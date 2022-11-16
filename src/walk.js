@@ -90,7 +90,7 @@ function walk(root, options) {
             included = true;
 
             if (excludes) {
-                if (!quiet) logger.trace("There are excludes. Relpath is " + pathName);
+                if (!quiet) logger.trace(`There are excludes. Relpath is ${pathName}`);
                 if (mm.isMatch(pathName, excludes)) {
                     included = false;
                 }
@@ -98,7 +98,7 @@ function walk(root, options) {
 
             // override the excludes
             if (includes) {
-                if (!quiet) logger.trace("There are includes. Relpath is " + pathName);
+                if (!quiet) logger.trace(`There are includes. Relpath is ${pathName}`);
                 if (mm.isMatch(pathName, includes)) {
                     included = true;
                 }
@@ -109,14 +109,14 @@ function walk(root, options) {
                 if (fs.existsSync(pathName)) {
                     stat = fs.statSync(pathName);
                     if (stat && stat.isDirectory()) {
-                        if (!quiet) logger.info(pathName);
+                        if (!quiet) logger.trace(pathName);
                         results = results.concat(walk(pathName, options));
                     } else {
-                        if (!quiet) logger.info(pathName);
+                        if (!quiet) logger.trace(pathName);
                         results.push(pathName);
                     }
                 } else {
-                    if (!quiet) logger.warn("File " + pathName + " does not exist.");
+                    if (!quiet) logger.warn(`File ${pathName} does not exist.`);
                 }
             } else {
                 if (!quiet) logger.trace("Excluded.");
