@@ -23,11 +23,8 @@ import Rule from '../Rule.js';
 
 let LICache = {};
 
-// all the plural categories from CLDR
-const categories = ["zero", "one", "two", "few", "many", "other"];
-
 // superset of all the start and end chars used in CLDR
-const quoteChars = "«»‘“”„「」’‚‹›『』\"\'\";
+const quoteChars = "«»‘“”„「」’‚‹›『』\"\'";
 
 /**
  * @class Represent an i18nlint rule.
@@ -69,22 +66,35 @@ class ResourceQuoteStyle extends Rule {
         const tarAltQuoteStart = li.info.delimiter.alternateQuotationStart;
         const tarAltQuoteEnd = li.info.delimiter.alternateQuotationEnd;
         
-        const srcQuotes = `([${srcQuoteStart}${srcQuoteEnd}${srcAltQuoteStart}${srcAltQuoteEnd}])`;
+        const srcQuotes = `([${srcQuoteStart}${srcQuoteEnd}${srcAltQuoteStart}${srcAltQuoteEnd}'"])`;
         const tarQuotes = `([${tarQuoteStart}${tarQuoteEnd}${tarAltQuoteStart}${tarAltQuoteEnd}])`;
         
-        const nonQuoteChars = `([${quoteChars.replace(srcQuote, "").replace(srcAltQuote, "").replace(tarQuote, "").replace(tarAltQuote, "")}])`;
-        const re = new RegExp(nonQuoteChars);
+        const nonQuoteChars = `([${
+            quoteChars.
+                replace(srcQuoteStart, "").
+	            replace(srcAltQuoteStart, "").
+	            replace(tarQuoteStart, "").
+	            replace(tarAltQuoteStart, "").
+                replace(srcQuoteEnd, "").
+                replace(srcAltQuoteEnd, "").
+                replace(tarQuoteEnd, "").
+                replace(tarAltQuoteEnd, "")}])`;
+        const re = new RegExp(nonQuoteChars, "g");
 
         function checkString(src, tar) {
             if (src.match(new RegExp(srcQuotes))) {
                 // contains quotes, so check the target
                 if (!tar.match(new RegExp(tarQuotes))) {
-                    return {
+                    let value = {
                         severity: "warning",
                         description: `quote style for the the locale ${options.locale} should be ${tarQuoteStart}text${tarQuoteEnd}`,
-                        lineNumber: options.lineNumber,
+                        id: resource.getKey(),
                         highlight: `Source: ${src}\nTarget: ${tar.replace(re, "<e0>$1</e0>")}`
                     };
+                    if (typeof(options.lineNumber) !== 'undefined') {
+                        value.lineNumber = options.lineNumber;
+                    }
+                    return value;
                 }
             }
         }
