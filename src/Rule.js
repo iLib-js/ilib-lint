@@ -97,11 +97,11 @@ class Rule {
      * <li>locale - the locale against which this rule should be checked. Some rules
      * are locale-sensitive, others not.
      * <li>resource - the resource to test this rule against. For resource rules, this
-     * is a required property. 
+     * is a required property.
      * <li>line - a single line of a file to test this rule against (for line rules)
      * <li>lines - all the lines of a file to test this rule against (for multiline rules
      * and multifile rules)
-     * <li>pathName - the name of the current file being matched in multifile rules. 
+     * <li>pathName - the name of the current file being matched in multifile rules.
      * <li>parameters - (optional) parameters for this rule from the configuration file
      * </ul>
      *
@@ -137,7 +137,7 @@ class Rule {
      * &lt;eX&gt; where X is a digit starting with 0 and progressing to 9 for each
      * subsequent problem. If the file type is XML already, the rest of the line will
      * be XML-escaped first.<p>
-     * 
+     *
      * Example:<p>
      *
      * "const str = rb.getString(<e0>id</e0>);"<p>
@@ -152,7 +152,7 @@ class Rule {
      * @param {Object} options The options object as per the description above
      * @returns {Object|Array.<Object>|=} an object describing the problem if the rule
      * does match for this locale, or an array of such Objects if there are multiple
-     * problems with the same input, or undefined if the rule does not match 
+     * problems with the same input, or undefined if the rule does not match
      */
     match(options) {
         throw new Error("Cannot call Rule.match() directly.");

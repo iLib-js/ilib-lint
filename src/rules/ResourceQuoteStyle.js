@@ -50,13 +50,13 @@ class ResourceQuoteStyle extends Rule {
             li = new LocaleInfo(locale);
             LICache[locale] = li;
         }
-        
+
         let sourceLI = LICache[this.sourceLocale];
         if (!sourceLI) {
             sourceLI = new LocaleInfo(this.sourceLocale);
             LICache[this.sourceLocale] = sourceLI;
         }
-        
+
         const srcQuoteStart = sourceLI.getDelimiterQuotationStart();
         const srcQuoteEnd = sourceLI.getDelimiterQuotationEnd();
         const srcAltQuoteStart = sourceLI.info.delimiter.alternateQuotationStart;
@@ -65,10 +65,10 @@ class ResourceQuoteStyle extends Rule {
         const tarQuoteEnd = li.getDelimiterQuotationEnd();
         const tarAltQuoteStart = li.info.delimiter.alternateQuotationStart;
         const tarAltQuoteEnd = li.info.delimiter.alternateQuotationEnd;
-        
+
         const srcQuotes = `([${srcQuoteStart}${srcQuoteEnd}${srcAltQuoteStart}${srcAltQuoteEnd}'"])`;
         const tarQuotes = `([${tarQuoteStart}${tarQuoteEnd}${tarAltQuoteStart}${tarAltQuoteEnd}])`;
-        
+
         const nonQuoteChars = `([${
             quoteChars.
                 replace(srcQuoteStart, "").

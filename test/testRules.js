@@ -27,32 +27,32 @@ export const testwalk = {
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         test.done();
     },
-    
+
     testResourceQuoteStyleName: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         test.equal(rule.getName(), "resources-quote-style");
 
         test.done();
     },
-    
+
     testResourceQuoteStyleDescription: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         test.equal(rule.getDescription(), "Ensure that the proper quote characters are used in translated resources");
 
         test.done();
     },
-    
+
     testResourceQuoteStyleSourceLocale: function(test) {
         test.expect(2);
 
@@ -60,12 +60,12 @@ export const testwalk = {
             sourceLocale: "de-DE"
         });
         test.ok(rule);
-        
+
         test.equal(rule.getSourceLocale(), "de-DE");
 
         test.done();
     },
-    
+
     testResourceQuoteStyleGetRuleType: function(test) {
         test.expect(2);
 
@@ -73,18 +73,18 @@ export const testwalk = {
             sourceLocale: "de-DE"
         });
         test.ok(rule);
-        
+
         test.equal(rule.getRuleType(), "resource");
 
         test.done();
     },
-    
+
     testResourceQuoteStyleMatchSimple: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -106,12 +106,12 @@ export const testwalk = {
         test.done();
     },
 
-    testResourceQuoteStyleMatchSimpleAsciiQuotes: function(test) {
+    testResourceQuoteStyleMatchAsciiQuotes: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -138,7 +138,7 @@ export const testwalk = {
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -159,13 +159,13 @@ export const testwalk = {
 
         test.done();
     },
-    
+
     testResourceQuoteStyleMatchSimpleNoError: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -180,13 +180,13 @@ export const testwalk = {
 
         test.done();
     },
-        
-    testResourceQuoteStyleMatchSimpleNoQuotesNoError: function(test) {
+
+    testResourceQuoteStyleMatchNoQuotesNoError: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -201,13 +201,13 @@ export const testwalk = {
 
         test.done();
     },
-    
-    testResourceQuoteStyleMatchSimpleQuotesInTargetOnly: function(test) {
+
+    testResourceQuoteStyleMatchQuotesInTargetOnly: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -222,13 +222,13 @@ export const testwalk = {
 
         test.done();
     },
-    
+
     testResourceQuoteStyleMatchAlternateNoError: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -243,13 +243,13 @@ export const testwalk = {
 
         test.done();
     },
-    
+
     testResourceICUPluralsMatchNoError: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -270,7 +270,7 @@ export const testwalk = {
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -291,28 +291,28 @@ export const testwalk = {
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
                 key: "plural.test",
                 sourceLocale: "en-US",
-                source: `{count, plural, 
+                source: `{count, plural,
                     one {
-                        {total, plural, 
-                            one {There is {count} of {total} item available} 
+                        {total, plural,
+                            one {There is {count} of {total} item available}
                             other {There is {count} of {total} items available}
                         }
                     }
                     other {
-                        {total, plural, 
-                            one {There are {count} of {total} item available} 
+                        {total, plural,
+                            one {There are {count} of {total} item available}
                             other {There are {count} of {total} items available}
                         }
                     }
                 }`,
                 targetLocale: "de-DE",
-                target: `{count, plural, 
+                target: `{count, plural,
                     one {
                         {total, plural,
                             one {Es gibt {count} von {total} Arkitel verfügbar}
@@ -333,12 +333,12 @@ export const testwalk = {
         test.done();
     },
 
-    testResourceICUPluralsMatchSimpleTooManyOpenBraces: function(test) {
+    testResourceICUPluralsMatchTooManyOpenBraces: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -360,12 +360,12 @@ export const testwalk = {
         test.done();
     },
 
-    testResourceICUPluralsMatchSimpleUnclosedOpenBraces: function(test) {
+    testResourceICUPluralsMatchUnclosedOpenBraces: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -387,12 +387,12 @@ export const testwalk = {
         test.done();
     },
 
-    testResourceICUPluralsMatchSimpleTranslatedCategories: function(test) {
+    testResourceICUPluralsMatchTranslatedCategories: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "de-DE",
             resource: new ResourceString({
@@ -414,12 +414,12 @@ export const testwalk = {
         test.done();
     },
 
-    testResourceICUPluralsMatchSimpleMissingCategories: function(test) {
+    testResourceICUPluralsMatchMissingCategoriesInTarget: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "ru-RU",
             resource: new ResourceString({
@@ -432,7 +432,7 @@ export const testwalk = {
         });
         const expected = {
             severity: "error",
-            description: "Missing plural categories in target string: few. Expecting all of these: one, few, other",
+            description: "Missing plural categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Это единственное число} other {это множественное число}}<e0></e0>'
         };
@@ -440,13 +440,13 @@ export const testwalk = {
 
         test.done();
     },
-    
-    testResourceICUPluralsMatchSimpleMissingCategoriesInSource: function(test) {
+
+    testResourceICUPluralsMatchMissingCategoriesInSource: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "ru-RU",
             resource: new ResourceString({
@@ -459,7 +459,7 @@ export const testwalk = {
         });
         const expected = {
             severity: "error",
-            description: "Missing plural categories in source string: one. Expecting all of these: one, other",
+            description: "Missing plural categories in source string: one. Expecting these: one, other",
             id: "plural.test",
             highlight: 'Source: {count, plural, other {This is plural}}<e0></e0>'
         };
@@ -467,34 +467,109 @@ export const testwalk = {
 
         test.done();
     },
-    
-    testResourceICUPluralsMatchSimpleMissingCategoriesNested: function(test) {
+
+    testResourceICUPluralsMatchExtraCategoriesInTarget: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}"
+            })
+        });
+        const expected = {
+            severity: "warning",
+            description: "Extra plural categories in target string: few. Expecting these: one, other",
+            id: "plural.test",
+            highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>'
+        };
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceICUPluralsMatchSameCategoriesInSourceAndTargetNoError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, =1 {Dies is eins} one {Dies ist einzigartig} other {Dies ist mehrerartig}}"
+            })
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralsMatchTargetIsMissingCategoriesInTarget: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}"
+            })
+        });
+        const expected = {
+            severity: "error",
+            description: "Missing plural categories in target string: =1. Expecting these: one, other, =1",
+            id: "plural.test",
+            highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>'
+        };
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceICUPluralsMatchMissingCategoriesNested: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
         const actual = rule.match({
             locale: "ru-RU",
             resource: new ResourceString({
                 key: "plural.test",
                 sourceLocale: "en-US",
-                source: `{count, plural, 
+                source: `{count, plural,
                     one {
-                        {total, plural, 
-                            one {There is {count} of {total} item available} 
+                        {total, plural,
+                            one {There is {count} of {total} item available}
                             other {There is {count} of {total} items available}
                         }
                     }
                     other {
-                        {total, plural, 
-                            one {There are {count} of {total} item available} 
+                        {total, plural,
+                            one {There are {count} of {total} item available}
                             other {There are {count} of {total} items available}
                         }
                     }
                 }`,
                 targetLocale: "ru-RU",
-                target: `{count, plural, 
+                target: `{count, plural,
                     one {
                         {total, plural,
                             one {Есть {count} из {total} статьи}
@@ -520,9 +595,9 @@ export const testwalk = {
         });
         const expected = {
             severity: "error",
-            description: "Missing plural categories in target string: few. Expecting all of these: one, few, other",
+            description: "Missing plural categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
-            highlight: 'Target: {count, plural, \n' +
+            highlight: 'Target: {count, plural,\n' +
                 '                    one {\n' +
                 '                        {total, plural,\n' +
                 '                            one {Есть {count} из {total} статьи}\n' +
@@ -550,33 +625,33 @@ export const testwalk = {
         test.done();
     },
 
-    testResourceICUPluralsMatchSimpleMultipleMissingCategoriesNested: function(test) {
+    testResourceICUPluralsMatchMultipleMissingCategoriesNested: function(test) {
         test.expect(2);
 
         const rule = new ResourceICUPlurals();
         test.ok(rule);
-        
+
         const actual = rule.match({
             locale: "ru-RU",
             resource: new ResourceString({
                 key: "plural.test",
                 sourceLocale: "en-US",
-                source: `{count, plural, 
+                source: `{count, plural,
                     one {
-                        {total, plural, 
-                            one {There is {count} of {total} item available} 
+                        {total, plural,
+                            one {There is {count} of {total} item available}
                             other {There is {count} of {total} items available}
                         }
                     }
                     other {
-                        {total, plural, 
-                            one {There are {count} of {total} item available} 
+                        {total, plural,
+                            one {There are {count} of {total} item available}
                             other {There are {count} of {total} items available}
                         }
                     }
                 }`,
                 targetLocale: "ru-RU",
-                target: `{count, plural, 
+                target: `{count, plural,
                     one {
                         {total, plural,
                             one {Есть {count} из {total} статьи}
@@ -599,12 +674,12 @@ export const testwalk = {
                 }`
             })
         });
-        const expected = [ 
+        const expected = [
             {
                 severity: "error",
-                description: "Missing plural categories in target string: few. Expecting all of these: one, few, other",
+                description: "Missing plural categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
-                highlight: 'Target: {count, plural, \n' +
+                highlight: 'Target: {count, plural,\n' +
                     '                    one {\n' +
                     '                        {total, plural,\n' +
                     '                            one {Есть {count} из {total} статьи}\n' +
@@ -628,9 +703,9 @@ export const testwalk = {
             },
             {
                 severity: "error",
-                description: "Missing plural categories in target string: few. Expecting all of these: one, few, other",
+                description: "Missing plural categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
-                highlight: 'Target: {count, plural, \n' +
+                highlight: 'Target: {count, plural,\n' +
                     '                    one {\n' +
                     '                        {total, plural,\n' +
                     '                            one {Есть {count} из {total} статьи}\n' +
@@ -659,4 +734,3 @@ export const testwalk = {
     },
 };
 
-    

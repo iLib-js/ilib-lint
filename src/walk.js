@@ -40,9 +40,9 @@ const logger = log4js.getLogger("i18nlint.walk");
  * idea is that you can exclude a whole category of files (like all json files),
  * but include specific ones. For example, you may exclude all json files, but
  * still want to include the "config.json" file.<p>
- 
+
  * The options parameter may include any of the following optional properties:
- * 
+ *
  * <ul>
  * <li><i>quiet</i> (boolean) - whether or not to give output while walking
  * the directory tree
@@ -51,12 +51,12 @@ const logger = log4js.getLogger("i18nlint.walk");
  * will not be recursively searched.
  * <li><i>includes</i> (Array of strings) - A list of micromatch patterns to
  * include in the walk. If a pattern matches both an exclude and an include, the
- * include will override the exclude. 
+ * include will override the exclude.
  * </ul>
  *
  * @param {String} root Directory to walk
  * @param {Object} options Options controlling how this walk happens. (See
- * the description for more details.) 
+ * the description for more details.)
  * @returns {Array.<String>} an array of file names in the directory, filtered
  * by the the excludes and includes list
  */
