@@ -19,23 +19,28 @@
 
 import walk from '../src/walk.js';
 
-export const testwalk = {
+function cmp(left, right) {
+    return (left.pathName < right.pathName) ? -1 :
+        ((left.pathName > right.pathName) ? 1 : 0);
+}
+
+export const testWalk = {
     testWalkDir: function(test) {
         test.expect(2);
-        const files = walk("test/ilib-mock", {quiet: true}).sort();
+        const files = walk("test/ilib-mock", {quiet: true}).sort(cmp);
         test.equal(files.length, 11);
         const expected = [
-            "test/ilib-mock/assemble.mjs",
-            "test/ilib-mock/ilib-mock-1.0.0.tgz",
-            "test/ilib-mock/index.js",
-            "test/ilib-mock/locale/de/DE/mockdata.json",
-            "test/ilib-mock/locale/de/mockdata.json",
-            "test/ilib-mock/locale/en/mockdata.json",
-            "test/ilib-mock/locale/en/US/mockdata.json",
-            "test/ilib-mock/locale/mockdata.json",
-            "test/ilib-mock/locale/und/DE/mockdata.json",
-            "test/ilib-mock/locale/und/US/mockdata.json",
-            "test/ilib-mock/package.json"
+            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
+            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
+            {pathName: "test/ilib-mock/index.js", pattern: "**"},
+            {pathName: "test/ilib-mock/locale/de/DE/mockdata.json", pattern: "**"},
+            {pathName: "test/ilib-mock/locale/de/mockdata.json", pattern: "**"},
+            {pathName: "test/ilib-mock/locale/en/US/mockdata.json", pattern: "**"},
+            {pathName: "test/ilib-mock/locale/en/mockdata.json", pattern: "**"},
+            {pathName: "test/ilib-mock/locale/mockdata.json", pattern: "**"},
+            {pathName: "test/ilib-mock/locale/und/DE/mockdata.json", pattern: "**"},
+            {pathName: "test/ilib-mock/locale/und/US/mockdata.json", pattern: "**"},
+            {pathName: "test/ilib-mock/package.json", pattern: "**"}
         ];
         test.equalIgnoringOrder(files, expected);
 
@@ -44,7 +49,7 @@ export const testwalk = {
 
     testWalkFile: function(test) {
         test.expect(2);
-        const files = walk("test/ilib-mock/index.js", {quiet: true}).sort();
+        const files = walk("test/ilib-mock/index.js", {quiet: true}).sort(cmp);
         test.equal(files.length, 1);
         test.equal(files[0], "test/ilib-mock/index.js");
 
@@ -53,7 +58,7 @@ export const testwalk = {
 
     testWalkNonExistentDir: function(test) {
         test.expect(1);
-        const files = walk("test/ilib-mock/asdf", {quiet: true}).sort();
+        const files = walk("test/ilib-mock/asdf", {quiet: true}).sort(cmp);
         test.equal(files.length, 0);
 
         test.done();
@@ -61,7 +66,7 @@ export const testwalk = {
 
     testWalkFileNonJSFile: function(test) {
         test.expect(1);
-        const files = walk("test/ilib-mock/locale/mockdata.json", {quiet: true}).sort();
+        const files = walk("test/ilib-mock/locale/mockdata.json", {quiet: true}).sort(cmp);
         test.equal(files.length, 1);
 
         test.done();
@@ -69,7 +74,7 @@ export const testwalk = {
 
     testWalkBadParamsUndefined: function(test) {
         test.expect(1);
-        const files = walk({quiet: true}).sort();
+        const files = walk({quiet: true}).sort(cmp);
         test.equal(files.length, 0);
 
         test.done();
@@ -92,19 +97,27 @@ export const testwalk = {
     },
 
     testWalkDirWithJsonExtension: function(test) {
-        test.expect(8);
-        const extensions = new Set();
-        extensions.add(".json");
-        const files = walk("test/ilib-mock/locale", {quiet: true, extensions }).sort();
+        test.expect(2);
+        const files = walk("test/ilib-mock/locale", {
+            quiet: true,
+            config: {
+                paths: {
+                    "**/*.json": {
+                    }
+                }
+            }
+        }).sort(cmp);
         test.equal(files.length, 7);
-        test.equal(files[0], "test/ilib-mock/locale/de/DE/mockdata.json");
-        test.equal(files[1], "test/ilib-mock/locale/de/mockdata.json");
-        test.equal(files[2], "test/ilib-mock/locale/en/US/mockdata.json");
-        test.equal(files[3], "test/ilib-mock/locale/en/mockdata.json");
-        test.equal(files[4], "test/ilib-mock/locale/mockdata.json");
-        test.equal(files[5], "test/ilib-mock/locale/und/DE/mockdata.json");
-        test.equal(files[6], "test/ilib-mock/locale/und/US/mockdata.json");
-
+        const expected = [
+            {pathName: "test/ilib-mock/locale/de/DE/mockdata.json", pattern: "**/*.json"},
+            {pathName: "test/ilib-mock/locale/de/mockdata.json", pattern: "**/*.json"},
+            {pathName: "test/ilib-mock/locale/en/US/mockdata.json", pattern: "**/*.json"},
+            {pathName: "test/ilib-mock/locale/en/mockdata.json", pattern: "**/*.json"},
+            {pathName: "test/ilib-mock/locale/mockdata.json", pattern: "**/*.json"},
+            {pathName: "test/ilib-mock/locale/und/DE/mockdata.json", pattern: "**/*.json"},
+            {pathName: "test/ilib-mock/locale/und/US/mockdata.json", pattern: "**/*.json"}
+        ];
+        test.deepEqual(files, expected);
         test.done();
     },
 
@@ -112,13 +125,43 @@ export const testwalk = {
         test.expect(2);
         const files = walk("test/ilib-mock", {
             quiet: true,
-            excludes: [ "**/*.json" ]
-        }).sort();
+            config: {
+                paths: {
+                    "**": {
+                        excludes: [ "**/*.json" ]
+                    }
+                }
+            }
+        }).sort(cmp);
         test.equal(files.length, 3);
         const expected = [
-            "test/ilib-mock/assemble.mjs",
-            "test/ilib-mock/ilib-mock-1.0.0.tgz",
-            "test/ilib-mock/index.js"
+            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
+            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
+            {pathName: "test/ilib-mock/index.js", pattern: "**"}
+        ];
+        test.equalIgnoringOrder(files, expected);
+
+        test.done();
+    },
+
+    testWalkDirWithExcludeDirectory: function(test) {
+        test.expect(2);
+        const files = walk("test/ilib-mock", {
+            quiet: true,
+            config: {
+                paths: {
+                    "**": {
+                        excludes: [ "test/ilib-mock/locale" ]
+                    }
+                }
+            }
+        }).sort(cmp);
+        test.equal(files.length, 4);
+        const expected = [
+            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
+            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
+            {pathName: "test/ilib-mock/index.js", pattern: "**"},
+            {pathName: "test/ilib-mock/package.json", pattern: "**"}
         ];
         test.equalIgnoringOrder(files, expected);
 
@@ -129,12 +172,18 @@ export const testwalk = {
         test.expect(2);
         const files = walk("test/ilib-mock", {
             quiet: true,
-            excludes: [ "**/*.json", "*.mjs" ]
-        }).sort();
-        test.equal(files.length, 3);
+            config: {
+                paths: {
+                    "**": {
+                        excludes: [ "**/*.json", "**/*.mjs" ]
+                    }
+                }
+            }
+        }).sort(cmp);
+        test.equal(files.length, 2);
         const expected = [
-            "test/ilib-mock/ilib-mock-1.0.0.tgz",
-            "test/ilib-mock/index.js"
+            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
+            {pathName: "test/ilib-mock/index.js", pattern: "**"}
         ];
         test.equalIgnoringOrder(files, expected);
 
@@ -145,15 +194,22 @@ export const testwalk = {
         test.expect(2);
         const files = walk("test/ilib-mock", {
             quiet: true,
-            excludes: [ "**/*.json" ],
-            includes: [ "**/package.json" ]
-        }).sort();
+            config: {
+                paths: {
+                    "**": {
+                        excludes: [ "**/*.json" ],
+                    },
+                    "**/package.json": {
+                    }
+                }
+            }
+        }).sort(cmp);
         test.equal(files.length, 4);
         const expected = [
-            "test/ilib-mock/assemble.mjs",
-            "test/ilib-mock/ilib-mock-1.0.0.tgz",
-            "test/ilib-mock/index.js",
-            "test/ilib-mock/package.json"
+            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
+            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
+            {pathName: "test/ilib-mock/index.js", pattern: "**"},
+            {pathName: "test/ilib-mock/package.json", pattern: "**/package.json"},
         ];
         test.equalIgnoringOrder(files, expected);
 

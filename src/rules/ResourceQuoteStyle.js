@@ -33,7 +33,7 @@ const quoteChars = "«»‘“”„「」’‚‹›『』\"\'";
 class ResourceQuoteStyle extends Rule {
     constructor(options) {
         super(options);
-        this.name = "resources-quote-style";
+        this.name = "resource-quote-style";
         this.description = "Ensure that the proper quote characters are used in translated resources";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
     }
@@ -43,7 +43,7 @@ class ResourceQuoteStyle extends Rule {
     }
 
     match(options) {
-        const { locale, resource } = options || {};
+        const { locale, resource, file } = options || {};
         let li = LICache[locale];
 
         if (!li) {
@@ -93,6 +93,9 @@ class ResourceQuoteStyle extends Rule {
                     };
                     if (typeof(options.lineNumber) !== 'undefined') {
                         value.lineNumber = options.lineNumber;
+                    }
+                    if (options.file) {
+                        value.file = options.file;
                     }
                     return value;
                 }

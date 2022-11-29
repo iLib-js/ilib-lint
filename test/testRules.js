@@ -21,7 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 
-export const testwalk = {
+export const testRules = {
     testResourceQuoteStyle: function(test) {
         test.expect(1);
 
@@ -37,7 +37,7 @@ export const testwalk = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        test.equal(rule.getName(), "resources-quote-style");
+        test.equal(rule.getName(), "resource-quote-style");
 
         test.done();
     },
@@ -93,9 +93,11 @@ export const testwalk = {
                 source: 'This string contains “quotes” in it.',
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält 'Anführungszeichen'."
-            })
+            }),
+            file: "x"
         });
         const expected = {
+            file: "x",
             severity: "warning",
             description: "quote style for the the locale de-DE should be „text“",
             id: "quote.test",

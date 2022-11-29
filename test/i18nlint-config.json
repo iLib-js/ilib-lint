@@ -16,16 +16,14 @@
                 "en-US",
                 "de-DE",
                 "ja-JP"
-            ],
-            "rules": {
-            }
+            ]
         },
         "**/*.xliff": {
             "rules": {
-                "formatjs-plural-syntax": true,
-                "formatjs-plural-categories": true,
+                "resource-icu-plurals": true,
+                "resource-quote-style": true,
                 "formatjs-match-substitution-params": true,
-                "match-quote-style": "localeOnly"
+                "formatjs-match-quote-style": "localeOnly"
             }
         }
     }

@@ -27,6 +27,9 @@ import json5 from 'json5';
 import log4js from 'log4js';
 
 import walk from './walk.js';
+import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
+import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
+import FormatterFactory from './rules/FormatterFactory.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
@@ -39,7 +42,7 @@ const optionConfig = {
         help: "This help message",
         showHelp: {
             banner: 'Usage: i18nlint [-h] [options] path [path ...]',
-            output: console.log
+            output: logger.info
         }
     },
     config: {
@@ -52,6 +55,11 @@ const optionConfig = {
         "default": "en-AU,en-CA,en-GB,en-IN,en-NG,en-PH,en-PK,en-US,en-ZA,de-DE,fr-CA,fr-FR,es-AR,es-ES,es-MX,id-ID,it-IT,ja-JP,ko-KR,pt-BR,ru-RU,tr-TR,vi-VN,zxx-XX,zh-Hans-CN,zh-Hant-HK,zh-Hant-TW,zh-Hans-SG",
         help: "Locales you want your app to support. Value is a comma-separated list of BCP-47 style locale tags. Default: the top 20 locales on the internet by traffic."
     },
+    sourceLocale: {
+        short: "s",
+        "default": "en-US",
+        help: "Default locale used to interpret the strings in the source code or the source strings in resource files."
+    },
     quiet: {
         short: "q",
         flag: true,
@@ -63,16 +71,16 @@ const options = OptionsParser.parse(optionConfig);
 
 /*
 if (options.args.length < 1) {
-    console.log("Error: missing path parameter");
+    logger.info("Error: missing path parameter");
     OptionsParser.help(optionConfig, {
         banner: 'Usage: ii18nlint [-h] [options] path [path ...]',
-        output: console.log
+        output: logger.info
     });
     process.exit(1);
 }
 */
 
-if (!options.opt.quiet) console.log("i18nlint - Copyright (c) 2022 JEDLsoft, All rights reserved.");
+if (!options.opt.quiet) logger.info("i18nlint - Copyright (c) 2022 JEDLsoft, All rights reserved.");
 
 let paths = options.args.slice(1);
 if (paths.length === 0) {
@@ -94,16 +102,80 @@ options.opt.locales = options.opt.locales.map(spec => {
 let config = {};
 if (options.opt.config) {
     if (!fs.existsSync(options.opt.config)) {
-        console.log(`Config file ${options.opt.config} does not exist. Aborting...`);
+        logger.info(`Config file ${options.opt.config} does not exist. Aborting...`);
         process.exit(2);
     }
     const data = fs.readFileSync(options.opt.config, "utf-8");
     config = json5.parse(data);
 }
 
-if (!options.opt.quiet) console.log(`\n\nScanning input paths: ${JSON.stringify(paths)}`);
+if (!options.opt.quiet) logger.info(`\n\nScanning input paths: ${JSON.stringify(paths)}`);
 
 let files = [];
+let rules = {
+    line: [],
+    resources: [
+        new ResourceICUPlurals({
+            sourceLocale: options.opt.sourceLocale
+        }),
+        new ResourceQuoteStyle({
+            sourceLocale: options.opt.sourceLocale
+        })
+    ]
+};
+
 paths.forEach(pathName => {
     files = files.concat(walk(pathName, options));
 });
+
+if (!options.opt.quiet) logger.info(`\n\nResults:`);
+
+const rules = {
+    line: [],
+    resource: [
+        ResourceICIPlurals,
+        ResourceQuoteStyle
+    ]
+};
+
+const fmt = FormatterFactory(options.opt);
+
+files.forEach(file => {
+    const data = fs.readFileSync(file, "utf-8");
+    const lines = data.split(/\n/g);
+    if (resourceFile) {
+        const resources = file.getResources();
+        resources.forEach(resource => {
+            rules.resource.forEach(rule => {
+                options.opt.locales.forEach(locale => {
+                    const result = rule.match({
+                        locale,
+                        resource,
+                        file
+                    });
+                    const str = fmt.format(result);
+                    if (str) {
+                        console.log(str);
+                    }
+                });
+            });
+        });
+    } else {
+        for (let i = 0; i < lines.length; i++) {
+            rules.line.forEach(rule => {
+                options.opt.locales.forEach(locale => {
+                    const result = rule.match({
+                        line: lines[i],
+                        locale,
+                        file
+                    });
+                    const str = fmt.format(result);
+                    if (str) {
+                        console.log(str);
+                    }
+                }
+            });
+        }
+    }
+});
+

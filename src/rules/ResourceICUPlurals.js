@@ -107,7 +107,7 @@ class ResourceICUPlurals extends Rule {
     }
 
     match(options) {
-        const { resource } = options;
+        const { resource, file } = options;
         const sourceLocale = this.sourceLocale;
         const sLoc = new Locale(sourceLocale);
         const tLoc = new Locale(options.locale);
@@ -133,6 +133,7 @@ class ResourceICUPlurals extends Rule {
             } catch (e) {
                 console.log(e);
                 let value = {
+                    file,
                     severity: "error",
                     description: `Incorrect plural or select syntax in source string: ${e}`,
                     id: resource.getKey(),
