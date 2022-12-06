@@ -56,7 +56,7 @@ class Formatter {
      * formatted string.
      *
      * @abstract
-     * @param {Object} result the result to format
+     * @param {Result} result the result to format
      * @returns {String} the formatted result
      */
     format(result) {

@@ -19,7 +19,8 @@
 
 const files = [
     "testwalk.js",
-    "testRules.js"
+    "testRules.js",
+    "testResult.js"
     // "testscanres.js"
     //"testassemble.js"
 ];

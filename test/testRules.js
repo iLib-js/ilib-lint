@@ -20,6 +20,7 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
+import Result from '../src/Result.js';
 
 export const testRules = {
     testResourceQuoteStyle: function(test) {
@@ -92,17 +93,20 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: 'This string contains “quotes” in it.',
                 targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält 'Anführungszeichen'."
+                target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
+                pathName: "a/b/c.xliff"
             }),
             file: "x"
         });
-        const expected = {
+        const expected = new Result({
             file: "x",
             severity: "warning",
             description: "quote style for the the locale de-DE should be „text“",
             id: "quote.test",
-            highlight: 'Source: This string contains “quotes” in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.'
-        };
+            highlight: 'Source: This string contains “quotes” in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -121,15 +125,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: 'This string contains "quotes" in it.',
                 targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält 'Anführungszeichen'."
+                target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "warning",
             description: "quote style for the the locale de-DE should be „text“",
             id: "quote.test",
-            highlight: 'Source: This string contains "quotes" in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.'
-        };
+            highlight: 'Source: This string contains "quotes" in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -148,15 +155,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: 'This string contains ‘quotes’ in it.',
                 targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält 'Anführungszeichen'."
+                target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "warning",
             description: "quote style for the the locale de-DE should be „text“",
             id: "quote.test",
-            highlight: 'Source: This string contains ‘quotes’ in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.'
-        };
+            highlight: 'Source: This string contains ‘quotes’ in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -175,7 +185,8 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: 'This string contains "quotes" in it.',
                 targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält „Anführungszeichen“."
+                target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -196,7 +207,8 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: 'This string contains quotes in it.',
                 targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält Anführungszeichen."
+                target: "Diese Zeichenfolge enthält Anführungszeichen.",
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -217,7 +229,8 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: 'This string contains quotes in it.',
                 targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält „Anführungszeichen“."
+                target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -238,7 +251,8 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: 'This string contains ‘quotes’ in it.',
                 targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält ‚Anführungszeichen‘."
+                target: "Diese Zeichenfolge enthält ‚Anführungszeichen‘.",
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -259,7 +273,8 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}"
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -280,7 +295,8 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, one {{total, plural, one {There is {count} of {total} item available} other {There is {count} of {total} items available}}} other {{total, plural, one {There are {count} of {total} item available} other {There are {count} of {total} items available}}}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}} other {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}}}"
+                target: "{count, plural, one {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}} other {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}}}",
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -327,7 +343,8 @@ export const testRules = {
                             other {Es gibt {count} von {total} Arkitel verfügbar}
                         }
                     }
-                }`
+                }`,
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -348,15 +365,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {{Dies ist einzigartig} other {Dies ist mehrerartig}}"
+                target: "{count, plural, one {{Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "error",
             description: "Incorrect plural or select syntax in target string: SyntaxError: MALFORMED_ARGUMENT",
             id: "plural.test",
-            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, one {{Dies <e0>ist einzigartig} other {Dies ist mehrerartig}}</e0>'
-        };
+            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, one {{Dies <e0>ist einzigartig} other {Dies ist mehrerartig}}</e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -375,15 +395,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}"
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "error",
             description: "Incorrect plural or select syntax in target string: SyntaxError: EXPECT_ARGUMENT_CLOSING_BRACE",
             id: "plural.test",
-            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}<e0></e0>'
-        };
+            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}<e0></e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -402,15 +425,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}}"
+                target: "{count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "error",
             description: "Incorrect plural or select syntax in target string: SyntaxError: MISSING_OTHER_CLAUSE",
             id: "plural.test",
-            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}<e0>}</e0>'
-        };
+            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}<e0>}</e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -429,15 +455,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {Это единственное число} other {это множественное число}}"
+                target: "{count, plural, one {Это единственное число} other {это множественное число}}",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "error",
             description: "Missing plural categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
-            highlight: 'Target: {count, plural, one {Это единственное число} other {это множественное число}}<e0></e0>'
-        };
+            highlight: 'Target: {count, plural, one {Это единственное число} other {это множественное число}}<e0></e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -456,15 +485,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {Это единственное число} few {это множественное число} other {это множественное число}}"
+                target: "{count, plural, one {Это единственное число} few {это множественное число} other {это множественное число}}",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "error",
             description: "Missing plural categories in source string: one. Expecting these: one, other",
             id: "plural.test",
-            highlight: 'Source: {count, plural, other {This is plural}}<e0></e0>'
-        };
+            highlight: 'Source: {count, plural, other {This is plural}}<e0></e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -483,15 +515,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}"
+                target: "{count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "warning",
             description: "Extra plural categories in target string: few. Expecting these: one, other",
             id: "plural.test",
-            highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>'
-        };
+            highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -510,7 +545,8 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, =1 {Dies is eins} one {Dies ist einzigartig} other {Dies ist mehrerartig}}"
+                target: "{count, plural, =1 {Dies is eins} one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff"
             })
         });
         test.ok(!actual);
@@ -531,15 +567,18 @@ export const testRules = {
                 sourceLocale: "en-US",
                 source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
                 targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}"
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "error",
             description: "Missing plural categories in target string: =1. Expecting these: one, other, =1",
             id: "plural.test",
-            highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>'
-        };
+            highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -592,10 +631,11 @@ export const testRules = {
                             other {Есть {count} из {total} статей}
                         }
                     }
-                }`
+                }`,
+                pathName: "a/b/c.xliff"
             })
         });
-        const expected = {
+        const expected = new Result({
             severity: "error",
             description: "Missing plural categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
@@ -620,8 +660,10 @@ export const testRules = {
                 '                            other {Есть {count} из {total} статей}\n' +
                 '                        }\n' +
                 '                    }\n' +
-                '                }<e0></e0>'
-        };
+                '                }<e0></e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
         test.deepEqual(actual, expected);
 
         test.done();
@@ -673,11 +715,12 @@ export const testRules = {
                             other {Есть {count} из {total} статей}
                         }
                     }
-                }`
+                }`,
+                pathName: "a/b/c.xliff"
             })
         });
         const expected = [
-            {
+            new Result({
                 severity: "error",
                 description: "Missing plural categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
@@ -701,9 +744,11 @@ export const testRules = {
                     '                            other {Есть {count} из {total} статей}\n' +
                     '                        }\n' +
                     '                    }\n' +
-                    '                }<e0></e0>'
-            },
-            {
+                    '                }<e0></e0>',
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
+            new Result({
                 severity: "error",
                 description: "Missing plural categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
@@ -727,12 +772,14 @@ export const testRules = {
                     '                            other {Есть {count} из {total} статей}\n' +
                     '                        }\n' +
                     '                    }\n' +
-                    '                }<e0></e0>'
-            },
+                    '                }<e0></e0>',
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
         ]
         test.deepEqual(actual, expected);
 
         test.done();
-    },
+    }
 };
 

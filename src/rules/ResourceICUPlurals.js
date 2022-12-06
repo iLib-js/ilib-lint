@@ -21,6 +21,7 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import Locale from 'ilib-locale';
 
 import Rule from '../Rule.js';
+import Result from '../Result.js';
 
 // all the plural categories from CLDR
 const allCategories = ["zero", "one", "two", "few", "many", "other"];
@@ -49,47 +50,6 @@ const categoriesForLang = {
     "ar": [ "zero", "one", "two", "few", "many", "other" ]
 }
 
-function checkPluralCategories(ast, neededCategories, isSource, src, key) {
-    let value = [];
-    for (let i = 0; i < ast.length; i++) {
-        const opts = ast[i].options;
-        if (opts) {
-            // check if any of the needed categories are missing
-            const missing = neededCategories.filter(category => {
-                return typeof(opts[category]) === 'undefined';
-            });
-            if ( missing && missing.length ) {
-                value.push({
-                    severity: "error",
-                    description: `Missing plural categories in ${isSource ? "source" : "target"} string: ${missing.join(", ")}. Expecting these: ${neededCategories.join(", ")}`,
-                    id: key,
-                    highlight: `${isSource ? "Source" : "Target"}: ${src}<e0></e0>`
-                });
-            }
-            for (let category in opts) {
-                if ( opts[category] && Array.isArray(opts[category].value) ) {
-                    value = value.concat(checkPluralCategories(opts[category].value, neededCategories, isSource, src, key));
-                }
-            }
-            // now check the other way around. That is, if the categories that exist are not needed.
-            if (!isSource) {
-                const extras = Object.keys(opts).filter(category => {
-                    return neededCategories.indexOf(category) < 0;
-                });
-                if (extras && extras.length) {
-                    value.push({
-                        severity: "warning",
-                        description: `Extra plural categories in ${isSource ? "source" : "target"} string: ${extras.join(", ")}. Expecting these: ${neededCategories.join(", ")}`,
-                        id: key,
-                        highlight: `${isSource ? "Source" : "Target"}: ${src}<e0></e0>`
-                    });
-                }
-            }
-        }
-    }
-    return value;
-}
-
 /**
  * @class Represent an i18nlint rule.
  * @abstract
@@ -106,74 +66,130 @@ class ResourceICUPlurals extends Rule {
         return "resource";
     }
 
+    /**
+     * @private
+     */
+    checkPluralCategories(ast, neededCategories, isSource, src, key, pathName) {
+        let value = [];
+        for (let i = 0; i < ast.length; i++) {
+            const opts = ast[i].options;
+            if (opts) {
+                // check if any of the needed categories are missing
+                const missing = neededCategories.filter(category => {
+                    return typeof(opts[category]) === 'undefined';
+                });
+                if ( missing && missing.length ) {
+                    value.push(new Result({
+                        severity: "error",
+                        rule: this,
+                        description: `Missing plural categories in ${isSource ? "source" : "target"} string: ${missing.join(", ")}. Expecting these: ${neededCategories.join(", ")}`,
+                        id: key,
+                        highlight: `${isSource ? "Source" : "Target"}: ${src}<e0></e0>`,
+                        pathName
+                    }));
+                }
+                for (let category in opts) {
+                    if ( opts[category] && Array.isArray(opts[category].value) ) {
+                        value = value.concat(this.checkPluralCategories(opts[category].value, neededCategories, isSource, src, key, pathName));
+                    }
+                }
+                // now check the other way around. That is, if the categories that exist are not needed.
+                if (!isSource) {
+                    const extras = Object.keys(opts).filter(category => {
+                        return neededCategories.indexOf(category) < 0;
+                    });
+                    if (extras && extras.length) {
+                        value.push(new Result({
+                            severity: "warning",
+                            rule: this,
+                            description: `Extra plural categories in ${isSource ? "source" : "target"} string: ${extras.join(", ")}. Expecting these: ${neededCategories.join(", ")}`,
+                            id: key,
+                            highlight: `${isSource ? "Source" : "Target"}: ${src}<e0></e0>`,
+                            pathName
+                        }));
+                    }
+                }
+            }
+        }
+        return value;
+    }
+
+    checkString(src, tar, file, resource, sourceLocale, targetLocale, lineNumber) {
+        const sLoc = new Locale(sourceLocale);
+        const tLoc = new Locale(targetLocale);
+        let results;
+        let problems = [];
+        let sourceCategories = [];
+        try {
+            const imf = new IntlMessageFormat(src, sourceLocale);
+            let categories = categoriesForLang[sLoc.getLanguage()] || [ "one", "other" ];
+            // look in the abstract syntax tree for the categories that were parsed out and make
+            // sure the required ones are there
+            const ast = imf.getAst();
+            problems = problems.concat(this.checkPluralCategories(ast, categories, true, src, resource.getKey(), resource.getPath()));
+            if ( ast[0] && ast[0].options ) {
+                sourceCategories = Object.keys(ast[0].options).filter(category => {
+                    // if it is not one of the standard categories, it is a special one, so search for it
+                    // in the target too
+                    return allCategories.indexOf(category) < 0;
+                });
+            }
+        } catch (e) {
+            console.log(e);
+            let value = {
+                pathName: file,
+                severity: "error",
+                rule: this,
+                description: `Incorrect plural or select syntax in source string: ${e}`,
+                id: resource.getKey(),
+                highlight: `Source: ${src.substring(0, e.location.end.offset)}<e0>${src.substring(e.location.end.offset)}</e0>`,
+                pathName: resource.getPath()
+            };
+            if (typeof(options.lineNumber) !== 'undefined') {
+                value.lineNumber = options.lineNumber + e.location.end.line - 1;
+            }
+            problems.push(new Result(value));
+        }
+        try {
+            const imf = new IntlMessageFormat(tar, targetLocale);
+            let categories = categoriesForLang[tLoc.getLanguage()] || [ "one", "other" ];
+            if (sourceCategories.length) {
+                categories = categories.concat(sourceCategories);
+            }
+            // look in the abstract syntax tree for the categories that were parsed out and make
+            // sure the required ones are there
+            const ast = imf.getAst();
+            problems = problems.concat(this.checkPluralCategories(ast, categories, false, tar, resource.getKey(), resource.getPath()));
+        } catch (e) {
+            let value = {
+                severity: "error",
+                description: `Incorrect plural or select syntax in target string: ${e}`,
+                rule: this,
+                id: resource.getKey(),
+                highlight: `Source: ${src}\nTarget: ${tar.substring(0, e.location.end.offset)}<e0>${tar.substring(e.location.end.offset)}</e0>`,
+                pathName: resource.getPath()
+            };
+            if (typeof(lineNumber) !== 'undefined') {
+                value.lineNumber = lineNumber + e.location.end.line - 1;
+            }
+            problems.push(new Result(value));
+        }
+        return problems.length < 2 ? problems[0] : problems;
+    }
+
+    /**
+     * @override
+     */
     match(options) {
         const { resource, file } = options;
         const sourceLocale = this.sourceLocale;
-        const sLoc = new Locale(sourceLocale);
-        const tLoc = new Locale(options.locale);
         let problems = [];
-        let sourceCategories = [];
-
-        function checkString(src, tar) {
-            let results;
-            try {
-                const imf = new IntlMessageFormat(src, sourceLocale);
-                let categories = categoriesForLang[sLoc.getLanguage()] || [ "one", "other" ];
-                // look in the abstract syntax tree for the categories that were parsed out and make
-                // sure the required ones are there
-                const ast = imf.getAst();
-                problems = problems.concat(checkPluralCategories(ast, categories, true, src, resource.getKey()));
-                if ( ast[0] && ast[0].options ) {
-                    sourceCategories = Object.keys(ast[0].options).filter(category => {
-                        // if it is not one of the standard categories, it is a special one, so search for it
-                        // in the target too
-                        return allCategories.indexOf(category) < 0;
-                    });
-                }
-            } catch (e) {
-                console.log(e);
-                let value = {
-                    file,
-                    severity: "error",
-                    description: `Incorrect plural or select syntax in source string: ${e}`,
-                    id: resource.getKey(),
-                    highlight: `Source: ${src.substring(0, e.location.end.offset)}<e0>${src.substring(e.location.end.offset)}</e0>`
-                };
-                if (typeof(options.lineNumber) !== 'undefined') {
-                    value.lineNumber = options.lineNumber + e.location.end.line - 1;
-                }
-                problems.push(value);
-            }
-            try {
-                const imf = new IntlMessageFormat(tar, options.locale);
-                let categories = categoriesForLang[tLoc.getLanguage()] || [ "one", "other" ];
-                if (sourceCategories.length) {
-                    categories = categories.concat(sourceCategories);
-                }
-                // look in the abstract syntax tree for the categories that were parsed out and make
-                // sure the required ones are there
-                const ast = imf.getAst();
-                problems = problems.concat(checkPluralCategories(ast, categories, false, tar, resource.getKey()));
-            } catch (e) {
-                let value = {
-                    severity: "error",
-                    description: `Incorrect plural or select syntax in target string: ${e}`,
-                    id: resource.getKey(),
-                    highlight: `Source: ${src}\nTarget: ${tar.substring(0, e.location.end.offset)}<e0>${tar.substring(e.location.end.offset)}</e0>`
-                };
-                if (typeof(options.lineNumber) !== 'undefined') {
-                    value.lineNumber = options.lineNumber + e.location.end.line - 1;
-                }
-                problems.push(value);
-            }
-            return problems.length < 2 ? problems[0] : problems;
-        }
 
         switch (resource.getType()) {
             case 'string':
                 const tarString = resource.getTarget();
                 if (tarString) {
-                    return checkString(resource.getSource(), tarString);
+                    return this.checkString(resource.getSource(), tarString, file, resource, sourceLocale, options.locale, options.lineNumber);
                 }
                 break;
 
@@ -183,7 +199,7 @@ class ResourceICUPlurals extends Rule {
                 if (tarArray) {
                     return srcArray.map((item, i) => {
                         if (i < tarArray.length && tarArray[i]) {
-                            return checkString(srcArray[i], tarArray[i]);
+                            return this.checkString(srcArray[i], tarArray[i], file, resource, sourceLocale, options.locale, options.lineNumber);
                         }
                     }).filter(element => {
                         return element;
@@ -196,7 +212,7 @@ class ResourceICUPlurals extends Rule {
                 const tarPlural = resource.getTarget();
                 if (tarPlural) {
                     return categories.map(category => {
-                        return checkString(srcPlural.other, tarPlural[category]);
+                        return this.checkString(srcPlural.other, tarPlural[category], file, resource, sourceLocale, options.locale, options.lineNumber);
                     });
                 }
                 break;

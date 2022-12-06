@@ -20,6 +20,7 @@
 import LocaleInfo from 'ilib-localeinfo';
 
 import Rule from '../Rule.js';
+import Result from '../Result.js';
 
 let LICache = {};
 
@@ -42,9 +43,13 @@ class ResourceQuoteStyle extends Rule {
         return "resource";
     }
 
+    /**
+     * @override
+     */
     match(options) {
         const { locale, resource, file } = options || {};
         let li = LICache[locale];
+        const _this = this;
 
         if (!li) {
             li = new LocaleInfo(locale);
@@ -72,24 +77,29 @@ class ResourceQuoteStyle extends Rule {
         const nonQuoteChars = `([${
             quoteChars.
                 replace(srcQuoteStart, "").
-	            replace(srcAltQuoteStart, "").
-	            replace(tarQuoteStart, "").
-	            replace(tarAltQuoteStart, "").
+                replace(srcAltQuoteStart, "").
+                replace(tarQuoteStart, "").
+                replace(tarAltQuoteStart, "").
                 replace(srcQuoteEnd, "").
                 replace(srcAltQuoteEnd, "").
                 replace(tarQuoteEnd, "").
                 replace(tarAltQuoteEnd, "")}])`;
         const re = new RegExp(nonQuoteChars, "g");
 
+        /**
+         * @private
+         */
         function checkString(src, tar) {
             if (src.match(new RegExp(srcQuotes))) {
                 // contains quotes, so check the target
                 if (!tar.match(new RegExp(tarQuotes))) {
                     let value = {
                         severity: "warning",
-                        description: `quote style for the the locale ${options.locale} should be ${tarQuoteStart}text${tarQuoteEnd}`,
+                        description: `quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`,
                         id: resource.getKey(),
-                        highlight: `Source: ${src}\nTarget: ${tar.replace(re, "<e0>$1</e0>")}`
+                        highlight: `Source: ${src}\nTarget: ${tar.replace(re, "<e0>$1</e0>")}`,
+                        rule: _this,
+                        pathName: resource.getPath()
                     };
                     if (typeof(options.lineNumber) !== 'undefined') {
                         value.lineNumber = options.lineNumber;
@@ -97,7 +107,7 @@ class ResourceQuoteStyle extends Rule {
                     if (options.file) {
                         value.file = options.file;
                     }
-                    return value;
+                    return new Result(value);
                 }
             }
         }
