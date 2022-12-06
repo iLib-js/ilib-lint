@@ -22,6 +22,8 @@ import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
 
+import SourceFile from './SourceFile.js';
+
 const logger = log4js.getLogger("i18nlint.walk");
 
 /**
@@ -57,7 +59,7 @@ const logger = log4js.getLogger("i18nlint.walk");
  * @param {String} root Directory to walk
  * @param {Object} options Options controlling how this walk happens. (See
  * the description for more details.)
- * @returns {Array.<String>} an array of file names in the directory, filtered
+ * @returns {Array.<SourceFile>} an array of file names in the directory, filtered
  * by the the excludes and includes list
  */
 function walk(root, options) {
@@ -116,10 +118,10 @@ function walk(root, options) {
                 } else {
                     if (included) {
                         if (!quiet) logger.trace(pathName);
-                        results.push({
+                        results.push(new SourceFile({
                             pathName,
                             pattern: glob
-                        });
+                        }));
                     } else {
                         if (!quiet) logger.trace("Excluded.");
                     }

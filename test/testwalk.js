@@ -18,6 +18,7 @@
  */
 
 import walk from '../src/walk.js';
+import SourceFile from '../src/SourceFile.js';
 
 function cmp(left, right) {
     return (left.pathName < right.pathName) ? -1 :
@@ -30,17 +31,17 @@ export const testWalk = {
         const files = walk("test/ilib-mock", {quiet: true}).sort(cmp);
         test.equal(files.length, 11);
         const expected = [
-            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
-            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
-            {pathName: "test/ilib-mock/index.js", pattern: "**"},
-            {pathName: "test/ilib-mock/locale/de/DE/mockdata.json", pattern: "**"},
-            {pathName: "test/ilib-mock/locale/de/mockdata.json", pattern: "**"},
-            {pathName: "test/ilib-mock/locale/en/US/mockdata.json", pattern: "**"},
-            {pathName: "test/ilib-mock/locale/en/mockdata.json", pattern: "**"},
-            {pathName: "test/ilib-mock/locale/mockdata.json", pattern: "**"},
-            {pathName: "test/ilib-mock/locale/und/DE/mockdata.json", pattern: "**"},
-            {pathName: "test/ilib-mock/locale/und/US/mockdata.json", pattern: "**"},
-            {pathName: "test/ilib-mock/package.json", pattern: "**"}
+            new SourceFile({pathName: "test/ilib-mock/assemble.mjs", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/index.js", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/de/DE/mockdata.json", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/de/mockdata.json", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/en/US/mockdata.json", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/en/mockdata.json", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/mockdata.json", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/und/DE/mockdata.json", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/und/US/mockdata.json", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/package.json", pattern: "**"})
         ];
         test.equalIgnoringOrder(files, expected);
 
@@ -109,13 +110,13 @@ export const testWalk = {
         }).sort(cmp);
         test.equal(files.length, 7);
         const expected = [
-            {pathName: "test/ilib-mock/locale/de/DE/mockdata.json", pattern: "**/*.json"},
-            {pathName: "test/ilib-mock/locale/de/mockdata.json", pattern: "**/*.json"},
-            {pathName: "test/ilib-mock/locale/en/US/mockdata.json", pattern: "**/*.json"},
-            {pathName: "test/ilib-mock/locale/en/mockdata.json", pattern: "**/*.json"},
-            {pathName: "test/ilib-mock/locale/mockdata.json", pattern: "**/*.json"},
-            {pathName: "test/ilib-mock/locale/und/DE/mockdata.json", pattern: "**/*.json"},
-            {pathName: "test/ilib-mock/locale/und/US/mockdata.json", pattern: "**/*.json"}
+            new SourceFile({pathName: "test/ilib-mock/locale/de/DE/mockdata.json", pattern: "**/*.json"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/de/mockdata.json", pattern: "**/*.json"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/en/US/mockdata.json", pattern: "**/*.json"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/en/mockdata.json", pattern: "**/*.json"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/mockdata.json", pattern: "**/*.json"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/und/DE/mockdata.json", pattern: "**/*.json"}),
+            new SourceFile({pathName: "test/ilib-mock/locale/und/US/mockdata.json", pattern: "**/*.json"})
         ];
         test.deepEqual(files, expected);
         test.done();
@@ -135,9 +136,9 @@ export const testWalk = {
         }).sort(cmp);
         test.equal(files.length, 3);
         const expected = [
-            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
-            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
-            {pathName: "test/ilib-mock/index.js", pattern: "**"}
+            new SourceFile({pathName: "test/ilib-mock/assemble.mjs", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/index.js", pattern: "**"})
         ];
         test.equalIgnoringOrder(files, expected);
 
@@ -158,10 +159,10 @@ export const testWalk = {
         }).sort(cmp);
         test.equal(files.length, 4);
         const expected = [
-            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
-            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
-            {pathName: "test/ilib-mock/index.js", pattern: "**"},
-            {pathName: "test/ilib-mock/package.json", pattern: "**"}
+            new SourceFile({pathName: "test/ilib-mock/assemble.mjs", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/index.js", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/package.json", pattern: "**"})
         ];
         test.equalIgnoringOrder(files, expected);
 
@@ -182,8 +183,8 @@ export const testWalk = {
         }).sort(cmp);
         test.equal(files.length, 2);
         const expected = [
-            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
-            {pathName: "test/ilib-mock/index.js", pattern: "**"}
+            new SourceFile({pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/index.js", pattern: "**"})
         ];
         test.equalIgnoringOrder(files, expected);
 
@@ -206,10 +207,10 @@ export const testWalk = {
         }).sort(cmp);
         test.equal(files.length, 4);
         const expected = [
-            {pathName: "test/ilib-mock/assemble.mjs", pattern: "**"},
-            {pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"},
-            {pathName: "test/ilib-mock/index.js", pattern: "**"},
-            {pathName: "test/ilib-mock/package.json", pattern: "**/package.json"},
+            new SourceFile({pathName: "test/ilib-mock/assemble.mjs", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/ilib-mock-1.0.0.tgz", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/index.js", pattern: "**"}),
+            new SourceFile({pathName: "test/ilib-mock/package.json", pattern: "**/package.json"}),
         ];
         test.equalIgnoringOrder(files, expected);
 

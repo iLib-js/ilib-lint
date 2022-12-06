@@ -17,12 +17,11 @@
  * limitations under the License.
  */
 
-import ConsoleFormatter from './ConsoleFormatter.js';
+import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 
-const formatterCache = {
-};
+const formatterCache = {};
 
-const cfmt = new ConsoleFormatter();
+const cfmt = new AnsiConsoleFormatter();
 formatterCache[cfmt.getName()] = cfmt;
 
 /**

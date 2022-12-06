@@ -57,7 +57,7 @@ const categoriesForLang = {
 class ResourceICUPlurals extends Rule {
     constructor(options) {
         super(options);
-        this.name = "resources-icu-plurals";
+        this.name = "resource-icu-plurals";
         this.description = "Ensure that plurals in translated resources have the correct syntax";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
     }

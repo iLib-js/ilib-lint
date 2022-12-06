@@ -29,7 +29,8 @@ import log4js from 'log4js';
 import walk from './walk.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
-import FormatterFactory from './rules/FormatterFactory.js';
+import FormatterFactory from './FormatterFactory.js';
+import RuleSet from './RuleSet.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
@@ -130,52 +131,22 @@ paths.forEach(pathName => {
 
 if (!options.opt.quiet) logger.info(`\n\nResults:`);
 
-const rules = {
-    line: [],
-    resource: [
-        ResourceICIPlurals,
-        ResourceQuoteStyle
-    ]
-};
-
+const defaultRules = new RuleSet([
+    ResourceICIPlurals,
+    ResourceQuoteStyle
+]);
 const fmt = FormatterFactory(options.opt);
 
+// main loop
+
 files.forEach(file => {
-    const data = fs.readFileSync(file, "utf-8");
-    const lines = data.split(/\n/g);
-    if (resourceFile) {
-        const resources = file.getResources();
-        resources.forEach(resource => {
-            rules.resource.forEach(rule => {
-                options.opt.locales.forEach(locale => {
-                    const result = rule.match({
-                        locale,
-                        resource,
-                        file
-                    });
-                    const str = fmt.format(result);
-                    if (str) {
-                        console.log(str);
-                    }
-                });
-            });
-        });
-    } else {
-        for (let i = 0; i < lines.length; i++) {
-            rules.line.forEach(rule => {
-                options.opt.locales.forEach(locale => {
-                    const result = rule.match({
-                        line: lines[i],
-                        locale,
-                        file
-                    });
-                    const str = fmt.format(result);
-                    if (str) {
-                        console.log(str);
-                    }
-                }
-            });
+    file.parse();
+    const issues = file.findIssues(defaultRules, options.opt.locales);
+    issues.forEach(issue => {
+        const str = fmt.format(issue);
+        if (str) {
+            console.log(str);
         }
-    }
+    });
 });
 

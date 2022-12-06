@@ -32,16 +32,6 @@ class AnsiConsoleFormatter extends Formatter {
     }
 
     /**
-     * Get the name of the formatter. This should be a unique string.
-     *
-     * @returns {String} the name of this formatter
-     */
-    getName() {
-        // make sure to define this.name in your implementation
-        return this.name;
-    }
-
-    /**
      * Return a general description of the formatter for use in help output.
      *
      * @returns {String} a general description of the formatter
@@ -60,10 +50,14 @@ class AnsiConsoleFormatter extends Formatter {
      */
     format(result) {
         if (!result) return;
-        const type = result.severity === "error" ? "ERR  " : "WARN ";
-        return `${type} ${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}: ${result.description}
+        let output = "";
+        output = (result.severity === "error" ? "ERR  " : "WARN ");
+        output += `${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}: ${result.description}
 ${highlight}
 Rule (${result.rule.getName()}): ${result.rule.getDescription()}`;
+        // output ascii terminal escape sequences
+        output = output.replace(/<e\d>/g, "\033[31;");
+        output = output.replace(/<\/e\d>/g, "\033[0;");
     }
 }
 

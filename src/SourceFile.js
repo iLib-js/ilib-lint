@@ -33,6 +33,7 @@ class SourceFile {
      */
     constructor(options) {
         this.filePath = options.filePath;
+        this.pattern = options.pattern;
     }
 
     getFilePath() {
@@ -43,13 +44,55 @@ class SourceFile {
     }
 
     parse() {
+        const data = fs.readFileSync(this.filePath, "utf-8");
+        this.lines = data.split(/\n/g);
+        this.type = "line";
     }
 
     /**
-     * Return the list of issues found in this file.
-     * @returns {Array.<Result>} a list of
+     * Check the current file and return a list of issues found in this file.
+     * This method parses the source file and applies each rule in turn
+     * using the given locales.
+     *
+     * @param {RuleSet} rules a set of rules to apply
+     * @param {Array.<Locale>} locales a set of locales to apply
+     * @returns {Array.<Result>} a list of natch results
      */
-    findIssues() {
+    findIssues(rules, locales) {
+        let issues = [];
+        switch (this.type) {
+        case "line":
+            for (let i = 0; i < this.lines.length; i++) {
+                rules.line.forEach(rule => {
+                    locales.forEach(locale => {
+                        const result = rule.match({
+                            line: this.lines[i],
+                            locale,
+                            file
+                        });
+                        issues.push(result);
+                    });
+                });
+            }
+            break;
+        case "resource":
+            const resources = this.ts.getResource();
+            resources.forEach(resource => {
+                rules.resource.forEach(rule => {
+                    options.opt.locales.forEach(locale => {
+                        const result = rule.match({
+                            locale,
+                            resource,
+                            file
+                        });
+                        issues.push(result);
+                    });
+                });
+            });
+            break;
+        }
+
+        return issues;
     }
 
     /**

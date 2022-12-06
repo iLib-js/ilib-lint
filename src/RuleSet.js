@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 
+import Rule from './Rule.js';
+
 /**
  * @class Represent a set of i18nlint rules.
  */
@@ -24,25 +26,58 @@ class RuleSet {
     /**
      * Construct an i18nlint rule set.
      */
-    constructor() {
+    constructor(rules) {
+        this.rules = {};
+        this.byname = {};
+        if (rules) {
+            rules.forEach(rule => {
+                this.addRule(rule);
+            });
+        }
     }
 
     /**
      * @param {Rule} rule
      */
     addRule(rule) {
+        if (!rule || !(rule instanceof Rule)) return;
+        const name = rule.getName();
+        if (this.byname[name]) return; // already added
+        this.byname[name] = rule;
+        const type = rule.getRuleType();
+        if (!this.rules[type]) {
+            this.rules[type] = [rule];
+        } else {
+            this.rules[type].push(rule);
+        }
     }
 
     /**
-     * @param {String} name
+     * Return the rule with the given name.
+     *
+     * @param {String} name name to search for
+     * @returns {Rule|undefined} the rule with the given name or
+     * undefined if the rule is not known
      */
     getRule(name) {
+        return this.byname[name];
     }
 
     /**
-     * @param {String} type
+     * Return all the rules of the given type in this set.
+     * @param {String} type to search for
+     * @returns {Array.<Rule>} the list of rules of the requested type
      */
     getRules(type) {
+        return this.rules[type] || [];
+    }
+
+    /**
+     * Return the number of rules in this set.
+     * @returns {Number} the number of rules in this set
+     */
+    getSize() {
+        return Object.keys(this.byname).length;
     }
 };
 
