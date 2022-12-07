@@ -22,7 +22,8 @@ const files = [
     "testRules.js",
     "testRuleSet.js",
     "testResult.js",
-    "testXliffPlugin.js"
+    "testXliffPlugin.js",
+    "testParserFactory.js"
 ];
 
 export default files;
