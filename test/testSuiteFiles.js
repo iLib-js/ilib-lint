@@ -21,9 +21,8 @@ const files = [
     "testwalk.js",
     "testRules.js",
     "testRuleSet.js",
-    "testResult.js"
-    // "testscanres.js"
-    //"testassemble.js"
+    "testResult.js",
+    "testXliffPlugin.js"
 ];
 
 export default files;

@@ -1,5 +1,5 @@
 /*
- * Formatter.js - Formats result output
+ * FormatterFactory.js - Factory to create and return the right formatter
  *
  * Copyright © 2022 JEDLSoft
  *

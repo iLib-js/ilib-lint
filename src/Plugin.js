@@ -53,6 +53,16 @@ class Plugin {
     }
 
     /**
+     * Return the list of extensions of the files that this parser handles.
+     * The extensions are listed without the dot. eg. ["json", "jsn"]
+     *
+     * @returns {Array.<String>} a list of file name extensions
+     */
+    getExtensions() {
+        return [];
+    }
+
+    /**
      * For a "rule" type of plugin, this returns a list of Rule instances
      * that this plugin implements.
      *
@@ -64,13 +74,13 @@ class Plugin {
     }
 
     /**
-     * For a "parser" type of plugin, this returns a list of Parser instances
+     * For a "parser" type of plugin, this returns a list of Parser classes
      * that this plugin implements.
      *
-     * @returns {Array.<Parser>} list of Parser instances implemented by this
+     * @returns {Array.<Parser>} list of Parser classes implemented by this
      * plugin
      */
-    getParser() {
+    getParsers() {
         return [];
     }
 

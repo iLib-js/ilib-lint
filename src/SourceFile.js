@@ -17,6 +17,10 @@
  * limitations under the License.
  */
 
+import path from 'node:path';
+
+import ParserFactory from './ParserFactory.js';
+
 /**
  * @class Represent a set of i18nlint rules.
  */
@@ -44,9 +48,20 @@ class SourceFile {
     }
 
     parse() {
-        const data = fs.readFileSync(this.filePath, "utf-8");
-        this.lines = data.split(/\n/g);
-        this.type = "line";
+        const extension = path.extension(this.filePath);
+        const parserClass = ParserFactory({extension});
+        if (parser) {
+            const parser = new parserClass({
+                filePath: this.filePath
+            });
+            parser.parse();
+            this.resources = parser.getResources();
+            this.type = "resource";
+        } else {
+            const data = fs.readFileSync(this.filePath, "utf-8");
+            this.lines = data.split(/\n/g);
+            this.type = "line";
+        }
     }
 
     /**
@@ -76,8 +91,7 @@ class SourceFile {
             }
             break;
         case "resource":
-            const resources = this.ts.getResource();
-            resources.forEach(resource => {
+            this.resources.forEach(resource => {
                 rules.resource.forEach(rule => {
                     options.opt.locales.forEach(locale => {
                         const result = rule.match({
