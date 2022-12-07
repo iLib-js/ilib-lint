@@ -31,7 +31,7 @@ formatterCache[cfmt.getName()] = cfmt;
 function FormatterFactory(options) {
     let fmt = formatterCache[cfmt.getName()];
 
-    if (options.formatter && formatterCache[options.formatter]) {
+    if (options && options.formatter && formatterCache[options.formatter]) {
         fmt = formatterCache[options.formatter];
     }
 

@@ -28,6 +28,7 @@ class AnsiConsoleFormatter extends Formatter {
      * Construct an formatter instance.
      */
     constructor() {
+        super();
         this.name = "ansi-console-formatter";
     }
 
@@ -56,8 +57,8 @@ class AnsiConsoleFormatter extends Formatter {
 ${highlight}
 Rule (${result.rule.getName()}): ${result.rule.getDescription()}`;
         // output ascii terminal escape sequences
-        output = output.replace(/<e\d>/g, "\033[31;");
-        output = output.replace(/<\/e\d>/g, "\033[0;");
+        output = output.replace(/<e\d>/g, "\u001B[31;");
+        output = output.replace(/<\/e\d>/g, "\u001B[0;");
     }
 }
 
