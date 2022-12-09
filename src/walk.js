@@ -69,67 +69,75 @@ function walk(root, options) {
         return results;
     }
 
+    const { config, quiet = false } = options || {};
+    const includes = config && config.paths ? Object.keys(config.paths) : ["**"];
+    let excludes = config && config.excludes;
+    let pathName, relPath, included, stat, glob;
+
     try {
-        list = fs.readdirSync(root);
+        if (fs.existsSync(root)) {
+            stat = fs.statSync(root);
+            if (stat && stat.isDirectory()) {
+                list = fs.readdirSync(root);
+                if (!quiet) logger.trace("Searching " + root);
+
+                if (list && list.length !== 0) {
+                    list.sort().forEach((file) => {
+                        if (file === "." || file === "..") {
+                            return;
+                        }
+
+                        pathName = path.join(root, file);
+                        included = true;
+
+                        if (excludes) {
+                            if (!quiet) logger.trace(`There are excludes. Relpath is ${pathName}`);
+                            included = !mm.match(pathName, excludes);
+                        }
+
+                        if (included) {
+                            results = results.concat(walk(pathName, options));
+                        }
+                    });
+                }
+            } else {
+                // file
+                included = false;
+
+                if (includes) {
+                    if (!quiet) logger.trace(`There are includes.`);
+                    mm.match(root, includes, {
+                        onMatch: (params) => {
+                            if (!glob && params.isMatch) {
+                                glob = params.glob;
+                                excludes = config && ((config.paths && config.paths[glob] && config.paths[glob].excludes) || excludes);
+                                included = excludes ? !mm.isMatch(root, excludes) : true;
+                            }
+                        }
+                    });
+                }
+
+                if (included) {
+                    if (!quiet) logger.trace(`${pathName} ... included`);
+                    glob = glob || "**";
+                    results.push(new SourceFile({
+                        filePath: root,
+                        settings: config.paths && config.paths[glob]
+                    }));
+                } else {
+                    if (!quiet) logger.trace(`${pathName} ... excluded`);
+                }
+            }
+        } else {
+            if (!quiet) logger.warn(`File ${pathName} does not exist.`);
+        }
     } catch (e) {
         // if the readdirSync did not work, it's maybe a file?
         if (fs.existsSync(root)) {
-            return [root];
+            return [new SourceFile({
+                filePath: root
+            })];
         }
-    }
-    const { config, quiet = false } = options || {};
-    const includes = config && config.paths ? Object.keys(config.paths) : ["**"];
-    let excludes;
-    let pathName, relPath, included, stat, glob;
-
-    if (!quiet) logger.trace("Searching " + root);
-
-    if (list && list.length !== 0) {
-        list.sort().forEach((file) => {
-            if (file === "." || file === "..") {
-                return;
-            }
-
-            pathName = path.join(root, file);
-            included = false;
-            excludes = undefined;
-
-            if (includes) {
-                if (!quiet) logger.trace(`There are includes. Relpath is ${pathName}`);
-                mm.match(pathName, includes, {
-                    onMatch: (params) => {
-                        if (params.isMatch) {
-                            glob = params.glob;
-                            excludes = config && ((config.paths && config.paths[glob] && config.paths[glob].excludes) || config.excludes);
-                            included = excludes ? !mm.isMatch(pathName, excludes) : true;
-                        }
-                    }
-                });
-            }
-
-            if (!quiet) logger.trace("Included.");
-            if (fs.existsSync(pathName)) {
-                stat = fs.statSync(pathName);
-                if (stat && stat.isDirectory()) {
-                    if (!quiet) logger.trace(pathName);
-                    if (!excludes || !mm.isMatch(pathName, excludes)) {
-                        results = results.concat(walk(pathName, options));
-                    }
-                } else {
-                    if (included) {
-                        if (!quiet) logger.trace(pathName);
-                        results.push(new SourceFile({
-                            filePath: pathName,
-                            pattern: glob
-                        }));
-                    } else {
-                        if (!quiet) logger.trace("Excluded.");
-                    }
-                }
-            } else {
-                if (!quiet) logger.warn(`File ${pathName} does not exist.`);
-            }
-        });
     }
 
     return results;

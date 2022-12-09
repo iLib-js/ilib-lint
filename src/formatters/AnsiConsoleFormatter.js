@@ -71,11 +71,7 @@ class AnsiConsoleFormatter extends Formatter {
         output = output.replace(/<e\d><\/e\d>/g, "\u001B[48:5:9m \u001B[0m");
         output = output.replace(/<e\d>/g, "\u001B[38:5:9m");
         output = output.replace(/<\/e\d>/g, "\u001B[0m");
-        if (result.severity === "error") {
-            logger.error(output);
-        } else {
-            logger.warn(output);
-        }
+        return output;
     }
 }
 

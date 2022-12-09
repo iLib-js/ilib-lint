@@ -84,7 +84,7 @@ if (options.args.length < 1) {
 
 if (!options.opt.quiet) logger.info("i18nlint - Copyright (c) 2022 JEDLsoft, All rights reserved.");
 
-let paths = options.args.slice(1);
+let paths = options.args;
 if (paths.length === 0) {
     paths.push(".");
 }
@@ -101,6 +101,7 @@ options.opt.locales = options.opt.locales.map(spec => {
     return loc.getSpec();
 });
 
+// used if no explicit config is found or given
 const defaultConfig = {
     "name": "i18nlint",
     "locales": [
@@ -136,7 +137,7 @@ const defaultConfig = {
 let config = {};
 if (options.opt.config) {
     if (!fs.existsSync(options.opt.config)) {
-        logger.info(`Config file ${options.opt.config} does not exist. Aborting...`);
+        logger.warn(`Config file ${options.opt.config} does not exist. Aborting...`);
         process.exit(2);
     }
     const data = fs.readFileSync(options.opt.config, "utf-8");
@@ -145,7 +146,7 @@ if (options.opt.config) {
     config = defaultConfig;
 }
 
-if (!options.opt.quiet) logger.info(`\n\nScanning input paths: ${JSON.stringify(paths)}`);
+if (!options.opt.quiet) logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 
 let files = [];
 
@@ -155,8 +156,6 @@ paths.forEach(pathName => {
         config
     }));
 });
-
-if (!options.opt.quiet) logger.info(`\n\nResults:`);
 
 const defaultRules = new RuleSet([
     new ResourceICUPlurals(),
@@ -174,7 +173,11 @@ files.forEach(file => {
     issues.forEach(issue => {
         const str = fmt.format(issue);
         if (str) {
-            console.log(str);
+            if (issue.severity === "error") {
+                logger.error(str);
+            } else {
+                logger.warn(str);
+            }
         }
     });
 });
