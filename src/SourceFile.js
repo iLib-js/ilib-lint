@@ -18,6 +18,8 @@
  */
 
 import path from 'node:path';
+import fs from 'node:fs';
+import { getLocaleFromPath } from 'ilib-tools-common';
 
 import ParserFactory from './ParserFactory.js';
 
@@ -32,32 +34,57 @@ class SourceFile {
      * - filePath {String} path to the file
      * - settings {Object} the settings from the i18nlint config that
      *   apply to this file
-     * - plugin {Plugin} the plugin that handles this file type
-     * - ruleset {RuleSet} the set of rules that applies to this file
      */
     constructor(options) {
         this.filePath = options.filePath;
-        this.pattern = options.pattern;
+        this.settings = options.settings;
     }
 
+    /**
+     * Return the file path for this source file.
+     *
+     * @returns {String} the file path for this source file
+     */
     getFilePath() {
         return this.filePath;
     }
 
+    /**
+     * Return the locale gleaned from the file path using the template in
+     * the settings, or undefined if no locale could be found.
+     *
+     * @returns {String|undefined} the locale gleaned from the path, or
+     * undefined if no locale could be found.
+     */
     getLocaleFromPath() {
+        if (this.settings && this.settings.template) {
+            return getLocaleFromPath(this.settings.template, this.filePath);
+        }
+        return undefined;
     }
 
+    /**
+     * Parse the current source file into a list of resources (in the case of
+     * resource files, or lines in the case of other types of files.
+     */
     parse() {
-        const extension = path.extension(this.filePath);
-        const parserClass = ParserFactory({extension});
-        if (parser) {
-            const parser = new parserClass({
-                filePath: this.filePath
-            });
-            parser.parse();
-            this.resources = parser.getResources();
-            this.type = "resource";
-        } else {
+        if (!this.filePath) return;
+        let extension = path.extname(this.filePath);
+        if (extension) {
+            // remove the dot
+            extension = extension.substring(1);
+            const parserClasses = ParserFactory({extension});
+            if (parserClasses && parserClasses.length) {
+                const parser = new parserClasses[0]({
+                    filePath: this.filePath
+                });
+                parser.parse();
+                this.resources = parser.getResources();
+                this.type = "resource";
+            }
+        }
+
+        if (!this.type) {
             const data = fs.readFileSync(this.filePath, "utf-8");
             this.lines = data.split(/\n/g);
             this.type = "line";
@@ -69,40 +96,49 @@ class SourceFile {
      * This method parses the source file and applies each rule in turn
      * using the given locales.
      *
-     * @param {RuleSet} rules a set of rules to apply
+     * @param {RuleSet} ruleset a set of rules to apply
      * @param {Array.<Locale>} locales a set of locales to apply
      * @returns {Array.<Result>} a list of natch results
      */
-    findIssues(rules, locales) {
-        let issues = [];
+    findIssues(ruleset, locales) {
+        let issues = [], rules;
+        const detectedLocale = this.getLocaleFromPath();
+
+        if (detectedLocale && locales.indexOf(detectedLocale) < -1) {
+            // not one of the locales we need to check
+            return issues;
+        }
+
         switch (this.type) {
         case "line":
-            for (let i = 0; i < this.lines.length; i++) {
-                rules.line.forEach(rule => {
-                    locales.forEach(locale => {
+            rules = ruleset.getRules("line");
+            if (rules && rules.length) {
+                for (let i = 0; i < this.lines.length; i++) {
+                    rules.forEach(rule => {
                         const result = rule.match({
                             line: this.lines[i],
-                            locale,
-                            file
+                            locale: detectedLocale,
+                            file: this.filePath
+                        });
+                        issues.push(result);
+                    });
+                }
+            }
+            break;
+        case "resource":
+            rules = ruleset.getRules("resource");
+            if (rules && rules.length) {
+                this.resources.forEach(resource => {
+                    rules.forEach(rule => {
+                        const result = rule.match({
+                            locale: resource.getTargetLocale(),
+                            resource,
+                            file: this.filePath
                         });
                         issues.push(result);
                     });
                 });
             }
-            break;
-        case "resource":
-            this.resources.forEach(resource => {
-                rules.resource.forEach(rule => {
-                    options.opt.locales.forEach(locale => {
-                        const result = rule.match({
-                            locale,
-                            resource,
-                            file
-                        });
-                        issues.push(result);
-                    });
-                });
-            });
             break;
         }
 

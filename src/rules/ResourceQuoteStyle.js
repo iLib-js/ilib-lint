@@ -93,19 +93,23 @@ class ResourceQuoteStyle extends Rule {
             if (src.match(new RegExp(srcQuotes))) {
                 // contains quotes, so check the target
                 if (!tar.match(new RegExp(tarQuotes))) {
+                    const matches = re.exec(tar);
                     let value = {
                         severity: "warning",
-                        description: `quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`,
                         id: resource.getKey(),
-                        highlight: `Source: ${src}\nTarget: ${tar.replace(re, "<e0>$1</e0>")}`,
+                        source: src,
                         rule: _this,
-                        pathName: resource.getPath()
+                        pathName: file
                     };
+                    if (matches) {
+                        value.highlight = `Target: ${tar.replace(re, "<e0>$1</e0>")}`;
+                        value.description = `Quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`;
+                    } else {
+                        value.highlight = `Target: ${tar}<e0></e0>`;
+                        value.description = `Quotes are missing in the target. Quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`;
+                    }
                     if (typeof(options.lineNumber) !== 'undefined') {
                         value.lineNumber = options.lineNumber;
-                    }
-                    if (options.file) {
-                        value.file = options.file;
                     }
                     return new Result(value);
                 }

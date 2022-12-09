@@ -33,8 +33,10 @@ class Result {
      * - pathName {String}: name of the file that the issue was found in (required)
      * - rule {Rule}: the rule that generated this issue (required)
      * - id {String}: key of a resource being checked
+     * - source {String}: for resource problems, this is the original source string
      * - highlight {String}: highlighted text from the source file indicating
-     *   where the issue was
+     *   where the issue was. For resources, this is either the source or target
+     *   string, where-ever the problem occurred
      * - lineNumber {Number}: line number in the source fie where the issue
      *   was found
      * - locale {String}: locale of associated with this issue
@@ -51,7 +53,7 @@ class Result {
         this.severity = (fields.severity === "error" || fields.severity === "warning") ?
             fields.severity :
             "warning";
-        ["description", "pathName", "rule", "id", "highlight", "lineNumber", "locale"].forEach(property => {
+        ["description", "pathName", "rule", "id", "highlight", "lineNumber", "locale", "source"].forEach(property => {
             if (fields[property]) this[property] = fields[property];
         });
     }

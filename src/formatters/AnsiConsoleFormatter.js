@@ -16,8 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import log4js from 'log4js';
 
 import Formatter from '../Formatter.js';
+
+var logger = log4js.getLogger("i18nlint.formatters.AnsiConsoleFormatter");
 
 /**
  * @class Represent an output formatter for an ANSI console/terminal
@@ -52,13 +55,24 @@ class AnsiConsoleFormatter extends Formatter {
     format(result) {
         if (!result) return;
         let output = "";
-        output = (result.severity === "error" ? "ERR  " : "WARN ");
-        output += `${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}: ${result.description}
-${highlight}
-Rule (${result.rule.getName()}): ${result.rule.getDescription()}`;
+        const startColor = (result.severity === "error" ? "\u001B[38:5:9m" : "\u001B[38:5:178m");
+        output += `${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}:
+  ${startColor}${result.description}\u001B[0m\n`;
+        if (result.source) {
+            output += `  Source: ${result.source}\n`;
+        }
+        output += `  ${result.highlight}
+  Rule (${result.rule.getName()}): ${result.rule.getDescription()}
+`;
         // output ascii terminal escape sequences
-        output = output.replace(/<e\d>/g, "\u001B[31;");
-        output = output.replace(/<\/e\d>/g, "\u001B[0;");
+        output = output.replace(/<e\d><\/e\d>/g, "\u001B[48:5:9m \u001B[0m");
+        output = output.replace(/<e\d>/g, "\u001B[38:5:9m");
+        output = output.replace(/<\/e\d>/g, "\u001B[0m");
+        if (result.severity === "error") {
+            logger.error(output);
+        } else {
+            logger.warn(output);
+        }
     }
 }
 

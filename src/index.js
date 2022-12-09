@@ -29,6 +29,7 @@ import log4js from 'log4js';
 import walk from './walk.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
+import ResourceURLMatch from './rules/ResourceURLMatch.js';
 import FormatterFactory from './FormatterFactory.js';
 import RuleSet from './RuleSet.js';
 
@@ -100,6 +101,38 @@ options.opt.locales = options.opt.locales.map(spec => {
     return loc.getSpec();
 });
 
+const defaultConfig = {
+    "name": "i18nlint",
+    "locales": [
+        "en-US",
+        "de-DE",
+        "ja-JP",
+        "ko-KR"
+    ],
+    "paths": {
+        "**/*.json": {
+            "locales": [
+                "en-US",
+                "de-DE",
+                "ja-JP"
+            ]
+        },
+        "**/*.xliff": {
+            "rules": {
+                "resource-icu-plurals": true,
+                "resource-quote-style": true
+            }
+        }
+    },
+    "excludes": [
+        "**/.git",
+        "**/node_modules",
+        "**/.svn",
+        "package.json",
+        "package-lock.json"
+    ]
+};
+
 let config = {};
 if (options.opt.config) {
     if (!fs.existsSync(options.opt.config)) {
@@ -108,38 +141,34 @@ if (options.opt.config) {
     }
     const data = fs.readFileSync(options.opt.config, "utf-8");
     config = json5.parse(data);
+} else {
+    config = defaultConfig;
 }
 
 if (!options.opt.quiet) logger.info(`\n\nScanning input paths: ${JSON.stringify(paths)}`);
 
 let files = [];
-let rules = {
-    line: [],
-    resources: [
-        new ResourceICUPlurals({
-            sourceLocale: options.opt.sourceLocale
-        }),
-        new ResourceQuoteStyle({
-            sourceLocale: options.opt.sourceLocale
-        })
-    ]
-};
 
 paths.forEach(pathName => {
-    files = files.concat(walk(pathName, options));
+    files = files.concat(walk(pathName, {
+        quiet: options.opt.quiet,
+        config
+    }));
 });
 
 if (!options.opt.quiet) logger.info(`\n\nResults:`);
 
 const defaultRules = new RuleSet([
-    ResourceICIPlurals,
-    ResourceQuoteStyle
+    new ResourceICUPlurals(),
+    new ResourceQuoteStyle(),
+    new ResourceURLMatch()
 ]);
 const fmt = FormatterFactory(options.opt);
 
 // main loop
 
 files.forEach(file => {
+    logger.trace(`Examining ${file.filePath}`);
     file.parse();
     const issues = file.findIssues(defaultRules, options.opt.locales);
     issues.forEach(issue => {

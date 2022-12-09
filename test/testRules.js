@@ -20,6 +20,8 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
+import ResourceURLMatch from '../src/rules/ResourceURLMatch.js';
+
 import Result from '../src/Result.js';
 
 export const testRules = {
@@ -99,13 +101,13 @@ export const testRules = {
             file: "x"
         });
         const expected = new Result({
-            file: "x",
             severity: "warning",
-            description: "quote style for the the locale de-DE should be „text“",
+            description: "Quote style for the the locale de-DE should be „text“",
             id: "quote.test",
-            highlight: 'Source: This string contains “quotes” in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            source: 'This string contains “quotes” in it.',
+            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x"
         });
         test.deepEqual(actual, expected);
 
@@ -127,15 +129,17 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "warning",
-            description: "quote style for the the locale de-DE should be „text“",
+            description: "Quote style for the the locale de-DE should be „text“",
             id: "quote.test",
-            highlight: 'Source: This string contains "quotes" in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            source: 'This string contains "quotes" in it.',
+            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y"
         });
         test.deepEqual(actual, expected);
 
@@ -157,15 +161,17 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "a/b"
         });
         const expected = new Result({
             severity: "warning",
-            description: "quote style for the the locale de-DE should be „text“",
+            description: "Quote style for the the locale de-DE should be „text“",
             id: "quote.test",
-            highlight: 'Source: This string contains ‘quotes’ in it.\nTarget: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            source: "This string contains ‘quotes’ in it.",
+            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "a/b"
         });
         test.deepEqual(actual, expected);
 
@@ -187,7 +193,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -209,7 +216,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält Anführungszeichen.",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -231,7 +239,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -253,7 +262,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält ‚Anführungszeichen‘.",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -275,7 +285,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -297,7 +308,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}} other {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -345,7 +357,8 @@ export const testRules = {
                     }
                 }`,
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -367,15 +380,17 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {{Dies ist einzigartig} other {Dies ist mehrerartig}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "error",
             description: "Incorrect plural or select syntax in target string: SyntaxError: MALFORMED_ARGUMENT",
             id: "plural.test",
-            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, one {{Dies <e0>ist einzigartig} other {Dies ist mehrerartig}}</e0>',
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            highlight: 'Target: {count, plural, one {{Dies <e0>ist einzigartig} other {Dies ist mehrerartig}}</e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y"
         });
         test.deepEqual(actual, expected);
 
@@ -397,15 +412,17 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "error",
             description: "Incorrect plural or select syntax in target string: SyntaxError: EXPECT_ARGUMENT_CLOSING_BRACE",
             id: "plural.test",
-            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}<e0></e0>',
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}<e0></e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y"
         });
         test.deepEqual(actual, expected);
 
@@ -427,15 +444,17 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "error",
             description: "Incorrect plural or select syntax in target string: SyntaxError: MISSING_OTHER_CLAUSE",
             id: "plural.test",
-            highlight: 'Source: {count, plural, one {This is singular} other {This is plural}}\nTarget: {count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}<e0>}</e0>',
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            highlight: 'Target: {count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}<e0>}</e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y"
         });
         test.deepEqual(actual, expected);
 
@@ -457,15 +476,17 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {Это единственное число} other {это множественное число}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "error",
             description: "Missing plural categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
             highlight: 'Target: {count, plural, one {Это единственное число} other {это множественное число}}<e0></e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y"
         });
         test.deepEqual(actual, expected);
 
@@ -487,7 +508,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {Это единственное число} few {это множественное число} other {это множественное число}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "error",
@@ -495,7 +517,8 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Source: {count, plural, other {This is plural}}<e0></e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y",
+            source: '{count, plural, other {This is plural}}'
         });
         test.deepEqual(actual, expected);
 
@@ -517,15 +540,17 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "warning",
-            description: "Extra plural categories in target string: few. Expecting these: one, other",
+            description: "Extra plural categories in target string: few. Expecting only these: one, other",
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y",
+            source: '{count, plural, one {This is singular} other {This is plural}}'
         });
         test.deepEqual(actual, expected);
 
@@ -547,7 +572,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, =1 {Dies is eins} one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         test.ok(!actual);
 
@@ -569,7 +595,8 @@ export const testRules = {
                 targetLocale: "de-DE",
                 target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "error",
@@ -577,7 +604,8 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y",
+            source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}'
         });
         test.deepEqual(actual, expected);
 
@@ -633,7 +661,8 @@ export const testRules = {
                     }
                 }`,
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = new Result({
             severity: "error",
@@ -662,7 +691,21 @@ export const testRules = {
                 '                    }\n' +
                 '                }<e0></e0>',
             rule,
-            pathName: "a/b/c.xliff"
+            pathName: "x/y",
+            source: `{count, plural,
+                    one {
+                        {total, plural,
+                            one {There is {count} of {total} item available}
+                            other {There is {count} of {total} items available}
+                        }
+                    }
+                    other {
+                        {total, plural,
+                            one {There are {count} of {total} item available}
+                            other {There are {count} of {total} items available}
+                        }
+                    }
+                }`
         });
         test.deepEqual(actual, expected);
 
@@ -717,7 +760,8 @@ export const testRules = {
                     }
                 }`,
                 pathName: "a/b/c.xliff"
-            })
+            }),
+            file: "x/y"
         });
         const expected = [
             new Result({
@@ -746,7 +790,21 @@ export const testRules = {
                     '                    }\n' +
                     '                }<e0></e0>',
                 rule,
-                pathName: "a/b/c.xliff"
+                pathName: "x/y",
+                source: `{count, plural,
+                    one {
+                        {total, plural,
+                            one {There is {count} of {total} item available}
+                            other {There is {count} of {total} items available}
+                        }
+                    }
+                    other {
+                        {total, plural,
+                            one {There are {count} of {total} item available}
+                            other {There are {count} of {total} items available}
+                        }
+                    }
+                }`
             }),
             new Result({
                 severity: "error",
@@ -774,10 +832,148 @@ export const testRules = {
                     '                    }\n' +
                     '                }<e0></e0>',
                 rule,
-                pathName: "a/b/c.xliff"
+                pathName: "x/y",
+                source: `{count, plural,
+                    one {
+                        {total, plural,
+                            one {There is {count} of {total} item available}
+                            other {There is {count} of {total} items available}
+                        }
+                    }
+                    other {
+                        {total, plural,
+                            one {There are {count} of {total} item available}
+                            other {There are {count} of {total} items available}
+                        }
+                    }
+                }`
             }),
         ]
         test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceURLMatch: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceURLMatch();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'This has an URL in it http://www.box.com',
+                targetLocale: "de-DE",
+                target: "Dies hat ein URL http://www.box.com",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceURLMatchMismatch: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceURLMatch();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'This has an URL in it http://www.box.com',
+                targetLocale: "de-DE",
+                target: "Dies hat ein URL http://www.yahoo.com",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "url.test");
+        test.equal(actual[0].description, "URL from source string does not appear in target string");
+        test.equal(actual[0].highlight, "URL: http://www.box.com");
+        test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    },
+
+    testResourceURLMatchMultiple: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceURLMatch();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
+                targetLocale: "de-DE",
+                target: "Dies hat ein URL http://www.box.com http://www.google.com/",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceURLMatchMultipleReverseOrder: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceURLMatch();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
+                targetLocale: "de-DE",
+                target: "Dies hat ein URL http://www.google.com/ http://www.box.com",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceURLMatchMultipleMissing: function(test) {
+        test.expect(3);
+
+        const rule = new ResourceURLMatch();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
+                targetLocale: "de-DE",
+                target: "Dies hat ein URL http://www.google.com/",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
 
         test.done();
     }

@@ -100,7 +100,7 @@ function walk(root, options) {
                     onMatch: (params) => {
                         if (params.isMatch) {
                             glob = params.glob;
-                            excludes = config && config.paths && config.paths[glob] && config.paths[glob].excludes;
+                            excludes = config && ((config.paths && config.paths[glob] && config.paths[glob].excludes) || config.excludes);
                             included = excludes ? !mm.isMatch(pathName, excludes) : true;
                         }
                     }
@@ -119,7 +119,7 @@ function walk(root, options) {
                     if (included) {
                         if (!quiet) logger.trace(pathName);
                         results.push(new SourceFile({
-                            pathName,
+                            filePath: pathName,
                             pattern: glob
                         }));
                     } else {
