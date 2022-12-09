@@ -52,6 +52,12 @@ const optionConfig = {
         "default": "./i18nlint-config.json",
         help: "Give an explicit path to a configuration file instead of trying to find it in the current directory."
     },
+    errorsOnly: {
+        short: "e",
+        flag: true,
+        "default": false,
+        help: "Only return errors and supress warnings"
+    },
     locales: {
         short: "l",
         "default": "en-AU,en-CA,en-GB,en-IN,en-NG,en-PH,en-PK,en-US,en-ZA,de-DE,fr-CA,fr-FR,es-AR,es-ES,es-MX,id-ID,it-IT,ja-JP,ko-KR,pt-BR,ru-RU,tr-TR,vi-VN,zxx-XX,zh-Hans-CN,zh-Hant-HK,zh-Hant-TW,zh-Hans-SG",
@@ -165,6 +171,7 @@ const defaultRules = new RuleSet([
 const fmt = FormatterFactory(options.opt);
 
 // main loop
+let exitValue = 0;
 
 files.forEach(file => {
     logger.trace(`Examining ${file.filePath}`);
@@ -175,10 +182,13 @@ files.forEach(file => {
         if (str) {
             if (issue.severity === "error") {
                 logger.error(str);
-            } else {
+                exitValue = 2;
+            } else if (!options.opt.errorsOnly) {
                 logger.warn(str);
+                exitValue = Math.max(exitValue, 1);
             }
         }
     });
 });
 
+process.exit(exitValue);
