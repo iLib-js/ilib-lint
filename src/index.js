@@ -29,7 +29,7 @@ import log4js from 'log4js';
 import walk from './walk.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
-import ResourceURLMatch from './rules/ResourceURLMatch.js';
+import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
 import FormatterFactory from './FormatterFactory.js';
 import RuleSet from './RuleSet.js';
 
@@ -163,10 +163,19 @@ paths.forEach(pathName => {
     }));
 });
 
+const rules = {
+    url: {
+        name: "resource-url-match",
+        description: "Ensure that URLs that appear in the source string are also used in the translated string",
+        note: "URL '{matchString}' from source string does not appear in target string",
+        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)?([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
+    }
+};
+
 const defaultRules = new RuleSet([
     new ResourceICUPlurals(),
     new ResourceQuoteStyle(),
-    new ResourceURLMatch()
+    new ResourceRegExpChecker(rules.url)
 ]);
 const fmt = FormatterFactory(options.opt);
 

@@ -20,6 +20,7 @@
 const files = [
     "testFormatterFactory.js",
     "testParserFactory.js",
+    "testRegExpRules.js",
     "testRules.js",
     "testRuleSet.js",
     "testResult.js",

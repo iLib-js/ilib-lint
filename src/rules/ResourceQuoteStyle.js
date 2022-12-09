@@ -29,7 +29,6 @@ const quoteChars = "«»‘“”„「」’‚‹›『』\"\'";
 
 /**
  * @class Represent an i18nlint rule.
- * @abstract
  */
 class ResourceQuoteStyle extends Rule {
     constructor(options) {
