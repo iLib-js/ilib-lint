@@ -99,9 +99,23 @@ i18nlint accepts the following command-line parameters:
 * locales - Locales you want your app to support. Value is a comma-separated
   list of BCP-47 style locale tags.
   Default: the top 20 locales on the internet by traffic.
+* sourceLocale - locale of the source files or the source locale for resource
+  files. Default: "en-US"
 * quiet - Produce no progress output during the run, except for errors running
   the tool such as the inability to load a plugin. Instead exit with a return
   value. Zero indicates no errors, and a positive exit value indicates errors.
+
+## Exit Status
+
+If you want to use this linter in a script, you can check for the following
+exit status:
+
+* 0 - no problems found
+* 1 - warnings found
+* 2 - errors found
+
+When the `--errorsOnly` flag is given, the program will return 0 if only
+warnings can be found.
 
 ## Configuration
 
@@ -135,6 +149,8 @@ will be read and processed to configure the i18nlint tool for that path. The
       individual rules in that rule set can still be overridden using
       the "rules" property above. Rulesets are just a short-hand
       to turn on many of them at once.
+    * template (string) - a template that can be used to parse the
+      file name for the locale of that file.
 * plugins (Array of strings) - names the i18nlint plugins to use in this
   project. Once loaded, each plugin can define parsers for file types
   or a set of linting rules that become available to use, or both. The
@@ -161,6 +177,11 @@ Here is an example of a configuration file:
         "ja-JP",
         "ko-KR"
     ],
+    "excludes": {
+        "node_modules/**",
+        ".git/**",
+        "test/**"
+    },
     "paths": {
         "src/**/*.json": {
             // override the general locales
@@ -188,6 +209,8 @@ Here is an example of a configuration file:
 ```
 
 ## Directive Comments
+
+(not implemented yet)
 
 Some file types can contain comments, such as source code. In these types of
 files, it is possible to put special i18nlint directive comments that help to
@@ -222,12 +245,15 @@ const str = rb.getString(uniqueId); // i18nlint-line javascript-getstring-of-var
 
 ## Plugins
 
-Plugins for i18nlint can provide two different things:
+(not implemented yet)
+
+Plugins for i18nlint can provide a few different things:
 
 * classes that know how to parse particular file types
 * classes that implement rules
+* classes that format issues for output
 
-Often, the same plugin can provide both types of classes.
+Often, the same plugin can provide all types of classes.
 
 The idea behind a parser plugin is that you can get a better understanding of the
 file if you know how
@@ -249,7 +275,19 @@ description of each rule so that when the rule matches in a file, the person who
 responsible for that file can get some clue as to what it means and what they need
 to do to fix it.
 
+## Built-in Rules
+
 Some generic rules that apply to many types of files are built-in to i18nlint.
+This apply mostly to resource files, such as XLIFF files.
+
+The built-in rules are:
+
+- resource-icu-plurals - check for ICU-style plurals. Also works with formatjs
+  plurals, as it has the same syntax.
+- resource-quote-style - if the source string has quotes, check that the target
+  string also has quotes and that those quotes are appropriate for the locale
+- resource-url-match - if the source string contains references to URLs, check
+  that the target string also contains references to the same URLs
 
 ## License
 
