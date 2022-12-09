@@ -55,7 +55,7 @@ class AnsiConsoleFormatter extends Formatter {
     format(result) {
         if (!result) return;
         let output = "";
-        const startColor = (result.severity === "error" ? "\u001B[38:5:9m" : "\u001B[38:5:178m");
+        const startColor = (result.severity === "error" ? "\u001B[91m" : "\u001B[33m");
         output += `${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}:
   ${startColor}${result.description}\u001B[0m\n`;
         if (result.id) {
@@ -68,8 +68,8 @@ class AnsiConsoleFormatter extends Formatter {
   Rule (${result.rule.getName()}): ${result.rule.getDescription()}
 `;
         // output ascii terminal escape sequences
-        output = output.replace(/<e\d><\/e\d>/g, "\u001B[48:5:9m \u001B[0m");
-        output = output.replace(/<e\d>/g, "\u001B[38:5:9m");
+        output = output.replace(/<e\d><\/e\d>/g, "\u001B[91m \u001B[0m");
+        output = output.replace(/<e\d>/g, "\u001B[91m");
         output = output.replace(/<\/e\d>/g, "\u001B[0m");
         return output;
     }
