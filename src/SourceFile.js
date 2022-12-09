@@ -120,7 +120,7 @@ class SourceFile {
                             locale: detectedLocale,
                             file: this.filePath
                         });
-                        issues.push(result);
+                        if (result) issues = issues.concat(result);
                     });
                 }
             }
@@ -135,7 +135,7 @@ class SourceFile {
                             resource,
                             file: this.filePath
                         });
-                        issues.push(result);
+                        if (result) issues = issues.concat(result);
                     });
                 });
             }

@@ -901,7 +901,7 @@ export const testRules = {
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "url.test");
         test.equal(actual[0].description, "URL from source string does not appear in target string");
-        test.equal(actual[0].highlight, "URL: http://www.box.com");
+        test.equal(actual[0].highlight, "Target: Dies hat ein URL http://www.yahoo.com<e0></e0>");
         test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
         test.equal(actual[0].pathName, "x/y");
 

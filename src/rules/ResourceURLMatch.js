@@ -86,7 +86,7 @@ class ResourceURLMatch extends Rule {
                             source: src,
                             rule: _this,
                             pathName: file,
-                            highlight:`URL: ${missing}`,
+                            highlight:`Target: ${tar}<e0></e0>`,
                             description: `URL from source string does not appear in target string`
                         };
                         if (typeof(options.lineNumber) !== 'undefined') {

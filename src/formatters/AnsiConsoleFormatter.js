@@ -58,6 +58,9 @@ class AnsiConsoleFormatter extends Formatter {
         const startColor = (result.severity === "error" ? "\u001B[38:5:9m" : "\u001B[38:5:178m");
         output += `${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}:
   ${startColor}${result.description}\u001B[0m\n`;
+        if (result.id) {
+            output += `  Key: ${result.id}\n`;
+        }
         if (result.source) {
             output += `  Source: ${result.source}\n`;
         }
