@@ -36,6 +36,9 @@ class SourceFile {
      *   apply to this file
      */
     constructor(options) {
+        if (!options || !options.filePath) {
+            throw "Incorrect options given to SourceFile constructor";
+        }
         this.filePath = options.filePath;
         this.settings = options.settings;
     }
@@ -53,19 +56,20 @@ class SourceFile {
      * Return the locale gleaned from the file path using the template in
      * the settings, or undefined if no locale could be found.
      *
-     * @returns {String|undefined} the locale gleaned from the path, or
-     * undefined if no locale could be found.
+     * @returns {String} the locale gleaned from the path, or the empty
+     * string if no locale could be found.
      */
     getLocaleFromPath() {
         if (this.settings && this.settings.template) {
             return getLocaleFromPath(this.settings.template, this.filePath);
         }
-        return undefined;
+        return "";
     }
 
     /**
      * Parse the current source file into a list of resources (in the case of
      * resource files, or lines in the case of other types of files.
+     * @returns {Object} the parsed representation of this file
      */
     parse() {
         if (!this.filePath) return;
@@ -81,14 +85,24 @@ class SourceFile {
                 parser.parse();
                 this.resources = parser.getResources();
                 this.type = "resource";
+                
+                return this.resources;
             }
         }
 
-        if (!this.type) {
-            const data = fs.readFileSync(this.filePath, "utf-8");
-            this.lines = data.split(/\n/g);
-            this.type = "line";
-        }
+        const data = fs.readFileSync(this.filePath, "utf-8");
+        this.lines = data.split(/\n/g);
+        this.type = "line";
+
+        return this.lines;
+    }
+    
+    /**
+     * Return the type of this file, resource or line.
+     * @returns {String} the type of this file
+     */
+    getType() {
+        return this.type;
     }
 
     /**
@@ -143,12 +157,6 @@ class SourceFile {
         }
 
         return issues;
-    }
-
-    /**
-     * @param {String} type
-     */
-    getRules(type) {
     }
 };
 

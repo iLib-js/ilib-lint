@@ -18,13 +18,14 @@
  */
 
 const files = [
-    "testwalk.js",
+    "testFormatterFactory.js",
+    "testParserFactory.js",
     "testRules.js",
     "testRuleSet.js",
     "testResult.js",
-    "testXliffPlugin.js",
-    "testParserFactory.js",
-    "testFormatterFactory.js"
+    "testSourceFile.js",
+    "testwalk.js",
+    "testXliffPlugin.js"
 ];
 
 export default files;
