@@ -197,6 +197,8 @@ The built-in rules are:
   that the target string also contains references to the same URLs
 - resource-named-params - Ensure that named parameters that appear in the source
   string are also used in the translated string
+- resource-unique-key - Ensure that the keys are unique within a locale across
+  all resource files
 
 ## License
 

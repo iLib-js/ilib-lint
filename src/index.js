@@ -30,6 +30,7 @@ import walk from './walk.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
+import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 import FormatterFactory from './FormatterFactory.js';
 import RuleSet from './RuleSet.js';
 
@@ -183,7 +184,8 @@ const defaultRules = new RuleSet([
     new ResourceICUPlurals(),
     new ResourceQuoteStyle(),
     new ResourceRegExpChecker(rules.url),
-    new ResourceRegExpChecker(rules.namedParams)
+    new ResourceRegExpChecker(rules.namedParams),
+    new ResourceUniqueKeys()
 ]);
 const fmt = FormatterFactory(options.opt);
 
