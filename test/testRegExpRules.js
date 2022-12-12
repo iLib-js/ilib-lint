@@ -27,7 +27,7 @@ const rules = {
         name: "resource-url-match",
         description: "Ensure that URLs that appear in the source string are also used in the translated string",
         note: "URL '{matchString}' from source string does not appear in target string",
-        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)?([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
+        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
     },
     namedParams: {
         name: "resource-named-params",
@@ -349,6 +349,38 @@ export const testRegExpRules = {
 
         test.done();
     },
+
+    testResourceNamedParamsMatch: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceRegExpChecker(rules.namedParams);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'This has an {URL} in it.',
+                targetLocale: "de-DE",
+                target: "Dies hat ein {job} drin.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "url.test");
+        test.equal(actual[0].description, "The named parameter '{URL}' from the source string does not appear in the target string");
+        test.equal(actual[0].highlight, "Target: Dies hat ein {job} drin.<e0></e0>");
+        test.equal(actual[0].source, 'This has an {URL} in it.');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    },
+
 
 };
 
