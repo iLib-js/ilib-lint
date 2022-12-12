@@ -236,6 +236,7 @@ export const testRules = {
             rule,
             pathName: "a/b"
         });
+
         test.deepEqual(actual, expected);
 
         test.done();

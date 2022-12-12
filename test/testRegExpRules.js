@@ -381,6 +381,60 @@ export const testRegExpRules = {
         test.done();
     },
 
+    testResourceNamedParamsNotInPlurals: function(test) {
+        test.expect(2);
 
+        const rule = new ResourceRegExpChecker(rules.namedParams);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'In {number} {days, plural, one {day} other {days}}',
+                targetLocale: "de-DE",
+                target: "In {number} {days, plural, one {Tag} other {Tagen}}",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+
+        // {day} is part of the plural, not a replacement param
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceNamedParamsNotInPluralsButOutsideOfThem: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceRegExpChecker(rules.namedParams);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: 'In {number} {days, plural, one {day} other {days}}',
+                targetLocale: "de-DE",
+                target: "In {num} {days, plural, one {Tag} other {Tagen}}",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "url.test");
+        test.equal(actual[0].description, "The named parameter '{number}' from the source string does not appear in the target string");
+        test.equal(actual[0].highlight, "Target: In {num} {days, plural, one {Tag} other {Tagen}}<e0></e0>");
+        test.equal(actual[0].source, 'In {number} {days, plural, one {day} other {days}}');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    }
 };
 

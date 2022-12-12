@@ -20,6 +20,7 @@
 
 import Rule from '../Rule.js';
 import Result from '../Result.js';
+import { stripPlurals } from './utils.js';
 
 function findMissing(source, target) {
     let missing = [];
@@ -82,23 +83,26 @@ class ResourceRegExpChecker extends Rule {
          */
         function checkString(re, src, tar) {
             re.lastIndex = 0;
-            let sourceUrls = [];
-            let match = re.exec(src);
+            let sourceMatches = [];
+            const strippedSrc = stripPlurals(src);
+            const strippedTar = stripPlurals(tar);
+
+            let match = re.exec(strippedSrc);
             while (match) {
-                sourceUrls.push(match[0]);
-                match = re.exec(src);
+                sourceMatches.push(match[0]);
+                match = re.exec(strippedSrc);
             }
 
-            if (sourceUrls.length > 0) {
+            if (sourceMatches.length > 0) {
                 // contains URLs, so check the target
                 re.lastIndex = 0;
-                let targetUrls = [];
-                match = re.exec(tar);
+                let targetMatches = [];
+                match = re.exec(strippedTar);
                 while (match) {
-                    targetUrls.push(match[0]);
-                    match = re.exec(tar);
+                    targetMatches.push(match[0]);
+                    match = re.exec(strippedTar);
                 }
-                const missing = findMissing(sourceUrls, targetUrls);
+                const missing = findMissing(sourceMatches, targetMatches);
                 if (missing.length > 0) {
                     return missing.map(missing => {
                         let value = {
