@@ -147,8 +147,8 @@ class ResourceICUPlurals extends Rule {
                 highlight: `Source: ${src.substring(0, e.location.end.offset)}<e0>${src.substring(e.location.end.offset)}</e0>`,
                 pathName: file
             };
-            if (typeof(options.lineNumber) !== 'undefined') {
-                value.lineNumber = options.lineNumber + e.location.end.line - 1;
+            if (typeof(lineNumber) !== 'undefined') {
+                value.lineNumber = lineNumber + e.location.end.line - 1;
             }
             problems.push(new Result(value));
         }
