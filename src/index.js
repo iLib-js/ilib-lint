@@ -167,15 +167,22 @@ const rules = {
     url: {
         name: "resource-url-match",
         description: "Ensure that URLs that appear in the source string are also used in the translated string",
-        note: "URL '{matchString}' from source string does not appear in target string",
+        note: "URL '{matchString}' from the source string does not appear in the target string",
         regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)?([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
+    },
+    namedParams: {
+        name: "resource-named-params",
+        description: "Ensure that named parameters that appear in the source string are also used in the translated string",
+        note: "The named parameter '{matchString}' from the source string does not appear in the target string",
+        regexps: [ "\\{\\w+\\}" ]
     }
 };
 
 const defaultRules = new RuleSet([
     new ResourceICUPlurals(),
     new ResourceQuoteStyle(),
-    new ResourceRegExpChecker(rules.url)
+    new ResourceRegExpChecker(rules.url),
+    new ResourceRegExpChecker(rules.namedParams)
 ]);
 const fmt = FormatterFactory(options.opt);
 
