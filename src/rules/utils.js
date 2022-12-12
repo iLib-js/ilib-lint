@@ -43,7 +43,7 @@ function processNode(node) {
     if (node.children) {
         text += concatText(node.children);
     }
-    
+
     return text;
 }
 
@@ -61,13 +61,18 @@ function concatText(ast) {
     } else if (typeof(ast) === "string") {
         result = ast;
     } // else just ignore
-    
+
     return result;
 }
 
 export function stripPlurals(str, locale) {
-    const imf = new IntlMessageFormat(str, locale);
-    const ast = imf.getAst();
-    
-    return concatText(ast).replace(/\s+/g, " ");
+    try {
+        const imf = new IntlMessageFormat(str, locale);
+        const ast = imf.getAst();
+
+        return concatText(ast).replace(/\s+/g, " ");
+    } catch (e) {
+        // punt
+        return str;
+    }
 }

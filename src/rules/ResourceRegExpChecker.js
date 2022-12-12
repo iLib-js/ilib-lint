@@ -54,7 +54,7 @@ class ResourceRegExpChecker extends Rule {
      */
     constructor(options) {
         super(options);
-        
+
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
             throw "Missing required options for the ResourceRegExpChecker constructor";
         }
@@ -122,7 +122,7 @@ class ResourceRegExpChecker extends Rule {
                 }
             }
         }
-        
+
         function checkRegExps(src, tar) {
             let results = [];
             _this.re.forEach(re => {
