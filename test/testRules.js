@@ -269,6 +269,52 @@ export const testRules = {
         test.done();
     },
 
+    testResourceQuoteStyleDontMatchApostrophes: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string doesn't contain quotes in it.",
+                targetLocale: "de-DE",
+                target: "Diese Zeichenfolge enthält nicht Anführungszeichen.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleDontMatchMultipleApostrophes: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string doesn't contain quotes in it. The user's keyboard is working",
+                targetLocale: "de-DE",
+                target: "Diese Zeichenfolge enthält nicht Anführungszeichen. Der Tastenbord des Users funktioniert.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
     testResourceICUPluralsMatchNoError: function(test) {
         test.expect(2);
 
