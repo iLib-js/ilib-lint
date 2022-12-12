@@ -49,7 +49,6 @@ const optionConfig = {
     },
     config: {
         short: "c",
-        "default": "./i18nlint-config.json",
         help: "Give an explicit path to a configuration file instead of trying to find it in the current directory."
     },
     errorsOnly: {
