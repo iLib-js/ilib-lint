@@ -114,6 +114,54 @@ export const testRules = {
         test.done();
     },
 
+    testResourceQuoteStyleMatchAsciiToNative: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string contains 'quotes' in it.",
+                targetLocale: "de-DE",
+                target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have native quotes
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleMatchAsciiToNativeRussian: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ru-RU",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: '"My Documents"',
+                targetLocale: "ru-RU",
+                target: "«Мои документы»",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have native quotes
+        test.ok(!actual);
+
+        test.done();
+    },
+
     testResourceQuoteStyleMatchAsciiQuotes: function(test) {
         test.expect(2);
 
