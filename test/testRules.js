@@ -149,6 +149,30 @@ export const testRules = {
             resource: new ResourceString({
                 key: "quote.test",
                 sourceLocale: "en-US",
+                source: 'Click on "My Documents" to see more',
+                targetLocale: "ru-RU",
+                target: "Click on «Мои документы» to see more",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have native quotes
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleMatchBeginEndOfWord: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ru-RU",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
                 source: '"My Documents"',
                 targetLocale: "ru-RU",
                 target: "«Мои документы»",

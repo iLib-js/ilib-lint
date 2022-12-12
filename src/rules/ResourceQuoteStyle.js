@@ -74,12 +74,12 @@ class ResourceQuoteStyle extends Rule {
         const tarAltQuoteEnd = li.info.delimiter.alternateQuotationEnd;
 
         // if the source uses ASCII quotes, then the target could have ASCII or native quotes
-        const srcQuotesAscii = new RegExp(`((^|\\W)['"]\\w|\\w['"](\\W|$))`, "g");
-        const srcQuotesNative = new RegExp(`((^|\\W)[${srcQuoteStart}${srcAltQuoteStart}]\\w|\\w[${srcQuoteEnd}${srcAltQuoteEnd}](\\W|$))`, "g");
+        const srcQuotesAscii = new RegExp(`((^|\\W)['"]\\p{Letter}|\\p{Letter}['"](\\W|$))`, "gu");
+        const srcQuotesNative = new RegExp(`((^|\\W)[${srcQuoteStart}${srcAltQuoteStart}]\\p{Letter}|\\p{Letter}[${srcQuoteEnd}${srcAltQuoteEnd}](\\W|$))`, "gu");
 
         // if the source contains native quotes, then the target should also have native quotes
-        const tarQuotesAll = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}'"]\\w|\\w[${tarQuoteEnd}${tarAltQuoteEnd}'"](\\W|$))`, "g");
-        const tarQuotesNative = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}]\\w|\\w[${tarQuoteEnd}${tarAltQuoteEnd}](\\W|$))`, "g");
+        const tarQuotesAll = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}'"]\\p{Letter}|\\p{Letter}[${tarQuoteEnd}${tarAltQuoteEnd}'"](\\W|$))`, "gu");
+        const tarQuotesNative = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}]\\p{Letter}|\\p{Letter}[${tarQuoteEnd}${tarAltQuoteEnd}](\\W|$))`, "gu");
 
         const nonQuoteChars = `([${
             quoteChars.
