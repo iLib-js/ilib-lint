@@ -1,0 +1,21 @@
+{
+    "appenders": {
+        "default": { 
+            "type": "stdout",
+            "layout": {
+                "type": "pattern",
+                "pattern": "%[%p%]: %m"
+            }
+        }
+    },
+    "categories": {
+        "default": {
+            "appenders": [ "default" ],
+            "level": "info"
+        },
+        "i18nlint.root": {
+            "appenders": [ "default" ],
+            "level": "info"
+        }
+    }
+}
