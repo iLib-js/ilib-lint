@@ -17,6 +17,22 @@
  * limitations under the License.
  */
 
+import Rule from './Rule.js';
+import Formatter from './Formatter.js';
+import Parser from './Parser.js';
+import Result from './Result.js';
+
+const API = {
+    baseClasses: {
+        "Rule": Rule,
+        "Formatter": Formatter,
+        "Parser": Parser
+    },
+    newResult: (params) => {
+        return new Result(params);
+    }
+};
+
 /**
  * @class Represent a plugin manager, which loads a list of plugins
  * and then maintains references to them
@@ -45,7 +61,7 @@ class PluginManager {
      * on things like the file name extension.
      *
      * @param {String} pathName path to a file to match
-     * @param {String} type the type of plugin being sought
+     * @param {String} type the type of plugin being sought, "parser" or "rule"
      * @returns {Array.<Plugin>} an array of plugins that claim to handle
      * the given path name
      */

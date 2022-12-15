@@ -15,8 +15,8 @@
         "lint",
         "locale"
     ],
-    "homepage": "https://github.com/iLib-js/ilib-common",
-    "bugs": "https://github.com/iLib-js/ilib-common/issues",
+    "homepage": "https://github.com/iLib-js/i18nlint-common",
+    "bugs": "https://github.com/iLib-js/i18nlint-common/issues",
     "email": "marketing@translationcircle.com",
     "license": "Apache-2.0",
     "author": {
@@ -47,7 +47,7 @@
         "url": "https://github.com/iLib-js/i18nlint.git"
     },
     "engines": {
-        "node": ">=10.0.0"
+        "node": ">=14.0.0"
     },
     "scripts": {
         "build": "npm run build:prod",
@@ -71,6 +71,7 @@
     },
     "dependencies": {
         "@formatjs/intl": "^2.5.1",
+        "i18nlint-common": "file:../i18nlint-common/i18nlint-common-1.0.0.tgz",
         "ilib-common": "^1.1.3",
         "ilib-locale": "^1.2.2",
         "ilib-localeinfo": "^1.0.4",
