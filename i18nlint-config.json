@@ -22,10 +22,10 @@
         },
         "**/*.xliff": {
             "rules": {
-                "formatjs-plural-syntax": true,
-                "formatjs-plural-categories": true,
-                "formatjs-match-substitution-params": true,
-                "match-quote-style": "localeOnly"
+                "resource-icu-plurals": true,
+                "resource-quote-style": true,
+                "resource-url-match": true,
+                "resource-named-params": "localeOnly"
             }
         }
     }

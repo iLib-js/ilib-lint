@@ -126,7 +126,9 @@ const defaultConfig = {
         "**/*.xliff": {
             "rules": {
                 "resource-icu-plurals": true,
-                "resource-quote-style": true
+                "resource-quote-style": true,
+                "resource-url-match": true,
+                "resource-named-params": "localeOnly"
             }
         }
     },

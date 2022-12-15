@@ -92,7 +92,7 @@ function walk(root, options) {
 
                         if (excludes) {
                             if (!quiet) logger.trace(`There are excludes. Relpath is ${pathName}`);
-                            included = !mm.match(pathName, excludes);
+                            included = !mm.isMatch(pathName, excludes);
                         }
 
                         if (included) {
