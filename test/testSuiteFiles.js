@@ -21,9 +21,10 @@ const files = [
     "testFormatterFactory.js",
     "testParserFactory.js",
     "testRegExpRules.js",
+    "testResult.js",
     "testRules.js",
     "testRuleSet.js",
-    "testResult.js",
+    "testRuleUtils.js",
     "testSourceFile.js",
     "testwalk.js",
     "testXliffPlugin.js"

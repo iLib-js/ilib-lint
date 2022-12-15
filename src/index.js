@@ -49,7 +49,6 @@ const optionConfig = {
     },
     config: {
         short: "c",
-        "default": "./i18nlint-config.json",
         help: "Give an explicit path to a configuration file instead of trying to find it in the current directory."
     },
     errorsOnly: {
@@ -127,7 +126,9 @@ const defaultConfig = {
         "**/*.xliff": {
             "rules": {
                 "resource-icu-plurals": true,
-                "resource-quote-style": true
+                "resource-quote-style": true,
+                "resource-url-match": true,
+                "resource-named-params": "localeOnly"
             }
         }
     },
@@ -168,7 +169,7 @@ const rules = {
         name: "resource-url-match",
         description: "Ensure that URLs that appear in the source string are also used in the translated string",
         note: "URL '{matchString}' from the source string does not appear in the target string",
-        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)?([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
+        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
     },
     namedParams: {
         name: "resource-named-params",

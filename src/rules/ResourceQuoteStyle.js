@@ -62,16 +62,24 @@ class ResourceQuoteStyle extends Rule {
         }
 
         const srcQuoteStart = sourceLI.getDelimiterQuotationStart();
-        const srcQuoteEnd = sourceLI.getDelimiterQuotationEnd();
         const srcAltQuoteStart = sourceLI.info.delimiter.alternateQuotationStart;
+
+        const srcQuoteEnd = sourceLI.getDelimiterQuotationEnd();
         const srcAltQuoteEnd = sourceLI.info.delimiter.alternateQuotationEnd;
+
         const tarQuoteStart = li.getDelimiterQuotationStart();
-        const tarQuoteEnd = li.getDelimiterQuotationEnd();
         const tarAltQuoteStart = li.info.delimiter.alternateQuotationStart;
+
+        const tarQuoteEnd = li.getDelimiterQuotationEnd();
         const tarAltQuoteEnd = li.info.delimiter.alternateQuotationEnd;
 
-        const srcQuotes = `([${srcQuoteStart}${srcQuoteEnd}${srcAltQuoteStart}${srcAltQuoteEnd}'"])`;
-        const tarQuotes = `([${tarQuoteStart}${tarQuoteEnd}${tarAltQuoteStart}${tarAltQuoteEnd}])`;
+        // if the source uses ASCII quotes, then the target could have ASCII or native quotes
+        const srcQuotesAscii = new RegExp(`((^|\\W)['"]\\p{Letter}|\\p{Letter}['"](\\W|$))`, "gu");
+        const srcQuotesNative = new RegExp(`((^|\\W)[${srcQuoteStart}${srcAltQuoteStart}]\\p{Letter}|\\p{Letter}[${srcQuoteEnd}${srcAltQuoteEnd}](\\W|$))`, "gu");
+
+        // if the source contains native quotes, then the target should also have native quotes
+        const tarQuotesAll = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}'"]\\p{Letter}|\\p{Letter}[${tarQuoteEnd}${tarAltQuoteEnd}'"](\\W|$))`, "gu");
+        const tarQuotesNative = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}]\\p{Letter}|\\p{Letter}[${tarQuoteEnd}${tarAltQuoteEnd}](\\W|$))`, "gu");
 
         const nonQuoteChars = `([${
             quoteChars.
@@ -89,29 +97,29 @@ class ResourceQuoteStyle extends Rule {
          * @private
          */
         function checkString(src, tar) {
-            if (src.match(new RegExp(srcQuotes))) {
-                // contains quotes, so check the target
-                if (!tar.match(new RegExp(tarQuotes))) {
-                    const matches = re.exec(tar);
-                    let value = {
-                        severity: "warning",
-                        id: resource.getKey(),
-                        source: src,
-                        rule: _this,
-                        pathName: file
-                    };
-                    if (matches) {
-                        value.highlight = `Target: ${tar.replace(re, "<e0>$1</e0>")}`;
-                        value.description = `Quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`;
-                    } else {
-                        value.highlight = `Target: ${tar}<e0></e0>`;
-                        value.description = `Quotes are missing in the target. Quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`;
-                    }
-                    if (typeof(options.lineNumber) !== 'undefined') {
-                        value.lineNumber = options.lineNumber;
-                    }
-                    return new Result(value);
+            srcQuotesAscii.lastIndex = 0;
+            tarQuotesAll.lastIndex = 0;
+            if ((src.match(srcQuotesAscii) && !tar.match(tarQuotesAll)) ||
+                (src.match(srcQuotesNative) && !tar.match(tarQuotesNative))) {
+                const matches = re.exec(tar);
+                let value = {
+                    severity: "warning",
+                    id: resource.getKey(),
+                    source: src,
+                    rule: _this,
+                    pathName: file
+                };
+                if (matches) {
+                    value.highlight = `Target: ${tar.replace(re, "<e0>$1</e0>")}`;
+                    value.description = `Quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`;
+                } else {
+                    value.highlight = `Target: ${tar}<e0></e0>`;
+                    value.description = `Quotes are missing in the target. Quote style for the the locale ${locale} should be ${tarQuoteStart}text${tarQuoteEnd}`;
                 }
+                if (typeof(options.lineNumber) !== 'undefined') {
+                    value.lineNumber = options.lineNumber;
+                }
+                return new Result(value);
             }
         }
 

@@ -81,7 +81,7 @@ export const testRules = {
         test.done();
     },
 
-    testResourceQuoteStyleMatchSimple: function(test) {
+    testResourceQuoteStyleMatchSimpleNative: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
@@ -99,6 +99,7 @@ export const testRules = {
             }),
             file: "x"
         });
+        // if the source contains native quotes, the target must too
         const expected = new Result({
             severity: "warning",
             description: "Quote style for the the locale de-DE should be „text“",
@@ -109,6 +110,78 @@ export const testRules = {
             pathName: "x"
         });
         test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleMatchAsciiToNative: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string contains 'quotes' in it.",
+                targetLocale: "de-DE",
+                target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have native quotes
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleMatchAsciiToNativeRussian: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ru-RU",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: 'Click on "My Documents" to see more',
+                targetLocale: "ru-RU",
+                target: "Click on «Мои документы» to see more",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have native quotes
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleMatchBeginEndOfWord: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ru-RU",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: '"My Documents"',
+                targetLocale: "ru-RU",
+                target: "«Мои документы»",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have native quotes
+        test.ok(!actual);
 
         test.done();
     },
@@ -131,16 +204,7 @@ export const testRules = {
             }),
             file: "x/y"
         });
-        const expected = new Result({
-            severity: "warning",
-            description: "Quote style for the the locale de-DE should be „text“",
-            id: "quote.test",
-            source: 'This string contains "quotes" in it.',
-            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
-            rule,
-            pathName: "x/y"
-        });
-        test.deepEqual(actual, expected);
+        test.ok(!actual);
 
         test.done();
     },
@@ -172,6 +236,7 @@ export const testRules = {
             rule,
             pathName: "a/b"
         });
+
         test.deepEqual(actual, expected);
 
         test.done();
@@ -260,6 +325,52 @@ export const testRules = {
                 source: 'This string contains ‘quotes’ in it.',
                 targetLocale: "de-DE",
                 target: "Diese Zeichenfolge enthält ‚Anführungszeichen‘.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleDontMatchApostrophes: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string doesn't contain quotes in it.",
+                targetLocale: "de-DE",
+                target: "Diese Zeichenfolge enthält nicht Anführungszeichen.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleDontMatchMultipleApostrophes: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string doesn't contain quotes in it. The user's keyboard is working",
+                targetLocale: "de-DE",
+                target: "Diese Zeichenfolge enthält nicht Anführungszeichen. Der Tastenbord des Users funktioniert.",
                 pathName: "a/b/c.xliff"
             }),
             file: "x/y"
