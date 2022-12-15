@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import Plugin from '../Plugin.js';
+import { Plugin } from 'i18nlint-common';
 import XliffParser from './XliffParser.js';
 
 /**

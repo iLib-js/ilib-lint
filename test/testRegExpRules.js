@@ -20,7 +20,7 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceRegExpChecker from '../src/rules/ResourceRegExpChecker.js';
 
-import Result from '../src/Result.js';
+import { Result } from 'i18nlint-common';
 
 const rules = {
     url: {

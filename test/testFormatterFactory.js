@@ -18,7 +18,7 @@
  */
 
 import FormatterFactory from '../src/FormatterFactory.js';
-import Formatter from '../src/Formatter.js';
+import { Formatter } from 'i18nlint-common';
 
 export const testFormatterFactory = {
     testFormatterFactoryNormal: function(test) {

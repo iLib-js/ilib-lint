@@ -18,9 +18,7 @@
  */
 
 import LocaleInfo from 'ilib-localeinfo';
-
-import Rule from '../Rule.js';
-import Result from '../Result.js';
+import { Rule, Result } from 'i18nlint-common';
 
 let LICache = {};
 

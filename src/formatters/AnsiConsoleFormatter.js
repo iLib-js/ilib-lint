@@ -18,7 +18,7 @@
  */
 import log4js from 'log4js';
 
-import Formatter from '../Formatter.js';
+import { Formatter } from 'i18nlint-common';
 
 var logger = log4js.getLogger("ilib-lint.formatters.AnsiConsoleFormatter");
 

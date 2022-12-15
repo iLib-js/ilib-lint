@@ -18,7 +18,7 @@
  */
 
 import XliffPlugin from '../src/plugins/XliffPlugin.js';
-import Parser from '../src/Parser.js';
+import { Parser } from 'i18nlint-common';
 
 export const testXliffPlugin = {
     testXliffPlugin: function(test) {

@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import Rule from './Rule.js';
+import { Rule } from 'i18nlint-common';
 
 /**
  * @class Represent a set of ilib-lint rules.

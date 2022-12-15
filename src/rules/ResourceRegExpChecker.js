@@ -18,8 +18,7 @@
  * limitations under the License.
  */
 
-import Rule from '../Rule.js';
-import Result from '../Result.js';
+import { Rule, Result } from 'i18nlint-common';
 import { stripPlurals } from './utils.js';
 
 function findMissing(source, target) {

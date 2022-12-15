@@ -18,7 +18,7 @@
  */
 
 import ParserFactory from '../src/ParserFactory.js';
-import Parser from '../src/Parser.js';
+import { Parser } from 'i18nlint-common';
 
 export const testParserFactory = {
     testParserFactoryNormal: function(test) {

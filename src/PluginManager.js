@@ -17,20 +17,7 @@
  * limitations under the License.
  */
 
-import Rule from './Rule.js';
-import Formatter from './Formatter.js';
-import Parser from './Parser.js';
-import Result from './Result.js';
-
 const API = {
-    baseClasses: {
-        "Rule": Rule,
-        "Formatter": Formatter,
-        "Parser": Parser
-    },
-    newResult: (params) => {
-        return new Result(params);
-    }
 };
 
 /**

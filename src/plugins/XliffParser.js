@@ -19,8 +19,7 @@
 
 import fs from 'node:fs';
 import { ResourceXliff } from 'ilib-tools-common';
-
-import Parser from '../Parser.js';
+import { Parser } from 'i18nlint-common';
 
 /**
  * @class common SPI for parser plugins

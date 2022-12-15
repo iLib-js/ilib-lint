@@ -21,7 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 
-import Result from '../src/Result.js';
+import { Result } from 'i18nlint-common';
 
 export const testRules = {
     testResourceQuoteStyle: function(test) {

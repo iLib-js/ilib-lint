@@ -19,9 +19,7 @@
 
 import { IntlMessageFormat } from 'intl-messageformat';
 import Locale from 'ilib-locale';
-
-import Rule from '../Rule.js';
-import Result from '../Result.js';
+import { Rule, Result } from 'i18nlint-common';
 
 // all the plural categories from CLDR
 const allCategories = ["zero", "one", "two", "few", "many", "other"];
