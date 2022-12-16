@@ -1,5 +1,5 @@
 /*
- * testFormatterFactory.js - test the formatter factory
+ * testFormatterManager.js - test the formatter manager
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -16,15 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import FormatterFactory from '../src/FormatterFactory.js';
 import { Formatter } from 'i18nlint-common';
 
-export const testFormatterFactory = {
-    testFormatterFactoryNormal: function(test) {
-        test.expect(2);
+import FormatterManager from '../src/FormatterManager.js';
+import AnsiConsoleFormatter from '../src/formatters/AnsiConsoleFormatter.js';
 
-        const formatter = FormatterFactory();
+export const testFormatterManager = {
+    testFormatterManagerNormal: function(test) {
+        test.expect(3);
+
+        const mgr = new FormatterManager();
+        test.ok(mgr);
+        mgr.add(AnsiConsoleFormatter);
+
+        const formatter = mgr.get("ansi-console-formatter");
 
         test.ok(formatter);
         test.ok(formatter instanceof Formatter);
@@ -32,15 +37,14 @@ export const testFormatterFactory = {
         test.done();
     },
 
-    testFormatterFactoryNotFound: function(test) {
+    testFormatterManagerNotFound: function(test) {
         test.expect(2);
 
-        const formatter = FormatterFactory({
-            formatter: "non-existent"
-        });
+        const mgr = new FormatterManager();
+        test.ok(mgr);
+        const formatter = mgr.get("non-existent");
 
-        test.ok(formatter);
-        test.ok(formatter instanceof Formatter);
+        test.ok(!formatter);
 
         test.done();
     }

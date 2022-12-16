@@ -17,8 +17,8 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import OptionsParser from 'options-parser';
 import Locale from 'ilib-locale';
@@ -31,8 +31,10 @@ import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
-import FormatterFactory from './FormatterFactory.js';
+import FormatterManager from './FormatterManager.js';
 import RuleSet from './RuleSet.js';
+import XliffPlugin from './plugins/XliffPlugin.js';
+import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
@@ -57,6 +59,11 @@ const optionConfig = {
         flag: true,
         "default": false,
         help: "Only return errors and supress warnings"
+    },
+    formatter: {
+        short: "f",
+        "default": "ansi-console-formatter",
+        help: "Name the formatter that should be used to format the output."
     },
     locales: {
         short: "l",
@@ -156,8 +163,20 @@ if (options.opt.config) {
 
 if (!options.opt.quiet) logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 
-let files = [];
+// some built-in plugins
 
+const pm = new ParserManager();
+const fm = new FormatterManager();
+fm.add(AnsiConsoleFormatter); // default formatter
+
+const pluginMgr = new PluginManager({
+    parserManager: pm,
+    formatterManager: fm
+});
+
+pluginMgr.add(new XliffPlugin());  // default parser, rules
+
+let files = [];
 paths.forEach(pathName => {
     files = files.concat(walk(pathName, {
         quiet: options.opt.quiet,
@@ -187,14 +206,29 @@ const defaultRules = new RuleSet([
     new ResourceRegExpChecker(rules.namedParams),
     new ResourceUniqueKeys()
 ]);
-const fmt = FormatterFactory(options.opt);
+
+const fmt = fm.get(options.opt);
+if (!fmt) {
+    logger.error(`Could not find formatter ${options.opt}. Aborting...`);
+    process.exit(3); 
+}
 
 // main loop
 let exitValue = 0;
 
 files.forEach(file => {
     logger.trace(`Examining ${file.filePath}`);
-    file.parse();
+
+    let parserClasses;
+
+    let extension = path.extname(file.getFilePath());
+    if (extension) {
+        // remove the dot
+        extension = extension.substring(1);
+        parserClasses = pm.get({extension});
+    }
+
+    file.parse(parserClasses);
     const issues = file.findIssues(defaultRules, options.opt.locales);
     issues.forEach(issue => {
         const str = fmt.format(issue);

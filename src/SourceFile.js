@@ -19,9 +19,7 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
-import { getLocaleFromPath } from 'ilib-tools-common';
-
-import ParserFactory from './ParserFactory.js';
+import { getLocaleFromPath, TranslationSet } from 'ilib-tools-common';
 
 /**
  * @class Represent a set of ilib-lint rules.
@@ -34,6 +32,8 @@ class SourceFile {
      * - filePath {String} path to the file
      * - settings {Object} the settings from the ilib-lint config that
      *   apply to this file
+     * - parserManager {ParserManager} the parser manager to use with this
+     *   source file
      */
     constructor(options) {
         if (!options || !options.filePath) {
@@ -41,6 +41,7 @@ class SourceFile {
         }
         this.filePath = options.filePath;
         this.settings = options.settings;
+        this.parserMgr = options.parserManager;
     }
 
     /**
@@ -69,34 +70,30 @@ class SourceFile {
     /**
      * Parse the current source file into a list of resources (in the case of
      * resource files, or lines in the case of other types of files.
+     * @param {Array.<Parser>} parsers parsers for the current source file
      * @returns {Object} the parsed representation of this file
      */
-    parse() {
+    parse(parsers) {
         if (!this.filePath) return;
-        let extension = path.extname(this.filePath);
-        if (extension) {
-            // remove the dot
-            extension = extension.substring(1);
-            const parserClasses = ParserFactory({extension});
-            if (parserClasses && parserClasses.length) {
-                const parser = new parserClasses[0]({
+        if (parsers) {
+            const ts = new TranslationSet();
+            for (const parser of parsers) {
+                const p = new parser({
                     filePath: this.filePath
                 });
-                parser.parse();
-                this.resources = parser.getResources();
+                p.parse();
                 this.type = "resource";
-                
-                return this.resources;
+                ts.addAll(p.getResources());
             }
-        }
-
-        const data = fs.readFileSync(this.filePath, "utf-8");
-        this.lines = data.split(/\n/g);
-        this.type = "line";
-
-        return this.lines;
-    }
     
+            this.resources = ts.getAll();
+        } else {
+            const data = fs.readFileSync(this.filePath, "utf-8");
+            this.lines = data.split(/\n/g);
+            this.type = "line";
+        }
+    }
+
     /**
      * Return the type of this file, resource or line.
      * @returns {String} the type of this file

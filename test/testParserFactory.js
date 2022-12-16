@@ -1,5 +1,5 @@
 /*
- * testParserFactory.js - test the parser factory
+ * testParserManager.js - test the parser factory
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -19,7 +19,7 @@
 
 import { Parser } from 'i18nlint-common';
 
-import ParserFactory, { addParsers } from '../src/ParserFactory.js';
+import ParserManager from '../src/ParserManager.js';
 
 class MockParser extends Parser {
     constructor(options) {
@@ -28,10 +28,10 @@ class MockParser extends Parser {
         this.extensions = [ "xyz" ];
     }
 
-    static getExtensions() {
+    getExtensions() {
         return this.extensions;
     }
-    
+
     parse() {}
 
     getResources() {
@@ -39,25 +39,23 @@ class MockParser extends Parser {
     }
 }
 
-export const testParserFactory = {
-    testParserFactoryNormal: function(test) {
-        test.expect(3);
+// does not extend Parser
+class NotMockParser {
+    constructor(options) {
+        this.extensions = [ "xyz" ];
+    }
 
-        const parsers = ParserFactory({
-            extension: "xliff"
-        });
+    getExtensions() {
+        return this.extensions;
+    }
+}
 
-        test.ok(parsers);
-        test.equal(parsers.length, 1);
-        test.ok(Object.getPrototypeOf(parsers[0], Parser));
-
-        test.done();
-    },
-
-    testParserFactoryNotFound: function(test) {
+export const testParserManager = {
+    testParserManagerEmpty: function(test) {
         test.expect(2);
 
-        const parsers = ParserFactory({
+        const mgr = new ParserManager();
+        const parsers = mgr.get({
             extension: "js"
         });
 
@@ -67,14 +65,18 @@ export const testParserFactory = {
         test.done();
     },
 
-    testParserFactoryAddParsers: function(test) {
-        test.expect(2);
+    testParserManagerAddParsers: function(test) {
+        test.expect(3);
 
-        addParsers([
-            MockParser
-        ]);
+        const mgr = new ParserManager();
+        let parsers = mgr.get({
+            extension: "xyz"
+        });
+        test.ok(parsers);
+        test.equal(parsers.length, 0);
 
-        const parsers = ParserFactory({
+        mgr.add([MockParser]);
+        parsers = mgr.get({
             extension: "xyz"
         });
 
@@ -83,6 +85,27 @@ export const testParserFactory = {
         test.ok(Object.is(parsers[0], MockParser));
 
         test.done();
+    },
+
+    testParserManagerAddParsersNotParser: function(test) {
+        test.expect(2);
+
+        const mgr = new ParserManager();
+        let parsers = mgr.get({
+            extension: "xyz"
+        });
+        test.ok(parsers);
+
+        mgr.add([NotMockParser]);
+        parsers = mgr.get({
+            extension: "xyz"
+        });
+
+        test.ok(parsers);
+        test.equal(parsers.length, 0);
+
+        test.done();
     }
+
 };
 

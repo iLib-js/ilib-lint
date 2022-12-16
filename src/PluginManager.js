@@ -20,7 +20,7 @@
 import path from 'node:path';
 import log4js from 'log4js';
 
-import { addParser } from './ParserFactory.js';
+import ParserManager from './ParserManager.js';
 import { addFactory } from './FormatterFactory.js';
 
 var logger = log4js.getLogger("i18nlint.PluginManager");
@@ -65,8 +65,8 @@ function loadPlugin(name, API) {
                         // go to the overall `catch` clause below.
                         const name6 = path.join(process.cwd(), "..", "plugins", `i18nlint-${name}` + ".js")
                         return attemptLoad(name6);
-                    }); 
-                }); 
+                    });
+                });
             });
         });
     }).then((module) => {
@@ -102,6 +102,18 @@ class PluginManager {
      * Construct a new plugin manager.
      */
     constructor(options) {
+        this.parserMgr = options.parserManager;
+        this.formatterMgr = options.formatterManager;
+    }
+
+    /**
+     * Add the already-loaded plugin to this manager.
+     *
+     * @param {Plugin} a plugin to add
+     */
+    add(plugin) {
+        this.parserMgr.add(plugin.getParsers());
+        this.formatterMgr.add(plugin.getFormatters());
     }
 
     /**
@@ -115,8 +127,7 @@ class PluginManager {
     load(name) {
         const API = getAPI();
         return loadPlugin(name, API).then((plugin) => {
-            addParsers(plugin.getParsers());
-            addFormatters(plugin.getFormatters());
+            this.add(plugin);
         });
     }
 };
