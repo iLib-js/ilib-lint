@@ -19,7 +19,6 @@
 import { Formatter } from 'i18nlint-common';
 
 import FormatterManager from '../src/FormatterManager.js';
-import AnsiConsoleFormatter from '../src/formatters/AnsiConsoleFormatter.js';
 
 export const testFormatterManager = {
     testFormatterManagerNormal: function(test) {
@@ -27,7 +26,6 @@ export const testFormatterManager = {
 
         const mgr = new FormatterManager();
         test.ok(mgr);
-        mgr.add(AnsiConsoleFormatter);
 
         const formatter = mgr.get("ansi-console-formatter");
 

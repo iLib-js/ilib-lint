@@ -17,12 +17,13 @@
  * limitations under the License.
  */
 
+import log4js from 'log4js';
+
+import { Formatter } from 'i18nlint-common';
+
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 
-const 
-
-const cfmt = new AnsiConsoleFormatter();
-formatterCache[cfmt.getName()] = cfmt;
+var logger = log4js.getLogger("i18nlint.FormatterManager");
 
 /**
  * Return the formatter with the given name
@@ -33,18 +34,18 @@ formatterCache[cfmt.getName()] = cfmt;
 class FormatterManager {
     constructor(options) {
         this.formatterCache = {};
+        this.add([new AnsiConsoleFormatter()]);
     }
 
     /**
-     * Return a list of parsers for the given file name extension
+     * Return a formatter with the given name for use in
+     * formatting the output.
      *
-     * @returns {Array.<Parser>} the array of parsers that handle
-     * the given type of file
+     * @param {String} name name of the formatter to return
+     * @returns {Formatter} the formatter to use
      */
-    get(options) {
-        const { formatter } = options || {};
-        
-        return this.formatterCache[formatter] || [];
+    get(name) {
+        return this.formatterCache[name];
     }
 
     /**
@@ -56,7 +57,13 @@ class FormatterManager {
     add(formatters) {
         if (!formatters || !Array.isArray(formatters)) return;
         for (const formatter of formatters) {
-            this.formatterCache[formatter.getName()] = formatter;
+            if (formatter && typeof(formatter) === 'object' && formatter instanceof Formatter) {
+                this.formatterCache[formatter.getName()] = formatter;
+                logger.trace(`Added formatter ${formatter.getName()} to the formatter manager`);
+            } else {
+                logger.debug(`Attempt to add a non-formatter to the formatter manager`);
+                if (typeof(formatter.getName) === 'function') logger.debug(`Name is ${formatter.getName()}`);
+            }
         }
     }
 

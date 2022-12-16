@@ -18,7 +18,7 @@
  */
 
 const files = [
-    "testFormatterFactory.js",
+    "testFormatterManager.js",
     "testParserManager.js",
     "testRegExpRules.js",
     "testRules.js",

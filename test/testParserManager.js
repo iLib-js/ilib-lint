@@ -55,9 +55,7 @@ export const testParserManager = {
         test.expect(2);
 
         const mgr = new ParserManager();
-        const parsers = mgr.get({
-            extension: "js"
-        });
+        const parsers = mgr.get("js");
 
         test.ok(parsers);
         test.equal(parsers.length, 0);
@@ -66,19 +64,15 @@ export const testParserManager = {
     },
 
     testParserManagerAddParsers: function(test) {
-        test.expect(3);
+        test.expect(5);
 
         const mgr = new ParserManager();
-        let parsers = mgr.get({
-            extension: "xyz"
-        });
+        let parsers = mgr.get("xyz");
         test.ok(parsers);
         test.equal(parsers.length, 0);
 
         mgr.add([MockParser]);
-        parsers = mgr.get({
-            extension: "xyz"
-        });
+        parsers = mgr.get("xyz");
 
         test.ok(parsers);
         test.equal(parsers.length, 1);
@@ -88,24 +82,19 @@ export const testParserManager = {
     },
 
     testParserManagerAddParsersNotParser: function(test) {
-        test.expect(2);
+        test.expect(3);
 
         const mgr = new ParserManager();
-        let parsers = mgr.get({
-            extension: "xyz"
-        });
+        let parsers = mgr.get("xyz");
         test.ok(parsers);
 
         mgr.add([NotMockParser]);
-        parsers = mgr.get({
-            extension: "xyz"
-        });
+        parsers = mgr.get("xyz");
 
         test.ok(parsers);
         test.equal(parsers.length, 0);
 
         test.done();
     }
-
 };
 

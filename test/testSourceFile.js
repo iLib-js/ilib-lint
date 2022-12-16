@@ -19,7 +19,7 @@
 
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
-
+import XliffParser from '../src/plugins/XliffParser.js';
 import SourceFile from '../src/SourceFile.js';
 
 export const testSourceFile = {
@@ -123,7 +123,7 @@ export const testSourceFile = {
             }
         });
         test.ok(sf);
-        const resources = sf.parse();
+        const resources = sf.parse([XliffParser]);
         test.ok(resources);
         test.equal(resources.length, 1);
 
@@ -139,7 +139,7 @@ export const testSourceFile = {
             }
         });
         test.ok(sf);
-        const resources = sf.parse();
+        const resources = sf.parse([XliffParser]);
         test.ok(resources);
         test.equal(resources[0].source, "Asdf asdf");
         test.equal(resources[0].target, "foobarfoo");
@@ -158,7 +158,7 @@ export const testSourceFile = {
         });
         test.ok(sf);
         test.ok(!sf.getType());
-        const resources = sf.parse();
+        const resources = sf.parse([XliffParser]);
         test.equal(sf.getType(), "resource");
 
         test.done();

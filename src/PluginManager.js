@@ -20,9 +20,6 @@
 import path from 'node:path';
 import log4js from 'log4js';
 
-import ParserManager from './ParserManager.js';
-import { addFactory } from './FormatterFactory.js';
-
 var logger = log4js.getLogger("i18nlint.PluginManager");
 
 /**
@@ -33,7 +30,6 @@ function attemptLoad(name) {
     return import(name);
 };
 
-function.attemp
 /*
  * Attempt to load the plugin in various places:
  *

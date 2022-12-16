@@ -26,15 +26,17 @@ import { JSUtils, Utils, Path } from 'ilib-common';
 import json5 from 'json5';
 import log4js from 'log4js';
 
-import walk from './walk.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
-import FormatterManager from './FormatterManager.js';
-import RuleSet from './RuleSet.js';
 import XliffPlugin from './plugins/XliffPlugin.js';
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
+import FormatterManager from './FormatterManager.js';
+import ParserManager from './ParserManager.js';
+import PluginManager from './PluginManager.js';
+import RuleSet from './RuleSet.js';
+import walk from './walk.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
@@ -207,7 +209,7 @@ const defaultRules = new RuleSet([
     new ResourceUniqueKeys()
 ]);
 
-const fmt = fm.get(options.opt);
+const fmt = fm.get(options.opt.formatter);
 if (!fmt) {
     logger.error(`Could not find formatter ${options.opt}. Aborting...`);
     process.exit(3); 
@@ -225,7 +227,7 @@ files.forEach(file => {
     if (extension) {
         // remove the dot
         extension = extension.substring(1);
-        parserClasses = pm.get({extension});
+        parserClasses = pm.get(extension);
     }
 
     file.parse(parserClasses);

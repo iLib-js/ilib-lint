@@ -35,6 +35,8 @@ class XliffParser extends Parser {
         this.xliff = new ResourceXliff({
             path: options.filePath
         });
+
+        this.extensions = [ "xliff", "xlf" ];
     }
 
     /**
@@ -53,6 +55,10 @@ class XliffParser extends Parser {
      */
     getResources() {
         return this.xliff.getResources();
+    }
+    
+    getExtensions() {
+        return this.extensions;
     }
 };
 

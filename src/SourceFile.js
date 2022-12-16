@@ -75,7 +75,7 @@ class SourceFile {
      */
     parse(parsers) {
         if (!this.filePath) return;
-        if (parsers) {
+        if (parsers && parsers.length) {
             const ts = new TranslationSet();
             for (const parser of parsers) {
                 const p = new parser({
@@ -87,10 +87,12 @@ class SourceFile {
             }
     
             this.resources = ts.getAll();
+            return this.resources;
         } else {
             const data = fs.readFileSync(this.filePath, "utf-8");
             this.lines = data.split(/\n/g);
             this.type = "line";
+            return this.lines;
         }
     }
 
