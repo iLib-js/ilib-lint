@@ -17,8 +17,27 @@
  * limitations under the License.
  */
 
-import ParserFactory from '../src/ParserFactory.js';
 import { Parser } from 'i18nlint-common';
+
+import ParserFactory, { addParsers } from '../src/ParserFactory.js';
+
+class MockParser extends Parser {
+    constructor(options) {
+        super(options);
+        this.name = "mock-parser";
+        this.extensions = [ "xyz" ];
+    }
+
+    static getExtensions() {
+        return this.extensions;
+    }
+    
+    parse() {}
+
+    getResources() {
+        return [];
+    }
+}
 
 export const testParserFactory = {
     testParserFactoryNormal: function(test) {
@@ -46,7 +65,24 @@ export const testParserFactory = {
         test.equal(parsers.length, 0);
 
         test.done();
-    }
+    },
 
+    testParserFactoryAddParsers: function(test) {
+        test.expect(2);
+
+        addParsers([
+            MockParser
+        ]);
+
+        const parsers = ParserFactory({
+            extension: "xyz"
+        });
+
+        test.ok(parsers);
+        test.equal(parsers.length, 1);
+        test.ok(Object.is(parsers[0], MockParser));
+
+        test.done();
+    }
 };
 

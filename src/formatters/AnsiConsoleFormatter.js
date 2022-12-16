@@ -33,15 +33,7 @@ class AnsiConsoleFormatter extends Formatter {
     constructor() {
         super();
         this.name = "ansi-console-formatter";
-    }
-
-    /**
-     * Return a general description of the formatter for use in help output.
-     *
-     * @returns {String} a general description of the formatter
-     */
-    getDescription() {
-        return "Formats results for an ANSI terminal/console with colors.";
+        this.description = "Formats results for an ANSI terminal/console with colors.";
     }
 
     /**

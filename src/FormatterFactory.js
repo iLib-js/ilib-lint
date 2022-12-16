@@ -25,8 +25,10 @@ const cfmt = new AnsiConsoleFormatter();
 formatterCache[cfmt.getName()] = cfmt;
 
 /**
- * @class Represent an output formatter
- * @abstract
+ * Return the formatter with the given name
+ *
+ * @returns {Array.<Formatter>} the array of parsers that handle
+ * the given type of file
  */
 function FormatterFactory(options) {
     let fmt = formatterCache[cfmt.getName()];
@@ -37,5 +39,18 @@ function FormatterFactory(options) {
 
     return fmt;
 }
+
+/**
+ * Add a list of formatters to this factory so that other code
+ * can find them.
+ *
+ * @param {Array.<Formatter>} formatters the list of formatters to add
+ */
+export function addFormatters(formatters) {
+    if (!formatters || !Array.isArray(formatters)) return;
+    for (const formatter of formatters) {
+        formatterCache[formatter.getName()] = formatter;
+    }
+};
 
 export default FormatterFactory;

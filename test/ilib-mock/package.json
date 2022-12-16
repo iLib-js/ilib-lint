@@ -2,7 +2,7 @@
     "name": "ilib-mock",
     "version": "1.0.0",
     "main": "./index.js",
-    "description": "mock ilib package used for testing the scan module function",
+    "description": "mock i18nlint package used for testing the walk function",
     "files": [
         "locale",
         "index.js",

@@ -30,6 +30,9 @@ extensions.forEach(ext => {
 
 /**
  * Return a list of parsers for the given file name extension
+ *
+ * @returns {Array.<Parser>} the array of parsers that handle
+ * the given type of file
  */
 function ParserFactory(options) {
     const { extension } = options;
@@ -37,5 +40,23 @@ function ParserFactory(options) {
 
     return parserClasses || [];
 }
+
+/**
+ * Add a list of parsers to this factory so that other code
+ * can find them.
+ *
+ * @param {Array.<Parser>} parsers the list of parsers to add
+ */
+export function addParsers(parsers) {
+    if (!parsers || !Array.isArray(parsers)) return;
+    for (const parser of parsers) {
+        for (const extension of parser.getExtensions()) {
+            if (!parserCache[extension]) {
+                parserCache[extension] = [];
+            }
+            parserCache[extension].push(parser);
+        }
+    }
+};
 
 export default ParserFactory;
