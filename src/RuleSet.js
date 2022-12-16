@@ -30,9 +30,7 @@ class RuleSet {
         this.rules = {};
         this.byname = {};
         if (rules) {
-            rules.forEach(rule => {
-                this.addRule(rule);
-            });
+            this.add(rules);
         }
     }
 

@@ -172,7 +172,7 @@ const fm = pluginMgr.getFormatterManager();
 const fmt = fm.get(options.opt.formatter);
 if (!fmt) {
     logger.error(`Could not find formatter ${options.opt}. Aborting...`);
-    process.exit(3); 
+    process.exit(3);
 }
 
 // main loop

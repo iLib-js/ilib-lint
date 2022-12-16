@@ -31,7 +31,7 @@ import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
 
 var logger = log4js.getLogger("i18nlint.PluginManager");
 
-const regexRules = {
+export const regexRules = {
     url: {
         name: "resource-url-match",
         description: "Ensure that URLs that appear in the source string are also used in the translated string",
@@ -124,7 +124,7 @@ class PluginManager {
     constructor(options) {
         this.parserMgr = new ParserManager();
         this.formatterMgr = new FormatterManager();
-        
+
         // default rules
         this.rules = new RuleSet([
             new ResourceICUPlurals(),
@@ -134,7 +134,7 @@ class PluginManager {
         ]);
 
         // install the default formatter
-        this.formatterMgr.add(AnsiConsoleFormatter); 
+        this.formatterMgr.add(AnsiConsoleFormatter);
         // install the default parser, rules
         this.add(new XliffPlugin());
     }
@@ -164,7 +164,7 @@ class PluginManager {
     }
 
     /**
-     * Return the rules in this manager. This is from both the 
+     * Return the rules in this manager. This is from both the
      * built-in rules and the rules loaded from the plugins.
      *
      * @returns {FormatterManager} the rule set for this plugin manager.

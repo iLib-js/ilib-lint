@@ -85,7 +85,7 @@ class SourceFile {
                 this.type = "resource";
                 ts.addAll(p.getResources());
             }
-    
+
             this.resources = ts.getAll();
             return this.resources;
         } else {
