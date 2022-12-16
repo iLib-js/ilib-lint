@@ -20,7 +20,31 @@
 import path from 'node:path';
 import log4js from 'log4js';
 
+import FormatterManager from './FormatterManager.js';
+import ParserManager from './ParserManager.js';
+import RuleSet from './RuleSet.js';
+import XliffPlugin from './plugins/XliffPlugin.js';
+import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
+import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
+import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
+import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
+
 var logger = log4js.getLogger("i18nlint.PluginManager");
+
+const regexRules = {
+    url: {
+        name: "resource-url-match",
+        description: "Ensure that URLs that appear in the source string are also used in the translated string",
+        note: "URL '{matchString}' from the source string does not appear in the target string",
+        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
+    },
+    namedParams: {
+        name: "resource-named-params",
+        description: "Ensure that named parameters that appear in the source string are also used in the translated string",
+        note: "The named parameter '{matchString}' from the source string does not appear in the target string",
+        regexps: [ "\\{\\w+\\}" ]
+    }
+};
 
 /**
  * @private
@@ -98,8 +122,55 @@ class PluginManager {
      * Construct a new plugin manager.
      */
     constructor(options) {
-        this.parserMgr = options.parserManager;
-        this.formatterMgr = options.formatterManager;
+        this.parserMgr = new ParserManager();
+        this.formatterMgr = new FormatterManager();
+        
+        // default rules
+        this.rules = new RuleSet([
+            new ResourceICUPlurals(),
+            new ResourceQuoteStyle(),
+            new ResourceRegExpChecker(regexRules.url),
+            new ResourceRegExpChecker(regexRules.namedParams)
+        ]);
+
+        // install the default formatter
+        this.formatterMgr.add(AnsiConsoleFormatter); 
+        // install the default parser, rules
+        this.add(new XliffPlugin());
+    }
+
+    /**
+     * Return the parser manager for this plugin manager.
+     * This manages both the built-in parsers, and the parsers
+     * loaded from the plugins.
+     *
+     * @returns {ParserManager} the parser manager for this
+     * plugin manager.
+     */
+    getParserManager() {
+        return this.parserMgr;
+    }
+
+    /**
+     * Return the formatter manager for this plugin manager. This
+     * manages both the built-in formatters, and the formatters
+     * loaded from the plugins.
+     *
+     * @returns {FormatterManager} the formatter manager for this
+     * plugin manager.
+     */
+    getFormatterManager() {
+        return this.formatterMgr;
+    }
+
+    /**
+     * Return the rules in this manager. This is from both the 
+     * built-in rules and the rules loaded from the plugins.
+     *
+     * @returns {FormatterManager} the rule set for this plugin manager.
+     */
+    getRuleSet() {
+        return this.rules;
     }
 
     /**
@@ -110,6 +181,7 @@ class PluginManager {
     add(plugin) {
         this.parserMgr.add(plugin.getParsers());
         this.formatterMgr.add(plugin.getFormatters());
+        this.rules.add(plugin.getRules());
     }
 
     /**

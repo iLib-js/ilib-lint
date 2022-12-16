@@ -37,7 +37,9 @@ class RuleSet {
     }
 
     /**
-     * @param {Rule} rule
+     * Add a rule to this set.
+     *
+     * @param {Rule} rule the rule to add
      */
     addRule(rule) {
         if (!rule || !(rule instanceof Rule)) return;
@@ -50,6 +52,15 @@ class RuleSet {
         } else {
             this.rules[type].push(rule);
         }
+    }
+
+    /**
+     * Add an array of rules.
+     *
+     * @param {Array.<Rule>} rules an array to add to this set
+     */
+    add(rules) {
+        rules.forEach(rule => this.addRule(rule));
     }
 
     /**

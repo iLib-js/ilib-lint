@@ -26,16 +26,7 @@ import { JSUtils, Utils, Path } from 'ilib-common';
 import json5 from 'json5';
 import log4js from 'log4js';
 
-import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
-import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
-import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
-import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
-import XliffPlugin from './plugins/XliffPlugin.js';
-import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
-import FormatterManager from './FormatterManager.js';
-import ParserManager from './ParserManager.js';
 import PluginManager from './PluginManager.js';
-import RuleSet from './RuleSet.js';
 import walk from './walk.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
@@ -165,18 +156,9 @@ if (options.opt.config) {
 
 if (!options.opt.quiet) logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 
-// some built-in plugins
+// load and manage the plugins
 
-const pm = new ParserManager();
-const fm = new FormatterManager();
-fm.add(AnsiConsoleFormatter); // default formatter
-
-const pluginMgr = new PluginManager({
-    parserManager: pm,
-    formatterManager: fm
-});
-
-pluginMgr.add(new XliffPlugin());  // default parser, rules
+const pluginMgr = new PluginManager();
 
 let files = [];
 paths.forEach(pathName => {
@@ -186,29 +168,7 @@ paths.forEach(pathName => {
     }));
 });
 
-const rules = {
-    url: {
-        name: "resource-url-match",
-        description: "Ensure that URLs that appear in the source string are also used in the translated string",
-        note: "URL '{matchString}' from the source string does not appear in the target string",
-        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
-    },
-    namedParams: {
-        name: "resource-named-params",
-        description: "Ensure that named parameters that appear in the source string are also used in the translated string",
-        note: "The named parameter '{matchString}' from the source string does not appear in the target string",
-        regexps: [ "\\{\\w+\\}" ]
-    }
-};
-
-const defaultRules = new RuleSet([
-    new ResourceICUPlurals(),
-    new ResourceQuoteStyle(),
-    new ResourceRegExpChecker(rules.url),
-    new ResourceRegExpChecker(rules.namedParams),
-    new ResourceUniqueKeys()
-]);
-
+const fm = pluginMgr.getFormatterManager();
 const fmt = fm.get(options.opt.formatter);
 if (!fmt) {
     logger.error(`Could not find formatter ${options.opt}. Aborting...`);
@@ -217,6 +177,8 @@ if (!fmt) {
 
 // main loop
 let exitValue = 0;
+const pm = pluginMgr.getParserManager();
+const ruleset = pluginMgr.getRuleSet();
 
 files.forEach(file => {
     logger.trace(`Examining ${file.filePath}`);
@@ -231,7 +193,7 @@ files.forEach(file => {
     }
 
     file.parse(parserClasses);
-    const issues = file.findIssues(defaultRules, options.opt.locales);
+    const issues = file.findIssues(ruleset, options.opt.locales);
     issues.forEach(issue => {
         const str = fmt.format(issue);
         if (str) {
