@@ -24,7 +24,7 @@ import mm from 'micromatch';
 
 import SourceFile from './SourceFile.js';
 
-const logger = log4js.getLogger("i18nlint.walk");
+const logger = log4js.getLogger("ilib-lint.walk");
 
 /**
  * Recursively walk a directory and return a list of files and directories

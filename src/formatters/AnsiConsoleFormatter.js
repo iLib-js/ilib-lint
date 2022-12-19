@@ -20,7 +20,7 @@ import log4js from 'log4js';
 
 import Formatter from '../Formatter.js';
 
-var logger = log4js.getLogger("i18nlint.formatters.AnsiConsoleFormatter");
+var logger = log4js.getLogger("ilib-lint.formatters.AnsiConsoleFormatter");
 
 /**
  * @class Represent an output formatter for an ANSI console/terminal

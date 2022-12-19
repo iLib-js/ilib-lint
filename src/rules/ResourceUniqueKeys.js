@@ -24,7 +24,7 @@ import Rule from '../Rule.js';
 import Result from '../Result.js';
 
 /**
- * @class Represent an i18nlint rule.
+ * @class Represent an ilib-lint rule.
  */
 class ResourceUniqueKeys extends Rule {
     constructor(options) {

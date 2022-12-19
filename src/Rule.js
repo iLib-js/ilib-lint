@@ -1,5 +1,5 @@
 /*
- * Rule.js - Represent an i18nlint rule
+ * Rule.js - Represent an ilib-lint rule
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -18,12 +18,12 @@
  */
 
 /**
- * @class Represent an i18nlint rule.
+ * @class Represent an ilib-lint rule.
  * @abstract
  */
 class Rule {
     /**
-     * Construct an i18nlint rule. Rules in plugins should implement this
+     * Construct an ilib-lint rule. Rules in plugins should implement this
      * abstract class.
      */
     constructor() {
@@ -120,7 +120,7 @@ class Rule {
      *   crash your app in some cases.
      *   </ul>
      * <li>description - a description of the problem to display to the user. In order
-     * to make the i18nlint output useful, this description should attempt to make the
+     * to make the ilib-lint output useful, this description should attempt to make the
      * following things clear:
      *   <ul>
      *   <li>What part is wrong
@@ -150,7 +150,7 @@ class Rule {
      * for a web-based device.
      *
      * @param {Object} options The options object as per the description above
-     * @returns {Object|Array.<Object>|=} an object describing the problem if the rule
+     * @returns {Object|Array.<Object>|undefined} an object describing the problem if the rule
      * does match for this locale, or an array of such Objects if there are multiple
      * problems with the same input, or undefined if the rule does not match
      */
