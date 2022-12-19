@@ -21,10 +21,12 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { getLocaleFromPath, TranslationSet } from 'ilib-tools-common';
 
+import DirItem from './DirItem.js';
+
 /**
- * @class Represent a set of ilib-lint rules.
+ * @class Represent a source file
  */
-class SourceFile {
+class SourceFile extends DirItem {
     /**
      * Construct a source file instance
      * The options parameter can contain any of the following properties:
@@ -36,21 +38,12 @@ class SourceFile {
      *   source file
      */
     constructor(options) {
+        super(options);
         if (!options || !options.filePath) {
             throw "Incorrect options given to SourceFile constructor";
         }
-        this.filePath = options.filePath;
-        this.settings = options.settings;
         this.parserMgr = options.parserManager;
-    }
-
-    /**
-     * Return the file path for this source file.
-     *
-     * @returns {String} the file path for this source file
-     */
-    getFilePath() {
-        return this.filePath;
+        this.type = "line";
     }
 
     /**
@@ -94,14 +87,6 @@ class SourceFile {
             this.type = "line";
             return this.lines;
         }
-    }
-
-    /**
-     * Return the type of this file, resource or line.
-     * @returns {String} the type of this file
-     */
-    getType() {
-        return this.type;
     }
 
     /**

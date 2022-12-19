@@ -23,6 +23,7 @@ import log4js from 'log4js';
 import mm from 'micromatch';
 
 import SourceFile from './SourceFile.js';
+import Project from './Project.js';
 
 const logger = log4js.getLogger("ilib-lint.walk");
 
@@ -59,7 +60,7 @@ const logger = log4js.getLogger("ilib-lint.walk");
  * @param {String} root Directory to walk
  * @param {Object} options Options controlling how this walk happens. (See
  * the description for more details.)
- * @returns {Array.<SourceFile>} an array of file names in the directory, filtered
+ * @returns {Array.<DirItem>} an array of file names in the directory, filtered
  * by the the excludes and includes list
  */
 function walk(root, options) {
