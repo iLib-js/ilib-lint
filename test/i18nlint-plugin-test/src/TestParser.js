@@ -26,11 +26,16 @@ import { ResourceString, TranslationSet } from 'ilib-tools-common';
 class TestParser extends Parser {
     constructor(options) {
         super(options);
-        this.filePath = options.filePath;
+        this.name = "parser-xyz";
+        this.filePath = options && options.filePath;
     }
 
     init() {
         console.log("TestParser.init called");
+    }
+
+    getExtensions() {
+        return [ "xyz" ];
     }
 
     /**

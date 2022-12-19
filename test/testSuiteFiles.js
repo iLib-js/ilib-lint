@@ -20,6 +20,7 @@
 const files = [
     "testFormatterManager.js",
     "testParserManager.js",
+    "testPluginManager.js",
     "testRegExpRules.js",
     "testRules.js",
     "testRuleSet.js",

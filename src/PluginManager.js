@@ -72,7 +72,7 @@ function attemptLoad(name) {
  * @private
  */
 function loadPlugin(name, API) {
-    let promise = attemptLoad(name).catch(e1 => {
+    return attemptLoad(name).catch(e1 => {
         const name2 = `i18nlint-${name}`;
         return attemptLoad(name2).catch(e2 => {
             const name3 = path.join(process.cwd(), "node_modules", name);
@@ -90,11 +90,12 @@ function loadPlugin(name, API) {
             });
         });
     }).then((module) => {
-        plugin = new module(API);
+        const Main = module.default;
+        const plugin = new Main(API);
         plugin.init();
         return plugin;
     }).catch(e2 => {
-        logger.trace(`Could not load plugin ${plugin}`);
+        logger.trace(`Could not load plugin ${name}`);
         return undefined;
     });
 };
@@ -132,6 +133,14 @@ class PluginManager {
             new ResourceRegExpChecker(regexRules.url),
             new ResourceRegExpChecker(regexRules.namedParams)
         ]);
+
+        if (options) {
+            if (options.rulesData) {
+                for (const rule in options.rulesData) {
+                    this.rules.addRule(new ResourceRegExpChecker(options.rulesData[rule]));
+                }
+            }
+        }
 
         // install the default formatter
         this.formatterMgr.add(AnsiConsoleFormatter);
@@ -179,24 +188,35 @@ class PluginManager {
      * @param {Plugin} a plugin to add
      */
     add(plugin) {
+        if (!plugin) return;
         this.parserMgr.add(plugin.getParsers());
         this.formatterMgr.add(plugin.getFormatters());
         this.rules.add(plugin.getRules());
     }
 
     /**
-     * Load the named plugin.
+     * Load the named plugin or plugins. If the names param is given
+     * as a string, a single plugin is loaded. If it is an array of strings,
+     * each named plugin is loaded. This method returns Promise 
      *
-     * @param {String} name plugin to load
-     * @returns {Promise} a promise to load the named plugin.
-     * @accept {Plugin} the loaded plugin
-     * @reject the plugin could not be found or loaded
+     * @param {String|Array.<String>} names name or names of plugins to load
+     * @returns {Promise} a promise to load the named plugins.
+     * @accept {Array.<Object>} an array of promise statuses. The status
+     * field will either be "fulfilled" and the value field will be the
+     * Plugin instance, or "rejected" and the reason field will be filled
+     * with a description of why the plugin could not be loaded.
+     * @reject the plugins could not be found or loaded
      */
-    load(name) {
+    load(names) {
         const API = getAPI();
-        return loadPlugin(name, API).then((plugin) => {
-            this.add(plugin);
-        });
+        if (typeof(name) === 'string') {
+            names = [ names ];
+        }
+        return Promise.allSettled(names.map(name => {
+            return loadPlugin(name, API).then((plugin) => {
+                this.add(plugin);
+            });
+        }));
     }
 };
 

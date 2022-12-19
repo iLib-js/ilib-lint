@@ -29,27 +29,32 @@ class TestPlugin extends Plugin {
     }
 
     init() {
-        console.log("TestPlugin.init() called");
+        //console.log("TestPlugin.init() called");
     }
 
     getType() {
+        //console.log("TestPlugin.getType() called");
         return "resource";
     }
 
     getExtensions() {
+        //console.log("TestPlugin.getExtensions() called");
         return [ "xyz" ];
     }
 
     getRules() {
-        return [ TestRule ];
+        //console.log("TestPlugin.getRules() called");
+        return [ new TestRule() ];
     }
 
     getParsers() {
+        //console.log("TestPlugin.getParsers() called");
         return [ TestParser ];
     }
 
     getFormatters() {
-        return [ TestFormatter ];
+        //console.log("TestPlugin.getFormatters() called");
+        return [ new TestFormatter() ];
     }
 
 }

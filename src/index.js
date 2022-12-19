@@ -158,7 +158,13 @@ if (!options.opt.quiet) logger.debug(`Scanning input paths: ${JSON.stringify(pat
 
 // load and manage the plugins
 
-const pluginMgr = new PluginManager();
+const pluginMgr = new PluginManager({
+    rulesData: config.rules
+});
+
+if (config.plugins) {
+    await pluginMgr.load(config.plugins);
+}
 
 let files = [];
 paths.forEach(pathName => {

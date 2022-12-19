@@ -115,6 +115,25 @@ will be read and processed to configure the ilib-lint tool for that path. The
   whole project if they are not configured by each path
 * sourceLocale (String) - name the locale for source strings in this app.
   Default if not specified is "en-US".
+* rules (Object) - an array of regular-expression-based resource rules to use
+  with this project. For every resource loaded from a resource file, these
+  rules make sure that when the regular expression matches in the source, it also
+  matches in the target string. Each item in the rules array should be an
+  object that contains the following properties:
+    * name (String) - a unique dash-separated name of this rule. 
+      eg. "resource-url-match",
+    * description (String) - a description of what this rule is trying
+      to do. eg. "Ensure that URLs that appear in the source string are
+      also used in the translated string"
+    * note (String) - string to use when the regular expression check fails.
+      eg. "URL '{matchString}' from the source string does not appear in 
+      the target string"
+      Note that you can use `{matchString}` to show the user the string
+      that the regular expression matched in the source but not in the target.
+    * regexps (Array.<String>) - an array of regular expressions to match
+      in the source and target strings. If any one of those expressions
+      matches in the source, but not the target, the rule will create
+      a Result that will be formatted for the user.
 * paths (Object) - a set of configurations for various paths that are given
   by a [micromatch](https://github.com/micromatch/micromatch) glob expression.
   Each glob expression property should be an object that contains settings
@@ -122,7 +141,7 @@ will be read and processed to configure the ilib-lint tool for that path. The
   be any of:
     * locales (Array of strings) - a set of locales that override
       the global locales list
-    * rules - (Object) a set of rules to use with this set of files.
+    * rules - (Object) names a set of rules to use with this set of files.
       Each rule name maps either to a boolean (true means turn it
       on, and false means off) or to a string or object that gives
       options for the rule. (Each rule can be different)
