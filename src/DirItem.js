@@ -72,7 +72,9 @@ class DirItem {
      * @returns {String} the type of this file
      * @abstract
      */
-    getType() {}
+    getType() {
+        return this.type;
+    }
 
     /**
      * Check the directory item and return a list of issues found in it.

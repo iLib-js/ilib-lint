@@ -157,7 +157,7 @@ export const testSourceFile = {
             }
         });
         test.ok(sf);
-        test.ok(!sf.getType());
+        test.equal(sf.getType(), "line");
         const resources = sf.parse([XliffParser]);
         test.equal(sf.getType(), "resource");
 
@@ -189,7 +189,7 @@ export const testSourceFile = {
             }
         });
         test.ok(sf);
-        test.ok(!sf.getType());
+        test.equal(sf.getType(), "line");
         const resources = sf.parse();
         test.equal(sf.getType(), "line");
 

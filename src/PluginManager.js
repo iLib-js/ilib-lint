@@ -28,6 +28,7 @@ import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
+import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -131,7 +132,8 @@ class PluginManager {
             new ResourceICUPlurals(),
             new ResourceQuoteStyle(),
             new ResourceRegExpChecker(regexRules.url),
-            new ResourceRegExpChecker(regexRules.namedParams)
+            new ResourceRegExpChecker(regexRules.namedParams),
+            new ResourceUniqueKeys()
         ]);
 
         if (options) {

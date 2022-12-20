@@ -20,8 +20,7 @@
 import LocaleInfo from 'ilib-localeinfo';
 import { TranslationSet } from 'ilib-tools-common';
 
-import Rule from '../Rule.js';
-import Result from '../Result.js';
+import { Rule, Result } from 'i18nlint-common';
 
 /**
  * @class Represent an ilib-lint rule.
