@@ -23,7 +23,7 @@ import { Formatter } from 'i18nlint-common';
 
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 
-var logger = log4js.getLogger("i18nlint.FormatterManager");
+const logger = log4js.getLogger("i18nlint.FormatterManager");
 
 /**
  * Return the formatter with the given name

@@ -29,7 +29,7 @@ import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
 
-var logger = log4js.getLogger("i18nlint.PluginManager");
+const logger = log4js.getLogger("i18nlint.PluginManager");
 
 export const regexRules = {
     url: {

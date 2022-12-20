@@ -32,7 +32,7 @@ import walk from './walk.js';
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
 
-var logger = log4js.getLogger("ilib-lint.root");
+const logger = log4js.getLogger("ilib-lint.root");
 
 const optionConfig = {
     help: {
@@ -167,12 +167,18 @@ if (config.plugins) {
 }
 
 let files = [];
-paths.forEach(pathName => {
-    files = files.concat(walk(pathName, {
-        quiet: options.opt.quiet,
-        config
-    }));
-});
+if (paths.length < 1) {
+	files = [new Project({
+	    filePath: "."
+	})];
+} else {
+	paths.forEach(pathName => {
+	    files = files.concat(walk(pathName, {
+	        quiet: options.opt.quiet,
+	        config
+	    }));
+	});
+}
 
 const fm = pluginMgr.getFormatterManager();
 const fmt = fm.get(options.opt.formatter);

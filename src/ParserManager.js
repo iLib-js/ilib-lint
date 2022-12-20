@@ -21,7 +21,7 @@ import log4js from 'log4js';
 
 import { Parser } from 'i18nlint-common';
 
-var logger = log4js.getLogger("i18nlint.ParserManager");
+const logger = log4js.getLogger("i18nlint.ParserManager");
 
 function getSuperClassName(obj) {
     return Object.getPrototypeOf(Object.getPrototypeOf(obj)).constructor.name;

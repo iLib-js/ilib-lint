@@ -21,7 +21,7 @@ import log4js from 'log4js';
 
 import DirItem from './DirItem.js';
 
-var logger = log4js.getLogger("i18nlint.Project");
+const logger = log4js.getLogger("i18nlint.Project");
 
 /**
  * @class Represent an i18nlint project.
@@ -56,7 +56,7 @@ class Project extends DirItem {
         }
 
         this.root = options.root;
-        this.config = options.config
+        this.config = options.config;
     }
 
     findIssues(ruleset, locales) {

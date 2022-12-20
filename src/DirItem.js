@@ -19,7 +19,7 @@
 
 import log4js from 'log4js';
 
-var logger = log4js.getLogger("i18nlint.Project");
+const logger = log4js.getLogger("i18nlint.DirItem");
 
 /**
  * @class Represent a directory item.
@@ -85,4 +85,4 @@ class DirItem {
     findIssues(ruleset, locales) {}
 };
 
-export default SourceFile;
+export default DirItem;
