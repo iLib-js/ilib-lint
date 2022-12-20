@@ -1,4 +1,4 @@
-# i18nlint
+# ilib-lint
 
 A static analysis linter for many types of source files that looks for i18n problems.
 
@@ -17,18 +17,18 @@ This i18n linter differs from other static linters in the following ways:
 ## Installation
 
 ```
-npm install i18nlint
+npm install ilib-lint
 
 or
 
-yarn add i18nlint
+yarn add ilib-lint
 ```
 
 Then, in your package.json, add a script:
 
 ```
 "scripts": {
-    "lint": "i18nlint"
+    "lint": "ilib-lint"
 }
 ```
 
@@ -37,7 +37,7 @@ is written with ESM modules.
 
 ## Quick Start
 
-Running i18nlint is easy. Just change your directory to the top level directory
+Running ilib-lint is easy. Just change your directory to the top level directory
 of your project and run it with no parameters and no configuration file. When
 there are no parameters and no configuration file, it will do all default
 behaviours, which for some projects is sufficient.
@@ -61,24 +61,28 @@ The default behaviours are:
 * Output will be printed on the standard output in human readable form
 ```
 $ cd myproject
-$ i18nlint
-i18nlint - Copyright (c) 2022 JEDLsoft, All rights reserved.
+$ ilib-lint
+ilib-lint - Copyright (c) 2022 JEDLsoft, All rights reserved.
 WARN: i18n/ru_RU.properties(45): translation should use the appropriate
 quote style
   myproject.dialog1.body.text = Нажмите кнопку "Справка", чтобы получить
 дополнительную информацию.
   Rule (locale-quote-style): quote style for the the locale "ru-RU" should
-be «»
+be «text»
 $
 ```
 
 ## Command-line Parameters
 
-i18nlint accepts the following command-line parameters:
+ilib-lint accepts the following command-line parameters:
 
 * help - Print out a help message detailing these command-line parameters
 * config - Give an explicit path to a configuration file instead of trying to
   find it in the current directory.
+* errorsOnly - Only give information on errors, not warnings. Also, only exit
+  with status 2 if there are errors, and status 0 if there are warnings. This
+  flag allows you to squelch the warnings and only fail a script if there are
+  actual errors.
 * locales - Locales you want your app to support. Value is a comma-separated
   list of BCP-47 style locale tags.
   Default: the top 20 locales on the internet by traffic.
@@ -98,13 +102,13 @@ exit status:
 * 2 - errors found
 
 When the `--errorsOnly` flag is given, the program will return 0 if only
-warnings can be found.
+warnings can be found or if no issues are found.
 
 ## Configuration
 
-If the named paths contain a file called `i18nlint-config.json`, it
-will be read and processed to configure the i18nlint tool for that path. The
-`i18nlint-config.json` file can have any of the following properties:
+If the named paths contain a file called `ilib-lint-config.json`, it
+will be read and processed to configure the ilib-lint tool for that path. The
+`ilib-lint-config.json` file can have any of the following properties:
 
 * name (String) - name of this project
 * locales (Array of strings) - that name the default set of locales for the
@@ -135,7 +139,7 @@ will be read and processed to configure the i18nlint tool for that path. The
     * template (string) - a template that can be used to parse the
       file name for the locale of that file.
 
-The `i18nlint-config.json` file can be written in [JSON5](https://github.com/json5/json5)
+The `ilib-lint-config.json` file can be written in [JSON5](https://github.com/json5/json5)
 syntax, which means it can contain comments and other enhancements.
 
 ### Example Config File
@@ -184,7 +188,7 @@ Here is an example of a configuration file:
 
 ## Built-in Rules
 
-Some generic rules that apply to many types of files are built-in to i18nlint.
+Some generic rules that apply to many types of files are built-in to ilib-lint.
 This apply mostly to resource files, such as XLIFF files.
 
 The built-in rules are:
@@ -223,3 +227,5 @@ limitations under the License.
 
 - initial version
 - define initial code and default built-in rules
+- this is an ESM-only project, which is why it can only be run with
+  nodejs v14+

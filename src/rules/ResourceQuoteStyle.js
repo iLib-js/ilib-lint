@@ -28,7 +28,7 @@ let LICache = {};
 const quoteChars = "«»‘“”„「」’‚‹›『』\"\'";
 
 /**
- * @class Represent an i18nlint rule.
+ * @class Represent an ilib-lint rule.
  */
 class ResourceQuoteStyle extends Rule {
     constructor(options) {

@@ -1,5 +1,5 @@
 /*
- * RuleSet.js - Represent a set of i18nlint rules
+ * RuleSet.js - Represent a set of ilib-lint rules
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -20,11 +20,11 @@
 import Rule from './Rule.js';
 
 /**
- * @class Represent a set of i18nlint rules.
+ * @class Represent a set of ilib-lint rules.
  */
 class RuleSet {
     /**
-     * Construct an i18nlint rule set.
+     * Construct an ilib-lint rule set.
      */
     constructor(rules) {
         this.rules = {};

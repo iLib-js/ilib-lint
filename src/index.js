@@ -1,5 +1,5 @@
 /*
- * index.js - main program of i18nlint
+ * index.js - main program of ilib-lint
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -37,14 +37,14 @@ import RuleSet from './RuleSet.js';
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
 
-var logger = log4js.getLogger("i18nlint.root");
+var logger = log4js.getLogger("ilib-lint.root");
 
 const optionConfig = {
     help: {
         short: "h",
         help: "This help message",
         showHelp: {
-            banner: 'Usage: i18nlint [-h] [options] path [path ...]',
+            banner: 'Usage: ilib-lint [-h] [options] path [path ...]',
             output: logger.info
         }
     },
@@ -81,14 +81,14 @@ const options = OptionsParser.parse(optionConfig);
 if (options.args.length < 1) {
     logger.info("Error: missing path parameter");
     OptionsParser.help(optionConfig, {
-        banner: 'Usage: ii18nlint [-h] [options] path [path ...]',
+        banner: 'Usage: iilib-lint [-h] [options] path [path ...]',
         output: logger.info
     });
     process.exit(1);
 }
 */
 
-if (!options.opt.quiet) logger.info("i18nlint - Copyright (c) 2022 JEDLsoft, All rights reserved.");
+if (!options.opt.quiet) logger.info("ilib-lint - Copyright (c) 2022 JEDLsoft, All rights reserved.");
 
 let paths = options.args;
 if (paths.length === 0) {
@@ -109,7 +109,7 @@ options.opt.locales = options.opt.locales.map(spec => {
 
 // used if no explicit config is found or given
 const defaultConfig = {
-    "name": "i18nlint",
+    "name": "ilib-lint",
     "locales": [
         "en-US",
         "de-DE",

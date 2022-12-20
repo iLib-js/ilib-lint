@@ -24,7 +24,7 @@ import { getLocaleFromPath } from 'ilib-tools-common';
 import ParserFactory from './ParserFactory.js';
 
 /**
- * @class Represent a set of i18nlint rules.
+ * @class Represent a set of ilib-lint rules.
  */
 class SourceFile {
     /**
@@ -32,7 +32,7 @@ class SourceFile {
      * The options parameter can contain any of the following properties:
      *
      * - filePath {String} path to the file
-     * - settings {Object} the settings from the i18nlint config that
+     * - settings {Object} the settings from the ilib-lint config that
      *   apply to this file
      */
     constructor(options) {

@@ -51,7 +51,7 @@ const categoriesForLang = {
 }
 
 /**
- * @class Represent an i18nlint rule.
+ * @class Represent an ilib-lint rule.
  */
 class ResourceICUPlurals extends Rule {
     constructor(options) {
