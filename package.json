@@ -71,7 +71,7 @@
     },
     "dependencies": {
         "@formatjs/intl": "^2.5.1",
-        "i18nlint-common": "file:../i18nlint-common/i18nlint-common-1.1.0.tgz",
+        "i18nlint-common": "^1.1.0",
         "i18nlint-plugin-test": "file:test/i18nlint-plugin-test/i18nlint-plugin-test-1.0.0.tgz",
         "ilib-common": "^1.1.3",
         "ilib-locale": "^1.2.2",
