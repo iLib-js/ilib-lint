@@ -129,23 +129,20 @@ class PluginManager {
 
         // default rules
         this.rules = new RuleSet([
-            new ResourceICUPlurals(),
-            new ResourceQuoteStyle(),
-            new ResourceRegExpChecker(regexRules.url),
-            new ResourceRegExpChecker(regexRules.namedParams),
-            new ResourceUniqueKeys()
+            ResourceICUPlurals,
+            ResourceQuoteStyle,
+            ResourceUniqueKeys,
+            regexRules.url,
+            regexRules.namedParams
         ]);
 
-        if (options) {
-            if (options.rulesData) {
-                for (const rule in options.rulesData) {
-                    this.rules.addRule(new ResourceRegExpChecker(options.rulesData[rule]));
-                }
-            }
+        if (options && options.rulesData) {
+            this.rules.add(options.rulesData);
         }
 
         // install the default formatter
         this.formatterMgr.add(AnsiConsoleFormatter);
+
         // install the default parser, rules
         this.add(new XliffPlugin());
     }

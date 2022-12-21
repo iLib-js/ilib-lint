@@ -19,47 +19,87 @@
 
 import walk from '../src/walk.js';
 import SourceFile from '../src/SourceFile.js';
+import Project from '../src/Project.js';
+import PluginManager from '../src/PluginManager.js';
 
 function cmp(left, right) {
     return (left.pathName < right.pathName) ? -1 :
         ((left.pathName > right.pathName) ? 1 : 0);
 }
 
+
+const config = {
+    "name": "test",
+    "locales": [
+        "en-US",
+        "de-DE",
+        "ja-JP",
+        "ko-KR"
+    ],
+    "paths": {
+        "**/*.json": {
+            "locales": [
+                "en-US",
+                "de-DE",
+                "ja-JP"
+            ]
+        },
+        "**/*.xliff": {
+            "rules": {
+                "resource-icu-plurals": true,
+                "resource-quote-style": true,
+                "resource-url-match": true,
+                "resource-named-params": "localeOnly"
+            }
+        },
+        "**": {
+        }
+    }
+};
+
+const project = new Project(".", {
+    pluginManager: new PluginManager()
+}, config);
+
 export const testWalk = {
     testWalkDir: function(test) {
         test.expect(2);
-        const files = walk("test/ilib-mock", {quiet: true}).sort(cmp);
+        const files = walk("test/ilib-mock", project).sort(cmp);
         test.equal(files.length, 11);
         const expected = [
-            new SourceFile({filePath: "test/ilib-mock/assemble.mjs"}),
-            new SourceFile({filePath: "test/ilib-mock/ilib-mock-1.0.0.tgz"}),
-            new SourceFile({filePath: "test/ilib-mock/index.js"}),
-            new SourceFile({filePath: "test/ilib-mock/locale/de/DE/mockdata.json"}),
-            new SourceFile({filePath: "test/ilib-mock/locale/de/mockdata.json"}),
-            new SourceFile({filePath: "test/ilib-mock/locale/en/US/mockdata.json"}),
-            new SourceFile({filePath: "test/ilib-mock/locale/en/mockdata.json"}),
-            new SourceFile({filePath: "test/ilib-mock/locale/mockdata.json"}),
-            new SourceFile({filePath: "test/ilib-mock/locale/und/DE/mockdata.json"}),
-            new SourceFile({filePath: "test/ilib-mock/locale/und/US/mockdata.json"}),
-            new SourceFile({filePath: "test/ilib-mock/package.json"})
+            "test/ilib-mock/assemble.mjs",
+            "test/ilib-mock/ilib-mock-1.0.0.tgz",
+            "test/ilib-mock/index.js",
+            "test/ilib-mock/locale/de/DE/mockdata.json",
+            "test/ilib-mock/locale/de/mockdata.json",
+            "test/ilib-mock/locale/en/US/mockdata.json",
+            "test/ilib-mock/locale/en/mockdata.json",
+            "test/ilib-mock/locale/mockdata.json",
+            "test/ilib-mock/locale/und/DE/mockdata.json",
+            "test/ilib-mock/locale/und/US/mockdata.json",
+            "test/ilib-mock/package.json"
         ];
-        test.equalIgnoringOrder(files, expected);
+        test.equalIgnoringOrder(files.map(file => file.getFilePath()), expected);
 
         test.done();
     },
 
     testWalkFile: function(test) {
         test.expect(2);
-        const files = walk("test/ilib-mock/index.js", {quiet: true});
+        project.clear();
+
+        const files = walk("test/ilib-mock/index.js", project);
         test.equal(files.length, 1);
-        test.deepEqual(files[0], new SourceFile({filePath: "test/ilib-mock/index.js"}));
+        test.deepEqual(files[0].getFilePath(), "test/ilib-mock/index.js");
 
         test.done();
     },
 
     testWalkNonExistentDir: function(test) {
         test.expect(1);
-        const files = walk("test/ilib-mock/asdf", {quiet: true}).sort(cmp);
+        project.clear();
+
+        const files = walk("test/ilib-mock/asdf", project).sort(cmp);
         test.equal(files.length, 0);
 
         test.done();
@@ -67,7 +107,9 @@ export const testWalk = {
 
     testWalkFileNonJSFile: function(test) {
         test.expect(1);
-        const files = walk("test/ilib-mock/locale/mockdata.json", {quiet: true}).sort(cmp);
+        project.clear();
+
+        const files = walk("test/ilib-mock/locale/mockdata.json", project).sort(cmp);
         test.equal(files.length, 1);
 
         test.done();
@@ -75,7 +117,9 @@ export const testWalk = {
 
     testWalkBadParamsUndefined: function(test) {
         test.expect(1);
-        const files = walk({quiet: true}).sort(cmp);
+        project.clear();
+
+        const files = walk(undefined, project).sort(cmp);
         test.equal(files.length, 0);
 
         test.done();
@@ -83,7 +127,9 @@ export const testWalk = {
 
     testWalkBadParamsBoolean: function(test) {
         test.expect(1);
-        const files = walk(true, {quiet: true}).sort();
+        project.clear();
+
+        const files = walk(true, project).sort();
         test.equal(files.length, 0);
 
         test.done();
@@ -91,7 +137,9 @@ export const testWalk = {
 
     testWalkBadParamsNumber: function(test) {
         test.expect(1);
-        const files = walk(3, {quiet: true}).sort();
+        project.clear();
+
+        const files = walk(3, project).sort();
         test.equal(files.length, 0);
 
         test.done();
@@ -99,32 +147,36 @@ export const testWalk = {
 
     testWalkDirWithJsonExtension: function(test) {
         test.expect(2);
+        project.clear();
+
         const config = {
             paths: {
                 "**/*.json": {
                 }
             }
         };
-        const files = walk("test/ilib-mock/locale", {
-            quiet: true,
-            config
-        }).sort(cmp);
+        const proj = new Project(".", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = walk("test/ilib-mock/locale", proj).sort(cmp);
         test.equal(files.length, 7);
         const expected = [
-            new SourceFile({filePath: "test/ilib-mock/locale/de/DE/mockdata.json", settings: config.paths["**/*.json"]}),
-            new SourceFile({filePath: "test/ilib-mock/locale/de/mockdata.json", settings: config.paths["**/*.json"]}),
-            new SourceFile({filePath: "test/ilib-mock/locale/en/US/mockdata.json", settings: config.paths["**/*.json"]}),
-            new SourceFile({filePath: "test/ilib-mock/locale/en/mockdata.json", settings: config.paths["**/*.json"]}),
-            new SourceFile({filePath: "test/ilib-mock/locale/mockdata.json", settings: config.paths["**/*.json"]}),
-            new SourceFile({filePath: "test/ilib-mock/locale/und/DE/mockdata.json", settings: config.paths["**/*.json"]}),
-            new SourceFile({filePath: "test/ilib-mock/locale/und/US/mockdata.json", settings: config.paths["**/*.json"]})
+            "test/ilib-mock/locale/de/DE/mockdata.json",
+            "test/ilib-mock/locale/de/mockdata.json",
+            "test/ilib-mock/locale/en/US/mockdata.json",
+            "test/ilib-mock/locale/en/mockdata.json",
+            "test/ilib-mock/locale/mockdata.json",
+            "test/ilib-mock/locale/und/DE/mockdata.json",
+            "test/ilib-mock/locale/und/US/mockdata.json"
         ];
-        test.deepEqual(files, expected);
+        test.deepEqual(files.map(file => file.getFilePath()), expected);
         test.done();
     },
 
     testWalkDirWithExcludes: function(test) {
         test.expect(2);
+        project.clear();
+
         const config = {
             paths: {
                 "**": {
@@ -132,23 +184,25 @@ export const testWalk = {
                 }
             }
         };
-        const files = walk("test/ilib-mock", {
-            quiet: true,
-            config
-        }).sort(cmp);
+        const proj = new Project(".", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = walk("test/ilib-mock", proj).sort(cmp);
         test.equal(files.length, 3);
         const expected = [
-            new SourceFile({filePath: "test/ilib-mock/assemble.mjs", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/ilib-mock-1.0.0.tgz", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/index.js", settings: config.paths["**"]})
+            "test/ilib-mock/assemble.mjs",
+            "test/ilib-mock/ilib-mock-1.0.0.tgz",
+            "test/ilib-mock/index.js"
         ];
-        test.equalIgnoringOrder(files, expected);
+        test.equalIgnoringOrder(files.map(file => file.getFilePath()), expected);
 
         test.done();
     },
 
     testWalkDirWithExcludeDirectory: function(test) {
         test.expect(2);
+        project.clear();
+
         const config = {
             paths: {
                 "**": {
@@ -156,24 +210,26 @@ export const testWalk = {
                 }
             }
         };
-        const files = walk("test/ilib-mock", {
-            quiet: true,
-            config
-        }).sort(cmp);
+        const proj = new Project(".", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = walk("test/ilib-mock", proj).sort(cmp);
         test.equal(files.length, 4);
         const expected = [
-            new SourceFile({filePath: "test/ilib-mock/assemble.mjs", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/ilib-mock-1.0.0.tgz", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/index.js", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/package.json", settings: config.paths["**"]})
+            "test/ilib-mock/assemble.mjs",
+            "test/ilib-mock/ilib-mock-1.0.0.tgz",
+            "test/ilib-mock/index.js",
+            "test/ilib-mock/package.json"
         ];
-        test.equalIgnoringOrder(files, expected);
+        test.equalIgnoringOrder(files.map(file => file.getFilePath()), expected);
 
         test.done();
     },
 
     testWalkDirWithMultipleExcludes: function(test) {
         test.expect(2);
+        project.clear();
+
         const config = {
             paths: {
                 "**": {
@@ -181,22 +237,24 @@ export const testWalk = {
                 }
             }
         };
-        const files = walk("test/ilib-mock", {
-            quiet: true,
-            config
-        }).sort(cmp);
+        const proj = new Project(".", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = walk("test/ilib-mock", proj).sort(cmp);
         test.equal(files.length, 2);
         const expected = [
-            new SourceFile({filePath: "test/ilib-mock/ilib-mock-1.0.0.tgz", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/index.js", settings: config.paths["**"]})
+            "test/ilib-mock/ilib-mock-1.0.0.tgz",
+            "test/ilib-mock/index.js"
         ];
-        test.equalIgnoringOrder(files, expected);
+        test.equalIgnoringOrder(files.map(file => file.getFilePath()), expected);
 
         test.done();
     },
 
     testWalkDirWithExcludesAndIncludes: function(test) {
         test.expect(2);
+        project.clear();
+
         const config = {
             paths: {
                 "**/package.json": {
@@ -207,18 +265,18 @@ export const testWalk = {
                 }
             }
         };
-        const files = walk("test/ilib-mock", {
-            quiet: true,
-            config
-        }).sort(cmp);
+        const proj = new Project(".", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = walk("test/ilib-mock", proj).sort(cmp);
         test.equal(files.length, 4);
         const expected = [
-            new SourceFile({filePath: "test/ilib-mock/assemble.mjs", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/ilib-mock-1.0.0.tgz", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/index.js", settings: config.paths["**"]}),
-            new SourceFile({filePath: "test/ilib-mock/package.json", settings: config.paths["**/package.json"]}),
+            "test/ilib-mock/assemble.mjs",
+            "test/ilib-mock/ilib-mock-1.0.0.tgz",
+            "test/ilib-mock/index.js",
+            "test/ilib-mock/package.json"
         ];
-        test.equalIgnoringOrder(files, expected);
+        test.equalIgnoringOrder(files.map(file => file.getFilePath()), expected);
 
         test.done();
     }

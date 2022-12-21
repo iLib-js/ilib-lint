@@ -36,49 +36,92 @@ class Project extends DirItem {
     /**
      * Construct a new project.
      *
-     * The options parameter may contain any of the following properties
-     *
-     * - root (String) - root directory for this project
-     * - config (Object) - a configuration for this project
-     * - pluginManager (PluginManager) - the plugin manager to use with
-     *   this project
-     *
-     * @param {Object} options properties controlling how this project
-     * works (see above)
+     * @param {String} root root directory for this project
+     * @param {Object} options properties controlling how this run of the linter
+     * works, mostly from the command-line options
+     * @param {Object} config contents of a configuration file for this project
      */
-    constructor(options) {
-        super(options);
+    constructor(root, options, config) {
+        super(root, options, config);
 
         this.files = [];
 
-        if (!options || !options.root || !options.config) {
-            throw "Insufficient options given to Project constructor";
+        if (!options || !root || !config) {
+            throw "Insufficient params given to Project constructor";
         }
 
-        this.root = options.root;
-        this.config = options.config;
+        this.root = root;
+        this.options = options;
+        this.config = config;
+        if (this.config) {
+            this.includes = this.config.paths ? Object.keys(this.config.paths) : ["**"];
+            this.excludes = config.excludes;
+        }
+    }
+
+    getIncludes() {
+        return this.includes; 
+    }
+
+    getExcludes() {
+        return this.excludes;
+    }
+
+    getOptions() {
+        return this.options;
+    }
+    
+    getLocales() {
+        return this.options.locales || this.config.locales;
+    }
+    
+    getParserManager() {
+        const pluginMgr = this.options.pluginManager;
+        return pluginMgr.getParserManager();
+    }
+
+    getRuleSet(glob) {
+        if (this.config.paths && this.config.paths[glob]) {
+            const rules = this.config.paths[glob].rules;
+        }
+    }
+
+    getConfig() {
+        return this.config;
+    }
+
+    getSettings(glob) {
+        return (this.config.paths && this.config.paths[glob]) || {};
+    }
+
+    /**
+     * Add a directory item to this project.
+     *
+     * @param {DirItem} item directory item to add
+     */
+    add(item) {
+        this.files.push(item);
+    }
+
+    /**
+     * Return all directory items in this project.
+     * @returns {Array.<DirItem>} the directory items in this project.
+     */
+    get() {
+        return this.files;
     }
 
     findIssues(ruleset, locales) {
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
 
-            if (file.getType() === "project") {
-                return file.findIssues(ruleset, locales);
-            }
-
-            let parserClasses;
-            let extension = path.extname(file.getFilePath());
-            if (extension) {
-                // remove the dot
-                extension = extension.substring(1);
-                const pm = this.pluginMgr.getParserManager();
-                parserClasses = pm.get(extension);
-            }
-
-            file.parse(parserClasses);
-            return file.findIssues(ruleset, options.opt.locales);
+            file.parse();
+            return file.findIssues(ruleset, locales);
         }).flat();
+    }
+    
+    clear() {
+        this.files = [];
     }
 };
 

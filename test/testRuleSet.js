@@ -33,12 +33,9 @@ export const testRuleSet = {
     },
 
     testRuleSetConstructor: function(test) {
-        test.expect(3);
+        test.expect(2);
 
-        const rule = new ResourceQuoteStyle();
-        test.ok(rule);
-
-        const ruleset = new RuleSet([rule]);
+        const ruleset = new RuleSet([ResourceQuoteStyle]);
         test.ok(ruleset);
         test.equal(ruleset.getSize(), 1);
 
@@ -48,8 +45,8 @@ export const testRuleSet = {
     testRuleSetConstructorMultiple: function(test) {
         test.expect(2);
 
-        const rule1 = new ResourceQuoteStyle();
-        const rule2 = new ResourceICUPlurals();
+        const rule1 = ResourceQuoteStyle;
+        const rule2 = ResourceICUPlurals;
 
         const ruleset = new RuleSet([rule1, rule2]);
         test.ok(ruleset);
@@ -61,17 +58,17 @@ export const testRuleSet = {
     testRuleSetGetByName: function(test) {
         test.expect(4);
 
-        const rule1 = new ResourceQuoteStyle();
-        const rule2 = new ResourceICUPlurals();
+        const rule1 = ResourceQuoteStyle;
+        const rule2 = ResourceICUPlurals;
 
         const ruleset = new RuleSet([rule1, rule2]);
         test.ok(ruleset);
         test.equal(ruleset.getSize(), 2);
 
         let rule = ruleset.getRule("resource-quote-style");
-        test.equal(rule, rule1);
+        test.ok(rule instanceof rule1);
         rule = ruleset.getRule("resource-icu-plurals");
-        test.equal(rule, rule2);
+        test.ok(rule instanceof rule2);
 
         test.done();
     },
@@ -79,8 +76,8 @@ export const testRuleSet = {
     testRuleSetGetByNameNotExist: function(test) {
         test.expect(3);
 
-        const rule1 = new ResourceQuoteStyle();
-        const rule2 = new ResourceICUPlurals();
+        const rule1 = ResourceQuoteStyle;
+        const rule2 = ResourceICUPlurals;
 
         const ruleset = new RuleSet([rule1, rule2]);
         test.ok(ruleset);
@@ -95,8 +92,8 @@ export const testRuleSet = {
     testRuleSetGetByType: function(test) {
         test.expect(5);
 
-        const rule1 = new ResourceQuoteStyle();
-        const rule2 = new ResourceICUPlurals();
+        const rule1 = ResourceQuoteStyle;
+        const rule2 = ResourceICUPlurals;
 
         const ruleset = new RuleSet([rule1, rule2]);
         test.ok(ruleset);
@@ -113,8 +110,8 @@ export const testRuleSet = {
     testRuleSetGetByTypeNonExistant: function(test) {
         test.expect(4);
 
-        const rule1 = new ResourceQuoteStyle();
-        const rule2 = new ResourceICUPlurals();
+        const rule1 = ResourceQuoteStyle;
+        const rule2 = ResourceICUPlurals;
 
         const ruleset = new RuleSet([rule1, rule2]);
         test.ok(ruleset);
@@ -125,6 +122,6 @@ export const testRuleSet = {
         test.equal(rules.length, 0);
 
         test.done();
-    },
+    }
 };
 

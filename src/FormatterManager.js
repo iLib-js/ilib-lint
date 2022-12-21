@@ -34,31 +34,35 @@ const logger = log4js.getLogger("i18nlint.FormatterManager");
 class FormatterManager {
     constructor(options) {
         this.formatterCache = {};
-        this.add([new AnsiConsoleFormatter()]);
+        this.add([AnsiConsoleFormatter]);
     }
 
     /**
-     * Return a formatter with the given name for use in
+     * Return a formatter instance with the given name for use in
      * formatting the output.
      *
      * @param {String} name name of the formatter to return
+     * @param {Object|undefined} options options for this instance of the
+     * formatter from the config file, if any
      * @returns {Formatter} the formatter to use
      */
-    get(name) {
-        return this.formatterCache[name];
+    get(name, options) {
+        const FormatterClass = this.formatterCache[name];
+        return FormatterClass ? new FormatterClass(options) : undefined;
     }
 
     /**
-     * Add a list of formatters to this factory so that other code
+     * Add a list of formatter classes to this factory so that other code
      * can find them.
      *
-     * @param {Array.<Formatter>} formatters the list of formatters to add
+     * @param {Array.<Class>} formatters the list of formatter classes to add
      */
     add(formatters) {
         if (!formatters || !Array.isArray(formatters)) return;
-        for (const formatter of formatters) {
+        for (const fmt of formatters) {
+            const formatter = new fmt();
             if (formatter && typeof(formatter) === 'object' && formatter instanceof Formatter) {
-                this.formatterCache[formatter.getName()] = formatter;
+                this.formatterCache[formatter.getName()] = fmt;
                 logger.trace(`Added formatter ${formatter.getName()} to the formatter manager`);
             } else {
                 logger.debug(`Attempt to add a non-formatter to the formatter manager`);

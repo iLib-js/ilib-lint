@@ -40,15 +40,26 @@ class RuleSet {
      * @param {Rule} rule the rule to add
      */
     addRule(rule) {
-        if (!rule || !(rule instanceof Rule)) return;
-        const name = rule.getName();
-        if (this.byname[name]) return; // already added
-        this.byname[name] = rule;
-        const type = rule.getRuleType();
-        if (!this.rules[type]) {
-            this.rules[type] = [rule];
-        } else {
-            this.rules[type].push(rule);
+        if (!rule) return;
+        if (rule instanceof Function) {
+            const r = new rule();
+            if (!(r instanceof Rule)) return;
+            const name = r.getName();
+            if (this.byname[name]) return; // already added
+            this.byname[name] = rule;
+            const type = r.getRuleType();
+            if (!this.rules[type]) {
+                this.rules[type] = [rule];
+            } else {
+                this.rules[type].push(rule);
+            }
+        } else if (typeof(rule) === 'object') {
+            if (!this.rules.resource) {
+                this.rules.resource = [rule];
+            } else {
+                this.rules.resource.push(rule);
+            }
+            this.byname[rule.name] = rule;
         }
     }
 
@@ -65,17 +76,26 @@ class RuleSet {
      * Return the rule with the given name.
      *
      * @param {String} name name to search for
+     * @param {Object} options options for this instance of the rule
      * @returns {Rule|undefined} the rule with the given name or
      * undefined if the rule is not known
      */
-    getRule(name) {
-        return this.byname[name];
+    getRule(name, options) {
+        const rule = this.byname[name];
+        if (typeof(rule) === 'object') {
+            return new ResourceRegExpChecker({
+                ...rule,
+                ...options
+            });
+        }
+        return rule ? new rule(options) : undefined;
     }
 
     /**
      * Return all the rules of the given type in this set.
      * @param {String} type to search for
-     * @returns {Array.<Rule>} the list of rules of the requested type
+     * @returns {Array.<Class>} the list of rule classes of
+     * the requested type
      */
     getRules(type) {
         return this.rules[type] || [];

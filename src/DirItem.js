@@ -40,13 +40,14 @@ class DirItem {
      * - pluginManager {PluginManager} the plugin manager for this run of
      *   the i18nlint tool
      */
-    constructor(options) {
-        if (!options || !options.filePath) {
-            throw "Incorrect options given to SourceFile constructor";
+    constructor(filePath, options, project) {
+        if (!options || !filePath) {
+            throw "Incorrect options given to DirItem constructor";
         }
-        this.filePath = options.filePath;
+        this.filePath = filePath;
         this.settings = options.settings;
         this.pluginMgr = options.pluginManager;
+        this.project = project;
     }
 
     /**
@@ -61,11 +62,10 @@ class DirItem {
     /**
      * Parse the current directory item.
      *
-     * @param {Array.<Parser>} parsers parsers for the current source file
      * @returns {Object} the parsed representation of this file
      * @abstract
      */
-    parse(parsers) {}
+    parse() {}
 
     /**
      * Return the type of this file, resource or line or project.

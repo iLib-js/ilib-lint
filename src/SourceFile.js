@@ -32,18 +32,26 @@ class SourceFile extends DirItem {
      * The options parameter can contain any of the following properties:
      *
      * - filePath {String} path to the file
-     * - settings {Object} the settings from the ilib-lint config that
-     *   apply to this file
-     * - parserManager {ParserManager} the parser manager to use with this
-     *   source file
+     *
+     * @param {Object} options options for constructing this source file
+     * @param {Project} project the project where this file is located
      */
-    constructor(options) {
-        super(options);
-        if (!options || !options.filePath) {
+    constructor(filePath, options, project) {
+        super(filePath, options, project);
+        if (!options || !filePath) {
             throw "Incorrect options given to SourceFile constructor";
         }
-        this.parserMgr = options.parserManager;
+        this.filePath = filePath;
         this.type = "line";
+
+        let parserClasses;
+        let extension = path.extname(this.filePath);
+        if (extension) {
+            // remove the dot
+            extension = extension.substring(1);
+            const pm = project.getParserManager();
+            this.parserClasses = pm.get(extension);
+        }
     }
 
     /**
@@ -66,11 +74,11 @@ class SourceFile extends DirItem {
      * @param {Array.<Parser>} parsers parsers for the current source file
      * @returns {Object} the parsed representation of this file
      */
-    parse(parsers) {
+    parse() {
         if (!this.filePath) return;
-        if (parsers && parsers.length) {
+        if (this.parserClasses && this.parserClasses.length) {
             const ts = new TranslationSet();
-            for (const parser of parsers) {
+            for (const parser of this.parserClasses) {
                 const p = new parser({
                     filePath: this.filePath
                 });

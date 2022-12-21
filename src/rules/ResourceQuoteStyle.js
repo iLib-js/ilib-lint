@@ -34,6 +34,10 @@ class ResourceQuoteStyle extends Rule {
         this.name = "resource-quote-style";
         this.description = "Ensure that the proper quote characters are used in translated resources";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
+        if (options && options.param === "localeOnly") {
+            // only localized quotes are allowed in the target string
+            this.localeOnly = true;
+        }
     }
 
     getRuleType() {
@@ -76,8 +80,10 @@ class ResourceQuoteStyle extends Rule {
         const srcQuotesNative = new RegExp(`((^|\\W)[${srcQuoteStart}${srcAltQuoteStart}]\\p{Letter}|\\p{Letter}[${srcQuoteEnd}${srcAltQuoteEnd}](\\W|$))`, "gu");
 
         // if the source contains native quotes, then the target should also have native quotes
-        const tarQuotesAll = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}'"]\\p{Letter}|\\p{Letter}[${tarQuoteEnd}${tarAltQuoteEnd}'"](\\W|$))`, "gu");
         const tarQuotesNative = new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}]\\p{Letter}|\\p{Letter}[${tarQuoteEnd}${tarAltQuoteEnd}](\\W|$))`, "gu");
+        const tarQuotesAll = this.localeOnly ?
+            tarQuotesNative :
+            new RegExp(`((^|\\W)[${tarQuoteStart}${tarAltQuoteStart}'"]\\p{Letter}|\\p{Letter}[${tarQuoteEnd}${tarAltQuoteEnd}'"](\\W|$))`, "gu");
 
         const nonQuoteChars = `([${
             quoteChars.
@@ -101,7 +107,7 @@ class ResourceQuoteStyle extends Rule {
                 (src.match(srcQuotesNative) && !tar.match(tarQuotesNative))) {
                 const matches = re.exec(tar);
                 let value = {
-                    severity: "warning",
+                    severity: _this.localeOnly ? "error" : "warning",
                     id: resource.getKey(),
                     source: src,
                     rule: _this,

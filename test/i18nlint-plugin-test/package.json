@@ -10,10 +10,11 @@
     },
     "description": "mock i18nlint plugin package used for testing the plugin functionality",
     "files": [
-        "src"
+        "src",
+        "package.json"
     ],
     "dependencies": {
-        "i18nlint-common": "^1.0.0",
+        "i18nlint-common": "^1.1.0",
         "ilib-locale": "^1.1.1",
         "ilib-tools-common": "^1.2.0",
         "json5": "^2.2.1"

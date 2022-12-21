@@ -32,11 +32,6 @@ class TestPlugin extends Plugin {
         //console.log("TestPlugin.init() called");
     }
 
-    getType() {
-        //console.log("TestPlugin.getType() called");
-        return "resource";
-    }
-
     getExtensions() {
         //console.log("TestPlugin.getExtensions() called");
         return [ "xyz" ];
@@ -44,7 +39,7 @@ class TestPlugin extends Plugin {
 
     getRules() {
         //console.log("TestPlugin.getRules() called");
-        return [ new TestRule() ];
+        return [ TestRule ];
     }
 
     getParsers() {
@@ -54,7 +49,7 @@ class TestPlugin extends Plugin {
 
     getFormatters() {
         //console.log("TestPlugin.getFormatters() called");
-        return [ new TestFormatter() ];
+        return [ TestFormatter ];
     }
 
 }

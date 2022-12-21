@@ -162,24 +162,6 @@ const pluginMgr = new PluginManager({
     rulesData: config.rules
 });
 
-if (config.plugins) {
-    await pluginMgr.load(config.plugins);
-}
-
-let files = [];
-if (paths.length < 1) {
-	files = [new Project({
-	    filePath: "."
-	})];
-} else {
-	paths.forEach(pathName => {
-	    files = files.concat(walk(pathName, {
-	        quiet: options.opt.quiet,
-	        config
-	    }));
-	});
-}
-
 const fm = pluginMgr.getFormatterManager();
 const fmt = fm.get(options.opt.formatter);
 if (!fmt) {
@@ -187,37 +169,35 @@ if (!fmt) {
     process.exit(3);
 }
 
+if (config.plugins) {
+    await pluginMgr.load(config.plugins);
+}
+
+const rootProject = new Project(".", {
+    pluginManager: pluginMgr
+}, config);
+
+paths.forEach(pathName => {
+    walk(pathName, rootProject);
+});
+
 // main loop
 let exitValue = 0;
-const pm = pluginMgr.getParserManager();
 const ruleset = pluginMgr.getRuleSet();
 
-files.forEach(file => {
-    logger.trace(`Examining ${file.filePath}`);
+const issues = rootProject.findIssues(ruleset, options.opt.locales);
 
-    let parserClasses;
-
-    let extension = path.extname(file.getFilePath());
-    if (extension) {
-        // remove the dot
-        extension = extension.substring(1);
-        parserClasses = pm.get(extension);
-    }
-
-    file.parse(parserClasses);
-    const issues = file.findIssues(ruleset, options.opt.locales);
-    issues.forEach(issue => {
-        const str = fmt.format(issue);
-        if (str) {
-            if (issue.severity === "error") {
-                logger.error(str);
-                exitValue = 2;
-            } else if (!options.opt.errorsOnly) {
-                logger.warn(str);
-                exitValue = Math.max(exitValue, 1);
-            }
+issues.forEach(issue => {
+    const str = fmt.format(issue);
+    if (str) {
+        if (issue.severity === "error") {
+            logger.error(str);
+            exitValue = 2;
+        } else if (!options.opt.errorsOnly) {
+            logger.warn(str);
+            exitValue = Math.max(exitValue, 1);
         }
-    });
+    }
 });
 
 process.exit(exitValue);
