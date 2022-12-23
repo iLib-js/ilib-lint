@@ -27,6 +27,7 @@ import json5 from 'json5';
 import log4js from 'log4js';
 
 import PluginManager from './PluginManager.js';
+import Project from './Project.js';
 import walk from './walk.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));

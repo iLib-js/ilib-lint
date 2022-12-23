@@ -107,7 +107,7 @@ class SourceFile extends DirItem {
      * @returns {Array.<Result>} a list of natch results
      */
     findIssues(ruleset, locales) {
-        let issues = [], rules;
+        let issues = [], names;
         const detectedLocale = this.getLocaleFromPath();
 
         if (detectedLocale && locales.indexOf(detectedLocale) < -1) {
@@ -115,27 +115,26 @@ class SourceFile extends DirItem {
             return issues;
         }
 
-        switch (this.type) {
-        case "line":
-            rules = ruleset.getRules("line");
-            if (rules && rules.length) {
-                for (let i = 0; i < this.lines.length; i++) {
-                    rules.forEach(rule => {
+        names = ruleset.getRules(this.type);
+        if (names && names.length) {
+            names.forEach(name => {
+                const rule = ruleset.getRule(name, {
+                    ...this.project.getOptions(),
+                    ...this.project.getSettings()
+                });
+                switch (this.type) {
+                case "line":
+                    for (let i = 0; i < this.lines.length; i++) {
                         const result = rule.match({
                             line: this.lines[i],
                             locale: detectedLocale,
                             file: this.filePath
                         });
                         if (result) issues = issues.concat(result);
-                    });
-                }
-            }
-            break;
-        case "resource":
-            rules = ruleset.getRules("resource");
-            if (rules && rules.length) {
-                this.resources.forEach(resource => {
-                    rules.forEach(rule => {
+                    }
+                    break;
+                case "resource":
+                    this.resources.forEach(resource => {
                         const result = rule.match({
                             locale: resource.getTargetLocale(),
                             resource,
@@ -143,9 +142,9 @@ class SourceFile extends DirItem {
                         });
                         if (result) issues = issues.concat(result);
                     });
-                });
-            }
-            break;
+                    break;
+                }
+            });
         }
 
         return issues;

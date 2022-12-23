@@ -60,8 +60,8 @@ class FormatterManager {
     add(formatters) {
         if (!formatters || !Array.isArray(formatters)) return;
         for (const fmt of formatters) {
-            const formatter = new fmt();
-            if (formatter && typeof(formatter) === 'object' && formatter instanceof Formatter) {
+            if (fmt && typeof(fmt) === 'function' && Object.getPrototypeOf(fmt).name === "Formatter") {
+                const formatter = new fmt();
                 this.formatterCache[formatter.getName()] = fmt;
                 logger.trace(`Added formatter ${formatter.getName()} to the formatter manager`);
             } else {

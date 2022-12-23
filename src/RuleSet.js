@@ -19,6 +19,8 @@
 
 import { Rule } from 'i18nlint-common';
 
+import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
+
 /**
  * @class Represent a set of ilib-lint rules.
  */
@@ -41,26 +43,22 @@ class RuleSet {
      */
     addRule(rule) {
         if (!rule) return;
-        if (rule instanceof Function) {
+        let name, type;
+        if (typeof(rule) === 'function' && Object.getPrototypeOf(rule).name === "Rule") {
             const r = new rule();
-            if (!(r instanceof Rule)) return;
-            const name = r.getName();
-            if (this.byname[name]) return; // already added
-            this.byname[name] = rule;
-            const type = r.getRuleType();
-            if (!this.rules[type]) {
-                this.rules[type] = [rule];
-            } else {
-                this.rules[type].push(rule);
-            }
+            name = r.getName();
+            type = r.getRuleType();
         } else if (typeof(rule) === 'object') {
-            if (!this.rules.resource) {
-                this.rules.resource = [rule];
-            } else {
-                this.rules.resource.push(rule);
-            }
-            this.byname[rule.name] = rule;
+            name = rule.name;
+            type = "resource";
         }
+
+        if (this.byname[name]) return; // already added
+        this.byname[name] = rule;
+        if (!this.rules.resource) {
+            this.rules.resource = [];
+        }
+        this.rules.resource.push(name);
     }
 
     /**
@@ -92,13 +90,15 @@ class RuleSet {
     }
 
     /**
-     * Return all the rules of the given type in this set.
+     * Return the names of all the rules of the given type in this
+     * set.
+     *
      * @param {String} type to search for
-     * @returns {Array.<Class>} the list of rule classes of
+     * @returns {Array.<String>} the list of rule names of
      * the requested type
      */
-    getRules(type) {
-        return this.rules[type] || [];
+    getRules(type, options) {
+        return this.rules[type];
     }
 
     /**

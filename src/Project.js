@@ -60,7 +60,7 @@ class Project extends DirItem {
     }
 
     getIncludes() {
-        return this.includes; 
+        return this.includes;
     }
 
     getExcludes() {
@@ -70,11 +70,11 @@ class Project extends DirItem {
     getOptions() {
         return this.options;
     }
-    
+
     getLocales() {
         return this.options.locales || this.config.locales;
     }
-    
+
     getParserManager() {
         const pluginMgr = this.options.pluginManager;
         return pluginMgr.getParserManager();
@@ -111,6 +111,12 @@ class Project extends DirItem {
         return this.files;
     }
 
+    /**
+     * Find all issues with the files located within this project and
+     * return them.
+     *
+     * @returns {Array.<Result>} a list of results
+     */
     findIssues(ruleset, locales) {
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
@@ -119,7 +125,7 @@ class Project extends DirItem {
             return file.findIssues(ruleset, locales);
         }).flat();
     }
-    
+
     clear() {
         this.files = [];
     }
