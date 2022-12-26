@@ -19,40 +19,18 @@
 
 import { Formatter } from 'i18nlint-common';
 
-const rainbowColors = [
-    91, // R
-    43, // O
-    93, // Y
-    42, // G
-    34, // B
-    35, // I
-    95, // V
-];
-
-function rainbow(str) {
-    const chars = str.split(/./g);
-    let i = -1;
-    let colors = chars.map(ch => {
-        i = (i + 1) % rainbowColors.length;
-        return `\u001B[${rainbowColors[i]}]m${ch}`;
-    });
-    colors.push("\u001B[33m");
-    return colors.join("");
-}
-
 class TestFormatter extends Formatter {
     constructor(options) {
         super(options);
         this.name = "formatter-test";
-        this.description = "A test formatter that formats results as crazy rainbow strings";
+        this.description = "A test formatter that formats results with underscores instead of spaces";
     }
 
     format(result) {
         if (!result) return;
         let output = "";
-        const startColor = (result.severity === "error" ? "\u001B[91m" : "\u001B[33m");
         output += `${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}:
-  ${startColor}${result.description}\u001B[0m\n`;
+  ${result.description}\n`;
         if (result.id) {
             output += `  Key: ${result.id}\n`;
         }
@@ -67,7 +45,7 @@ class TestFormatter extends Formatter {
         output = output.replace(/<e\d>/g, ">>");
         output = output.replace(/<\/e\d>/g, "<<");
 
-        return rainbow(output);
+        return output.replace(/ /g, "_");
     }
 }
 
