@@ -38,25 +38,29 @@ class TestParser extends Parser {
         return [ "xyz" ];
     }
 
+    parseData(data) {
+        const json = json5.parse(data);
+        this.ts = new TranslationSet();
+
+        for (let prop in json) {
+            this.ts.add(new ResourceString({
+                sourceLocale: "en-US",
+                source: prop,
+                reskey: prop,
+                target: json[prop],
+                resType: "x-xyz",
+                pathName: this.filePath
+            }));
+        }
+    }
+
     /**
      * Parse the current file into an intermediate representation.
      */
     parse() {
         // parse the xyz files as json for simplicity
         const data = fs.readFileSync(this.filePath, "utf-8");
-        const json = json5.parse(data);
-
-        this.ts = new TranslationSet();
-
-        for (let prop of json) {
-            this.ts.add(new ResourceString({
-                sourceLocale: "en-US",
-                source: json[prop],
-                reskey: prop,
-                resType: "x-xyz",
-                pathName: this.filePath
-            }));
-        }
+        this.parseData(data);
     }
 
     getResources() {

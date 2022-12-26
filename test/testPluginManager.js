@@ -109,6 +109,39 @@ export const testPluginManager = {
         });
     },
 
+    testPluginManagerGetLoadPluginParserWorks: function(test) {
+        test.expect(11);
+
+        const plgmgr = new PluginManager();
+        test.ok(plgmgr);
+
+        plgmgr.load([
+            "ilib-lint-plugin-test"
+        ]).then(result => {
+            test.ok(result);
+
+            const pm = plgmgr.getParserManager();
+            const parsers = pm.get("xyz");
+            const testParser = new parsers[0]();
+            test.ok(testParser);
+            
+            testParser.parseData(`{
+                "string1": "value1",
+                "string2": "value2",
+                "string3": "value3"
+            }`);
+            const resources = testParser.getResources();
+            test.ok(resources);
+            test.equal(resources.length, 3);
+            
+            for (let i = 0; i < 3; i++) {
+                test.equal(resources[i].getSource(), `string${i+1}`);
+                test.equal(resources[i].getTarget(), `value${i+1}`);
+            }
+            test.done();
+        });
+    },
+
     testPluginManagerGetLoadPluginRightFormatter: function(test) {
         test.expect(5);
 
