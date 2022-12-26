@@ -102,7 +102,7 @@ export const testRuleSet = {
         const rules = ruleset.getRules("resource");
         test.ok(rules);
         test.equal(rules.length, 2);
-        test.equalIgnoringOrder(rules, [rule1, rule2]);
+        test.equalIgnoringOrder(rules, ["resource-quote-style", "resource-icu-plurals"]);
 
         test.done();
     },
@@ -118,7 +118,7 @@ export const testRuleSet = {
         test.equal(ruleset.getSize(), 2);
 
         const rules = ruleset.getRules("asdf");
-        test.ok(rules);
+        test.ok(typeof(rules) !== 'undefined');
         test.equal(rules.length, 0);
 
         test.done();

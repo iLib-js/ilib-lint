@@ -131,7 +131,7 @@ export const testPluginManager = {
     },
 
     testPluginManagerGetLoadPluginRightRules: function(test) {
-        test.expect(8);
+        test.expect(9);
 
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
@@ -148,8 +148,9 @@ export const testPluginManager = {
             const rules = rs.getRules("resource");
             test.ok(rules);
             test.equal(rules.length, size + 1);
-            test.ok(rules[size] instanceof Function);
-            const rule = new rules[size]();
+            test.equal(typeof(rules[size]), 'string');
+            const rule = rs.getRule(rules[size]);
+            test.equal(Object.getPrototypeOf(rule).constructor.name, "TestRule");
             test.equal(rule.getName(), "resource-test");
 
             test.done();

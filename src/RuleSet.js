@@ -98,7 +98,7 @@ class RuleSet {
      * the requested type
      */
     getRules(type, options) {
-        return this.rules[type];
+        return this.rules[type] || [];
     }
 
     /**
