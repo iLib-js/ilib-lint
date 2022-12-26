@@ -74,7 +74,7 @@ export const testPluginManager = {
         test.ok(plgmgr);
 
         plgmgr.load([
-            "i18nlint-plugin-test"
+            "ilib-lint-plugin-test"
         ]).then(result => {
             test.ok(result);
             test.equal(result.length, 1);
@@ -92,7 +92,7 @@ export const testPluginManager = {
         test.ok(plgmgr);
 
         plgmgr.load([
-            "i18nlint-plugin-test"
+            "ilib-lint-plugin-test"
         ]).then(result => {
             test.ok(result);
 
@@ -116,7 +116,7 @@ export const testPluginManager = {
         test.ok(plgmgr);
 
         plgmgr.load([
-            "i18nlint-plugin-test"
+            "ilib-lint-plugin-test"
         ]).then(result => {
             test.ok(result);
             
@@ -140,7 +140,7 @@ export const testPluginManager = {
         const size = rs.getSize();
 
         plgmgr.load([
-            "i18nlint-plugin-test"
+            "ilib-lint-plugin-test"
         ]).then(result => {
             test.ok(result);
             test.equal(rs.getSize(), size + 1); // the plugin added 1 new one
