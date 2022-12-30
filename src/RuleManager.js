@@ -79,8 +79,15 @@ class RuleManager {
         // unknown rule?
         if (!ruleConfig) return;
 
-        const ruleClass = (typeof(ruleConfig) === 'object') ? typeMap[ruleConfig.type] : ruleConfig;
-        return new ruleClass(options);
+        if (typeof(ruleConfig) === 'object') {
+            const ruleClass = typeMap[ruleConfig.type];
+            return new ruleClass({
+                ...ruleConfig,
+                ...options
+            });
+        } else {
+            return new ruleConfig(options);
+        }
     }
 
     /**
@@ -173,6 +180,14 @@ class RuleManager {
             this.addRule(rules);
         }
     };
+
+    /**
+     * Return how many rules this manager knows about.
+     * @returns {Number} the number of rules this manager knows about.
+     */
+    size() {
+        return Object.keys(this.ruleCache).length;
+    }
 
     /**
      * for use with the unit tests
