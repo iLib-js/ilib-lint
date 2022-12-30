@@ -80,7 +80,8 @@ class SourceFile extends DirItem {
             const ts = new TranslationSet();
             for (const parser of this.parserClasses) {
                 const p = new parser({
-                    filePath: this.filePath
+                    filePath: this.filePath,
+                    settings: this.settings
                 });
                 p.parse();
                 this.type = "resource";

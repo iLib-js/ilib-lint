@@ -1,5 +1,5 @@
 /*
- * ResourceRegExpChecker.js - rule to check if URLs in the source string also
+ * ResourceMatcher.js - rule to check if URLs in the source string also
  * appear in the target string
  *
  * Copyright © 2022 JEDLSoft
@@ -35,7 +35,7 @@ function findMissing(source, target) {
  * @class Resource checker class that checks that any regular expressions
  * that matches in the source also appears in the translation.
  */
-class ResourceRegExpChecker extends Rule {
+class ResourceMatcher extends Rule {
     /**
      * Construct a new regular expression-based resource checker.
      *
@@ -55,7 +55,7 @@ class ResourceRegExpChecker extends Rule {
         super(options);
 
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
-            throw "Missing required options for the ResourceRegExpChecker constructor";
+            throw "Missing required options for the ResourceMatcher constructor";
         }
         ["name", "description", "regexps", "note", "sourceLocale"].forEach(prop => {
             this[prop] = options[prop];
@@ -175,4 +175,4 @@ class ResourceRegExpChecker extends Rule {
     return;
 }
 
-export default ResourceRegExpChecker;
+export default ResourceMatcher;

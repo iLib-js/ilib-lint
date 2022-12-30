@@ -19,8 +19,6 @@
 
 import { Rule } from 'i18nlint-common';
 
-import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
-
 /**
  * @class Represent a set of ilib-lint rules.
  */
@@ -80,12 +78,6 @@ class RuleSet {
      */
     getRule(name, options) {
         const rule = this.byname[name];
-        if (typeof(rule) === 'object') {
-            return new ResourceRegExpChecker({
-                ...rule,
-                ...options
-            });
-        }
         return rule ? new rule(options) : undefined;
     }
 

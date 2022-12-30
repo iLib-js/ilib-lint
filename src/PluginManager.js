@@ -27,7 +27,6 @@ import XliffPlugin from './plugins/XliffPlugin.js';
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
-import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
