@@ -23,11 +23,11 @@ import { regexRules } from '../src/PluginManager.js';
 
 import { Result } from 'i18nlint-common';
 
-export const testRegExpRules = {
+export const testResourceMatcher = {
     testResourceMatcher: function(test) {
         test.expect(1);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         test.done();
@@ -92,7 +92,7 @@ export const testRegExpRules = {
     testResourceURLMatch: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -115,7 +115,7 @@ export const testRegExpRules = {
     testResourceURLMatchMismatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -146,7 +146,7 @@ export const testRegExpRules = {
     testResourceURLMatchMultiple: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -169,7 +169,7 @@ export const testRegExpRules = {
     testResourceURLMatchMultipleReverseOrder: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -192,7 +192,7 @@ export const testRegExpRules = {
     testResourceURLMatchMultipleMissing: function(test) {
         test.expect(3);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -216,7 +216,7 @@ export const testRegExpRules = {
     testResourceURLNonMatch1: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -239,7 +239,7 @@ export const testRegExpRules = {
     testResourceURLNonMatch2: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -262,7 +262,7 @@ export const testRegExpRules = {
     testResourceNamedParamsMatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -293,7 +293,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNoMatch: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -316,7 +316,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNoMatchCapitals: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -339,7 +339,7 @@ export const testRegExpRules = {
     testResourceNamedParamsMatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -370,7 +370,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNotInPlurals: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -395,7 +395,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNotInPluralsButOutsideOfThem: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({

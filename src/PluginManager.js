@@ -22,6 +22,7 @@ import log4js from 'log4js';
 
 import FormatterManager from './FormatterManager.js';
 import ParserManager from './ParserManager.js';
+import RuleManager from './RuleManager.js';
 import RuleSet from './RuleSet.js';
 import XliffPlugin from './plugins/XliffPlugin.js';
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
@@ -31,20 +32,22 @@ import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
-export const regexRules = {
-    url: {
+export const regexRules = [
+    {
+        type: "resource-matcher",
         name: "resource-url-match",
         description: "Ensure that URLs that appear in the source string are also used in the translated string",
         note: "URL '{matchString}' from the source string does not appear in the target string",
         regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
     },
-    namedParams: {
+    {
+        type: "resource-matcher",
         name: "resource-named-params",
         description: "Ensure that named parameters that appear in the source string are also used in the translated string",
         note: "The named parameter '{matchString}' from the source string does not appear in the target string",
         regexps: [ "\\{\\w+\\}" ]
     }
-};
+];
 
 /**
  * @private
@@ -125,18 +128,22 @@ class PluginManager {
     constructor(options) {
         this.parserMgr = new ParserManager();
         this.formatterMgr = new FormatterManager();
+        this.ruleMgr = new RuleManager();
 
         // default rules
         this.rules = new RuleSet([
             ResourceICUPlurals,
             ResourceQuoteStyle,
             ResourceUniqueKeys,
-            regexRules.url,
-            regexRules.namedParams
+            regexRules[0],
+            regexRules[1]
         ]);
+        
+        this.ruleMgr.add(regexRules);
 
         if (options && options.rulesData) {
             this.rules.add(options.rulesData);
+            this.ruleMgr.add(options.rulesData);
         }
 
         // install the default formatter
@@ -168,6 +175,18 @@ class PluginManager {
      */
     getFormatterManager() {
         return this.formatterMgr;
+    }
+
+    /**
+     * Return the rule manager for this plugin manager. This
+     * manages both the built-in rules, and the rules
+     * loaded from the plugins.
+     *
+     * @returns {RuleManager} the rule manager for this
+     * plugin manager.
+     */
+    getRuleManager() {
+        return this.ruleMgr;
     }
 
     /**

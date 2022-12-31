@@ -42,23 +42,44 @@ of your project and run it with no parameters and no configuration file. When
 there are no parameters and no configuration file, it will do all default
 behaviours, which for some projects is sufficient.
 
+The default behaviour is to recursively search the current directory for all
+xliff files, and then apply all of the built-in resource rules to those files
+and report human-readable results to the standard output.
+
+The ilib-lint tool also supports the following features above and beyond the defaults
+above:
+
+- the tool can load plugins to extend its functionality. For example, if your
+  application is written in python, you can load a python plugin to allow it to
+  parse python source files and find problems in those.
+    - plugins can define new parsers for different file types, new
+      formatters for different output types, and new rules for ways to
+      check the contents of those file types
+- the tool can load configuration files that define a project, and subdirectories
+  may contain other nested projects. (For example, if you have a git submodule
+  that defines its own project configuration.)
+- the tool can apply rules with different locales and data types
+
+The sections below give the details of these features and configurations.
+
+## Default Behaviours
+
 The default behaviours are:
 
-* Start in the current directory and recursively find all files
-  and subdirectories underneath there
-* All built-in rules will be added to the current rule set
-* There are a few built-in
-  types of files handled and default rulesets that apply to them.
-* For each rule in a ruleset, it will use the default settings for that rule
+* Start in the current directory and recursively find all xliff files
+  underneath there. The xliff datatype is built-in to the linter.
+* All built-in rules will be added to the current rule set, and it will
+  instantiate each rule with its default settings.
 * It will use the default set of locales (the top 20 locales on the internet
   by traffic) with "en-US" being the source locale
-* It will apply each rule in the current ruleset that applies to
-  each type of file. If a file type does not have any rulesets that apply to it,
+* For each file found, it applies each rule in the ruleset. 
+  If a file type does not have any rulesets that apply to it,
   it will be skipped.
-    * the locale of a file will be gleaned from its path name if possible
+    * the locale of a file can sometimes be gleaned from its path name
     * for some types of resource files, the locale is documented in
-      the file itself. (eg. xliff files)
+      the file itself. (eg. xliff or other resource files)
 * Output will be printed on the standard output in human readable form
+
 ```
 $ cd myproject
 $ ilib-lint
@@ -106,20 +127,42 @@ warnings can be found or if no issues are found.
 
 ## Configuration
 
-If the named paths contain a file called `ilib-lint-config.json`, it
-will be read and processed to configure the ilib-lint tool for that path. The
-`ilib-lint-config.json` file can have any of the following properties:
+The paths to process are given on the command-line. If no path is specified
+on the command-line, the tool will default to the current directory.
+If the named paths contain a file called `ilib-lint-config.json`, that
+file will be read and processed to configure a project within the ilib-lint tool
+with that path as the root directory for the project.
+
+This json config file will be parsed as [JSON5](https://json5.org), which means
+it can contain comments and other nice features that make it easier for humans
+to read and write. 
+
+The `ilib-lint-config.json` file can have any of the following properties:
 
 * name (String) - name of this project
 * locales (Array of strings) - that name the default set of locales for the
   whole project if they are not configured by each path
 * sourceLocale (String) - name the locale for source strings in this app.
   Default if not specified is "en-US".
-* rules (Object) - an array of regular-expression-based resource rules to use
-  with this project. For every resource loaded from a resource file, these
-  rules make sure that when the regular expression matches in the source, it also
-  matches in the target string. Each item in the rules array should be an
+* rules (Object) - an array of declarative regular-expression-based rules to use
+  with this project. Resource rules are applied to resources loaded from a
+  resource file. Source file rules are applied to regular programming source
+  files. Each item in the rules array should be an
   object that contains the following properties:
+    * type (String) - the type of this rule. This may be any of the
+      following:
+        * resource-matcher - check resources in a resource file. The
+          regular expressions that match in the
+          source strings must also match in the target string
+        * resource-source - check resources in a resource file. If
+          the regular expressions match in the source string of a
+          resource, a result will be generated
+        * resource-target - check resources in a resource file. If
+          the regular expressions match in the target string of a
+          resource, a result will be generated
+        * sourcefile - Check the text in a source file, such as a
+          java file or a python file. Regular expressions that match
+          in the source file will generate results
     * name (String) - a unique dash-separated name of this rule. 
       eg. "resource-url-match",
     * description (String) - a description of what this rule is trying
@@ -134,13 +177,16 @@ will be read and processed to configure the ilib-lint tool for that path. The
       in the source and target strings. If any one of those expressions
       matches in the source, but not the target, the rule will create
       a Result that will be formatted for the user.
-* paths (Object) - a set of configurations for various paths that are given
-  by a [micromatch](https://github.com/micromatch/micromatch) glob expression.
-  Each glob expression property should be an object that contains settings
-  that apply to files that match the glob expression. The settings can be
-  be any of:
+* filetypes (Object) - a set of configurations for various file types. The file types
+  are given names such as "python-source-files" so that they can be referred to in the
+  paths object below. Properties in the filetypes object are the names of the filetype,
+  and the values are an object that gives the settings for that file type. The value
+  object can contain any of the following properties:
+    * template (string - required) - a template that can be used to parse the
+      file name for the locale of that file.
     * locales (Array of strings) - a set of locales that override
-      the global locales list
+      the global locales list. If not specified, the file type uses the
+      global set of locales.
     * rules - (Object) names a set of rules to use with this set of files.
       Each rule name maps either to a boolean (true means turn it
       on, and false means off) or to a string or object that gives
@@ -155,8 +201,14 @@ will be read and processed to configure the ilib-lint tool for that path. The
       individual rules in that rule set can still be overridden using
       the "rules" property above. Rulesets are just a short-hand
       to turn on many of them at once.
-    * template (string) - a template that can be used to parse the
-      file name for the locale of that file.
+* paths (Object) - this maps sets of files to file types. The properties in this
+  object are [micromatch](https://github.com/micromatch/micromatch) glob expressions
+  that select a subset of files within the current project. The glob expressions
+  can only be relative to the root of the project.
+  The value of each glob expression property should be either a string that names
+  a file type, or the definition of the file type directly. If you give the file
+  type directly, it cannot be shared, so it is usually a good idea to define the
+  file type in the "filetypes" property.
 
 The `ilib-lint-config.json` file can be written in [JSON5](https://github.com/json5/json5)
 syntax, which means it can contain comments and other enhancements.
@@ -179,8 +231,8 @@ Here is an example of a configuration file:
         ".git/**",
         "test/**"
     },
-    "paths": {
-        "src/**/*.json": {
+    "filetypes": {
+        "json": {
             // override the general locales
             "locales": [
                 "en-US",
@@ -191,8 +243,11 @@ Here is an example of a configuration file:
                 "javascript-ilib"
             ]
         },
-        // check the translations from the translation vendor before
-        // we use them in our project
+    },
+    "paths": {
+        // use the "json" file type defined above
+        "src/**/*.json": "json",
+        // define a file type on the fly
         "**/*.xliff": {
             "rules": {
                 "formatjs-plural-syntax": true,

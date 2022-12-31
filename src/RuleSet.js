@@ -1,5 +1,5 @@
 /*
- * RuleSet.js - Represent a set of ilib-lint rules
+ * RuleSet.js - Represent a set of ilib-lint rule instances
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -20,7 +20,12 @@
 import { Rule } from 'i18nlint-common';
 
 /**
- * @class Represent a set of ilib-lint rules.
+ * @class Represent a set of ilib-lint rules. The rule manager keeps
+ * track of all the rules that are known to in this run of the linter,
+ * and a RuleSet is a set of instances of some or all of those rules.
+ * Instances are created with options so two instances of the same
+ * rule may behave slightly differently and would apply to different
+ * data types.
  */
 class RuleSet {
     /**
