@@ -1,7 +1,7 @@
 /*
  * index.js - main program of ilib-lint
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ if (options.args.length < 1) {
 }
 */
 
-if (!options.opt.quiet) logger.info("ilib-lint - Copyright (c) 2022 JEDLsoft, All rights reserved.");
+if (!options.opt.quiet) logger.info("ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.");
 
 let paths = options.args;
 if (paths.length === 0) {

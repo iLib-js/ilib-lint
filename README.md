@@ -4,15 +4,25 @@ A static analysis linter for many types of source files that looks for i18n prob
 
 This i18n linter differs from other static linters in the following ways:
 
-* it can recognize the locale of files from the path name of files or from within
-  the file itself, and applies locale-sensitive rules. For example, you can apply
-  a rule that checks that the translations in a resource file of a plural resource
-  contain the correct set of plural categories for the target language.
-* it can apply different rulesets to different sets of files. This is useful for
+* It can apply different rulesets to different sets of files. This is useful for
   a number of reasons:
     * when linting a mono-repo that has different subprojects inside of it
       and each subproject needs different rules applied to its files
-    * when different file types need different rulesets
+    * when different sets of files need different rulesets, even within the same file type
+* It can handle any file type
+    * most linters are specific to a programming language and its related files. This linter
+      can read any type of file and apply the appropriate set of rules.
+* Rules can be locale-sensitive
+    * most linters apply the same rules blindly to all files, regardless of the locale
+    * for resource files, it can apply the appropriate locale for each resource individually
+* It can recognize the locale of files from the path name of files
+    * this allows it to apply the locale-sensitive rules automatically. For example, you can apply
+      a rule that checks that the translations in a resource file of a plural resource
+      contain the correct set of plural categories for the target language.
+* It can load plugins
+    * Parsers - you can add parsers for new programming languages or resource file types
+    * Formatters - you can make the output look exactly the way you want
+    * Rules - you can add new rules declaratively or programmatically
 
 ## Installation
 
@@ -38,52 +48,14 @@ is written with ESM modules.
 ## Quick Start
 
 Running ilib-lint is easy. Just change your directory to the top level directory
-of your project and run it with no parameters and no configuration file. When
-there are no parameters and no configuration file, it will do all default
-behaviours, which for some projects is sufficient.
-
-The default behaviour is to recursively search the current directory for all
-xliff files, and then apply all of the built-in resource rules to those files
-and report human-readable results to the standard output.
-
-The ilib-lint tool also supports the following features above and beyond the defaults
-above:
-
-- the tool can load plugins to extend its functionality. For example, if your
-  application is written in python, you can load a python plugin to allow it to
-  parse python source files and find problems in those.
-    - plugins can define new parsers for different file types, new
-      formatters for different output types, and new rules for ways to
-      check the contents of those file types
-- the tool can load configuration files that define a project, and subdirectories
-  may contain other nested projects. (For example, if you have a git submodule
-  that defines its own project configuration.)
-- the tool can apply rules with different locales and data types
-
-The sections below give the details of these features and configurations.
-
-## Default Behaviours
-
-The default behaviours are:
-
-* Start in the current directory and recursively find all xliff files
-  underneath there. The xliff datatype is built-in to the linter.
-* All built-in rules will be added to the current rule set, and it will
-  instantiate each rule with its default settings.
-* It will use the default set of locales (the top 20 locales on the internet
-  by traffic) with "en-US" being the source locale
-* For each file found, it applies each rule in the ruleset. 
-  If a file type does not have any rulesets that apply to it,
-  it will be skipped.
-    * the locale of a file can sometimes be gleaned from its path name
-    * for some types of resource files, the locale is documented in
-      the file itself. (eg. xliff or other resource files)
-* Output will be printed on the standard output in human readable form
+of your project and run it with no parameters and no configuration file. It will
+do all default behaviours and apply the default rules, which for some projects
+is sufficient:
 
 ```
 $ cd myproject
 $ ilib-lint
-ilib-lint - Copyright (c) 2022 JEDLsoft, All rights reserved.
+ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.
 WARN: i18n/ru_RU.properties(45): translation should use the appropriate
 quote style
   myproject.dialog1.body.text = Нажмите кнопку "Справка", чтобы получить
@@ -92,6 +64,29 @@ quote style
 be «text»
 $
 ```
+
+## Default Behaviours
+
+The default behaviour is to recursively search the current directory for all
+xliff files, and then apply all of the built-in resource rules to those files
+and report human-readable results to the standard output.
+
+The default behaviours are:
+
+* Start in the current directory and recursively find all xliff files
+  underneath there. The xliff file type is built-in to the linter.
+* All built-in rules will be added to the current rule set, and it will
+  instantiate each rule with its default settings.
+* It will use the default set of locales (the top 20 locales on the internet
+  by traffic) with "en-US" being the source locale
+* For each file found, it applies each rule in the ruleset.
+  If a file type does not have any rulesets that apply to it,
+  it will be skipped.
+    * the locale of a file can sometimes be gleaned from its path name
+    * for some types of resource files, the locale is documented in
+      the file itself. (eg. xliff or other resource files)
+* Output will be printed on the standard output in human readable form
+
 
 ## Command-line Parameters
 
@@ -104,8 +99,8 @@ ilib-lint accepts the following command-line parameters:
   with status 2 if there are errors, and status 0 if there are warnings. This
   flag allows you to squelch the warnings and only fail a script if there are
   actual errors.
-* locales - Locales you want your app to support. Value is a comma-separated
-  list of BCP-47 style locale tags.
+* locales - Locales you want your app to support globally. Value is a comma-separated
+  list of BCP-47 style locale tags. File types can override this list.
   Default: the top 20 locales on the internet by traffic.
 * sourceLocale - locale of the source files or the source locale for resource
   files. Default: "en-US"
@@ -122,33 +117,33 @@ exit status:
 * 1 - warnings found
 * 2 - errors found
 
-When the `--errorsOnly` flag is given, the program will return 0 if only
-warnings can be found or if no issues are found.
+When the `--errorsOnly` flag is given, the program will return 0 unless at least
+one error was found.
 
 ## Configuration
 
 The paths to process are given on the command-line. If no path is specified
 on the command-line, the tool will default to the current directory.
-If the named paths contain a file called `ilib-lint-config.json`, that
+If any named path contains a file called `ilib-lint-config.json`, that
 file will be read and processed to configure a project within the ilib-lint tool
 with that path as the root directory for the project.
 
 This json config file will be parsed as [JSON5](https://json5.org), which means
 it can contain comments and other nice features that make it easier for humans
-to read and write. 
+to read and write.
 
 The `ilib-lint-config.json` file can have any of the following properties:
 
-* name (String) - name of this project
+* name (String, required) - name of this project
 * locales (Array of strings) - that name the default set of locales for the
   whole project if they are not configured by each path
 * sourceLocale (String) - name the locale for source strings in this app.
   Default if not specified is "en-US".
-* rules (Object) - an array of declarative regular-expression-based rules to use
+* rules (Array of Object) - an array of declarative regular-expression-based rules to use
   with this project. Resource rules are applied to resources loaded from a
   resource file. Source file rules are applied to regular programming source
   files. Each item in the rules array should be an
-  object that contains the following properties:
+  object that contains the following properties, all of which are required:
     * type (String) - the type of this rule. This may be any of the
       following:
         * resource-matcher - check resources in a resource file. The
@@ -163,13 +158,13 @@ The `ilib-lint-config.json` file can have any of the following properties:
         * sourcefile - Check the text in a source file, such as a
           java file or a python file. Regular expressions that match
           in the source file will generate results
-    * name (String) - a unique dash-separated name of this rule. 
+    * name (String) - a unique dash-separated name of this rule.
       eg. "resource-url-match",
     * description (String) - a description of what this rule is trying
       to do. eg. "Ensure that URLs that appear in the source string are
       also used in the translated string"
     * note (String) - string to use when the regular expression check fails.
-      eg. "URL '{matchString}' from the source string does not appear in 
+      eg. "URL '{matchString}' from the source string does not appear in
       the target string"
       Note that you can use `{matchString}` to show the user the string
       that the regular expression matched in the source but not in the target.
@@ -177,21 +172,29 @@ The `ilib-lint-config.json` file can have any of the following properties:
       in the source and target strings. If any one of those expressions
       matches in the source, but not the target, the rule will create
       a Result that will be formatted for the user.
+* rulesets (Object) - configured named sets of rules. Some rules can be shared between
+  file types and others are more specific to the file type. As such, it is sometimes
+  convenient to to name a set of rules and refer to the whole set by its name instead
+  of listing them all out. The properties of the rulesets object are the names of the
+  sets, and the values is also a Object that configures each rule. The rules are turned
+  on with a value "true" or with a rule-specific option. They are turned off with
+  a falsy value.
 * filetypes (Object) - a set of configurations for various file types. The file types
-  are given names such as "python-source-files" so that they can be referred to in the
-  paths object below. Properties in the filetypes object are the names of the filetype,
+  are given dash-separated names such as "python-source-files" so that they can be referred
+  to in the
+  paths object below. Properties in the filetypes object are the name of the file type,
   and the values are an object that gives the settings for that file type. The value
   object can contain any of the following properties:
-    * template (string - required) - a template that can be used to parse the
+    * template (String, required) - a template that can be used to parse the
       file name for the locale of that file.
-    * locales (Array of strings) - a set of locales that override
+    * locales (Array of String) - a set of locales that override
       the global locales list. If not specified, the file type uses the
       global set of locales.
     * rules - (Object) names a set of rules to use with this set of files.
       Each rule name maps either to a boolean (true means turn it
       on, and false means off) or to a string or object that gives
       options for the rule. (Each rule can be different)
-    * rulesets (Array of strings) - list the names of rule sets to
+    * rulesets (Array of String) - list the names of rule sets to
       turn on. Rulesets are groups of rules that are typically
       bundled together for particular purpose, such as rules for a
       particular library in a particular programming languages. For
@@ -226,10 +229,32 @@ Here is an example of a configuration file:
         "ja-JP",
         "ko-KR"
     ],
+    "plugins": [
+        "react"
+    ],
     "excludes": {
         "node_modules/**",
         ".git/**",
         "test/**"
+    },
+    rules: [
+        // test that named parameters like {param} appear in both the source and target
+        {
+            "type": "resource-matcher",
+            "name": "resource-named-params",
+            "description": "Ensure that named parameters that appear in the source string are also used in the translated string",
+            "note": "The named parameter '{matchString}' from the source string does not appear in the target string",
+            "regexps": [ "\\{\\w+\\}" ]
+        }
+    ],
+    "rulesets": {
+        "react-rules": {
+            "resource-named-params": true,
+            // the "localeOnly" is an option that the quote matcher supports
+            // so this both includes the rule in the rule set and instantiates
+            // it with the "localeOnly" option
+            "resource-quote-matcher": "localeOnly"
+        }
     },
     "filetypes": {
         "json": {
@@ -238,15 +263,24 @@ Here is an example of a configuration file:
                 "en-US",
                 "de-DE",
                 "ja-JP"
-            ],
-            "rulesets": [
-                "javascript-ilib"
             ]
         },
+        "javascript": {
+            "rulesets": [
+                "react-rules"
+            ]
+        },
+        "jsx": {
+            "rulesets": [
+                "react-rules"
+            ]
+        }
     },
     "paths": {
-        // use the "json" file type defined above
+        // use the file type defined above
         "src/**/*.json": "json",
+        "src/**/*.js": "javascript",
+        "src/**/*.jsx": "jsx",
         // define a file type on the fly
         "**/*.xliff": {
             "rules": {
