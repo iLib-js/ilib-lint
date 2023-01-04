@@ -172,6 +172,13 @@ The `ilib-lint-config.json` file can have any of the following properties:
       in the source and target strings. If any one of those expressions
       matches in the source, but not the target, the rule will create
       a Result that will be formatted for the user.
+* formatters (Array of Object) - a set of declarative formatters. Each array element is
+  an object that contains the following properties:
+    * name - a unique name for this formatter
+    * description - a description of this formatter to show to users
+    * template - a template string that shows how the various fields of a Result instance should be formatted
+    * highlightStart - string to use as the highlight starting marker in the highlight string
+    * highlightEnd - string to use as the highlight ending marker in the highlight string
 * rulesets (Object) - configured named sets of rules. Some rules can be shared between
   file types and others are more specific to the file type. As such, it is sometimes
   convenient to to name a set of rules and refer to the whole set by its name instead
@@ -222,21 +229,26 @@ Here is an example of a configuration file:
 
 ```json
 {
+    // the name is reaquired and should be unique amongst all your projects
     "name": "tester",
+    // this is the global set of locales that applies unless something else overrides it
     "locales": [
         "en-US",
         "de-DE",
         "ja-JP",
         "ko-KR"
     ],
+    // list of plugins to load
     "plugins": [
         "react"
     ],
+    // default micromatch expressions to exclude from recursive dir searches
     "excludes": {
         "node_modules/**",
         ".git/**",
         "test/**"
     },
+    // declarative definitions of new rules
     rules: [
         // test that named parameters like {param} appear in both the source and target
         {
@@ -247,6 +259,16 @@ Here is an example of a configuration file:
             "regexps": [ "\\{\\w+\\}" ]
         }
     ],
+    "formatters": [
+        {
+            "name": "minimal",
+            "description": "A minimalistic formatter that only outputs the path and the highlight",
+            "template": "{pathName}\n{highlight}\n",
+            "highlightStart": ">>",
+            "highlightEnd": "<<"
+        }
+    ],
+    // named rule sets to be used with the file types
     "rulesets": {
         "react-rules": {
             "resource-named-params": true,
@@ -256,6 +278,7 @@ Here is an example of a configuration file:
             "resource-quote-matcher": "localeOnly"
         }
     },
+    // defines common settings for a particular types of file
     "filetypes": {
         "json": {
             // override the general locales
@@ -276,6 +299,7 @@ Here is an example of a configuration file:
             ]
         }
     },
+    // this maps micromatch path expressions to a file type definition
     "paths": {
         // use the file type defined above
         "src/**/*.json": "json",
@@ -312,9 +336,196 @@ The built-in rules are:
 - resource-unique-key - Ensure that the keys are unique within a locale across
   all resource files
 
+## Writing Plugins
+
+The linter tool can support plugins that provide parsers, formatters, or rules,
+or any of them at the same time.
+
+## Common Code
+
+All plugins should import and use the classes in the
+[i18nlint-common](https://github.com/ilib-js/i18nlint-common) package.
+This defines the super classes for each plugin type, as well as a number
+of utility classes and functions.
+
+### Linter Plugins
+
+Linter plugins are simple wrappers around the parser, formatter, and rule
+plugins, which allow the plugin to define multiple plugins. For example, many
+plugins define multiple related rules at the same time which check for
+different aspects of a string.
+
+The linter plugin should override and implement these three methods:
+
+- getParsers - return an array of classes that inherit from the Parser class
+- getRules - return an array of classes that inherit from the Rule class
+- getFormatters - return an array of classes that inherit from the Formatter class
+
+For rules and formatters, each array entry can be either declarative or
+programmatic. See the descriptions below about declarative and programmatic
+plugins.
+
+When returning programmatic plugins, make sure to return the actual class
+itself instead of instances of the class. The linter will need to create
+multiple instances of each class during the run of the program.
+
+### Parsers
+
+The job of the parser is to convert a source file into an intermediate representation
+that rules can easily digest. There are two standard representations that many
+rules use, but your parser and rules can use their own representation, as
+long as the parser and the rules agree on what that format is. Typically, the
+parser will produce something like an abstract syntax tree (AST) that the rules
+know how to traverse and interpret.
+
+The two standard representations are:
+
+- resources - the file is converted into a set of Resource instances
+- lines - the file in converted into a simple array of lines
+
+The resources representation is intended to represent entries in resource files
+such as xliff files, gnu po files, or java properties files. Each entry in the
+resource file is represented as an instance of one of the standard resource
+classes all defined in the
+[ilib-tools-common](https://github.com/ilib-js/ilib-tools-common)
+project:
+
+- ResourceString - the resource is a single string
+- ResourceArray - the resource is an array of strings
+- ResourcePlural - the resource is a plural string
+
+The power of a resource file is that resources can contain both a source and a
+target string, so the rules are able to check the source strings against the target
+strings. Regularly, source files only have source strings in them (if any) so
+the target translations cannot be checked.
+
+Parsers should extend the `Parser` class from the `i18nlint-common` package. The constructor
+for your class should define the following properties:
+
+- `this.name` - a unique name for this parser
+- `this.description` - a description of this type of parser to display to users
+
+It should also override the
+[parseData()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Parser.js)
+method which parses a string, and the
+[parse()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Parser.js)
+method, which loads data from the file and then parses it.
+
+You can see an example of a parser plugin by looking at the gnu PO file parser at
+[ilib-lint-python-gnu](https://github.com/ilib-js/ilib-lint-python-gnu/blob/main/src/POParser.js).
+That parser interprets a .po file as a resource file and returns a set of
+Resource instances.
+
+### Rules
+
+Rules interpret the intermediate representation of a file produced by a Parser
+and produce a single
+[Result](https://github.com/iLib-js/i18nlint-common/blob/main/src/Result.js)
+instance, an array of Result instances, one for each problem found, or undefined
+if there are no problems found.
+
+There are two types of rules, declarative and programmatic.
+
+Declarative rules are simply a list of regular expressions with metadata. The
+linter searches for matches to those regular expressions and produces Result
+instances when found. (Or when they are not found in some cases!)
+
+These can be declared in the config file. (See the example config file above.)
+
+Each declarative rule should have the following properties:
+
+* type (String) - the type of this rule. This may be any of the
+  following:
+    * resource-matcher - check resources in a resource file. The
+      regular expressions that match in the
+      source strings must also match in the target string
+    * resource-source - check resources in a resource file. If
+      the regular expressions match in the source string of a
+      resource, a result will be generated
+    * resource-target - check resources in a resource file. If
+      the regular expressions match in the target string of a
+      resource, a result will be generated
+    * sourcefile - Check the text in a source file, such as a
+      java file or a python file. Regular expressions that match
+      in the source file will generate results
+* name (String) - a unique dash-separated name of this rule.
+  eg. "resource-url-match",
+* description (String) - a description of what this rule is trying
+  to do. eg. "Ensure that URLs that appear in the source string are
+  also used in the translated string"
+* note (String) - string to use when the regular expression check fails.
+  eg. "URL '{matchString}' from the source string does not appear in
+  the target string"
+  Note that you can use `{matchString}` to show the user the string
+  that the regular expression matched in the source but not in the target.
+* regexps (Array.<String>) - an array of regular expressions to match
+  in the source and target strings. If any one of those expressions
+  matches in the source, but not the target, the rule will create
+  a Result that will be formatted for the user.
+
+Programmatic rules are used when the requirements for the rules are more complicated
+than a simple regular expression string can handle. For example, a rule that checks
+if the target string of a resource has the correct quote style for the target
+locale first needs to look up what the correct quote style even is in
+order to apply the rule.
+
+In order to create a rule instance, create a class that extends the
+[Rule](https://github.com/ilib-js/i18nlint-common/blob/main/src/Rule.js)
+class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/] project.
+The constructor of this class should define the following properties:
+
+- `this.name` - a unique name for this rule
+- `this.description` - a description of this type of rule to display to users
+
+The rule should also override and implement the getRuleType() method and the
+[match()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Rule.js) method,
+which takes an intermediate representation as a parameter and returns either
+a single Result, an array of Result, or undefined.
+
+If you would like to see an example rule plugin, see the definition of
+the built-in ICU plural matcher rule:
+[resource-icu-plurals](https://github.com/ilib-js/i18nlint/blob/main/src/rules/ResourceICUPlurals.js)
+which checks resources to make sure that plurals in source and target strings
+have the correct syntax for ICU and formatjs.
+
+### Formatters
+
+Formatters transform a [Result object](https://github.com/iLib-js/i18nlint-common/blob/main/src/Result.js) into a format that the consumer can use. For the most part, the consumer
+is a human, so the result should be formatted in text so that the user can read
+it easily. Other times, the consumer is another program, so the result should be
+formatted for easy parsing. Formatters can formats the results in any way necessary.
+
+There are two types of formatters, declarative and programmatic.
+
+Declarative formatters are simply a template string where properties of the Result
+instances are formatted into it. These can be declared in the config file. (See the
+example config file above.)
+
+Programmatic formatters are used when the requirements for formatting are more complicated
+than a simple template string can handle. For example, a CSV formatter would have to make
+sure that fields in a CSV file are escaped properly to conform to CSV syntax, and would
+include escaping code in it.
+
+In order to create a formatter instance, create a class that extends the
+[Formatter](https://github.com/ilib-js/i18nlint-common/blob/main/src/Formatter.js)
+class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/] project.
+The constructor of this class should define the following properties:
+
+- `this.name` - a unique name for this formatter
+- `this.description` - a description of this type of formatter to display to users
+
+The formatter should also override and implement the
+[format()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Formatter.js) method,
+which takes a Result instance as a parameter and returns a formatted string.
+
+If you would like to look at an example formatter plugin, see the definition of
+the built-in default formatter
+[ansi-console-formatter](https://github.com/ilib-js/i18nlint/blob/main/src/formatters/AnsiConsoleFormatter.js)
+which formats a Result for colorful output on an ANSI console.
+
 ## License
 
-Copyright © 2022, JEDLSoft
+Copyright © 2022-2023, JEDLSoft
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
