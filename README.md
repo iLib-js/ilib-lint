@@ -176,7 +176,8 @@ The `ilib-lint-config.json` file can have any of the following properties:
   an object that contains the following properties:
     * name - a unique name for this formatter
     * description - a description of this formatter to show to users
-    * template - a template string that shows how the various fields of a Result instance should be formatted
+    * template - a template string that shows how the various fields of a Result instance should be
+      formatted, plus two extras that come from the rule: ruleName and ruleDescription
     * highlightStart - string to use as the highlight starting marker in the highlight string
     * highlightEnd - string to use as the highlight ending marker in the highlight string
 * rulesets (Object) - configured named sets of rules. Some rules can be shared between

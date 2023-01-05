@@ -22,6 +22,7 @@ import log4js from 'log4js';
 import { Formatter } from 'i18nlint-common';
 
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
+import { ConfigBasedFormatter, requiredFields } from './formatters/ConfigBasedFormatter.js';
 
 const logger = log4js.getLogger("i18nlint.FormatterManager");
 
@@ -47,28 +48,53 @@ class FormatterManager {
      * @returns {Formatter} the formatter to use
      */
     get(name, options) {
-        const FormatterClass = this.formatterCache[name];
-        return FormatterClass ? new FormatterClass(options) : undefined;
+        const formatConfig = this.formatterCache[name];
+        if (!formatConfig) return;
+
+        if (typeof(formatConfig) === 'object') {
+            return new ConfigBasedFormatter({
+                ...formatConfig,
+                ...options
+            });
+        }
+        return formatConfig ? new formatConfig(options) : undefined;
     }
 
     /**
      * Add a list of formatter classes to this factory so that other code
      * can find them.
      *
-     * @param {Array.<Class>} formatters the list of formatter classes to add
+     * @param {Array.<Class|Object>} formatters the list of formatter classes
+     * or definitions to add
      */
     add(formatters) {
         if (!formatters || !Array.isArray(formatters)) return;
         for (const fmt of formatters) {
-            if (fmt && typeof(fmt) === 'function' && Object.getPrototypeOf(fmt).name === "Formatter") {
-                const formatter = new fmt();
-                this.formatterCache[formatter.getName()] = fmt;
-                logger.trace(`Added formatter ${formatter.getName()} to the formatter manager`);
-            } else {
+            let formatter;
+            if (fmt) {
+                if (typeof(fmt) === 'function' && Object.getPrototypeOf(fmt).name === "Formatter") {
+                    formatter = new fmt();
+                    this.formatterCache[formatter.getName()] = fmt;
+                    logger.trace(`Added programmatic formatter ${formatter.getName()} to the formatter manager`);
+                } else if (typeof(fmt) === 'object') {
+                    formatter = fmt;
+                    this.formatterCache[fmt.name] = fmt;
+                    logger.trace(`Added declarative formatter ${fmt.name} to the formatter manager`);
+                }
+            }
+            if (!formatter) {
                 logger.debug(`Attempt to add a non-formatter to the formatter manager`);
                 if (typeof(formatter.getName) === 'function') logger.debug(`Name is ${formatter.getName()}`);
             }
         }
+    }
+
+    /**
+     * Return how many rules this manager knows about.
+     * @returns {Number} the number of rules this manager knows about.
+     */
+    size() {
+        return Object.keys(this.formatterCache).length;
     }
 
     // for use with the unit tests
