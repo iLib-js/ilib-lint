@@ -17,85 +17,53 @@
  * limitations under the License.
  */
 
-import { Rule } from 'i18nlint-common';
-
 /**
  * @class Represent a set of ilib-lint rules. The rule manager keeps
  * track of all the rules that are known to in this run of the linter,
- * and a RuleSet is a set of instances of some or all of those rules.
- * Instances are created with options so two instances of the same
- * rule may behave slightly differently and would apply to different
- * data types.
+ * and a RuleSet is a named set of rule names and options of some or all of
+ * those rules.
  */
 class RuleSet {
     /**
      * Construct an ilib-lint rule set.
      */
-    constructor(rules) {
+    constructor(name, rules) {
+        this.name = name;
         this.rules = {};
-        this.byname = {};
         if (rules) {
             this.add(rules);
         }
     }
 
-    /**
-     * Add a rule to this set.
-     *
-     * @param {Rule} rule the rule to add
-     */
-    addRule(rule) {
-        if (!rule) return;
-        let name, type;
-        if (typeof(rule) === 'function' && Object.getPrototypeOf(rule).name === "Rule") {
-            const r = new rule();
-            name = r.getName();
-            type = r.getRuleType();
-        } else if (typeof(rule) === 'object') {
-            name = rule.name;
-            type = "resource";
-        }
-
-        if (this.byname[name]) return; // already added
-        this.byname[name] = rule;
-        if (!this.rules.resource) {
-            this.rules.resource = [];
-        }
-        this.rules.resource.push(name);
+    getName() {
+        return this.name;
     }
 
     /**
-     * Add an array of rules.
-     *
-     * @param {Array.<Rule>} rules an array to add to this set
+     * Add rules and their optional parameters to this rule set.
+     * @param {Object} rules the rule definitions to add
      */
     add(rules) {
-        rules.forEach(rule => this.addRule(rule));
+        if (!rules || typeof(rules) !== 'object') return;
+        for (let rule in rules) {
+            // a boolean value of "false" will turn off the rule
+            // in this set if it was previously defined
+            this.rules[rule] =
+                (typeof(this.rules[rule]) !== 'undefined' &&
+                 typeof(rules[rule]) === 'boolean' &&
+                 !rules[rule]) ? undefined : rules[rule];
+        }
     }
 
     /**
-     * Return the rule with the given name.
+     * Return an object containing the names of all the rules
+     * and mapping them to optional parameters, or to the boolean
+     * value of true.
      *
-     * @param {String} name name to search for
-     * @param {Object} options options for this instance of the rule
-     * @returns {Rule|undefined} the rule with the given name or
-     * undefined if the rule is not known
+     * @returns {Object} the set of rules and optional parameters
      */
-    getRule(name, options) {
-        const rule = this.byname[name];
-        return rule ? new rule(options) : undefined;
-    }
-
-    /**
-     * Return the names of all the rules of the given type in this
-     * set.
-     *
-     * @param {String} type to search for
-     * @returns {Array.<String>} the list of rule names of
-     * the requested type
-     */
-    getRules(type, options) {
-        return this.rules[type] || [];
+    getRules() {
+        return this.rules;
     }
 
     /**
@@ -103,7 +71,7 @@ class RuleSet {
      * @returns {Number} the number of rules in this set
      */
     getSize() {
-        return Object.keys(this.byname).length;
+        return Object.keys(this.rules).length;
     }
 };
 

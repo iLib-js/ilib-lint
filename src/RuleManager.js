@@ -61,6 +61,8 @@ class RuleManager {
         this.addRule(ResourceICUPlurals);
         this.addRule(ResourceQuoteStyle);
         this.addRule(ResourceUniqueKeys);
+
+        this.rulesets = {};
     }
 
     /**
@@ -134,7 +136,7 @@ class RuleManager {
      *
      * - type - the type of the Rule required. This can be one of the declarative
      *   types. The values for declarative types are limited to the following:
-     *     - resource-matcher - Checks resources for matches. Any matches for 
+     *     - resource-matcher - Checks resources for matches. Any matches for
      *       the given regular expression the source string must also appear
      *       somewhere in the target string.
      *     - resource-source - Check resources for matches of the regular
@@ -180,6 +182,32 @@ class RuleManager {
             this.addRule(rules);
         }
     };
+
+    /**
+     * Add rule set definitions to this manager.
+     *
+     * @param {Object} sets rule set definitions to add to this manager
+     */
+    addRuleSets(sets) {
+        if (!sets || typeof(sets) !== 'object') return;
+
+        this.rulesets = {
+            ...this.rulesets,
+            ...sets
+        };
+    }
+
+    /**
+     * Return the named rule set.
+     *
+     * @param {String} name the name of this rule set
+     * @returns {RuleSet} a rule set containing those rules, or undefined
+     * if a rule set with that name is not found
+     */
+    getRuleSet(name) {
+        if (!this.rulesets[name]) return;
+        return new RuleSet(this.rulesets[name]);
+    }
 
     /**
      * Return how many rules this manager knows about.

@@ -180,13 +180,13 @@ The `ilib-lint-config.json` file can have any of the following properties:
       formatted, plus two extras that come from the rule: ruleName and ruleDescription
     * highlightStart - string to use as the highlight starting marker in the highlight string
     * highlightEnd - string to use as the highlight ending marker in the highlight string
-* rulesets (Object) - configured named sets of rules. Some rules can be shared between
+* rulesets (Object) - configure named sets of rules. Some rules can be shared between
   file types and others are more specific to the file type. As such, it is sometimes
   convenient to to name a set of rules and refer to the whole set by its name instead
   of listing them all out. The properties of the rulesets object are the names of the
-  sets, and the values is also a Object that configures each rule. The rules are turned
-  on with a value "true" or with a rule-specific option. They are turned off with
-  a falsy value.
+  sets, and the values is also a Object that configures each rule that should be
+  included in that set. The rules are turned on with a value "true" or with a
+  rule-specific option. They are turned off with a falsy value.
 * filetypes (Object) - a set of configurations for various file types. The file types
   are given dash-separated names such as "python-source-files" so that they can be referred
   to in the
@@ -198,10 +198,6 @@ The `ilib-lint-config.json` file can have any of the following properties:
     * locales (Array of String) - a set of locales that override
       the global locales list. If not specified, the file type uses the
       global set of locales.
-    * rules - (Object) names a set of rules to use with this set of files.
-      Each rule name maps either to a boolean (true means turn it
-      on, and false means off) or to a string or object that gives
-      options for the rule. (Each rule can be different)
     * rulesets (Array of String) - list the names of rule sets to
       turn on. Rulesets are groups of rules that are typically
       bundled together for particular purpose, such as rules for a
@@ -272,6 +268,7 @@ Here is an example of a configuration file:
     // named rule sets to be used with the file types
     "rulesets": {
         "react-rules": {
+            // this is the declarative rule defined above
             "resource-named-params": true,
             // the "localeOnly" is an option that the quote matcher supports
             // so this both includes the rule in the rule set and instantiates
@@ -308,7 +305,7 @@ Here is an example of a configuration file:
         "src/**/*.jsx": "jsx",
         // define a file type on the fly
         "**/*.xliff": {
-            "rules": {
+            "ruleset": {
                 "formatjs-plural-syntax": true,
                 "formatjs-plural-categories": true,
                 "formatjs-match-substitution-params": true,
