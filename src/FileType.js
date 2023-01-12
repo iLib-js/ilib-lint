@@ -49,7 +49,7 @@ class FileType {
      *   name if the path includes it. Many file types do not
      *   include the locale in the path, and in those cases,
      *   the template can be left out.
-     * - rulesets (Array of String) - a list of rule set names
+     * - ruleset (Array of String) - a list of rule set names
      *   to use with this file type
      *
      * @param {Object} options the options governing the construction
@@ -60,11 +60,26 @@ class FileType {
         if (!options || !options.name || !options.project) {
             throw "Missing required options to the FileType constructor";
         }
-        ["name", "project", "locales", "rulesets", "template"].forEach(prop => {
+        ["name", "project", "locales", "ruleset", "template"].forEach(prop => {
             if (typeof(options[prop]) !== 'undefined') {
                 this[prop] = options[prop];
             }
         });
+        
+        if (this.ruleset) {
+            if (typeof(this.ruleset) === 'string') {
+                // single string -> convert to an array with a single element
+                this.ruleset = [ this.ruleset ];
+            } else if (!Array.isArray(this.ruleset)) {
+                // rule set definition instead of a ruleset name. Save a new
+                // rule set definition in the rule manager and give it a
+                // temp name so we can refer to it
+                const ruleMgr = this.project.getRuleManager();
+                const setName = `${this.name}-unnamed-ruleset`;
+                ruleMgr.addRuleSetDefinition(setName, this.ruleset);
+                this.ruleset = [ setName ];
+            }
+        }
     }
 
     getName() {
@@ -83,8 +98,13 @@ class FileType {
         return this.template;
     }
 
+    /**
+     * Return an array of names of rule sets.
+     *
+     * @returns {Array.<String>} a list of rule set names
+     */
     getRuleSetNames() {
-        return this.rulesets;
+        return this.ruleset;
     }
 
     /**
@@ -97,7 +117,7 @@ class FileType {
     getRules() {
         const ruleMgr = this.project.getRuleManager();
         const set = new RuleSet();
-        this.rulesets.forEach(ruleSetName => {
+        this.ruleset.forEach(ruleSetName => {
             const definitions = ruleMgr.getRuleSetDefinition(ruleSetName);
             for (let ruleName in definitions) {
                 if (typeof(definitions[ruleName]) === 'boolean') {

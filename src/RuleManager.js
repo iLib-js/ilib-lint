@@ -202,6 +202,18 @@ class RuleManager {
         // this will override any existing one with the same name
         this.ruleDefs[name] = ruleDefs;
     }
+    /**
+     * Add an object full of ruleset definitions to this rule manager.
+     *
+     * @param {Object} ruleDefs an object where the properties are
+     * the rule name, and the values are the rule definitions.
+     */
+    addRuleSetDefinitions(ruleDefs) {
+        if (typeof(ruleDefs) !== 'object') return;
+        for (let name in ruleDefs) {
+            this.addRuleSetDefinition(name, ruleDefs[name]);
+        }
+    }
 
     /**
      * Return the named ruleset definition.

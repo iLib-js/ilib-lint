@@ -146,18 +146,72 @@ export const testFileType = {
         test.done();
     },
 
-    testFileTypeGetRuleSetNames: function(test) {
+    testFileTypeGetRuleSetNamesSingle: function(test) {
         test.expect(2);
 
-        const rulesets = [ "ruleset1", "ruleset2" ];
+        const ruleset = "ruleset1";
         const ft = new FileType({
             name: "test",
-            rulesets,
+            ruleset,
             project
         });
         test.ok(ft);
 
-        test.equal(ft.getRuleSetNames(), rulesets);
+        test.deepEqual(ft.getRuleSetNames(), [ "ruleset1" ]);
+
+        test.done();
+    },
+
+    testFileTypeGetRuleSetNamesMultiple: function(test) {
+        test.expect(2);
+
+        const ruleset = [ "ruleset1", "ruleset2" ];
+        const ft = new FileType({
+            name: "test",
+            ruleset,
+            project
+        });
+        test.ok(ft);
+
+        test.deepEqual(ft.getRuleSetNames(), ruleset);
+
+        test.done();
+    },
+
+    testFileTypeGetRuleSetNamesSingleArray: function(test) {
+        test.expect(2);
+
+        const ruleset = [ "ruleset1" ];
+        const ft = new FileType({
+            name: "test",
+            ruleset,
+            project
+        });
+        test.ok(ft);
+
+        test.deepEqual(ft.getRuleSetNames(), ruleset);
+
+        test.done();
+    },
+
+    testFileTypeGetRuleSetNamesUnnamed: function(test) {
+        test.expect(4);
+
+        const ruleset = {
+            "resource-icu-plurals": true,
+            "resource-quote-style": "localeOnly"
+        };
+        const ft = new FileType({
+            name: "test",
+            ruleset,
+            project
+        });
+        test.ok(ft);
+
+        const names = ft.getRuleSetNames();
+        test.ok(Array.isArray(names));
+        test.equal(names.length, 1);
+        test.equal(names[0], "test-unnamed-ruleset");
 
         test.done();
     },
@@ -165,10 +219,10 @@ export const testFileType = {
     testFileTypeGetRuleSet: function(test) {
         test.expect(5);
 
-        const rulesets = [ "asdf" ];
+        const ruleset = [ "asdf" ]; // defined at the top of this file
         const ft = new FileType({
             name: "test",
-            rulesets,
+            ruleset,
             project
         });
         test.ok(ft);

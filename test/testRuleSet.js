@@ -190,6 +190,6 @@ export const testRuleSet = {
         test.equal(rule, rule2);
 
         test.done();
-    },
+    }
 };
 

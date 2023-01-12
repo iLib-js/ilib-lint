@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
 
@@ -24,6 +25,16 @@ import DirItem from './DirItem.js';
 import FileType from './FileType.js';
 
 const logger = log4js.getLogger("i18nlint.Project");
+
+const rulesetDefinitions = {
+    "resource-check-all": {
+        "resource-icu-plurals": true,
+        "resource-quote-style": "localeOnly",
+        "resource-unique-keys": true,
+        "resource-url-match": true,
+        "resource-named-params": true
+    }
+};
 
 const xliffFileTypeDefinition = {
     name: "xliff",
@@ -76,15 +87,16 @@ class Project extends DirItem {
         if (this.config.rules) {
             ruleMgr.add(this.config.rules);
         }
-        if (this.config.rules) {
-            ruleMgr.addRuleSets(this.config.rulesets);
+        ruleMgr.addRuleSetDefinitions(rulesetDefinitions);
+        if (this.config.rulesets) {
+            ruleMgr.addRuleSetDefinitions(this.config.rulesets);
         }
         if (this.config.formatters) {
             const fmtMgr = this.pluginMgr.getFormatterManager();
             fmtMgr.add(this.config.formatters);
         }
 
-        this.fileTypes = {
+        this.filetypes = {
             "xliff": new FileType({project: this, ...xliffFileTypeDefinition}),
             "unknown": new FileType({project: this, ...unknownFileTypeDefinition})
         };
@@ -99,7 +111,25 @@ class Project extends DirItem {
         }
         if (this.config.paths) {
             this.mappings = this.config.paths;
+            for (let glob in this.mappings) {
+                if (typeof(this.mappings[glob]) === 'object') {
+                    // this is an "on-the-fly" file type
+                    this.filetypes[glob] = new FileType({
+                        name: glob,
+                        project: this,
+                        ...this.mappings[glob]
+                    });
+                }
+            }
         }
+    }
+
+    /**
+     * Return the root directory for this project.
+     * @returns {String} the path to the root directory of this project
+     */
+    getRoot() {
+        return this.root;
     }
 
     /**
@@ -135,8 +165,16 @@ class Project extends DirItem {
     }
 
     /**
+     * Return the plugin manager for this project.
+     * @returns {PluginManager} the plugin manager for this project
+     */
+    getPluginManager() {
+        return this.options.pluginManager;
+    }
+
+    /**
      * Return the parser manager for this project.
-     * @returns {Array.<String>} the parser manager for this project
+     * @returns {ParserManager} the parser manager for this project
      */
     getParserManager() {
         const pluginMgr = this.options.pluginManager;
@@ -145,7 +183,7 @@ class Project extends DirItem {
 
     /**
      * Return the rule manager for this project.
-     * @returns {Array.<String>} the rule manager for this project
+     * @returns {RuleManager} the rule manager for this project
      */
     getRuleManager() {
         const pluginMgr = this.options.pluginManager;
@@ -182,9 +220,15 @@ class Project extends DirItem {
      * the given file.
      */
     getFileTypeForPath(pathName) {
+        pathName = path.normalize(pathName);
         for (let glob in this.mappings) {
             if (mm.isMatch(pathName, glob)) {
-                const name = this.mappings[glob];
+                // if it is a string, it names the file type. If it is
+                // something else, then it is an on-the-fly file type
+                // definition
+                const name = typeof(this.mappings[glob]) === 'string' ?
+                    this.mappings[glob] :
+                    glob;
                 return this.filetypes[name] || this.filetypes.unknown;
             }
         }

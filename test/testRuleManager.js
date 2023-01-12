@@ -349,5 +349,59 @@ export const testRuleManager = {
         });
         test.done();
     },
+
+    testRuleManagerAddRuleSetDefinitionsWithParamsSize: function(test) {
+        test.expect(3);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+        const ruleDefs = {
+            "foo": {
+                "resource-mock-programmatic": {
+                    "style": "funky"
+                },
+                "resource-mock-declarative": true
+            },
+            "bar": {
+                "resource-icu-plurals": true,
+                "resource-unique-keys": true
+            }
+        };
+        test.equal(mgr.sizeRuleSetDefinitions(), 0);
+        mgr.addRuleSetDefinitions(ruleDefs);
+        test.equal(mgr.sizeRuleSetDefinitions(), 2);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionsWithParamsSize: function(test) {
+        test.expect(2);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+        const ruleDefs = {
+            "foo": {
+                "resource-mock-programmatic": {
+                    "style": "funky"
+                },
+                "resource-mock-declarative": true
+            },
+            "bar": {
+                "resource-icu-plurals": true,
+                "resource-unique-keys": true
+            }
+        };
+        mgr.addRuleSetDefinitions(ruleDefs);
+
+        const rules = mgr.getRuleSetDefinition("foo");
+        const expected = {
+            "resource-mock-programmatic": {
+                "style": "funky"
+            },
+            "resource-mock-declarative": true
+        };
+        test.deepEqual(rules, expected);
+        test.done();
+    },
 };
 

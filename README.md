@@ -198,24 +198,21 @@ The `ilib-lint-config.json` file can have any of the following properties:
     * locales (Array of String) - a set of locales that override
       the global locales list. If not specified, the file type uses the
       global set of locales.
-    * rulesets (Array of String) - list the names of rule sets to
-      turn on. Rulesets are groups of rules that are typically
-      bundled together for particular purpose, such as rules for a
-      particular library in a particular programming languages. For
-      example, you might have a "android-kotlin" ruleset that turns
-      on a number of rules that are typical for checking Android
-      apps written in Kotlin. If a ruleset is given, the
-      individual rules in that rule set can still be overridden using
-      the "rules" property above. Rulesets are just a short-hand
-      to turn on many of them at once.
+    * ruleset (String, Array of String, or Object) - name the rule set or
+      list of rule sets to use with files of this type if the value is
+      a string or an array of strings. When the value is a list of strings,
+      the rules are a superset of all of the rules in the named rule sets.
+      If the value is an object, then it is considered to be an on-the-fly
+      unnamed rule set defined directly.
 * paths (Object) - this maps sets of files to file types. The properties in this
   object are [micromatch](https://github.com/micromatch/micromatch) glob expressions
   that select a subset of files within the current project. The glob expressions
   can only be relative to the root of the project.
   The value of each glob expression property should be either a string that names
-  a file type, or the definition of the file type directly. If you give the file
-  type directly, it cannot be shared, so it is usually a good idea to define the
-  file type in the "filetypes" property.
+  a file type for files that match the glob expression, or an on-the-fly unnamed
+  definition of the file type. If you specify the file type directly, it cannot be
+  shared with other mappings, so it is usually a good idea to define a named file type
+  in the "filetypes" property first.
 
 The `ilib-lint-config.json` file can be written in [JSON5](https://github.com/json5/json5)
 syntax, which means it can contain comments and other enhancements.
@@ -240,13 +237,13 @@ Here is an example of a configuration file:
         "react"
     ],
     // default micromatch expressions to exclude from recursive dir searches
-    "excludes": {
+    "excludes": [
         "node_modules/**",
         ".git/**",
         "test/**"
-    },
+    ],
     // declarative definitions of new rules
-    rules: [
+    "rules": [
         // test that named parameters like {param} appear in both the source and target
         {
             "type": "resource-matcher",

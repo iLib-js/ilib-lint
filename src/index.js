@@ -122,16 +122,14 @@ const defaultConfig = {
     "rulesets": {
         "resource-rules": {
             "resource-icu-plurals": true,
-            "resource-quote-style": true,
+            "resource-quote-style": "localeOnly",
             "resource-url-match": true,
-            "resource-named-params": "localeOnly"
+            "resource-named-params": true
         }
     },
     "fileTypes": {
         "xliff": {
-            "rulesets": [
-                "resource-rules"
-            ]
+            "rulesets": ["resource-rules"]
         }
     },
     "paths": {
