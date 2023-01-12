@@ -1,7 +1,7 @@
 /*
  * testRuleSet.js - test the built-in rules
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,72 @@ export const testRuleSet = {
         test.equal(rules.length, 0);
 
         test.done();
-    }
+    },
+
+    testRuleSetAddRuleSize: function(test) {
+        test.expect(3);
+
+        const ruleset = new RuleSet();
+        test.ok(ruleset);
+        test.equal(ruleset.getSize(), 0);
+
+        const rule1 = new ResourceQuoteStyle();
+
+        ruleset.addRule(rule1);
+        test.equal(ruleset.getSize(), 1);
+
+        test.done();
+    },
+
+    testRuleSetAddRuleContent: function(test) {
+        test.expect(2);
+
+        const ruleset = new RuleSet();
+        test.ok(ruleset);
+
+        const rule1 = new ResourceQuoteStyle();
+
+        ruleset.addRule(rule1);
+
+        let rule = ruleset.getRule("resource-quote-style");
+        test.equal(rule, rule1);
+
+        test.done();
+    },
+
+    testRuleSetAddSize: function(test) {
+        test.expect(3);
+
+        const ruleset = new RuleSet();
+        test.ok(ruleset);
+        test.equal(ruleset.getSize(), 0);
+
+        const rule1 = new ResourceQuoteStyle();
+        const rule2 = new ResourceICUPlurals();
+
+        ruleset.add([rule1, rule2]);
+        test.equal(ruleset.getSize(), 2);
+
+        test.done();
+    },
+
+    testRuleSetAddContent: function(test) {
+        test.expect(3);
+
+        const ruleset = new RuleSet();
+        test.ok(ruleset);
+
+        const rule1 = new ResourceQuoteStyle();
+        const rule2 = new ResourceICUPlurals();
+
+        ruleset.add([rule1, rule2]);
+
+        let rule = ruleset.getRule("resource-quote-style");
+        test.equal(rule, rule1);
+        rule = ruleset.getRule("resource-icu-plurals");
+        test.equal(rule, rule2);
+
+        test.done();
+    },
 };
 

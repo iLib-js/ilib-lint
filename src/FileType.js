@@ -19,6 +19,8 @@
 
 import log4js from 'log4js';
 
+import RuleSet from './RuleSet.js';
+
 const logger = log4js.getLogger("i18nlint.FileType");
 
 /**
@@ -36,7 +38,7 @@ class FileType {
      *
      * - name - the name or glob spec for this file type
      * - project - the Project that this file type is a part of
-     * 
+     *
      * Additionally, the options may optionally contain the
      * following properties:
      *
@@ -89,10 +91,10 @@ class FileType {
      * Return a rule set that contains all the rules in all of the rule set
      * definitions.
      *
-     * @returns {RuleSet} a ruleset containing all of the rules in all of the
-     * definitions
+     * @returns {Array.<Rule>} a list of rule instances of all the rules in
+     * all of the ruleset definitions
      */
-    getRuleSet() {
+    getRules() {
         const ruleMgr = this.project.getRuleManager();
         const set = new RuleSet();
         this.rulesets.forEach(ruleSetName => {
@@ -100,15 +102,15 @@ class FileType {
             for (let ruleName in definitions) {
                 if (typeof(definitions[ruleName]) === 'boolean') {
                     if (definitions[ruleName]) {
-                        set.add(ruleMgr.get(ruleName));
+                        set.addRule(ruleMgr.get(ruleName));
                     } // else turn the rule off by not adding it to the set!
                 } else {
                     // only pass in the optional parameter if it is not boolean
-                    set.add(ruleMgr.get(ruleName, definitions[ruleName]));
+                    set.addRule(ruleMgr.get(ruleName, definitions[ruleName]));
                 }
             }
         });
-        return set;
+        return set.getRules();
     }
 }
 

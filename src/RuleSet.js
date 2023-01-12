@@ -1,7 +1,7 @@
 /*
  * RuleSet.js - Represent a set of ilib-lint rule instances
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@
  */
 class RuleSet {
     /**
-     * Construct an ilib-lint rule set. 
+     * Construct an ilib-lint rule set.
      *
      * @constructor
      * @param {Array.<Rule>} rules a list of rules to initialize
@@ -39,6 +39,15 @@ class RuleSet {
     }
 
     /**
+     * Add a rule instnace to this rule set.
+     * @param {Rule} rule the instance to add
+     */
+    addRule(rule) {
+        if (!rule || typeof(rule) !== 'object' || !rule.getName()) return;
+        this.rules[rule.getName()] = rule;
+    }
+
+    /**
      * Add rule instances to this rule set.
      * If a rule is added that already exists in the set, it will
      * override the previous definition. This way, the rule is
@@ -48,9 +57,7 @@ class RuleSet {
      */
     add(rules) {
         if (!rules || typeof(rules) !== 'object' || !Array.isArray(rules)) return;
-        rules.forEach(rule => {
-            this.rules[rule.getName()] = rule;
-        });
+        rules.forEach(this.addRule.bind(this));
     }
 
     /**

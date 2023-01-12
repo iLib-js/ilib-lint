@@ -215,7 +215,7 @@ class PluginManager {
     /**
      * Load the named plugin or plugins. If the names param is given
      * as a string, a single plugin is loaded. If it is an array of strings,
-     * each named plugin is loaded. This method returns Promise 
+     * each named plugin is loaded. This method returns Promise
      *
      * @param {String|Array.<String>} names name or names of plugins to load
      * @returns {Promise} a promise to load the named plugins.

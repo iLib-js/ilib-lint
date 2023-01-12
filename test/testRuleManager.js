@@ -1,7 +1,7 @@
 /*
  * testRuleManager.js - test the rule manager
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,13 +87,13 @@ export const testRuleManager = {
 
         test.done();
     },
-    
+
     testRuleManagerAddRuleRightNumbers: function(test) {
         test.expect(3);
 
         const mgr = new RuleManager();
         test.ok(mgr);
-        
+
         test.equal(mgr.size(), 3);
         mgr.add(MockRule);
         test.equal(mgr.size(), 4);
@@ -168,7 +168,7 @@ export const testRuleManager = {
 
         const mgr = new RuleManager();
         test.ok(mgr);
-        
+
         test.equal(mgr.size(), 3);
         mgr.add({
             type: "resource-matcher",
@@ -210,7 +210,7 @@ export const testRuleManager = {
 
         const mgr = new RuleManager();
         test.ok(mgr);
-        
+
         test.equal(mgr.size(), 3);
         mgr.add([
             MockRule,
@@ -346,7 +346,7 @@ export const testRuleManager = {
         const rules = mgr.getRuleSetDefinition("foo");
         test.deepEqual(rules["resource-mock-programmatic"], {
             "style": "funky"
-        }); 
+        });
         test.done();
     },
 };
