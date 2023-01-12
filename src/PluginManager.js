@@ -131,19 +131,20 @@ class PluginManager {
         this.ruleMgr = new RuleManager();
 
         // default rules
-        this.rules = new RuleSet([
+        this.ruleMgr.add([
             ResourceICUPlurals,
             ResourceQuoteStyle,
-            ResourceUniqueKeys,
-            regexRules[0],
-            regexRules[1]
+            ResourceUniqueKeys
         ]);
-        
         this.ruleMgr.add(regexRules);
 
-        if (options && options.rulesData) {
-            this.rules.add(options.rulesData);
-            this.ruleMgr.add(options.rulesData);
+        if (options) {
+            if (options.rulesData) {
+                this.ruleMgr.add(options.rulesData);
+            }
+            if (options.rulesets) {
+                this.ruleMgr.addRuleSets(options.rulesets);
+            }
         }
 
         // install the default formatter
@@ -208,7 +209,7 @@ class PluginManager {
         if (!plugin) return;
         this.parserMgr.add(plugin.getParsers());
         this.formatterMgr.add(plugin.getFormatters());
-        this.rules.add(plugin.getRules());
+        this.ruleMgr.add(plugin.getRules());
     }
 
     /**

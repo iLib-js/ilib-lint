@@ -1,7 +1,7 @@
 /*
  * walk.js - walk a directory tree
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,8 +128,10 @@ function walk(root, project) {
                 if (included) {
                     logger.trace(`${pathName} ... included`);
                     glob = glob || "**";
+                    const filetype = project.getFileTypeForPath(pathName);
                     project.add(new SourceFile(root, {
-                        settings: project.getSettings(glob)
+                        settings: project.getSettings(glob),
+                        filetype
                     }, project));
                 } else {
                     logger.trace(`${pathName} ... excluded`);

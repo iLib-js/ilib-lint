@@ -61,25 +61,20 @@ class RuleManager {
         this.addRule(ResourceICUPlurals);
         this.addRule(ResourceQuoteStyle);
         this.addRule(ResourceUniqueKeys);
-
-        this.rulesets = {};
     }
 
     /**
      * Return a rule instance for the given name.
      *
-     * @param {Object} options options to pass to the constructor of the rule.
-     * This must contain a name property.
+     * @param {String} name name of the rule to return
+     * @param {Object|undefined} options options for this instance of the
+     * rule from the config file, if any
      * @returns {Rule|undefined} an instance of the required rule or undefined if
      * the rule cannot be found
      */
-    get(options = {}) {
-        const { name } = options;
-        if (!name) return;
-
+    get(name, options) {
         const ruleConfig = this.ruleCache[name];
-        // unknown rule?
-        if (!ruleConfig) return;
+        if (!name || !ruleConfig) return;
 
         if (typeof(ruleConfig) === 'object') {
             const ruleClass = typeMap[ruleConfig.type];
@@ -184,29 +179,13 @@ class RuleManager {
     };
 
     /**
-     * Add rule set definitions to this manager.
+     * Return all the rule classes that this manager knows about.
      *
-     * @param {Object} sets rule set definitions to add to this manager
+     * @returns {Array.<Rule>} an array of rule classes that this manager
+     * knows about
      */
-    addRuleSets(sets) {
-        if (!sets || typeof(sets) !== 'object') return;
-
-        this.rulesets = {
-            ...this.rulesets,
-            ...sets
-        };
-    }
-
-    /**
-     * Return the named rule set.
-     *
-     * @param {String} name the name of this rule set
-     * @returns {RuleSet} a rule set containing those rules, or undefined
-     * if a rule set with that name is not found
-     */
-    getRuleSet(name) {
-        if (!this.rulesets[name]) return;
-        return new RuleSet(this.rulesets[name]);
+    getRules() {
+        return Object.values(this.ruleCache);
     }
 
     /**

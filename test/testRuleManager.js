@@ -26,7 +26,7 @@ class MockRule extends Rule {
         super(options);
         this.name = "resource-mock-programmatic";
         this.description = "Mock programmatic rule to test the rule manager";
-        if (options.style) {
+        if (options && options.style) {
             this.style = options.style;
         }
     }
@@ -68,9 +68,7 @@ export const testRuleManager = {
         const mgr = new RuleManager();
         test.ok(mgr);
 
-        const rule = mgr.get({
-            name: "resource-icu-plurals"
-        });
+        const rule = mgr.get("resource-icu-plurals");
 
         test.ok(rule);
         test.ok(rule instanceof Rule);
@@ -83,9 +81,7 @@ export const testRuleManager = {
 
         const mgr = new RuleManager();
         test.ok(mgr);
-        const rule = mgr.get({
-            name: "non-existent"
-        });
+        const rule = mgr.get("non-existent");
 
         test.ok(!rule);
 
@@ -114,9 +110,7 @@ export const testRuleManager = {
         test.equal(mgr.size(), 3);
         mgr.add(MockRule);
 
-        const rule = mgr.get({
-            name: "resource-mock-programmatic"
-        });
+        const rule = mgr.get("resource-mock-programmatic");
 
         test.ok(rule);
         test.ok(rule instanceof Rule);
@@ -133,8 +127,7 @@ export const testRuleManager = {
         test.equal(mgr.size(), 3);
         mgr.add(MockRule);
 
-        const rule = mgr.get({
-            name: "resource-mock-programmatic",
+        const rule = mgr.get("resource-mock-programmatic", {
             style: "style2"
         });
 
@@ -153,16 +146,14 @@ export const testRuleManager = {
         test.equal(mgr.size(), 3);
         mgr.add(MockRule);
 
-        let rule = mgr.get({
-            name: "resource-mock-programmatic",
+        let rule = mgr.get("resource-mock-programmatic", {
             style: "style2"
         });
 
         test.ok(rule);
         test.equal(rule.style, "style2");
 
-        rule = mgr.get({
-            name: "resource-mock-programmatic",
+        rule = mgr.get("resource-mock-programmatic", {
             style: "style15"
         });
 
@@ -206,9 +197,7 @@ export const testRuleManager = {
             regexps: [ "test", "foobar" ]
         });
 
-        const rule = mgr.get({
-            name: "resource-mock-declarative"
-        });
+        const rule = mgr.get("resource-mock-declarative");
 
         test.ok(rule);
         test.ok(rule instanceof ResourceMatcher);

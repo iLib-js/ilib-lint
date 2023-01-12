@@ -1,7 +1,7 @@
 /*
  * Project.js - Represents a particular i18nlint project
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
  */
 
 import log4js from 'log4js';
+import mm from 'micromatch';
 
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
@@ -58,7 +59,7 @@ class Project extends DirItem {
 
         this.files = [];
 
-        if (!options || !root || !config) {
+        if (!options || !root || !config || !options.pluginManager) {
             throw "Insufficient params given to Project constructor";
         }
 
@@ -71,9 +72,12 @@ class Project extends DirItem {
         }
 
         this.pluginMgr = this.options.pluginManager;
+        const ruleMgr = this.pluginMgr.getRuleManager();
         if (this.config.rules) {
-            const ruleMgr = this.pluginMgr.getRuleManager();
             ruleMgr.add(this.config.rules);
+        }
+        if (this.config.rules) {
+            ruleMgr.addRuleSets(this.config.rulesets);
         }
         if (this.config.formatters) {
             const fmtMgr = this.pluginMgr.getFormatterManager();
@@ -92,6 +96,9 @@ class Project extends DirItem {
                     ...this.config.filetypes[ft]
                 });
             }
+        }
+        if (this.config.paths) {
+            this.mappings = this.config.paths;
         }
     }
 
@@ -156,13 +163,33 @@ class Project extends DirItem {
      * - unknown - handles all file types that are not otherwise
      * matched. It does not perform any rule checks on any file.
      *
-     * @param {String} spec the name or the glob expression used to
+     * @param {String} name the name or the glob expression used to
      * identify the requested file type
      * @returns {FileType} the requested file type, or undefined if
      * there is no such file type
      */
-    getFileType(spec) {
+    getFileType(name) {
+        
+    }
 
+    /**
+     * Using the path mappings, find the file type that applies for
+     * the given path. If no mappings apply, the "unkown" file type
+     * will be returned.
+     *
+     * @param {String} pathName the path to the file to test
+     * @returns {FileType} the file type instance that applies to
+     * the given file.
+     */
+    getFileTypeForPath(pathName) {
+        for (let glob in this.mappings) {
+            if (mm.isMatch(pathName, glob)) {
+                const name = this.mappings[glob];
+                return this.filetypes[name] || this.filetypes.unknown;
+            }
+        }
+        // default: we don't know what this type of file is!
+        return this.filetypes.unknown;
     }
 
     getRuleSet(glob) {

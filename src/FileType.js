@@ -47,7 +47,7 @@ class FileType {
      *   name if the path includes it. Many file types do not
      *   include the locale in the path, and in those cases,
      *   the template can be left out.
-     * - rulesets (Array of String) - a list of named rule sets
+     * - rulesets (Array of String) - a list of rule set names
      *   to use with this file type
      *
      * @param {Object} options the options governing the construction
@@ -81,8 +81,34 @@ class FileType {
         return this.template;
     }
 
-    getRuleSets() {
+    getRuleSetNames() {
         return this.rulesets;
+    }
+
+    /**
+     * Return a rule set that contains all the rules in all of the rule set
+     * definitions.
+     *
+     * @returns {RuleSet} a ruleset containing all of the rules in all of the
+     * definitions
+     */
+    getRuleSet() {
+        const ruleMgr = this.project.getRuleManager();
+        const set = new RuleSet();
+        this.rulesets.forEach(ruleSetName => {
+            const definitions = ruleMgr.getRuleSetDefinition(ruleSetName);
+            for (let ruleName in definitions) {
+                if (typeof(definitions[ruleName]) === 'boolean') {
+                    if (definitions[ruleName]) {
+                        set.add(ruleMgr.get(ruleName));
+                    } // else turn the rule off by not adding it to the set!
+                } else {
+                    // only pass in the optional parameter if it is not boolean
+                    set.add(ruleMgr.get(ruleName, definitions[ruleName]));
+                }
+            }
+        });
+        return set;
     }
 }
 

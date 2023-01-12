@@ -56,14 +56,14 @@ export const testPluginManager = {
         test.done();
     },
 
-    testPluginManagerGetRuleSet: function(test) {
+    testPluginManagerGetRuleManager: function(test) {
         test.expect(2);
 
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
 
-        const rs = plgmgr.getRuleSet();
-        test.ok(rs);
+        const rm = plgmgr.getRuleManager();
+        test.ok(rm);
 
         test.done();
     },
@@ -170,7 +170,7 @@ export const testPluginManager = {
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
         const fm = plgmgr.getFormatterManager();
-        const rs = plgmgr.getRuleSet();
+        const rm = plgmgr.getRuleManager();
 
         plgmgr.load([
             "ilib-lint-plugin-test"
@@ -179,7 +179,7 @@ export const testPluginManager = {
 
             const formatter = fm.get("formatter-test");
             test.ok(formatter);
-            const rule = rs.getRule("resource-test");
+            const rule = rm.get("resource-test");
             test.ok(rule);
 
             const str = formatter.format(new Result({
@@ -207,21 +207,21 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
 
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
-        const rs = plgmgr.getRuleSet();
-        test.ok(rs);
-        const size = rs.getSize();
+        const rm = plgmgr.getRuleManager();
+        test.ok(rm);
+        const size = rm.size();
 
         plgmgr.load([
             "ilib-lint-plugin-test"
         ]).then(result => {
             test.ok(result);
-            test.equal(rs.getSize(), size + 1); // the plugin added 1 new one
+            test.equal(rm.size(), size + 1); // the plugin added 1 new one
 
-            const rules = rs.getRules("resource");
+            const rules = rm.getRules();
             test.ok(rules);
             test.equal(rules.length, size + 1);
-            test.equal(typeof(rules[size]), 'string');
-            const rule = rs.getRule(rules[size]);
+            test.equal(typeof(rules[size]), 'function');
+            const rule = rm.get("resource-test");
             test.equal(Object.getPrototypeOf(rule).constructor.name, "TestRule");
             test.equal(rule.getName(), "resource-test");
 
@@ -234,16 +234,15 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
 
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
-        const rs = plgmgr.getRuleSet();
-        test.ok(rs);
-        const size = rs.getSize();
+        const rm = plgmgr.getRuleManager();
+        test.ok(rm);
 
         plgmgr.load([
             "ilib-lint-plugin-test"
         ]).then(loadResult => {
             test.ok(loadResult);
 
-            const rule = rs.getRule("resource-test");
+            const rule = rm.get("resource-test");
 
             test.ok(rule);
             let result = rule.match({

@@ -111,28 +111,31 @@ options.opt.locales = options.opt.locales.map(spec => {
 // used if no explicit config is found or given
 const defaultConfig = {
     "name": "ilib-lint",
+    // top 27 locales on the internet by volume
     "locales": [
-        "en-US",
-        "de-DE",
-        "ja-JP",
-        "ko-KR"
+        "en-AU", "en-CA", "en-GB", "en-IN", "en-NG", "en-PH",
+        "en-PK", "en-US", "en-ZA", "de-DE", "fr-CA", "fr-FR",
+        "es-AR", "es-ES", "es-MX", "id-ID", "it-IT", "ja-JP",
+        "ko-KR", "pt-BR", "ru-RU", "tr-TR", "vi-VN",
+        "zh-Hans-CN", "zh-Hant-HK", "zh-Hant-TW", "zh-Hans-SG"
     ],
-    "paths": {
-        "**/*.json": {
-            "locales": [
-                "en-US",
-                "de-DE",
-                "ja-JP"
-            ]
-        },
-        "**/*.xliff": {
-            "rules": {
-                "resource-icu-plurals": true,
-                "resource-quote-style": true,
-                "resource-url-match": true,
-                "resource-named-params": "localeOnly"
-            }
+    "rulesets": {
+        "resource-rules": {
+            "resource-icu-plurals": true,
+            "resource-quote-style": true,
+            "resource-url-match": true,
+            "resource-named-params": "localeOnly"
         }
+    },
+    "fileTypes": {
+        "xliff": {
+            "rulesets": [
+                "resource-rules"
+            ]
+        }
+    },
+    "paths": {
+        "**/*.xliff": "xliff"
     },
     "excludes": [
         "**/.git",

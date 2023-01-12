@@ -19,51 +19,64 @@
 
 /**
  * @class Represent a set of ilib-lint rules. The rule manager keeps
- * track of all the rules that are known to in this run of the linter,
- * and a RuleSet is a named set of rule names and options of some or all of
- * those rules.
+ * track of all the rules that are known to this run of the linter,
+ * and a RuleSet is a named set of rule instances that have been
+ * initialized with certain options for some or all of those rules.
  */
 class RuleSet {
     /**
-     * Construct an ilib-lint rule set.
+     * Construct an ilib-lint rule set. 
+     *
+     * @constructor
+     * @param {Array.<Rule>} rules a list of rules to initialize
+     * this set
      */
-    constructor(name, rules) {
-        this.name = name;
+    constructor(rules) {
         this.rules = {};
         if (rules) {
             this.add(rules);
         }
     }
 
-    getName() {
-        return this.name;
-    }
-
     /**
-     * Add rules and their optional parameters to this rule set.
-     * @param {Object} rules the rule definitions to add
+     * Add rule instances to this rule set.
+     * If a rule is added that already exists in the set, it will
+     * override the previous definition. This way, the rule is
+     * only ever added once.
+     *
+     * @param {Array.<Rule>} rules a list of rule instances to add
      */
     add(rules) {
-        if (!rules || typeof(rules) !== 'object') return;
-        for (let rule in rules) {
-            // a boolean value of "false" will turn off the rule
-            // in this set if it was previously defined
-            this.rules[rule] =
-                (typeof(this.rules[rule]) !== 'undefined' &&
-                 typeof(rules[rule]) === 'boolean' &&
-                 !rules[rule]) ? undefined : rules[rule];
-        }
+        if (!rules || typeof(rules) !== 'object' || !Array.isArray(rules)) return;
+        rules.forEach(rule => {
+            this.rules[rule.getName()] = rule;
+        });
     }
 
     /**
-     * Return an object containing the names of all the rules
-     * and mapping them to optional parameters, or to the boolean
-     * value of true.
+     * Return the rule instance with the given name.
      *
-     * @returns {Object} the set of rules and optional parameters
+     * @param {String} name unique name of the rule
+     * @returns {Rule} a rule instance with the given name, or undefined
+     * if the rule is not part of this set
      */
-    getRules() {
-        return this.rules;
+    getRule(name) {
+        return this.rules[name];
+    }
+
+    /**
+     * Return a list of rule instances in this set.
+     *
+     * @param {String} type optional parameter that restricts
+     * the type of rules returned. If no type is specified,
+     * all rules are returned.
+     *
+     * @returns {Array.<Rule>} a list of rule instances
+     */
+    getRules(type) {
+        return Object.values(this.rules).filter(rule => {
+            return (!type || rule.getRuleType() === type) ? rule : undefined;
+        });
     }
 
     /**
