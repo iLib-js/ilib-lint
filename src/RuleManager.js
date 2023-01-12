@@ -56,6 +56,7 @@ class RuleManager {
      */
     constructor() {
         this.ruleCache = {};
+        this.ruleDefs = {};
 
         // some built-in default rules
         this.addRule(ResourceICUPlurals);
@@ -189,6 +190,41 @@ class RuleManager {
     }
 
     /**
+     * Add a ruleset definition to this rule manager.
+     *
+     * @param {String} name the name of this ruleset definition
+     * @param {Object} ruleDefs definitions of rules in this
+     * definition and their optional parameters
+     */
+    addRuleSetDefinition(name, ruleDefs) {
+        if (typeof(ruleDefs) !== 'object') return;
+
+        // this will override any existing one with the same name
+        this.ruleDefs[name] = ruleDefs;
+    }
+
+    /**
+     * Return the named ruleset definition.
+     *
+     * @param {String} name the name of the ruleset definition
+     * to return
+     * @returns {Object} the ruleset definition
+     */
+    getRuleSetDefinition(name) {
+        return this.ruleDefs[name];
+    }
+
+    /**
+     * Return the number of named ruleset definitions that are
+     * known by this instance of the rule manager.
+     *
+     * @returns {Number} the number of named ruleset definitions
+     */
+    sizeRuleSetDefinitions() {
+        return Object.keys(this.ruleDefs).length;
+    }
+
+    /**
      * Return how many rules this manager knows about.
      * @returns {Number} the number of rules this manager knows about.
      */
@@ -202,6 +238,7 @@ class RuleManager {
      */
     clear() {
         this.ruleCache = {};
+        this.ruleDefs = {};
     }
 }
 

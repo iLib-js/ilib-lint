@@ -226,5 +226,128 @@ export const testRuleManager = {
 
         test.done();
     },
+
+    testRuleManagerAddRuleSetDefinitionSize: function(test) {
+        test.expect(3);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+        const expected = {
+            "resource-mock-programmatic": true,
+            "resource-mock-declarative": true
+        };
+        test.equal(mgr.sizeRuleSetDefinitions(), 0);
+        mgr.addRuleSetDefinition("foo", expected);
+        test.equal(mgr.sizeRuleSetDefinitions(), 1);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionContents: function(test) {
+        test.expect(2);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+        const expected = {
+            "resource-mock-programmatic": true,
+            "resource-mock-declarative": true
+        };
+
+        mgr.addRuleSetDefinition("foo", expected);
+
+        const rules = mgr.getRuleSetDefinition("foo");
+        test.deepEqual(rules, expected);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionEmptySize: function(test) {
+        test.expect(3);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+
+        test.equal(mgr.sizeRuleSetDefinitions(), 0);
+        mgr.addRuleSetDefinition("foo", undefined);
+        test.equal(mgr.sizeRuleSetDefinitions(), 0);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionEmptyContent: function(test) {
+        test.expect(2);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+
+        mgr.addRuleSetDefinition("foo", undefined);
+        const rules = mgr.getRuleSetDefinition("foo");
+        test.ok(!rules);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionNonobjectSize: function(test) {
+        test.expect(3);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+
+        test.equal(mgr.sizeRuleSetDefinitions(), 0);
+        mgr.addRuleSetDefinition("foo", "asdf");
+        test.equal(mgr.sizeRuleSetDefinitions(), 0);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionNonobjectContent: function(test) {
+        test.expect(2);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+
+        mgr.addRuleSetDefinition("foo", "asdf");
+        const rules = mgr.getRuleSetDefinition("foo");
+        test.ok(!rules);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionWithParamsSize: function(test) {
+        test.expect(3);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+        const expected = {
+            "resource-mock-programmatic": {
+                "style": "funky"
+            },
+            "resource-mock-declarative": true
+        };
+        test.equal(mgr.sizeRuleSetDefinitions(), 0);
+        mgr.addRuleSetDefinition("foo", expected);
+        test.equal(mgr.sizeRuleSetDefinitions(), 1);
+
+        test.done();
+    },
+
+    testRuleManagerAddRuleSetDefinitionWithParamsContents: function(test) {
+        test.expect(2);
+
+        const mgr = new RuleManager();
+        test.ok(mgr);
+        const expected = {
+            "resource-mock-programmatic": {
+                "style": "funky"
+            },
+            "resource-mock-declarative": true
+        };
+        mgr.addRuleSetDefinition("foo", expected);
+        const rules = mgr.getRuleSetDefinition("foo");
+        test.deepEqual(rules["resource-mock-programmatic"], {
+            "style": "funky"
+        }); 
+        test.done();
+    },
 };
 

@@ -18,6 +18,7 @@
  */
 
 const files = [
+    "testFileType.js",
     "testFormatterManager.js",
     "testParserManager.js",
     "testPluginManager.js",
