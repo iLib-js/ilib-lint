@@ -44,6 +44,8 @@ class SourceFile extends DirItem {
         this.filePath = filePath;
         this.type = "line";
 
+        this.filetype = options.filetype;
+
         let parserClasses;
         let extension = path.extname(this.filePath);
         if (extension) {
@@ -103,11 +105,10 @@ class SourceFile extends DirItem {
      * This method parses the source file and applies each rule in turn
      * using the given locales.
      *
-     * @param {RuleSet} ruleset a set of rules to apply
      * @param {Array.<Locale>} locales a set of locales to apply
      * @returns {Array.<Result>} a list of natch results
      */
-    findIssues(ruleset, locales) {
+    findIssues(locales) {
         let issues = [], names;
         const detectedLocale = this.getLocaleFromPath();
 
@@ -116,37 +117,31 @@ class SourceFile extends DirItem {
             return issues;
         }
 
-        names = ruleset.getRules(this.type);
-        if (names && names.length) {
-            names.forEach(name => {
-                const rule = ruleset.getRule(name, {
-                    ...this.project.getOptions(),
-                    ...this.project.getSettings()
-                });
-                switch (this.type) {
-                case "line":
-                    for (let i = 0; i < this.lines.length; i++) {
-                        const result = rule.match({
-                            line: this.lines[i],
-                            locale: detectedLocale,
-                            file: this.filePath
-                        });
-                        if (result) issues = issues.concat(result);
-                    }
-                    break;
-                case "resource":
-                    this.resources.forEach(resource => {
-                        const result = rule.match({
-                            locale: resource.getTargetLocale(),
-                            resource,
-                            file: this.filePath
-                        });
-                        if (result) issues = issues.concat(result);
+        const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === this.type));
+        rules.forEach(rule => {
+            switch (this.type) {
+            case "line":
+                for (let i = 0; i < this.lines.length; i++) {
+                    const result = rule.match({
+                        line: this.lines[i],
+                        locale: detectedLocale,
+                        file: this.filePath
                     });
-                    break;
+                    if (result) issues = issues.concat(result);
                 }
-            });
-        }
+                break;
+            case "resource":
+                this.resources.forEach(resource => {
+                    const result = rule.match({
+                        locale: resource.getTargetLocale(),
+                        resource,
+                        file: this.filePath
+                    });
+                    if (result) issues = issues.concat(result);
+                });
+                break;
+            }
+        });
 
         return issues;
     }

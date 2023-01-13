@@ -39,7 +39,7 @@ const rulesetDefinitions = {
 const xliffFileTypeDefinition = {
     name: "xliff",
     glob: "**/*.xliff",
-    rulesets: [ "resource-check-all" ]
+    ruleset: [ "resource-check-all" ]
 };
 
 const unknownFileTypeDefinition = {
@@ -278,7 +278,7 @@ class Project extends DirItem {
             logger.trace(`Examining ${file.filePath}`);
 
             file.parse();
-            return file.findIssues(ruleset, locales);
+            return file.findIssues(locales);
         }).flat();
     }
 

@@ -237,5 +237,23 @@ export const testFileType = {
         test.done();
     },
 
+    testFileTypeGetRuleSetNoRulesetsAvailable: function(test) {
+        test.expect(3);
+
+        const ruleset = [ "asdf" ]; // defined at the top of this file
+        const ft = new FileType({
+            name: "test",
+            project
+        });
+        test.ok(ft);
+
+        const rules = ft.getRules();
+
+        test.ok(Array.isArray(rules));
+        test.equal(rules.length, 0);
+
+        test.done();
+    },
+
 };
 

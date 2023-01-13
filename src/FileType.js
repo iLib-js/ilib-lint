@@ -65,7 +65,7 @@ class FileType {
                 this[prop] = options[prop];
             }
         });
-        
+
         if (this.ruleset) {
             if (typeof(this.ruleset) === 'string') {
                 // single string -> convert to an array with a single element
@@ -73,7 +73,8 @@ class FileType {
             } else if (!Array.isArray(this.ruleset)) {
                 // rule set definition instead of a ruleset name. Save a new
                 // rule set definition in the rule manager and give it a
-                // temp name so we can refer to it
+                // temp name so we can refer to it and make sure that this.ruleset
+                // always points to an array of rule set names
                 const ruleMgr = this.project.getRuleManager();
                 const setName = `${this.name}-unnamed-ruleset`;
                 ruleMgr.addRuleSetDefinition(setName, this.ruleset);
@@ -115,6 +116,9 @@ class FileType {
      * all of the ruleset definitions
      */
     getRules() {
+        if (this.rules) return this.rules;
+        if (!this.ruleset || this.ruleset.length === 0) return [];
+
         const ruleMgr = this.project.getRuleManager();
         const set = new RuleSet();
         this.ruleset.forEach(ruleSetName => {
@@ -130,7 +134,10 @@ class FileType {
                 }
             }
         });
-        return set.getRules();
+        // the RuleSet takes care of making sure there are no dups, so now we
+        // can just return the list of rule instances. Cache it for subsequent calls.
+        this.rules = set.getRules();
+        return this.rules;
     }
 }
 

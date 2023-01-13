@@ -73,6 +73,11 @@ const optionConfig = {
         short: "q",
         flag: true,
         help: "Produce no progress output during the run, except for error messages. Instead exit with a return value. Zero indicates no errors, and a positive exit value indicates errors."
+    },
+    verbose: {
+        short: "v",
+        flag: true,
+        help: "Produce lots of progress output during the run."
     }
 };
 
@@ -89,7 +94,15 @@ if (options.args.length < 1) {
 }
 */
 
-if (!options.opt.quiet) logger.info("ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.");
+if (options.opt.quiet) {
+    const rootlogger = log4js.getLogger();
+    logger.level = "error";
+} else if (options.opt.verbose) {
+    const rootlogger = log4js.getLogger();
+    logger.level = "debug";
+}
+
+logger.info("ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.");
 
 let paths = options.args;
 if (paths.length === 0) {
@@ -119,17 +132,9 @@ const defaultConfig = {
         "ko-KR", "pt-BR", "ru-RU", "tr-TR", "vi-VN",
         "zh-Hans-CN", "zh-Hant-HK", "zh-Hant-TW", "zh-Hans-SG"
     ],
-    "rulesets": {
-        "resource-rules": {
-            "resource-icu-plurals": true,
-            "resource-quote-style": "localeOnly",
-            "resource-url-match": true,
-            "resource-named-params": true
-        }
-    },
     "fileTypes": {
         "xliff": {
-            "rulesets": ["resource-rules"]
+            "ruleset": "resource-check-all"
         }
     },
     "paths": {
@@ -156,20 +161,13 @@ if (options.opt.config) {
     config = defaultConfig;
 }
 
-if (!options.opt.quiet) logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
+logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 
 // load and manage the plugins
 
 const pluginMgr = new PluginManager({
     rulesData: config.rules
 });
-
-const fm = pluginMgr.getFormatterManager();
-const fmt = fm.get(options.opt.formatter);
-if (!fmt) {
-    logger.error(`Could not find formatter ${options.opt}. Aborting...`);
-    process.exit(3);
-}
 
 if (config.plugins) {
     await pluginMgr.load(config.plugins);
@@ -183,11 +181,16 @@ paths.forEach(pathName => {
     walk(pathName, rootProject);
 });
 
+const fm = pluginMgr.getFormatterManager();
+const fmt = fm.get(options.opt.formatter);
+if (!fmt) {
+    logger.error(`Could not find formatter ${options.opt}. Aborting...`);
+    process.exit(3);
+}
+
 // main loop
 let exitValue = 0;
-const ruleset = pluginMgr.getRuleSet();
-
-const issues = rootProject.findIssues(ruleset, options.opt.locales);
+const issues = rootProject.findIssues(options.opt.locales);
 
 issues.forEach(issue => {
     const str = fmt.format(issue);

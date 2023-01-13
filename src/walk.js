@@ -126,9 +126,9 @@ function walk(root, project) {
                 }
 
                 if (included) {
-                    logger.trace(`${pathName} ... included`);
+                    logger.trace(`${root} ... included`);
                     glob = glob || "**";
-                    const filetype = project.getFileTypeForPath(pathName);
+                    const filetype = project.getFileTypeForPath(root);
                     project.add(new SourceFile(root, {
                         settings: project.getSettings(glob),
                         filetype
