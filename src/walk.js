@@ -21,6 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
+import JSON5 from 'json5';
 
 import SourceFile from './SourceFile.js';
 import Project from './Project.js';
@@ -72,17 +73,19 @@ function walk(root, project) {
     let pathName, included, stat, glob;
 
     try {
-        if (fs.existsSync(root)) {
-            stat = fs.statSync(root);
-            if (stat && stat.isDirectory()) {
+        stat = fs.statSync(root, {throwIfNoEntry: false});
+        if (stat) {
+            if (stat.isDirectory()) {
                 const configFileName = path.join(root, "ilib-lint-config.json");
                 if (fs.existsSync(configFileName)) {
                     const data = fs.readFileSync(configFileName, "utf-8");
                     const config = JSON5.parse(data);
-                    project = new Project(root, project.getOptions(), config);
-                    includes = project.getIncludes();
-                    excludes = project.getExcludes();
-                    logger.trace(`New project ${project.getName()}`);
+                    const newProject = new Project(root, project.getOptions(), config);
+                    includes = newProject.getIncludes();
+                    excludes = newProject.getExcludes();
+                    logger.trace(`New project ${newProject.getName()}`);
+                    project.add(newProject);
+                    project = newProject;
                 }
 
                 list = fs.readdirSync(root);
@@ -107,8 +110,7 @@ function walk(root, project) {
                         }
                     });
                 }
-            } else {
-                // file
+            } else if (stat.isFile()) {
                 included = false;
 
                 if (includes) {
@@ -136,9 +138,9 @@ function walk(root, project) {
                 } else {
                     logger.trace(`${pathName} ... excluded`);
                 }
-            }
+            } // else just ignore it
         } else {
-            logger.warn(`File ${pathName} does not exist.`);
+            logger.warn(`File ${root} does not exist.`);
         }
     } catch (e) {
         // if the readdirSync did not work, it's maybe a file?

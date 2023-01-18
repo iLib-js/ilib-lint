@@ -80,6 +80,7 @@ class Project extends DirItem {
         if (this.config) {
             this.includes = this.config.paths ? Object.keys(this.config.paths) : ["**"];
             this.excludes = config.excludes;
+            this.name = config.name;
         }
 
         this.pluginMgr = this.options.pluginManager;
@@ -122,6 +123,43 @@ class Project extends DirItem {
                 }
             }
         }
+    }
+
+    /**
+     * Initialize this project. This returns a promise to load the
+     * plugins and initializes them.
+     *
+     * @returns {Promise} a promise to initialize the project
+     * @accept {boolean} true when everything was initialized correct
+     * @reject the initialization failed
+     */
+    init() {
+        let promise = Promise.resolve(true);
+
+        if (this.config.plugins) {
+            promise = promise.then(() => {
+                return this.pluginMgr.load(this.config.plugins);
+            });
+        }
+
+        // initialize any projects or files that have an init method.
+        this.files.forEach(file => {
+            if (typeof(file.init) === 'function') {
+                promise = promise.then(() => {
+                    return file.init();
+                });
+            }
+        });
+
+        return promise;
+    }
+
+    /**
+     * Get the unique name of this project.
+     * @returns {String} the unique name of this project.
+     */
+    getName() {
+        return this.name;
     }
 
     /**

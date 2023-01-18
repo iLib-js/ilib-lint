@@ -76,17 +76,17 @@ function attemptLoad(name) {
  */
 function loadPlugin(name, API) {
     return attemptLoad(name).catch(e1 => {
-        const name2 = `i18nlint-${name}`;
+        const name2 = `ilib-lint-${name}`;
         return attemptLoad(name2).catch(e2 => {
             const name3 = path.join(process.cwd(), "node_modules", name);
             return attemptLoad(name3).catch(e3 => {
-                const name4 = path.join(process.cwd(), "node_modules", `i18nlint-${name}`);
+                const name4 = path.join(process.cwd(), "node_modules", `ilib-lint-${name}`);
                 return attemptLoad(name4).catch(e4 => {
                     const name5 = path.join(process.cwd(), "..", "plugins", name + ".js")
                     return attemptLoad(name5).catch(e5 => {
                         // on the last attempt, don't catch the exception. Just let it
                         // go to the overall `catch` clause below.
-                        const name6 = path.join(process.cwd(), "..", "plugins", `i18nlint-${name}` + ".js")
+                        const name6 = path.join(process.cwd(), "..", "plugins", `ilib-lint-${name}` + ".js")
                         return attemptLoad(name6);
                     });
                 });
@@ -210,6 +210,7 @@ class PluginManager {
         this.parserMgr.add(plugin.getParsers());
         this.formatterMgr.add(plugin.getFormatters());
         this.ruleMgr.add(plugin.getRules());
+        this.ruleMgr.addRuleSetDefinitions(plugin.getRuleSets());
     }
 
     /**

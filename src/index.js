@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * index.js - main program of ilib-lint
  *
@@ -150,12 +151,13 @@ const defaultConfig = {
 };
 
 let config = {};
-if (options.opt.config) {
-    if (!fs.existsSync(options.opt.config)) {
-        logger.warn(`Config file ${options.opt.config} does not exist. Aborting...`);
-        process.exit(2);
-    }
-    const data = fs.readFileSync(options.opt.config, "utf-8");
+if (options.opt.config && !fs.existsSync(options.opt.config)) {
+    logger.warn(`Config file ${options.opt.config} does not exist. Aborting...`);
+    process.exit(2);
+}
+let configPath = options.opt.config || "./ilib-lint-config.json";
+if (configPath && fs.existsSync(configPath)) {
+    const data = fs.readFileSync(configPath, "utf-8");
     config = json5.parse(data);
 } else {
     config = defaultConfig;
@@ -163,15 +165,11 @@ if (options.opt.config) {
 
 logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 
-// load and manage the plugins
+// loads and manage the plugins
 
 const pluginMgr = new PluginManager({
     rulesData: config.rules
 });
-
-if (config.plugins) {
-    await pluginMgr.load(config.plugins);
-}
 
 const rootProject = new Project(".", {
     pluginManager: pluginMgr
@@ -180,6 +178,8 @@ const rootProject = new Project(".", {
 paths.forEach(pathName => {
     walk(pathName, rootProject);
 });
+
+await rootProject.init();
 
 const fm = pluginMgr.getFormatterManager();
 const fmt = fm.get(options.opt.formatter);

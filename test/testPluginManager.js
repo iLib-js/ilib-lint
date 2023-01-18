@@ -282,6 +282,31 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
 
             test.done();
         });
+    },
+
+    testPluginManagerGetLoadPluginRightRuleSets: function(test) {
+        test.expect(8);
+
+        const plgmgr = new PluginManager();
+        test.ok(plgmgr);
+        const rm = plgmgr.getRuleManager();
+        test.ok(rm);
+        const size = rm.sizeRuleSetDefinitions();
+
+        plgmgr.load([
+            "ilib-lint-plugin-test"
+        ]).then(result => {
+            test.ok(result);
+            test.equal(rm.sizeRuleSetDefinitions(), size + 1); // the plugin added 1 new one
+
+            const set = rm.getRuleSetDefinition("test");
+            test.ok(set);
+            test.ok(set["resource-test"]);
+            test.equal(typeof(set["resource-test"]), 'boolean');
+            test.ok(typeof(set["resource-test"]));
+
+            test.done();
+        });
     }
 };
 

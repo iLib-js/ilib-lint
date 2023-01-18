@@ -42,6 +42,14 @@ class TestPlugin extends Plugin {
         return [ TestRule ];
     }
 
+    getRuleSets() {
+        return {
+            "test": {
+                "resource-test": true
+            }
+        };
+    }
+
     getParsers() {
         //console.log("TestPlugin.getParsers() called");
         return [ TestParser ];

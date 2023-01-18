@@ -139,6 +139,8 @@ The `ilib-lint-config.json` file can have any of the following properties:
   whole project if they are not configured by each path
 * sourceLocale (String) - name the locale for source strings in this app.
   Default if not specified is "en-US".
+* excludes (Array of String) - an array of micromatch expressions for files
+  or folders in the project to exclude from the recursive search.
 * rules (Array of Object) - an array of declarative regular-expression-based rules to use
   with this project. Resource rules are applied to resources loaded from a
   resource file. Source file rules are applied to regular programming source

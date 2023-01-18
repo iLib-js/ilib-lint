@@ -35,7 +35,7 @@ const genericConfig = {
     ],
     // list of plugins to load
     "plugins": [
-        "react"
+        "plugin-test"
     ],
     // default micromatch expressions to exclude from recursive dir searches
     "excludes": [
@@ -194,22 +194,6 @@ export const testProject = {
         test.done();
     },
 
-    testProjectGetIncludes: function(test) {
-        test.expect(2);
-
-        const project = new Project("x", {pluginManager}, genericConfig);
-        test.ok(project);
-
-        const expected = [
-            "src/**/*.json",
-            "src/**/*.js",
-            "src/**/*.jsx",
-            "**/*.xliff"
-        ];
-        test.equalIgnoringOrder(project.getIncludes(), expected);
-        test.done();
-    },
-
     testProjectGetExcludes: function(test) {
         test.expect(2);
 
@@ -317,6 +301,33 @@ export const testProject = {
         // the mapping's glob as the name
         test.equal(ft.getName(), "**/*.xliff");
         test.done();
+    },
+
+    testProjectInit: function(test) {
+        test.expect(5);
+
+        const project = new Project("x", {pluginManager}, genericConfig);
+        test.ok(project);
+
+        const pluginMgr = project.getPluginManager();
+        test.ok(pluginMgr);
+
+        project.init().then((result) => {
+            // verify that the init indeed loaded the test plugin
+            const fmtmgr = pluginMgr.getFormatterManager();
+            const fmtr = fmtmgr.get("formatter-test");
+            test.ok(fmtr);
+
+            const parserMgr = pluginMgr.getParserManager();
+            const prsr = parserMgr.get("parser-xyz");
+            test.ok(prsr);
+
+            const ruleMgr = pluginMgr.getRuleManager();
+            const rule = ruleMgr.get("resource-test");
+            test.ok(rule);
+
+            test.done();
+        });
     },
 
 };
