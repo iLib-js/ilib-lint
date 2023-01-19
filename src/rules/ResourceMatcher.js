@@ -2,7 +2,7 @@
  * ResourceMatcher.js - rule to check if URLs in the source string also
  * appear in the target string
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,9 @@ class ResourceMatcher extends Rule {
      *   param that is supported.)
      * - regexps - an array of strings that encode regular expressions to
      *   look for
+     *
+     * @param {Object} options options as documented above
+     * @constructor
      */
     constructor(options) {
         super(options);

@@ -1,7 +1,7 @@
 /*
  * ResourceQuoteStyle.js - rule to check quotes in the target string
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,10 @@ const quoteChars = "«»‘“”„「」’‚‹›『』\"\'";
  * @class Represent an ilib-lint rule.
  */
 class ResourceQuoteStyle extends Rule {
+    /**
+     * Make a new rule instance.
+     * @constructor
+     */
     constructor(options) {
         super(options);
         this.name = "resource-quote-style";

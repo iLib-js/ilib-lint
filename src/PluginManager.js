@@ -32,6 +32,7 @@ import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
+// built-in declarative rules
 export const regexRules = [
     {
         type: "resource-matcher",

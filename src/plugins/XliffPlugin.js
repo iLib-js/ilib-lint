@@ -1,7 +1,7 @@
 /*
  * XliffPlugin.js - plugin that can parse an Xliff file
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,28 +21,15 @@ import { Plugin } from 'i18nlint-common';
 import XliffParser from './XliffParser.js';
 
 /**
- * @class Plugin that can parse XLIFF files
+ * @class Ilib-lint plugin that can parse XLIFF files
  */
 class XliffPlugin extends Plugin {
     /**
-     *
+     * Create a new xliff plugin instance.
+     * @constructor
      */
     constructor(options) {
         super(options);
-    }
-
-    /**
-     * @override
-     */
-    getType() {
-        return "parser";
-    }
-
-    /**
-     * @override
-     */
-    getExtensions() {
-        return ["xliff", "xlif", "xlf"];
     }
 
     /**

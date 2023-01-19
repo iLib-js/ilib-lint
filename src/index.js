@@ -190,12 +190,12 @@ if (!fmt) {
 
 // main loop
 let exitValue = 0;
-const issues = rootProject.findIssues(options.opt.locales);
+const results = rootProject.findIssues(options.opt.locales);
 
-issues.forEach(issue => {
-    const str = fmt.format(issue);
+results.forEach(result => {
+    const str = fmt.format(result);
     if (str) {
-        if (issue.severity === "error") {
+        if (result.severity === "error") {
             logger.error(str);
             exitValue = 2;
         } else if (!options.opt.errorsOnly) {

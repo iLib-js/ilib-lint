@@ -42,11 +42,11 @@ const resultFields = [
 
 /**
  * @class Represent an output formatter for an ANSI console/terminal
- * @abstract
  */
 export class ConfigBasedFormatter extends Formatter {
     /**
      * Construct an formatter instance.
+     * @constructor
      */
     constructor(options) {
         super(options);
@@ -67,7 +67,6 @@ export class ConfigBasedFormatter extends Formatter {
      * Format the given result with the current formatter and return the
      * formatted string.
      *
-     * @abstract
      * @param {Result} result the result to format
      * @returns {String} the formatted result
      */

@@ -27,7 +27,15 @@ function getSuperClassName(obj) {
     return Object.getPrototypeOf(Object.getPrototypeOf(obj)).constructor.name;
 }
 
+/**
+ * @class Manages a collection of parsers that this instance of ilib-lint
+ * knows about.
+ */
 class ParserManager {
+    /**
+     * Create a new parser manager instance.
+     * @constructor
+     */
     constructor() {
         this.parserCache = {};
     }

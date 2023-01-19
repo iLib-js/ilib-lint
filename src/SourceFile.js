@@ -1,7 +1,7 @@
 /*
  * SourceFile.js - Represent a source file
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,8 @@ class SourceFile extends DirItem {
      *
      * - filePath {String} path to the file
      *
+     * @constructor
+     * @param {String} filePath path to the source file
      * @param {Object} options options for constructing this source file
      * @param {Project} project the project where this file is located
      */

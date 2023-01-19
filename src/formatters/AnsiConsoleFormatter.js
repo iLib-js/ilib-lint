@@ -24,11 +24,11 @@ var logger = log4js.getLogger("ilib-lint.formatters.AnsiConsoleFormatter");
 
 /**
  * @class Represent an output formatter for an ANSI console/terminal
- * @abstract
  */
 class AnsiConsoleFormatter extends Formatter {
     /**
      * Construct an formatter instance.
+     * @constructor
      */
     constructor(options) {
         super(options);
@@ -40,7 +40,6 @@ class AnsiConsoleFormatter extends Formatter {
      * Format the given result with the current formatter and return the
      * formatted string.
      *
-     * @abstract
      * @param {Result} result the result to format
      * @returns {String} the formatted result
      */

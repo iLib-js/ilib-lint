@@ -27,15 +27,20 @@ import { ConfigBasedFormatter, requiredFields } from './formatters/ConfigBasedFo
 const logger = log4js.getLogger("i18nlint.FormatterManager");
 
 /**
- * Return the formatter with the given name
- *
- * @returns {Array.<Formatter>} the array of parsers that handle
- * the given type of file
+ * @class Manages a collection of formatters that this instance of ilib-lint
+ * knows about.
  */
 class FormatterManager {
+    /**
+     * Create a new formatter manager instance.
+     * @constructor
+     */
     constructor(options) {
         this.formatterCache = {};
         this.add([AnsiConsoleFormatter]);
+        if (options && options.formatters) {
+            this.add(options.formatters);
+        }
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
- * XliffParser.js - common SPI for parser plugins
+ * XliffParser.js - Parser for XLIFF files
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import { ResourceXliff } from 'ilib-tools-common';
 import { Parser } from 'i18nlint-common';
 
 /**
- * @class common SPI for parser plugins
- * @abstract
+ * @class Parser for XLIFF files based on the ilib-xliff library.
  */
 class XliffParser extends Parser {
     /**
      * Construct a new plugin.
+     * @constructor
      */
     constructor(options) {
         super(options);
@@ -36,7 +36,7 @@ class XliffParser extends Parser {
             path: options.filePath
         });
 
-        this.extensions = [ "xliff", "xlf" ];
+        this.extensions = [ "xliff", "xlif", "xlf" ];
     }
 
     /**
