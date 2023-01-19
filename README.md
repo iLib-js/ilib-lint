@@ -225,7 +225,7 @@ Here is an example of a configuration file:
 
 ```json
 {
-    // the name is reaquired and should be unique amongst all your projects
+    // the name is required and should be unique amongst all your projects
     "name": "tester",
     // this is the global set of locales that applies unless something else overrides it
     "locales": [
@@ -519,6 +519,19 @@ If you would like to look at an example formatter plugin, see the definition of
 the built-in default formatter
 [ansi-console-formatter](https://github.com/ilib-js/i18nlint/blob/main/src/formatters/AnsiConsoleFormatter.js)
 which formats a Result for colorful output on an ANSI console.
+
+## Example Plugin
+
+You can take a look at the [ilib-lint-python](https://github.com/ilib-js/ilib-lint-python)
+plugin as a working example of ilib-lint plugin. It implements some rules that
+check the various types of substitution parameters that python/django and
+gnu gettext support.
+
+Additionally, there is a [sample python project](https://github.com/ilib-js/ilib-samples/lint)
+that uses the ilib-lint-python plugin. It has purposeful errors built into it which
+violate the rules implemented in the plugin so that the linter will produce some output.
+Clone the project, cd to the lint directory, run `npm install`, and then `npm run lint`
+to see the results.
 
 ## License
 
