@@ -30,6 +30,7 @@ import log4js from 'log4js';
 import PluginManager from './PluginManager.js';
 import Project from './Project.js';
 import walk from './walk.js';
+import { wrap, indent } from './rules/utils.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
@@ -42,7 +43,7 @@ const optionConfig = {
         help: "This help message",
         showHelp: {
             banner: 'Usage: ilib-lint [-h] [options] path [path ...]',
-            output: logger.info
+            output: logger.info.bind(logger)
         }
     },
     config: {
@@ -59,6 +60,10 @@ const optionConfig = {
         short: "f",
         "default": "ansi-console-formatter",
         help: "Name the formatter that should be used to format the output."
+    },
+    list: {
+        flag: true,
+        help: "Load all plugins, and then list out all available parsers, rules, rulesets, and formatters, then exit."
     },
     locales: {
         short: "l",
@@ -180,6 +185,48 @@ paths.forEach(pathName => {
 });
 
 await rootProject.init();
+
+if (options.opt.list) {
+    const ruleMgr = pluginMgr.getRuleManager();
+    const ruleDescriptions = ruleMgr.getDescriptions();
+    const ruleSetDefinitions = ruleMgr.getRuleSetDefinitions();
+    const parserMgr = pluginMgr.getParserManager();
+    const parserDescriptions = parserMgr.getDescriptions();
+    const formatterMgr = pluginMgr.getFormatterManager();
+    const formatterDescriptions = formatterMgr.getDescriptions();
+
+    let name;
+
+    let output = [
+        "These items are available to use in your configuration",
+        "",
+        "Parsers:"
+    ];
+    for (name in parserDescriptions) {
+        output = output.concat(indent(wrap(`${name} - ${parserDescriptions[name]}`, 76, "  "), 2));
+    }
+    output.push("");
+
+    output.push("Rules:");
+    for (name in ruleDescriptions) {
+        output = output.concat(indent(wrap(`${name} - ${ruleDescriptions[name]}`, 76, "  "), 2));
+    }
+    output.push("");
+
+    output.push("Rulesets:");
+    for (name in ruleSetDefinitions) {
+        output = output.concat(indent(wrap(`${name} - ${ruleSetDefinitions[name].join(", ")}`, 76, "  "), 2));
+    }
+    output.push("");
+
+    output.push("Formatters:");
+    for (name in formatterDescriptions) {
+        output = output.concat(indent(wrap(`${name} - ${formatterDescriptions[name]}`, 76, "  "), 2));
+    }
+
+    console.log(output.join('\n'));
+    process.exit(0);
+}
 
 const fm = pluginMgr.getFormatterManager();
 const fmt = fm.get(options.opt.formatter);
