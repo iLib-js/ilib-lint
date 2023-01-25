@@ -30,24 +30,19 @@ export const testXliffPlugin = {
         test.done();
     },
 
-    testXliffPluginGetType: function(test) {
-        test.expect(2);
-
-        const xp = new XliffPlugin();
-        test.ok(xp);
-
-        test.equal(xp.getType(), "parser");
-
-        test.done();
-    },
-
     testXliffPluginGetExtensions: function(test) {
-        test.expect(2);
+        test.expect(3);
 
         const xp = new XliffPlugin();
         test.ok(xp);
 
-        test.equalIgnoringOrder(xp.getExtensions(), ["xliff", "xlif", "xlf"]);
+        const parsers = xp.getParsers();
+        test.equal(parsers.length, 1);
+
+        const xliff = new parsers[0]({
+            filePath: "x"
+        });
+        test.equalIgnoringOrder(xliff.getExtensions(), ["xliff", "xlif", "xlf"]);
 
         test.done();
     },
