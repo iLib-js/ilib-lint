@@ -474,6 +474,17 @@ The constructor of this class should define the following properties:
 - `this.name` - a unique name for this rule
 - `this.description` - a description of this type of rule to display to users
 
+There are no rules for what to name your Rule, but the Rules written by the ilib-js
+organization generally follow some conventions. Resource checkers start with
+"resource-" and source file checkers start with "source-". For resource checkers,
+the word "match" is used at the end when checking both the source and target,
+"source" is used at the end when checking only the source string, and "target"
+when checking only the target string. So, "resource-urls-match" is a Rule that
+checks resource files for URLs in both the source and target. You are free to name
+your rules anything you like or to follow the conventions above. The important
+part is that the name should uniquely identify your Rule so that you can use it
+in config files.
+
 The rule should also override and implement the getRuleType() method and the
 [match()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Rule.js) method,
 which takes an intermediate representation as a parameter and returns either
