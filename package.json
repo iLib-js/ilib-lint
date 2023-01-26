@@ -15,8 +15,8 @@
         "lint",
         "locale"
     ],
-    "homepage": "https://github.com/iLib-js/ilib-common",
-    "bugs": "https://github.com/iLib-js/ilib-common/issues",
+    "homepage": "https://github.com/iLib-js/i18nlint",
+    "bugs": "https://github.com/iLib-js/i18nlint/issues",
     "email": "marketing@translationcircle.com",
     "license": "Apache-2.0",
     "author": {
@@ -47,14 +47,14 @@
         "url": "https://github.com/iLib-js/i18nlint.git"
     },
     "engines": {
-        "node": ">=10.0.0"
+        "node": ">=14.0.0"
     },
     "scripts": {
         "build": "npm run build:prod",
         "build:prod": "grunt babel --mode=prod",
         "build:dev": "grunt babel --mode=dev",
         "build:test": "webpack-cli --config webpack-test.config.js",
-        "dist": "npm-run-all doc build:prod build:pkg; npm pack",
+        "dist": "npm-run-all doc build:prod; npm pack",
         "test": "LANG=en_US.UTF8 node test/testSuite.js",
         "debug": "LANG=en_US.UTF8 node --inspect-brk test/testSuite.js",
         "clean": "git clean -f -d src test",
@@ -63,20 +63,22 @@
     },
     "devDependencies": {
         "assertextras": "^1.1.0",
-        "docdash": "^1.2.0",
-        "jsdoc": "^3.6.11",
-        "jsdoc-to-markdown": "^7.1.1",
+        "docdash": "^2.0.1",
+        "jsdoc": "^4.0.0",
+        "jsdoc-to-markdown": "^8.0.0",
         "nodeunit": "^0.11.3",
         "npm-run-all": "^4.1.5"
     },
     "dependencies": {
-        "@formatjs/intl": "^2.5.1",
+        "@formatjs/intl": "^2.6.3",
+        "i18nlint-common": "^1.2.0",
         "ilib-common": "^1.1.3",
+        "ilib-lint-plugin-test": "file:test/ilib-lint-plugin-test",
         "ilib-locale": "^1.2.2",
-        "ilib-localeinfo": "^1.0.4",
-        "ilib-tools-common": "^1.2.0",
-        "json5": "^2.2.1",
-        "log4js": "^6.7.0",
+        "ilib-localeinfo": "^1.0.5",
+        "ilib-tools-common": "^1.4.0",
+        "json5": "^2.2.3",
+        "log4js": "^6.7.1",
         "micromatch": "^4.0.5",
         "options-parser": "^0.4.0"
     }

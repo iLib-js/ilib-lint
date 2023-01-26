@@ -18,40 +18,26 @@
  */
 import { ResourceString } from 'ilib-tools-common';
 
-import ResourceRegExpChecker from '../src/rules/ResourceRegExpChecker.js';
+import ResourceMatcher from '../src/rules/ResourceMatcher.js';
+import { regexRules } from '../src/PluginManager.js';
 
-import Result from '../src/Result.js';
+import { Result } from 'i18nlint-common';
 
-const rules = {
-    url: {
-        name: "resource-url-match",
-        description: "Ensure that URLs that appear in the source string are also used in the translated string",
-        note: "URL '{matchString}' from source string does not appear in target string",
-        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
-    },
-    namedParams: {
-        name: "resource-named-params",
-        description: "Ensure that named parameters that appear in the source string are also used in the translated string",
-        note: "The named parameter '{matchString}' from the source string does not appear in the target string",
-        regexps: [ "\\{\\w+\\}" ]
-    }
-};
-
-export const testRegExpRules = {
-    testResourceRegExpChecker: function(test) {
+export const testResourceMatcher = {
+    testResourceMatcher: function(test) {
         test.expect(1);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         test.done();
     },
 
-    testResourceRegExpCheckerMissingName: function(test) {
+    testResourceMatcherMissingName: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new ResourceRegExpChecker({
+            const rule = new ResourceMatcher({
                 description: "a",
                 note: "b",
                 regexps: [ "a" ]
@@ -61,11 +47,11 @@ export const testRegExpRules = {
         test.done();
     },
 
-    testResourceRegExpCheckerMissingDescription: function(test) {
+    testResourceMatcherMissingDescription: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new ResourceRegExpChecker({
+            const rule = new ResourceMatcher({
                 name: "a",
                 note: "b",
                 regexps: [ "a" ]
@@ -75,11 +61,11 @@ export const testRegExpRules = {
         test.done();
     },
 
-    testResourceRegExpCheckerMissingNote: function(test) {
+    testResourceMatcherMissingNote: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new ResourceRegExpChecker({
+            const rule = new ResourceMatcher({
                 name: "a",
                 description: "a",
                 regexps: [ "a" ]
@@ -89,11 +75,11 @@ export const testRegExpRules = {
         test.done();
     },
 
-    testResourceRegExpCheckerMissingRegexps: function(test) {
+    testResourceMatcherMissingRegexps: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new ResourceRegExpChecker({
+            const rule = new ResourceMatcher({
                 name: "a",
                 description: "a",
                 note: "b"
@@ -106,7 +92,7 @@ export const testRegExpRules = {
     testResourceURLMatch: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -129,7 +115,7 @@ export const testRegExpRules = {
     testResourceURLMatchMismatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -149,7 +135,7 @@ export const testRegExpRules = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "url.test");
-        test.equal(actual[0].description, "URL 'http://www.box.com' from source string does not appear in target string");
+        test.equal(actual[0].description, "URL 'http://www.box.com' from the source string does not appear in the target string");
         test.equal(actual[0].highlight, "Target: Dies hat ein URL http://www.yahoo.com<e0></e0>");
         test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
         test.equal(actual[0].pathName, "x/y");
@@ -160,7 +146,7 @@ export const testRegExpRules = {
     testResourceURLMatchMultiple: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -183,7 +169,7 @@ export const testRegExpRules = {
     testResourceURLMatchMultipleReverseOrder: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -206,7 +192,7 @@ export const testRegExpRules = {
     testResourceURLMatchMultipleMissing: function(test) {
         test.expect(3);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -230,7 +216,7 @@ export const testRegExpRules = {
     testResourceURLNonMatch1: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -253,7 +239,7 @@ export const testRegExpRules = {
     testResourceURLNonMatch2: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.url);
+        const rule = new ResourceMatcher(regexRules[0]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -276,7 +262,7 @@ export const testRegExpRules = {
     testResourceNamedParamsMatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceRegExpChecker(rules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -307,7 +293,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNoMatch: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -330,7 +316,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNoMatchCapitals: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -353,7 +339,7 @@ export const testRegExpRules = {
     testResourceNamedParamsMatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceRegExpChecker(rules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -384,7 +370,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNotInPlurals: function(test) {
         test.expect(2);
 
-        const rule = new ResourceRegExpChecker(rules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({
@@ -409,7 +395,7 @@ export const testRegExpRules = {
     testResourceNamedParamsNotInPluralsButOutsideOfThem: function(test) {
         test.expect(9);
 
-        const rule = new ResourceRegExpChecker(rules.namedParams);
+        const rule = new ResourceMatcher(regexRules[1]);
         test.ok(rule);
 
         const actual = rule.match({

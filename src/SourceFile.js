@@ -1,7 +1,7 @@
 /*
  * SourceFile.js - Represent a source file
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,37 +19,43 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
-import { getLocaleFromPath } from 'ilib-tools-common';
+import { getLocaleFromPath, TranslationSet } from 'ilib-tools-common';
 
-import ParserFactory from './ParserFactory.js';
+import DirItem from './DirItem.js';
 
 /**
- * @class Represent a set of ilib-lint rules.
+ * @class Represent a source file
  */
-class SourceFile {
+class SourceFile extends DirItem {
     /**
      * Construct a source file instance
      * The options parameter can contain any of the following properties:
      *
      * - filePath {String} path to the file
-     * - settings {Object} the settings from the ilib-lint config that
-     *   apply to this file
+     *
+     * @constructor
+     * @param {String} filePath path to the source file
+     * @param {Object} options options for constructing this source file
+     * @param {Project} project the project where this file is located
      */
-    constructor(options) {
-        if (!options || !options.filePath) {
+    constructor(filePath, options, project) {
+        super(filePath, options, project);
+        if (!options || !filePath) {
             throw "Incorrect options given to SourceFile constructor";
         }
-        this.filePath = options.filePath;
-        this.settings = options.settings;
-    }
+        this.filePath = filePath;
+        this.type = "line";
 
-    /**
-     * Return the file path for this source file.
-     *
-     * @returns {String} the file path for this source file
-     */
-    getFilePath() {
-        return this.filePath;
+        this.filetype = options.filetype;
+
+        let parserClasses;
+        let extension = path.extname(this.filePath);
+        if (extension) {
+            // remove the dot
+            extension = extension.substring(1);
+            const pm = project.getParserManager();
+            this.parserClasses = pm.get(extension);
+        }
     }
 
     /**
@@ -69,40 +75,31 @@ class SourceFile {
     /**
      * Parse the current source file into a list of resources (in the case of
      * resource files, or lines in the case of other types of files.
+     * @param {Array.<Parser>} parsers parsers for the current source file
      * @returns {Object} the parsed representation of this file
      */
     parse() {
         if (!this.filePath) return;
-        let extension = path.extname(this.filePath);
-        if (extension) {
-            // remove the dot
-            extension = extension.substring(1);
-            const parserClasses = ParserFactory({extension});
-            if (parserClasses && parserClasses.length) {
-                const parser = new parserClasses[0]({
-                    filePath: this.filePath
+        if (this.parserClasses && this.parserClasses.length) {
+            const ts = new TranslationSet();
+            for (const parser of this.parserClasses) {
+                const p = new parser({
+                    filePath: this.filePath,
+                    settings: this.settings
                 });
-                parser.parse();
-                this.resources = parser.getResources();
+                p.parse();
                 this.type = "resource";
-                
-                return this.resources;
+                ts.addAll(p.getResources());
             }
+
+            this.resources = ts.getAll();
+            return this.resources;
+        } else {
+            const data = fs.readFileSync(this.filePath, "utf-8");
+            this.lines = data.split(/\n/g);
+            this.type = "line";
+            return this.lines;
         }
-
-        const data = fs.readFileSync(this.filePath, "utf-8");
-        this.lines = data.split(/\n/g);
-        this.type = "line";
-
-        return this.lines;
-    }
-    
-    /**
-     * Return the type of this file, resource or line.
-     * @returns {String} the type of this file
-     */
-    getType() {
-        return this.type;
     }
 
     /**
@@ -110,12 +107,11 @@ class SourceFile {
      * This method parses the source file and applies each rule in turn
      * using the given locales.
      *
-     * @param {RuleSet} ruleset a set of rules to apply
      * @param {Array.<Locale>} locales a set of locales to apply
      * @returns {Array.<Result>} a list of natch results
      */
-    findIssues(ruleset, locales) {
-        let issues = [], rules;
+    findIssues(locales) {
+        let issues = [], names;
         const detectedLocale = this.getLocaleFromPath();
 
         if (detectedLocale && locales.indexOf(detectedLocale) < -1) {
@@ -123,38 +119,31 @@ class SourceFile {
             return issues;
         }
 
-        switch (this.type) {
-        case "line":
-            rules = ruleset.getRules("line");
-            if (rules && rules.length) {
+        const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === this.type));
+        rules.forEach(rule => {
+            switch (this.type) {
+            case "line":
                 for (let i = 0; i < this.lines.length; i++) {
-                    rules.forEach(rule => {
-                        const result = rule.match({
-                            line: this.lines[i],
-                            locale: detectedLocale,
-                            file: this.filePath
-                        });
-                        if (result) issues = issues.concat(result);
+                    const result = rule.match({
+                        line: this.lines[i],
+                        locale: detectedLocale,
+                        file: this.filePath
                     });
+                    if (result) issues = issues.concat(result);
                 }
-            }
-            break;
-        case "resource":
-            rules = ruleset.getRules("resource");
-            if (rules && rules.length) {
+                break;
+            case "resource":
                 this.resources.forEach(resource => {
-                    rules.forEach(rule => {
-                        const result = rule.match({
-                            locale: resource.getTargetLocale(),
-                            resource,
-                            file: this.filePath
-                        });
-                        if (result) issues = issues.concat(result);
+                    const result = rule.match({
+                        locale: resource.getTargetLocale(),
+                        resource,
+                        file: this.filePath
                     });
+                    if (result) issues = issues.concat(result);
                 });
+                break;
             }
-            break;
-        }
+        });
 
         return issues;
     }

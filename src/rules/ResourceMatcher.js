@@ -1,8 +1,8 @@
 /*
- * ResourceRegExpChecker.js - rule to check if URLs in the source string also
+ * ResourceMatcher.js - rule to check if URLs in the source string also
  * appear in the target string
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@
  * limitations under the License.
  */
 
-import Rule from '../Rule.js';
-import Result from '../Result.js';
+import { Rule, Result } from 'i18nlint-common';
 import { stripPlurals } from './utils.js';
 
 function findMissing(source, target) {
@@ -36,7 +35,7 @@ function findMissing(source, target) {
  * @class Resource checker class that checks that any regular expressions
  * that matches in the source also appears in the translation.
  */
-class ResourceRegExpChecker extends Rule {
+class ResourceMatcher extends Rule {
     /**
      * Construct a new regular expression-based resource checker.
      *
@@ -51,19 +50,22 @@ class ResourceRegExpChecker extends Rule {
      *   param that is supported.)
      * - regexps - an array of strings that encode regular expressions to
      *   look for
+     *
+     * @param {Object} options options as documented above
+     * @constructor
      */
     constructor(options) {
         super(options);
 
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
-            throw "Missing required options for the ResourceRegExpChecker constructor";
+            throw "Missing required options for the ResourceMatcher constructor";
         }
         ["name", "description", "regexps", "note", "sourceLocale"].forEach(prop => {
             this[prop] = options[prop];
         });
         this.sourceLocale = this.sourceLocale || "en-US";
 
-        // this may throw if you got to the syntax wrong:
+        // this may throw if you got to the regexp syntax wrong:
         this.re = this.regexps.map(regexp => new RegExp(regexp, "g"));
     }
 
@@ -176,4 +178,4 @@ class ResourceRegExpChecker extends Rule {
     return;
 }
 
-export default ResourceRegExpChecker;
+export default ResourceMatcher;

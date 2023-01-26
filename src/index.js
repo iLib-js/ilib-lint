@@ -1,7 +1,8 @@
+#!/usr/bin/env node
 /*
  * index.js - main program of ilib-lint
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +18,8 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import OptionsParser from 'options-parser';
 import Locale from 'ilib-locale';
@@ -26,18 +27,14 @@ import { JSUtils, Utils, Path } from 'ilib-common';
 import json5 from 'json5';
 import log4js from 'log4js';
 
+import PluginManager from './PluginManager.js';
+import Project from './Project.js';
 import walk from './walk.js';
-import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
-import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
-import ResourceRegExpChecker from './rules/ResourceRegExpChecker.js';
-import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
-import FormatterFactory from './FormatterFactory.js';
-import RuleSet from './RuleSet.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
 
-var logger = log4js.getLogger("ilib-lint.root");
+const logger = log4js.getLogger("ilib-lint.root");
 
 const optionConfig = {
     help: {
@@ -58,6 +55,11 @@ const optionConfig = {
         "default": false,
         help: "Only return errors and supress warnings"
     },
+    formatter: {
+        short: "f",
+        "default": "ansi-console-formatter",
+        help: "Name the formatter that should be used to format the output."
+    },
     locales: {
         short: "l",
         "default": "en-AU,en-CA,en-GB,en-IN,en-NG,en-PH,en-PK,en-US,en-ZA,de-DE,fr-CA,fr-FR,es-AR,es-ES,es-MX,id-ID,it-IT,ja-JP,ko-KR,pt-BR,ru-RU,tr-TR,vi-VN,zxx-XX,zh-Hans-CN,zh-Hant-HK,zh-Hant-TW,zh-Hans-SG",
@@ -72,6 +74,11 @@ const optionConfig = {
         short: "q",
         flag: true,
         help: "Produce no progress output during the run, except for error messages. Instead exit with a return value. Zero indicates no errors, and a positive exit value indicates errors."
+    },
+    verbose: {
+        short: "v",
+        flag: true,
+        help: "Produce lots of progress output during the run."
     }
 };
 
@@ -88,7 +95,15 @@ if (options.args.length < 1) {
 }
 */
 
-if (!options.opt.quiet) logger.info("ilib-lint - Copyright (c) 2022 JEDLsoft, All rights reserved.");
+if (options.opt.quiet) {
+    const rootlogger = log4js.getLogger();
+    logger.level = "error";
+} else if (options.opt.verbose) {
+    const rootlogger = log4js.getLogger();
+    logger.level = "debug";
+}
+
+logger.info("ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.");
 
 let paths = options.args;
 if (paths.length === 0) {
@@ -110,28 +125,21 @@ options.opt.locales = options.opt.locales.map(spec => {
 // used if no explicit config is found or given
 const defaultConfig = {
     "name": "ilib-lint",
+    // top 27 locales on the internet by volume
     "locales": [
-        "en-US",
-        "de-DE",
-        "ja-JP",
-        "ko-KR"
+        "en-AU", "en-CA", "en-GB", "en-IN", "en-NG", "en-PH",
+        "en-PK", "en-US", "en-ZA", "de-DE", "fr-CA", "fr-FR",
+        "es-AR", "es-ES", "es-MX", "id-ID", "it-IT", "ja-JP",
+        "ko-KR", "pt-BR", "ru-RU", "tr-TR", "vi-VN",
+        "zh-Hans-CN", "zh-Hant-HK", "zh-Hant-TW", "zh-Hans-SG"
     ],
-    "paths": {
-        "**/*.json": {
-            "locales": [
-                "en-US",
-                "de-DE",
-                "ja-JP"
-            ]
-        },
-        "**/*.xliff": {
-            "rules": {
-                "resource-icu-plurals": true,
-                "resource-quote-style": true,
-                "resource-url-match": true,
-                "resource-named-params": "localeOnly"
-            }
+    "fileTypes": {
+        "xliff": {
+            "ruleset": "resource-check-all"
         }
+    },
+    "paths": {
+        "**/*.xliff": "xliff"
     },
     "excludes": [
         "**/.git",
@@ -143,71 +151,58 @@ const defaultConfig = {
 };
 
 let config = {};
-if (options.opt.config) {
-    if (!fs.existsSync(options.opt.config)) {
-        logger.warn(`Config file ${options.opt.config} does not exist. Aborting...`);
-        process.exit(2);
-    }
-    const data = fs.readFileSync(options.opt.config, "utf-8");
+if (options.opt.config && !fs.existsSync(options.opt.config)) {
+    logger.warn(`Config file ${options.opt.config} does not exist. Aborting...`);
+    process.exit(2);
+}
+let configPath = options.opt.config || "./ilib-lint-config.json";
+if (configPath && fs.existsSync(configPath)) {
+    const data = fs.readFileSync(configPath, "utf-8");
     config = json5.parse(data);
 } else {
     config = defaultConfig;
 }
 
-if (!options.opt.quiet) logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
+logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 
-let files = [];
+// loads and manage the plugins
 
-paths.forEach(pathName => {
-    files = files.concat(walk(pathName, {
-        quiet: options.opt.quiet,
-        config
-    }));
+const pluginMgr = new PluginManager({
+    rulesData: config.rules
 });
 
-const rules = {
-    url: {
-        name: "resource-url-match",
-        description: "Ensure that URLs that appear in the source string are also used in the translated string",
-        note: "URL '{matchString}' from the source string does not appear in the target string",
-        regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ]
-    },
-    namedParams: {
-        name: "resource-named-params",
-        description: "Ensure that named parameters that appear in the source string are also used in the translated string",
-        note: "The named parameter '{matchString}' from the source string does not appear in the target string",
-        regexps: [ "\\{\\w+\\}" ]
-    }
-};
+const rootProject = new Project(".", {
+    pluginManager: pluginMgr
+}, config);
 
-const defaultRules = new RuleSet([
-    new ResourceICUPlurals(),
-    new ResourceQuoteStyle(),
-    new ResourceRegExpChecker(rules.url),
-    new ResourceRegExpChecker(rules.namedParams),
-    new ResourceUniqueKeys()
-]);
-const fmt = FormatterFactory(options.opt);
+paths.forEach(pathName => {
+    walk(pathName, rootProject);
+});
+
+await rootProject.init();
+
+const fm = pluginMgr.getFormatterManager();
+const fmt = fm.get(options.opt.formatter);
+if (!fmt) {
+    logger.error(`Could not find formatter ${options.opt}. Aborting...`);
+    process.exit(3);
+}
 
 // main loop
 let exitValue = 0;
+const results = rootProject.findIssues(options.opt.locales);
 
-files.forEach(file => {
-    logger.trace(`Examining ${file.filePath}`);
-    file.parse();
-    const issues = file.findIssues(defaultRules, options.opt.locales);
-    issues.forEach(issue => {
-        const str = fmt.format(issue);
-        if (str) {
-            if (issue.severity === "error") {
-                logger.error(str);
-                exitValue = 2;
-            } else if (!options.opt.errorsOnly) {
-                logger.warn(str);
-                exitValue = Math.max(exitValue, 1);
-            }
+results.forEach(result => {
+    const str = fmt.format(result);
+    if (str) {
+        if (result.severity === "error") {
+            logger.error(str);
+            exitValue = 2;
+        } else if (!options.opt.errorsOnly) {
+            logger.warn(str);
+            exitValue = Math.max(exitValue, 1);
         }
-    });
+    }
 });
 
 process.exit(exitValue);

@@ -19,16 +19,47 @@
 
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
-
+import XliffParser from '../src/plugins/XliffParser.js';
 import SourceFile from '../src/SourceFile.js';
+import Project from '../src/Project.js';
+import PluginManager from '../src/PluginManager.js';
+
+const config = {
+    "name": "test",
+    "locales": [
+        "en-US",
+        "de-DE",
+        "ja-JP",
+        "ko-KR"
+    ],
+    "paths": {
+        "**/*.json": {
+            "locales": [
+                "en-US",
+                "de-DE",
+                "ja-JP"
+            ]
+        },
+        "**/*.xliff": {
+            "rules": {
+                "resource-icu-plurals": true,
+                "resource-quote-style": true,
+                "resource-url-match": true,
+                "resource-named-params": "localeOnly"
+            }
+        }
+    }
+};
+
+const project = new Project(".", {
+    pluginManager: new PluginManager()
+}, config);
 
 export const testSourceFile = {
     testSourceFile: function(test) {
         test.expect(2);
 
-        const sf = new SourceFile({
-            filePath: "a"
-        });
+        const sf = new SourceFile("a", {}, project);
         test.ok(sf);
         test.equal(sf.getFilePath(), "a");
 
@@ -49,7 +80,7 @@ export const testSourceFile = {
         test.expect(1);
 
         test.throws(() => {
-            new SourceFile({});
+            new SourceFile("", {}, {});
         });
 
         test.done();
@@ -58,12 +89,11 @@ export const testSourceFile = {
     testSourceFileWithSettings: function(test) {
         test.expect(2);
 
-        const sf = new SourceFile({
-            filePath: "a",
+        const sf = new SourceFile("a", {
             settings: {
                 template: "x"
             }
-        });
+        }, project);
         test.ok(sf);
         test.equal(sf.getFilePath(), "a");
 
@@ -73,12 +103,11 @@ export const testSourceFile = {
     testSourceFileGetLocaleFromPath: function(test) {
         test.expect(2);
 
-        const sf = new SourceFile({
-            filePath: "src/filemanager/xrs/messages_de_DE.properties",
+        const sf = new SourceFile("src/filemanager/xrs/messages_de_DE.properties", {
             settings: {
                 template: "[dir]/messages_[localeUnder].properties"
             }
-        });
+        }, project);
         test.ok(sf);
         test.equal(sf.getLocaleFromPath(), "de-DE");
 
@@ -88,12 +117,11 @@ export const testSourceFile = {
     testSourceFileGetLocaleFromPathNone: function(test) {
         test.expect(2);
 
-        const sf = new SourceFile({
-            filePath: "src/filemanager/xrs/Excludes.java",
+        const sf = new SourceFile("src/filemanager/xrs/Excludes.java", {
             settings: {
                 template: "[dir]/messages_[localeUnder].properties"
             }
-        });
+        }, project);
         test.ok(sf);
         test.equal(sf.getLocaleFromPath(), "");
 
@@ -103,11 +131,10 @@ export const testSourceFile = {
     testSourceFileGetLocaleFromPathNoTemplate: function(test) {
         test.expect(2);
 
-        const sf = new SourceFile({
-            filePath: "src/filemanager/xrs/messages_de_DE.properties",
+        const sf = new SourceFile("src/filemanager/xrs/messages_de_DE.properties", {
             settings: {
             }
-        });
+        }, project);
         test.ok(sf);
         test.equal(sf.getLocaleFromPath(), "");
 
@@ -117,11 +144,10 @@ export const testSourceFile = {
     testSourceFileParse: function(test) {
         test.expect(3);
 
-        const sf = new SourceFile({
-            filePath: "test/testfiles/test.xliff",
+        const sf = new SourceFile("test/testfiles/test.xliff", {
             settings: {
             }
-        });
+        }, project);
         test.ok(sf);
         const resources = sf.parse();
         test.ok(resources);
@@ -131,16 +157,16 @@ export const testSourceFile = {
     },
 
     testSourceFileParseRightContents: function(test) {
-        test.expect(5);
+        test.expect(6);
 
-        const sf = new SourceFile({
-            filePath: "test/testfiles/test.xliff",
+        const sf = new SourceFile("test/testfiles/test.xliff", {
             settings: {
             }
-        });
+        }, project);
         test.ok(sf);
         const resources = sf.parse();
         test.ok(resources);
+        test.equal(resources.length, 1);
         test.equal(resources[0].source, "Asdf asdf");
         test.equal(resources[0].target, "foobarfoo");
         test.equal(resources[0].reskey, "foobar");
@@ -151,13 +177,12 @@ export const testSourceFile = {
     testSourceFileParseRightType: function(test) {
         test.expect(3);
 
-        const sf = new SourceFile({
-            filePath: "test/testfiles/test.xliff",
+        const sf = new SourceFile("test/testfiles/test.xliff", {
             settings: {
             }
-        });
+        }, project);
         test.ok(sf);
-        test.ok(!sf.getType());
+        test.equal(sf.getType(), "line");
         const resources = sf.parse();
         test.equal(sf.getType(), "resource");
 
@@ -167,11 +192,10 @@ export const testSourceFile = {
     testSourceFileParseNonResourceFile: function(test) {
         test.expect(3);
 
-        const sf = new SourceFile({
-            filePath: "test/ilib-mock/index.js",
+        const sf = new SourceFile("test/ilib-mock/index.js", {
             settings: {
             }
-        });
+        }, project);
         test.ok(sf);
         const lines = sf.parse();
         test.ok(lines);
@@ -183,17 +207,15 @@ export const testSourceFile = {
     testSourceFileParseNonResRightType: function(test) {
         test.expect(3);
 
-        const sf = new SourceFile({
-            filePath: "test/ilib-mock/index.js",
+        const sf = new SourceFile("test/ilib-mock/index.js", {
             settings: {
             }
-        });
+        }, project);
         test.ok(sf);
-        test.ok(!sf.getType());
+        test.equal(sf.getType(), "line");
         const resources = sf.parse();
         test.equal(sf.getType(), "line");
 
         test.done();
-    },
+    }
 };
-

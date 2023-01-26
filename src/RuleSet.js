@@ -1,7 +1,7 @@
 /*
- * RuleSet.js - Represent a set of ilib-lint rules
+ * RuleSet.js - Represent a set of ilib-lint rule instances
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,59 +17,73 @@
  * limitations under the License.
  */
 
-import Rule from './Rule.js';
-
 /**
- * @class Represent a set of ilib-lint rules.
+ * @class Represent a set of ilib-lint rules. The rule manager keeps
+ * track of all the rules that are known to this run of the linter,
+ * and a RuleSet is a named set of rule instances that have been
+ * initialized with certain options for some or all of those rules.
  */
 class RuleSet {
     /**
      * Construct an ilib-lint rule set.
+     *
+     * @constructor
+     * @param {Array.<Rule>} rules a list of rules to initialize
+     * this set
      */
     constructor(rules) {
         this.rules = {};
-        this.byname = {};
         if (rules) {
-            rules.forEach(rule => {
-                this.addRule(rule);
-            });
+            this.add(rules);
         }
     }
 
     /**
-     * @param {Rule} rule
+     * Add a rule instnace to this rule set.
+     * @param {Rule} rule the instance to add
      */
     addRule(rule) {
-        if (!rule || !(rule instanceof Rule)) return;
-        const name = rule.getName();
-        if (this.byname[name]) return; // already added
-        this.byname[name] = rule;
-        const type = rule.getRuleType();
-        if (!this.rules[type]) {
-            this.rules[type] = [rule];
-        } else {
-            this.rules[type].push(rule);
-        }
+        if (!rule || typeof(rule) !== 'object' || !rule.getName()) return;
+        this.rules[rule.getName()] = rule;
     }
 
     /**
-     * Return the rule with the given name.
+     * Add rule instances to this rule set.
+     * If a rule is added that already exists in the set, it will
+     * override the previous definition. This way, the rule is
+     * only ever added once.
      *
-     * @param {String} name name to search for
-     * @returns {Rule|undefined} the rule with the given name or
-     * undefined if the rule is not known
+     * @param {Array.<Rule>} rules a list of rule instances to add
+     */
+    add(rules) {
+        if (!rules || typeof(rules) !== 'object' || !Array.isArray(rules)) return;
+        rules.forEach(this.addRule.bind(this));
+    }
+
+    /**
+     * Return the rule instance with the given name.
+     *
+     * @param {String} name unique name of the rule
+     * @returns {Rule} a rule instance with the given name, or undefined
+     * if the rule is not part of this set
      */
     getRule(name) {
-        return this.byname[name];
+        return this.rules[name];
     }
 
     /**
-     * Return all the rules of the given type in this set.
-     * @param {String} type to search for
-     * @returns {Array.<Rule>} the list of rules of the requested type
+     * Return a list of rule instances in this set.
+     *
+     * @param {String} type optional parameter that restricts
+     * the type of rules returned. If no type is specified,
+     * all rules are returned.
+     *
+     * @returns {Array.<Rule>} a list of rule instances
      */
     getRules(type) {
-        return this.rules[type] || [];
+        return Object.values(this.rules).filter(rule => {
+            return (!type || rule.getRuleType() === type) ? rule : undefined;
+        });
     }
 
     /**
@@ -77,7 +91,7 @@ class RuleSet {
      * @returns {Number} the number of rules in this set
      */
     getSize() {
-        return Object.keys(this.byname).length;
+        return Object.keys(this.rules).length;
     }
 };
 

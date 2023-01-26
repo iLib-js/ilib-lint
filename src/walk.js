@@ -1,7 +1,7 @@
 /*
  * walk.js - walk a directory tree
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
+import JSON5 from 'json5';
 
 import SourceFile from './SourceFile.js';
+import Project from './Project.js';
 
 const logger = log4js.getLogger("ilib-lint.walk");
 
@@ -46,8 +48,6 @@ const logger = log4js.getLogger("ilib-lint.walk");
  * The options parameter may include any of the following optional properties:
  *
  * <ul>
- * <li><i>quiet</i> (boolean) - whether or not to give output while walking
- * the directory tree
  * <li><i>excludes</i> (Array of strings) - A list of micromatch patterns to
  * exclude from the output. If a pattern matches a directory, that directory
  * will not be recursively searched.
@@ -57,29 +57,39 @@ const logger = log4js.getLogger("ilib-lint.walk");
  * </ul>
  *
  * @param {String} root Directory to walk
- * @param {Object} options Options controlling how this walk happens. (See
- * the description for more details.)
- * @returns {Array.<SourceFile>} an array of file names in the directory, filtered
+ * @param {Project} project Project
+ * @returns {Array.<DirItem>} an array of file names in the directory, filtered
  * by the the excludes and includes list
  */
-function walk(root, options) {
-    let results = [], projectRoot = false, newProject, list;
+function walk(root, project) {
+    let list;
 
     if (typeof(root) !== "string") {
-        return results;
+        return [];
     }
 
-    const { config, quiet = false } = options || {};
-    const includes = config && config.paths ? Object.keys(config.paths) : ["**"];
-    let excludes = config && config.excludes;
-    let pathName, relPath, included, stat, glob;
+    let includes = project.getIncludes();
+    let excludes = project.getExcludes();
+    let pathName, included, stat, glob;
 
     try {
-        if (fs.existsSync(root)) {
-            stat = fs.statSync(root);
-            if (stat && stat.isDirectory()) {
+        stat = fs.statSync(root, {throwIfNoEntry: false});
+        if (stat) {
+            if (stat.isDirectory()) {
+                const configFileName = path.join(root, "ilib-lint-config.json");
+                if (fs.existsSync(configFileName)) {
+                    const data = fs.readFileSync(configFileName, "utf-8");
+                    const config = JSON5.parse(data);
+                    const newProject = new Project(root, project.getOptions(), config);
+                    includes = newProject.getIncludes();
+                    excludes = newProject.getExcludes();
+                    logger.trace(`New project ${newProject.getName()}`);
+                    project.add(newProject);
+                    project = newProject;
+                }
+
                 list = fs.readdirSync(root);
-                if (!quiet) logger.trace("Searching " + root);
+                logger.trace(`Searching dir ${root}`);
 
                 if (list && list.length !== 0) {
                     list.sort().forEach((file) => {
@@ -91,26 +101,26 @@ function walk(root, options) {
                         included = true;
 
                         if (excludes) {
-                            if (!quiet) logger.trace(`There are excludes. Relpath is ${pathName}`);
+                            logger.trace(`There are excludes. Relpath is ${pathName}`);
                             included = !mm.isMatch(pathName, excludes);
                         }
 
                         if (included) {
-                            results = results.concat(walk(pathName, options));
+                            walk(pathName, project);
                         }
                     });
                 }
-            } else {
-                // file
+            } else if (stat.isFile()) {
                 included = false;
 
                 if (includes) {
-                    if (!quiet) logger.trace(`There are includes.`);
+                    logger.trace(`There are includes.`);
                     mm.match(root, includes, {
                         onMatch: (params) => {
                             if (!glob && params.isMatch) {
                                 glob = params.glob;
-                                excludes = config && ((config.paths && config.paths[glob] && config.paths[glob].excludes) || excludes);
+                                const settings = project.getSettings(glob);
+                                excludes = settings.excludes || excludes;
                                 included = excludes ? !mm.isMatch(root, excludes) : true;
                             }
                         }
@@ -118,29 +128,28 @@ function walk(root, options) {
                 }
 
                 if (included) {
-                    if (!quiet) logger.trace(`${pathName} ... included`);
+                    logger.trace(`${root} ... included`);
                     glob = glob || "**";
-                    results.push(new SourceFile({
-                        filePath: root,
-                        settings: config.paths && config.paths[glob]
-                    }));
+                    const filetype = project.getFileTypeForPath(root);
+                    project.add(new SourceFile(root, {
+                        settings: project.getSettings(glob),
+                        filetype
+                    }, project));
                 } else {
-                    if (!quiet) logger.trace(`${pathName} ... excluded`);
+                    logger.trace(`${pathName} ... excluded`);
                 }
-            }
+            } // else just ignore it
         } else {
-            if (!quiet) logger.warn(`File ${pathName} does not exist.`);
+            logger.warn(`File ${root} does not exist.`);
         }
     } catch (e) {
         // if the readdirSync did not work, it's maybe a file?
         if (fs.existsSync(root)) {
-            return [new SourceFile({
-                filePath: root
-            })];
+            project.add(new SourceFile(root, {}, project));
         }
     }
 
-    return results;
+    return project.get();
 }
 
 export default walk;

@@ -1,7 +1,7 @@
 /*
  * testSuiteFiles.js - list the test files in this directory
  * 
- * Copyright © 2022, JEDLSoft
+ * Copyright © 2022-2023, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,14 @@
  */
 
 const files = [
-    "testFormatterFactory.js",
-    "testParserFactory.js",
-    "testRegExpRules.js",
-    "testResult.js",
+    "testFileType.js",
+    "testFormatterManager.js",
+    "testParserManager.js",
+    "testPluginManager.js",
+    "testProject.js",
+    "testResourceMatcher.js",
     "testRules.js",
+    "testRuleManager.js",
     "testRuleSet.js",
     "testRuleUtils.js",
     "testSourceFile.js",
