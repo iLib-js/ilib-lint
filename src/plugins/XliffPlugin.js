@@ -21,7 +21,7 @@ import { Plugin } from 'i18nlint-common';
 import XliffParser from './XliffParser.js';
 
 /**
- * @class Ilib-lint plugin that can parse XLIFF files
+ * @class ilib-lint plugin that can parse XLIFF files
  */
 class XliffPlugin extends Plugin {
     /**
