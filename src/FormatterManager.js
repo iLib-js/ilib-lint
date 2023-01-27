@@ -1,7 +1,7 @@
 /*
  * FormatterManager.js - Factory to create and return the right formatter
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ class FormatterManager {
      */
     constructor(options) {
         this.formatterCache = {};
+        this.descriptions = {};
         this.add([AnsiConsoleFormatter]);
         if (options && options.formatters) {
             this.add(options.formatters);
@@ -80,10 +81,12 @@ class FormatterManager {
                 if (typeof(fmt) === 'function' && Object.getPrototypeOf(fmt).name === "Formatter") {
                     formatter = new fmt();
                     this.formatterCache[formatter.getName()] = fmt;
+                    this.descriptions[formatter.getName()] = formatter.getDescription();
                     logger.trace(`Added programmatic formatter ${formatter.getName()} to the formatter manager`);
                 } else if (typeof(fmt) === 'object') {
                     formatter = fmt;
                     this.formatterCache[fmt.name] = fmt;
+                    this.descriptions[fmt.name] = fmt.description;
                     logger.trace(`Added declarative formatter ${fmt.name} to the formatter manager`);
                 }
             }
@@ -92,6 +95,16 @@ class FormatterManager {
                 if (typeof(formatter.getName) === 'function') logger.debug(`Name is ${formatter.getName()}`);
             }
         }
+    }
+
+    /**
+     * Return an object where the properties are the formatter names and the
+     * values are the formatter descriptions.
+     *
+     * @returns {Object} the formatter names and descriptions
+     */
+    getDescriptions() {
+        return this.descriptions;
     }
 
     /**

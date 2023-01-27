@@ -1,7 +1,7 @@
 /*
  * ParserManager.js - Factory to create and return the right parser for the file
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ class ParserManager {
      */
     constructor() {
         this.parserCache = {};
+        this.descriptions = {};
     }
 
     /**
@@ -68,12 +69,24 @@ class ParserManager {
                     }
                     this.parserCache[extension].push(parser);
                 }
+                this.descriptions[p.getName()] = p.getDescription();
+
                 logger.trace(`Added parser to the parser manager.`);
             } else {
                 logger.debug("Attempt to add parser that does not inherit from Parser to the parser manager");
             }
         }
     };
+
+    /**
+     * Return an object where the properties are the parser names and the
+     * values are the parser descriptions.
+     *
+     * @returns {Object} the parser names and descriptions
+     */
+    getDescriptions() {
+        return this.descriptions;
+    }
 
     // for use with the unit tests
     clear() {

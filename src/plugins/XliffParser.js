@@ -37,6 +37,8 @@ class XliffParser extends Parser {
         });
 
         this.extensions = [ "xliff", "xlif", "xlf" ];
+        this.name = "xliff";
+        this.description = "A parser for xliff files. This can handle xliff v1.2 and v2.0 format files."
     }
 
     /**
@@ -56,7 +58,7 @@ class XliffParser extends Parser {
     getResources() {
         return this.xliff.getResources();
     }
-    
+
     getExtensions() {
         return this.extensions;
     }

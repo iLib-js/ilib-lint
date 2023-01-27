@@ -58,6 +58,7 @@ class RuleManager {
     constructor() {
         this.ruleCache = {};
         this.ruleDefs = {};
+        this.descriptions = {};
 
         // some built-in default rules
         this.addRule(ResourceICUPlurals);
@@ -97,14 +98,7 @@ class RuleManager {
             if (typeof(rule) === 'function' && Object.getPrototypeOf(rule).name === "Rule") {
                 const p = new rule({});
                 this.ruleCache[p.getName()] = rule;
-                /*
-                for (const extension of p.getExtensions()) {
-                    if (!this.ruleCache[extension]) {
-                        this.ruleCache[extension] = [];
-                    }
-                    this.ruleCache[extension].push(rule);
-                }
-                */
+                this.descriptions[p.getName()] = p.getDescription();
                 logger.trace(`Added rule ${p.getName} to the rule manager.`);
             } else if (typeof(rule) === 'object') {
                 if (typeof(rule.type) !== 'string' || typeof(rule.name) !== 'string' ||
@@ -114,6 +108,7 @@ class RuleManager {
                 }
                 this.ruleCache[rule.name] = rule;
                 logger.trace(`Added rule ${rule.name} to the rule manager.`);
+                this.descriptions[rule.name] = rule.description;
             } else {
                 logger.debug("Attempt to add a rule that is not declarative nor a class that inherits from Rule");
                 throw "Attempt to add a rule that is not declarative nor a class that inherits from Rule";
@@ -191,6 +186,16 @@ class RuleManager {
     }
 
     /**
+     * Return an object where the properties are the rule names and the
+     * values are the rule descriptions.
+     *
+     * @returns {Object} the rule names and descriptions
+     */
+    getDescriptions() {
+        return this.descriptions;
+    }
+
+    /**
      * Add a ruleset definition to this rule manager.
      *
      * @param {String} name the name of this ruleset definition
@@ -225,6 +230,24 @@ class RuleManager {
      */
     getRuleSetDefinition(name) {
         return this.ruleDefs[name];
+    }
+
+    /**
+     * Return all of the ruleset definitions. The definitions are
+     * returned as an object where the properties are the name of the
+     * ruleset, and the value is an array that names all of the
+     * rules in that set.
+     *
+     * @returns {Object} the ruleset definitions
+     */
+    getRuleSetDefinitions() {
+        const definitions = {};
+
+        for (let name in this.ruleDefs) {
+            const definition = this.ruleDefs[name];
+            definitions[name] = Object.keys(definition);
+        }
+        return definitions;
     }
 
     /**

@@ -76,3 +76,33 @@ export function stripPlurals(str, locale) {
         return str;
     }
 }
+
+export function wrap(text, length) {
+    // already short enough?
+    if (text.length < length) return [text];
+
+    let output = [];
+
+    for (let i = length; i > 0; i--) {
+        if (text[i] === ' ' || text[i] === '\t') {
+            output.push(text.substring(0, i));
+            output.push(text.substring(i+1));
+            return output;
+        }
+    }
+
+    // no spaces? Just cut it off
+    output.push(text.substring(0, length - index.length));
+    output.push(text.substring(length - index.length));
+    return output;
+}
+
+const spaces = "                                                     ";
+
+export function indent(arr, length) {
+    arr[0] = spaces.substring(0, length) + arr[0];
+    for (let i = 1; i < arr.length; i++) {
+        arr[i] = spaces.substring(0, 2*length) + arr[i];
+    }
+    return arr;
+}
