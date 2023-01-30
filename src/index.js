@@ -212,7 +212,7 @@ results.forEach(result => {
 });
 
 if (results.length) {
-    logger.info(`Errors: ${errors}, Warnings: ${warnings}`);
+    logger.info(options.opt.errorsOnly ? `Errors: ${errors}` : `Errors: ${errors}, Warnings: ${warnings}`);
 }
 
 process.exit(exitValue);
