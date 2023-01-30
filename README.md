@@ -563,6 +563,13 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.1.0
+
+- added support for plugins
+- added count at the end of the output
+- added the --list option to show what things are available to
+  put in the config file
+
 ### v1.0.0
 
 - initial version
