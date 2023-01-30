@@ -238,6 +238,8 @@ if (!fmt) {
 // main loop
 let exitValue = 0;
 const results = rootProject.findIssues(options.opt.locales);
+let errors = 0;
+let warnings = 0;
 
 results.forEach(result => {
     const str = fmt.format(result);
@@ -245,11 +247,19 @@ results.forEach(result => {
         if (result.severity === "error") {
             logger.error(str);
             exitValue = 2;
-        } else if (!options.opt.errorsOnly) {
-            logger.warn(str);
-            exitValue = Math.max(exitValue, 1);
+            errors++;
+        } else {
+            warnings++;
+            if (!options.opt.errorsOnly) {
+                logger.warn(str);
+                exitValue = Math.max(exitValue, 1);
+            }
         }
     }
 });
+
+if (results.length) {
+    logger.info(options.opt.errorsOnly ? `Errors: ${errors}` : `Errors: ${errors}, Warnings: ${warnings}`);
+}
 
 process.exit(exitValue);
