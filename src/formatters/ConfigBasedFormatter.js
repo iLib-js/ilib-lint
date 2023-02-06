@@ -75,7 +75,7 @@ export class ConfigBasedFormatter extends Formatter {
         let output = this.template;
         
         for (let prop of resultFields) {
-            output = output.replace(new RegExp(`{${prop}}`, "g"), result[prop]);
+            output = output.replace(new RegExp(`{${prop}}`, "g"), result[prop] || "");
         }
         output = output.replace(new RegExp("{ruleName}", "g"), result.rule.getName());
         output = output.replace(new RegExp("{ruleDescription}", "g"), result.rule.getDescription());
@@ -85,7 +85,8 @@ export class ConfigBasedFormatter extends Formatter {
         output = output.replace(/<\/e\d>/g, this.highlightEnd);
 
         if (typeof(result.rule.getLink) === 'function') {
-            output = output.replace(new RegExp("{ruleLink}", "g"), result.rule.getLink());
+            const link = result.rule.getLink() || "";
+            output = output.replace(new RegExp("{ruleLink}", "g"), link);
         }
         return output;
     }
