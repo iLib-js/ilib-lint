@@ -59,7 +59,7 @@ class ResourceMatcher extends Rule {
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
             throw "Missing required options for the ResourceMatcher constructor";
         }
-        ["name", "description", "regexps", "note", "sourceLocale"].forEach(prop => {
+        ["name", "description", "regexps", "note", "sourceLocale", "link"].forEach(prop => {
             this[prop] = options[prop];
         });
         this.sourceLocale = this.sourceLocale || "en-US";

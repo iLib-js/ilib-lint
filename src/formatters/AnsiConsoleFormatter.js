@@ -62,6 +62,9 @@ class AnsiConsoleFormatter extends Formatter {
         output = output.replace(/<e\d><\/e\d>/g, "\u001B[91m \u001B[0m");
         output = output.replace(/<e\d>/g, "\u001B[91m");
         output = output.replace(/<\/e\d>/g, "\u001B[0m");
+        if (result.rule.getLink()) {
+            output += `  More info: ${result.rule.getLink()}\n`;
+        }
         return output;
     }
 }

@@ -83,6 +83,10 @@ export class ConfigBasedFormatter extends Formatter {
         output = output.replace(/<e\d><\/e\d>/g, `${this.highlightStart}${this.highlightEnd}`);
         output = output.replace(/<e\d>/g, this.highlightStart);
         output = output.replace(/<\/e\d>/g, this.highlightEnd);
+
+        if (typeof(result.rule.getLink) === 'function') {
+            output = output.replace(new RegExp("{ruleLink}", "g"), result.rule.getLink());
+        }
         return output;
     }
 }

@@ -56,7 +56,7 @@ export const testFormatterManager = {
 
         let formatter = mgr.get("minimal-formatter");
         test.ok(!formatter);
-        
+
         mgr.add([{
             "name": "minimal-formatter",
             "description": "A minimalistic formatter that only outputs the path and the highlight",
@@ -64,7 +64,7 @@ export const testFormatterManager = {
             "highlightStart": ">>",
             "highlightEnd": "<<"
         }]);
-        
+
         formatter = mgr.get("minimal-formatter");
         test.ok(formatter);
         test.equal(formatter.getName(), "minimal-formatter");
@@ -79,7 +79,7 @@ export const testFormatterManager = {
         test.ok(mgr);
 
         test.equal(mgr.size(), 1);
-        
+
         mgr.add([{
             "name": "minimal-formatter",
             "description": "A minimalistic formatter that only outputs the path and the highlight",
@@ -87,7 +87,7 @@ export const testFormatterManager = {
             "highlightStart": ">>",
             "highlightEnd": "<<"
         }]);
-        
+
         test.equal(mgr.size(), 2);
 
         test.done();
@@ -101,7 +101,7 @@ export const testFormatterManager = {
 
         let formatter = mgr.get("minimal-formatter");
         test.ok(!formatter);
-        
+
         mgr.add([{
             "name": "minimal-formatter",
             "description": "A minimalistic formatter that only outputs the path and the highlight",
@@ -109,7 +109,7 @@ export const testFormatterManager = {
             "highlightStart": ">>",
             "highlightEnd": "<<"
         }]);
-        
+
         formatter = mgr.get("minimal-formatter");
         test.ok(formatter);
 
@@ -130,6 +130,46 @@ export const testFormatterManager = {
             source: "test"
         }));
         const expected = "a/b/c/d.txt:\nTarget: Do not >>add<< the context.\n";
+        test.equal(actual, expected);
+        test.done();
+    },
+
+    testFormatterManagerFormatWithAllFields: function(test) {
+        test.expect(4);
+
+        const mgr = new FormatterManager();
+        test.ok(mgr);
+
+        let formatter = mgr.get("full-formatter");
+        test.ok(!formatter);
+
+        mgr.add([{
+            "name": "full-formatter",
+            "description": "A full formatter that outputs everything",
+            "template": "{id}\n{severity}\n{lineNumber}\n{source}\n{pathName}\n{highlight}\n{ruleDescription}\n{ruleName}\n{ruleLink}\n",
+            "highlightStart": ">>",
+            "highlightEnd": "<<"
+        }]);
+
+        const testrule = new ResourceMatcher({
+            "name": "x",
+            "description": "y",
+            "regexps":["test"],
+            "note": "q",
+            "sourceLocale": "en-US",
+            "link": "https://github.com/docs/index.md"
+        });
+        const actual = formatter.format(new Result({
+            pathName: "a/b/c/d.txt",
+            highlight: "Target: Do not <e0>add</e0> the context.",
+            severity: "error",
+            rule: testrule,
+            lineNumber: 2342,
+            description: `target string cannot contain the word "test"`,
+            id: "test.id",
+            source: "test"
+        }));
+        const expected = "test.id\nerror\n2342\ntest\na/b/c/d.txt\nTarget: Do not >>add<< the context.\ny\nx\nhttps://github.com/docs/index.md\n";
         test.equal(actual, expected);
         test.done();
     }
