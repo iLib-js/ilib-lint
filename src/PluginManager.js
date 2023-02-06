@@ -40,7 +40,7 @@ export const regexRules = [
         description: "Ensure that URLs that appear in the source string are also used in the translated string",
         note: "URL '{matchString}' from the source string does not appear in the target string",
         regexps: [ "((https?|github|ftps?|mailto|file|data|irc):\\/\\/)([\\da-zA-Z\\.-]+)\\.([a-zA-Z\\.]{2,6})([\\/\w\\.-]*)*\\/?" ],
-        link: "https://github.com/ilib-js/i18nlint/docs/resource-url-match.md"
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-url-match.md"
     },
     {
         type: "resource-matcher",
@@ -48,7 +48,7 @@ export const regexRules = [
         description: "Ensure that named parameters that appear in the source string are also used in the translated string",
         note: "The named parameter '{matchString}' from the source string does not appear in the target string",
         regexps: [ "\\{\\w+\\}" ],
-        link: "https://github.com/ilib-js/i18nlint/docs/resource-named-params.md"
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-named-params.md"
     }
 ];
 

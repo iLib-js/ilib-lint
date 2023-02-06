@@ -36,7 +36,7 @@ class ResourceUniqueKeys extends Rule {
         this.name = "resource-unique-keys";
         this.description = "Ensure that the keys are unique within a locale across all resource files";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
-        this.link = "https://github.com/ilib-js/i18nlint/docs/resource-unique-keys.md";
+        this.link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-unique-keys.md";
         this.ts = new TranslationSet();
     }
 
