@@ -248,11 +248,12 @@ Here is an example of a configuration file:
     "rules": [
         // test that named parameters like {param} appear in both the source and target
         {
-            "type": "resource-matcher",
             "name": "resource-named-params",
+            "type": "resource-matcher",
             "description": "Ensure that named parameters that appear in the source string are also used in the translated string",
             "note": "The named parameter '{matchString}' from the source string does not appear in the target string",
-            "regexps": [ "\\{\\w+\\}" ]
+            "regexps": [ "\\{\\w+\\}" ],
+            "link": "https://github.com/ilib-js/i18nlint/blob/main/README.md"
         }
     ],
     "formatters": [
