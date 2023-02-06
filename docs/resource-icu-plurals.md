@@ -1,8 +1,8 @@
 # resource-icu-plurals
 
 If you received this error, then there is a syntax error in your plural string in
-translation of a source string. Strings are expected to follow the ICU format
-plurals. More info can be found [here](https://formatjs.io/docs/core-concepts/icu-syntax/#plural-format).
+the source String or in the translation string. Strings are expected to follow the
+ICU format plurals. More info can be found [here](https://formatjs.io/docs/core-concepts/icu-syntax/#plural-format).
 
 There may be multiple types of errors:
 
