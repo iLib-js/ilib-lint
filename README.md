@@ -248,11 +248,12 @@ Here is an example of a configuration file:
     "rules": [
         // test that named parameters like {param} appear in both the source and target
         {
-            "type": "resource-matcher",
             "name": "resource-named-params",
+            "type": "resource-matcher",
             "description": "Ensure that named parameters that appear in the source string are also used in the translated string",
             "note": "The named parameter '{matchString}' from the source string does not appear in the target string",
-            "regexps": [ "\\{\\w+\\}" ]
+            "regexps": [ "\\{\\w+\\}" ],
+            "link": "https://github.com/ilib-js/i18nlint/blob/main/README.md"
         }
     ],
     "formatters": [
@@ -459,6 +460,11 @@ Each declarative rule should have the following properties:
   in the source and target strings. If any one of those expressions
   matches in the source, but not the target, the rule will create
   a Result that will be formatted for the user.
+* link (String) - an URL to a website with a more complete explanation
+  of the problem that was found and how the problem can be resolved
+  and avoided in the future. Often, this is a link to a markdown file
+  in the docs folder on the github repo for the plugin, but it can be
+  any link you like.
 
 Programmatic rules are used when the requirements for the rules are more complicated
 than a simple regular expression string can handle. For example, a rule that checks
@@ -509,6 +515,22 @@ Declarative formatters are simply a template string where properties of the Resu
 instances are formatted into it. These can be declared in the config file. (See the
 example config file above.)
 
+The template strings may have any of the following fields from the Result instance
+in them:
+
+- severity
+- pathName
+- lineNumber
+- source
+- highlight
+- id
+
+Additionally, they may have the following fields from the Rule instance in them:
+
+- ruleDescription
+- ruleName
+- ruleLink
+
 Programmatic formatters are used when the requirements for formatting are more complicated
 than a simple template string can handle. For example, a CSV formatter would have to make
 sure that fields in a CSV file are escaped properly to conform to CSV syntax, and would
@@ -521,6 +543,8 @@ The constructor of this class should define the following properties:
 
 - `this.name` - a unique name for this formatter
 - `this.description` - a description of this type of formatter to display to users
+- `this.link` - (optional) a link to a web page that gives a more complete explanation
+  the the rule and how to resolve the problem it found
 
 The formatter should also override and implement the
 [format()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Formatter.js) method,
@@ -562,6 +586,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ## Release Notes
+
+### v1.2.0
+
+- added Rule links to give rule writers a way of giving a more complete explanation
+  of the rule and how to resolve the problem.
 
 ### v1.1.0
 
