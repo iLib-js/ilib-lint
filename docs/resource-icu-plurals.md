@@ -19,5 +19,3 @@ There may be multiple types of errors:
 - The translation contains a plural in the right syntax, but it uses plural categories
   that the target locale does not need. In this case, simply remove the unneeded
   plural category translation.
-
-  
