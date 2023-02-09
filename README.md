@@ -587,6 +587,11 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.2.1
+
+- fixed packaging problem where the test plugin was listed in the
+  dependencies instead of the devDependencies
+
 ### v1.2.0
 
 - added Rule links to give rule writers a way of giving a more complete explanation
