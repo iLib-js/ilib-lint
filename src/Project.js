@@ -474,7 +474,7 @@ class Project extends DirItem {
      */
     run() {
         let exitValue = 0;
-        const results = this.findIssues(this.options.opt.locales);
+        const results = this.findIssues(this.options.locales);
         let errors = 0;
         let warnings = 0;
 
@@ -488,7 +488,7 @@ class Project extends DirItem {
                         errors++;
                     } else {
                         warnings++;
-                        if (!options.opt.errorsOnly) {
+                        if (!this.options.errorsOnly) {
                             logger.warn(str);
                             exitValue = Math.max(exitValue, 1);
                         }
@@ -498,7 +498,7 @@ class Project extends DirItem {
         }
 
         if (results.length) {
-            logger.info(this.options.opt.errorsOnly ? `Errors: ${errors}` : `Errors: ${errors}, Warnings: ${warnings}`);
+            logger.info(this.options.errorsOnly ? `Errors: ${errors}` : `Errors: ${errors}, Warnings: ${warnings}`);
         }
 
         return exitValue;
