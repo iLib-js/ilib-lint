@@ -17,7 +17,6 @@
  * limitations under the License.
  */
 
-import walk from '../src/walk.js';
 import SourceFile from '../src/SourceFile.js';
 import Project from '../src/Project.js';
 import PluginManager from '../src/PluginManager.js';
@@ -64,7 +63,11 @@ const project = new Project(".", {
 export const testWalk = {
     testWalkDir: function(test) {
         test.expect(2);
-        const files = walk("test/ilib-mock", project).sort(cmp);
+        const project = new Project("test/ilib-mock", {
+            pluginManager: new PluginManager()
+        }, config);
+
+        const files = project.walk("test/ilib-mock").sort(cmp);
         test.equal(files.length, 11);
         const expected = [
             "test/ilib-mock/assemble.mjs",
@@ -86,9 +89,12 @@ export const testWalk = {
 
     testWalkFile: function(test) {
         test.expect(2);
-        project.clear();
 
-        const files = walk("test/ilib-mock/index.js", project);
+        const project = new Project("test/ilib-mock", {
+            pluginManager: new PluginManager()
+        }, config);
+
+        const files = project.walk("test/ilib-mock/index.js");
         test.equal(files.length, 1);
         test.deepEqual(files[0].getFilePath(), "test/ilib-mock/index.js");
 
@@ -97,9 +103,11 @@ export const testWalk = {
 
     testWalkNonExistentDir: function(test) {
         test.expect(1);
-        project.clear();
 
-        const files = walk("test/ilib-mock/asdf", project).sort(cmp);
+        const project = new Project("test/ilib-mock/asdf", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = project.walk("test/ilib-mock/asdf").sort(cmp);
         test.equal(files.length, 0);
 
         test.done();
@@ -107,9 +115,11 @@ export const testWalk = {
 
     testWalkFileNonJSFile: function(test) {
         test.expect(1);
-        project.clear();
 
-        const files = walk("test/ilib-mock/locale/mockdata.json", project).sort(cmp);
+        const project = new Project("test/ilib-mock/locale", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = project.walk("test/ilib-mock/locale/mockdata.json").sort(cmp);
         test.equal(files.length, 1);
 
         test.done();
@@ -117,9 +127,11 @@ export const testWalk = {
 
     testWalkBadParamsUndefined: function(test) {
         test.expect(1);
-        project.clear();
 
-        const files = walk(undefined, project).sort(cmp);
+        const project = new Project("test/ilib-mock/locale", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = project.walk(undefined).sort(cmp);
         test.equal(files.length, 0);
 
         test.done();
@@ -127,9 +139,11 @@ export const testWalk = {
 
     testWalkBadParamsBoolean: function(test) {
         test.expect(1);
-        project.clear();
 
-        const files = walk(true, project).sort();
+        const project = new Project("test/ilib-mock/locale", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = project.walk(true).sort();
         test.equal(files.length, 0);
 
         test.done();
@@ -137,9 +151,11 @@ export const testWalk = {
 
     testWalkBadParamsNumber: function(test) {
         test.expect(1);
-        project.clear();
 
-        const files = walk(3, project).sort();
+        const project = new Project("test/ilib-mock/locale", {
+            pluginManager: new PluginManager()
+        }, config);
+        const files = project.walk(3).sort();
         test.equal(files.length, 0);
 
         test.done();
@@ -147,7 +163,6 @@ export const testWalk = {
 
     testWalkDirWithJsonExtension: function(test) {
         test.expect(2);
-        project.clear();
 
         const config = {
             paths: {
@@ -158,7 +173,7 @@ export const testWalk = {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = walk("test/ilib-mock/locale", proj).sort(cmp);
+        const files = proj.walk("test/ilib-mock/locale").sort(cmp);
         test.equal(files.length, 7);
         const expected = [
             "test/ilib-mock/locale/de/DE/mockdata.json",
@@ -187,7 +202,7 @@ export const testWalk = {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = walk("test/ilib-mock", proj).sort(cmp);
+        const files = proj.walk("test/ilib-mock").sort(cmp);
         test.equal(files.length, 3);
         const expected = [
             "test/ilib-mock/assemble.mjs",
@@ -213,7 +228,7 @@ export const testWalk = {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = walk("test/ilib-mock", proj).sort(cmp);
+        const files = proj.walk("test/ilib-mock").sort(cmp);
         test.equal(files.length, 4);
         const expected = [
             "test/ilib-mock/assemble.mjs",
@@ -240,7 +255,7 @@ export const testWalk = {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = walk("test/ilib-mock", proj).sort(cmp);
+        const files = proj.walk("test/ilib-mock").sort(cmp);
         test.equal(files.length, 2);
         const expected = [
             "test/ilib-mock/ilib-mock-1.0.0.tgz",
@@ -268,7 +283,7 @@ export const testWalk = {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = walk("test/ilib-mock", proj).sort(cmp);
+        const files = proj.walk("test/ilib-mock").sort(cmp);
         test.equal(files.length, 4);
         const expected = [
             "test/ilib-mock/assemble.mjs",

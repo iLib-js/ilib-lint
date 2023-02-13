@@ -180,10 +180,10 @@ const rootProject = new Project(".", {
     pluginManager: pluginMgr
 }, config);
 
-paths.forEach(pathName => {
-    walk(pathName, rootProject);
-});
+rootProject.scan(paths);
 
+// this will load all the plugins, so we can print out the list of
+// them below if needed
 await rootProject.init();
 
 if (options.opt.list) {
@@ -228,38 +228,7 @@ if (options.opt.list) {
     process.exit(0);
 }
 
-const fm = pluginMgr.getFormatterManager();
-const fmt = fm.get(options.opt.formatter);
-if (!fmt) {
-    logger.error(`Could not find formatter ${options.opt}. Aborting...`);
-    process.exit(3);
-}
-
 // main loop
-let exitValue = 0;
-const results = rootProject.findIssues(options.opt.locales);
-let errors = 0;
-let warnings = 0;
-
-results.forEach(result => {
-    const str = fmt.format(result);
-    if (str) {
-        if (result.severity === "error") {
-            logger.error(str);
-            exitValue = 2;
-            errors++;
-        } else {
-            warnings++;
-            if (!options.opt.errorsOnly) {
-                logger.warn(str);
-                exitValue = Math.max(exitValue, 1);
-            }
-        }
-    }
-});
-
-if (results.length) {
-    logger.info(options.opt.errorsOnly ? `Errors: ${errors}` : `Errors: ${errors}, Warnings: ${warnings}`);
-}
+const exitValue = rootProject.run();
 
 process.exit(exitValue);
