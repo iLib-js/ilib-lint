@@ -87,9 +87,11 @@ class SourceFile extends DirItem {
                     filePath: this.filePath,
                     settings: this.settings
                 });
-                p.parse();
-                this.type = "resource";
-                ts.addAll(p.getResources());
+                this.intermediateFormat = p.parse();
+                this.type = p.getType();
+                if (this.type === "resource") {
+                    ts.addAll(this.intermediateFormat);
+                }
             }
 
             this.resources = ts.getAll();
@@ -142,6 +144,15 @@ class SourceFile extends DirItem {
                     if (result) issues = issues.concat(result);
                 });
                 break;
+            default:
+                // all other cases -- don't iterate, just call the rule
+                // with the whole intermediate format
+                const result = rule.match({
+                    locale: resource.getTargetLocale(),
+                    intermediateFormat: this.intermediateFormat,
+                    file: this.filePath
+                });
+                if (result) issues = result;
             }
         });
 

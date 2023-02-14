@@ -649,6 +649,9 @@ limitations under the License.
 
 - added resource-state-checker Rule so that you can ensure that all
   resources have a particular state field value
+- moved functionality into Project class
+    - main loop moved from index.js into the run() method
+    - directory walk function moved to a method of Project
 
 ### v1.2.1
 

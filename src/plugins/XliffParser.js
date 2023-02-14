@@ -47,6 +47,7 @@ class XliffParser extends Parser {
     parse() {
         const data = fs.readFileSync(this.path, "utf-8");
         this.xliff.parse(data);
+        return this.xliff.getResources();
     }
 
     /**
@@ -57,6 +58,10 @@ class XliffParser extends Parser {
      */
     getResources() {
         return this.xliff.getResources();
+    }
+
+    getType() {
+        return "resource";
     }
 
     getExtensions() {
