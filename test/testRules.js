@@ -20,6 +20,7 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
+import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
 
 import { Result } from 'i18nlint-common';
 
@@ -994,6 +995,192 @@ export const testRules = {
                 }`
             }),
         ]
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceStateCheckerMatchNoError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceStateChecker({
+            // all resources should have this state:
+            param: "translated"
+        });
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff",
+                state: "translated"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceStateCheckerMatchArrayNoError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceStateChecker({
+            // all resources should have this state:
+            param: [ "translated", "needs-review" ]
+        });
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff",
+                state: "needs-review"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceStateCheckerMatchError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceStateChecker({
+            // all resources should have this state:
+            param: "translated"
+        });
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff",
+                state: "new"
+            }),
+            file: "x/y"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Resources must have the following state: translated",
+            id: "plural.test",
+            highlight: 'Resource found with disallowed state: <e0>new</e0>',
+            rule,
+            pathName: "x/y",
+            locale: "de-DE",
+            source: '{count, plural, one {This is singular} other {This is plural}}'
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceStateCheckerMatchArrayError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceStateChecker({
+            // all resources should have this state:
+            param: [ "translated", "needs-review" ]
+        });
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff",
+                state: "new"
+            }),
+            file: "x/y"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Resources must have one of the following states: translated, needs-review",
+            id: "plural.test",
+            highlight: 'Resource found with disallowed state: <e0>new</e0>',
+            rule,
+            pathName: "x/y",
+            locale: "de-DE",
+            source: '{count, plural, one {This is singular} other {This is plural}}'
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceStateCheckerMatchDefaultNoError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceStateChecker();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff",
+                state: "translated"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceStateCheckerMatchDefaultError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceStateChecker();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff",
+                state: "new"
+            }),
+            file: "x/y"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Resources must have the following state: translated",
+            id: "plural.test",
+            highlight: 'Resource found with disallowed state: <e0>new</e0>',
+            rule,
+            pathName: "x/y",
+            locale: "de-DE",
+            source: '{count, plural, one {This is singular} other {This is plural}}'
+        });
         test.deepEqual(actual, expected);
 
         test.done();
