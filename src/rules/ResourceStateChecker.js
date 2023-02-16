@@ -25,7 +25,22 @@ import { Rule, Result } from 'i18nlint-common';
  */
 class ResourceStateChecker extends Rule {
     /**
-     * Make a new rule instance.
+     * Make a new rule instance. The options parameter can have
+     * a "param" property in it that will contain one of the
+     * following types of values:
+     *
+     * - string - all Resource instances should have a state value
+     *   equal to this value
+     * - array of string - all Resource instances should have
+     *   a state value that is one of the values contained in
+     *   this array
+     *
+     * If there is no "param" property (ie. the user just put
+     * `"resource-state-checker": true,` into their ruleset
+     * configuration), then this checker will check that all
+     * Resource instances have the state field value of
+     * "translated".
+     *
      * @param {Object} options options as documented above
      * @constructor
      */
@@ -38,8 +53,8 @@ class ResourceStateChecker extends Rule {
 
         if (options) {
             if (typeof(options.param) === "string") {
-	            // enforce the given string as the only state allowed
-	            this.states = [ options.param ];
+                // enforce the given string as the only state allowed
+                this.states = [ options.param ];
             } else if (Array.isArray(options.param)) {
                 this.states = options.param;
             }

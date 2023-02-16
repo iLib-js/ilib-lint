@@ -10,7 +10,7 @@ they might look like this:
 ```xml
     <trans-unit id="1" resname="example" restype="string" datatype="javascript">
       <source>This is the source text.</source>
-      <target state="translated">Dies ist def Quelltext</target>
+      <target state="translated">Dies ist der Quelltext</target>
     </trans-unit>
 ```
 
@@ -20,7 +20,7 @@ In xliff 2.0 resources, they might look like this:
     <unit id="1">
       <segment>
         <source>This is the source text.</source>
-        <target state="translated">Dies ist def Quelltext</target>
+        <target state="translated">Dies ist der Quelltext</target>
       </segment>
     </unit>
 ```
