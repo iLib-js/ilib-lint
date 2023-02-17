@@ -183,51 +183,53 @@ rootProject.scan(paths);
 
 // this will load all the plugins, so we can print out the list of
 // them below if needed
-await rootProject.init();
+rootProject.init().then(() => {
+    if (options.opt.list) {
+        const ruleMgr = pluginMgr.getRuleManager();
+        const ruleDescriptions = ruleMgr.getDescriptions();
+        const ruleSetDefinitions = ruleMgr.getRuleSetDefinitions();
+        const parserMgr = pluginMgr.getParserManager();
+        const parserDescriptions = parserMgr.getDescriptions();
+        const formatterMgr = pluginMgr.getFormatterManager();
+        const formatterDescriptions = formatterMgr.getDescriptions();
 
-if (options.opt.list) {
-    const ruleMgr = pluginMgr.getRuleManager();
-    const ruleDescriptions = ruleMgr.getDescriptions();
-    const ruleSetDefinitions = ruleMgr.getRuleSetDefinitions();
-    const parserMgr = pluginMgr.getParserManager();
-    const parserDescriptions = parserMgr.getDescriptions();
-    const formatterMgr = pluginMgr.getFormatterManager();
-    const formatterDescriptions = formatterMgr.getDescriptions();
+        let name;
 
-    let name;
+        let output = [
+            "These items are available to use in your configuration",
+            "",
+            "Parsers:"
+        ];
+        for (name in parserDescriptions) {
+            output = output.concat(indent(wrap(`${name} - ${parserDescriptions[name]}`, 76, "  "), 2));
+        }
+        output.push("");
 
-    let output = [
-        "These items are available to use in your configuration",
-        "",
-        "Parsers:"
-    ];
-    for (name in parserDescriptions) {
-        output = output.concat(indent(wrap(`${name} - ${parserDescriptions[name]}`, 76, "  "), 2));
+        output.push("Rules:");
+        for (name in ruleDescriptions) {
+            output = output.concat(indent(wrap(`${name} - ${ruleDescriptions[name]}`, 76, "  "), 2));
+        }
+        output.push("");
+
+        output.push("Rulesets:");
+        for (name in ruleSetDefinitions) {
+            output = output.concat(indent(wrap(`${name} - ${ruleSetDefinitions[name].join(", ")}`, 76, "  "), 2));
+        }
+        output.push("");
+
+        output.push("Formatters:");
+        for (name in formatterDescriptions) {
+            output = output.concat(indent(wrap(`${name} - ${formatterDescriptions[name]}`, 76, "  "), 2));
+        }
+
+        console.log(output.join('\n'));
+        process.exit(0);
     }
-    output.push("");
 
-    output.push("Rules:");
-    for (name in ruleDescriptions) {
-        output = output.concat(indent(wrap(`${name} - ${ruleDescriptions[name]}`, 76, "  "), 2));
-    }
-    output.push("");
+    // main loop
+    const exitValue = rootProject.run();
 
-    output.push("Rulesets:");
-    for (name in ruleSetDefinitions) {
-        output = output.concat(indent(wrap(`${name} - ${ruleSetDefinitions[name].join(", ")}`, 76, "  "), 2));
-    }
-    output.push("");
-
-    output.push("Formatters:");
-    for (name in formatterDescriptions) {
-        output = output.concat(indent(wrap(`${name} - ${formatterDescriptions[name]}`, 76, "  "), 2));
-    }
-
-    console.log(output.join('\n'));
-    process.exit(0);
-}
-
-// main loop
-const exitValue = rootProject.run();
-
-process.exit(exitValue);
+    process.exit(exitValue);
+}).catch(e => {
+    logger.error(e);
+});

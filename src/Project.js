@@ -477,6 +477,7 @@ class Project extends DirItem {
         const results = this.findIssues(this.options.locales);
         let errors = 0;
         let warnings = 0;
+        let suggestions = 0;
 
         if (results) {
             results.forEach(result => {
@@ -486,19 +487,32 @@ class Project extends DirItem {
                         logger.error(str);
                         exitValue = 2;
                         errors++;
-                    } else {
+                    } else if (result.severity === "warning") {
                         warnings++;
                         if (!this.options.errorsOnly) {
                             logger.warn(str);
                             exitValue = Math.max(exitValue, 1);
+                        }
+                    } else {
+                        suggestions++;
+                        if (!this.options.errorsOnly) {
+                            logger.warn(str);
                         }
                     }
                 }
             });
         }
 
+        const fmt = new Intl.NumberFormat("en-US", {
+            maxFractionDigits: 2
+        });
+        logger.info(`Files scanned: ${this.files.length}`);
         if (results.length) {
-            logger.info(this.options.errorsOnly ? `Errors: ${errors}` : `Errors: ${errors}, Warnings: ${warnings}`);
+            logger.info(`Errors: ${errors}, avg per file: ${fmt.format(errors/this.files.length)}`);
+            if (!this.options.errorsOnly) {
+                logger.info(`Warnings: ${warnings}, avg per file: ${fmt.format(warnings/this.files.length)}`);
+                logger.info(`Suggestions: ${suggestions}, avg per file: ${fmt.format(suggestions/this.files.length)}`);
+            }
         }
 
         return exitValue;
