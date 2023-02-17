@@ -496,7 +496,7 @@ class Project extends DirItem {
                     } else {
                         suggestions++;
                         if (!this.options.errorsOnly) {
-                            logger.warn(str);
+                            logger.info(str);
                         }
                     }
                 }
