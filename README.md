@@ -333,6 +333,10 @@ The built-in rules are:
   string are also used in the translated string
 - resource-unique-key - Ensure that the keys are unique within a locale across
   all resource files
+- resource-state-checker - Ensure that all resources have a particular state
+  field value, or one of an array of state field values. The parameter for this
+  rule should either be a string or an array of strings that name the allowed
+  values.
 
 ## Writing Plugins
 
@@ -586,6 +590,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ## Release Notes
+
+### v1.3.0
+
+- added resource-state-checker Rule so that you can ensure that all
+  resources have a particular state field value
 
 ### v1.2.1
 
