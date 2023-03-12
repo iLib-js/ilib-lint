@@ -32,6 +32,7 @@ const files = [
     "testRuleSet.js",
     "testRuleUtils.js",
     "testSourceFile.js",
+    "testSourceRegexpChecker.js",
     "testwalk.js",
     "testXliffPlugin.js"
 ];

@@ -23,7 +23,7 @@ import log4js from 'log4js';
 import ResourceMatcher from './rules/ResourceMatcher.js';
 import ResourceSourceChecker from './rules/ResourceSourceChecker.js';
 import ResourceTargetChecker from './rules/ResourceTargetChecker.js';
-import SourceFileChecker from './rules/SourceFileChecker.js';
+import SourceRegexpChecker from './rules/SourceRegexpChecker.js';
 
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
@@ -35,7 +35,7 @@ const typeMap = {
     "resource-matcher": ResourceMatcher,
     "resource-source": ResourceSourceChecker,
     "resource-target": ResourceTargetChecker,
-    "sourcefile": SourceFileChecker
+    "sourcefile": SourceRegexpChecker
 };
 
 /**

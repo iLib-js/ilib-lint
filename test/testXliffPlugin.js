@@ -89,7 +89,7 @@ export const testXliffPlugin = {
         
         const XliffParser = parsers[0];
 
-        const parser = new XliffParser({filePath: "./test/testfiles/test.xliff"});
+        const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
         test.ok(parser);
         parser.parse();
 
@@ -111,7 +111,7 @@ export const testXliffPlugin = {
         
         const XliffParser = parsers[0];
 
-        const parser = new XliffParser({filePath: "./test/testfiles/test.xliff"});
+        const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
         test.ok(parser);
         parser.parse();
 

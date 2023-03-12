@@ -1,5 +1,5 @@
 /*
- * ResourceMatcher.js - rule to check if URLs in the source string also
+ * ResourceMatcher.js - rule to check if regexps in the source string also
  * appear in the target string
  *
  * Copyright © 2022-2023 JEDLSoft

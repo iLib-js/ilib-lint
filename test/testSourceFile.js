@@ -144,7 +144,7 @@ export const testSourceFile = {
     testSourceFileParse: function(test) {
         test.expect(3);
 
-        const sf = new SourceFile("test/testfiles/test.xliff", {
+        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
@@ -159,7 +159,7 @@ export const testSourceFile = {
     testSourceFileParseRightContents: function(test) {
         test.expect(6);
 
-        const sf = new SourceFile("test/testfiles/test.xliff", {
+        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
@@ -177,7 +177,7 @@ export const testSourceFile = {
     testSourceFileParseRightType: function(test) {
         test.expect(3);
 
-        const sf = new SourceFile("test/testfiles/test.xliff", {
+        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
