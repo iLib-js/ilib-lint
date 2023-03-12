@@ -1,5 +1,5 @@
 /*
- * SourceRegexpChecker.js - rule to check if regexps match in the source 
+ * SourceRegexpChecker.js - rule to check if regexps match in the source
  *
  * Copyright © 2023 JEDLSoft
  *
@@ -38,6 +38,10 @@ class SourceRegexpChecker extends Rule {
      *   a call to function X, which is deprecated."
      *   (Currently, 'matchString' is the only replacement
      *   param that is supported.)
+     * - sourceLocale - locale (if any) of the source
+     * - link - an URL to a document that explains this rule in more detail
+     * - severity - severity of the results of this rule. This should be one of
+     *   "error", "warning", or "suggestion".
      * - regexps - an array of strings that encode regular expressions to
      *   look for
      * @param {Object} options options as documented above
@@ -49,10 +53,11 @@ class SourceRegexpChecker extends Rule {
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
             throw "Missing required options for the ResourceMatcher constructor";
         }
-        ["name", "description", "regexps", "note", "sourceLocale", "link"].forEach(prop => {
+        ["name", "description", "regexps", "note", "sourceLocale", "link", "severity"].forEach(prop => {
             this[prop] = options[prop];
         });
         this.sourceLocale = this.sourceLocale || "en-US";
+        this.severity = this.severity || "error";
 
         // this may throw if you got to the regexp syntax wrong:
         this.re = this.regexps.map(regexp => new RegExp(regexp, "g"));
@@ -91,7 +96,7 @@ class SourceRegexpChecker extends Rule {
                     // work backwards and forwards to find the start and end of the line, with reasonable limits
                     let start = match.index;
                     let count = 0;
-                    
+
                     // look back for the beginning of the line with a max of 100 chars
                     while (start >= 0 && src[start] !== '\n' && count < 100) {
                         start--;
@@ -122,7 +127,7 @@ class SourceRegexpChecker extends Rule {
                 }
 
                 results.push(new Result({
-                    severity: "error",
+                    severity: _this.severity,
                     rule: _this,
                     pathName: file,
                     highlight: snippet,

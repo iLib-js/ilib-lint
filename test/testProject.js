@@ -41,7 +41,7 @@ const genericConfig = {
     "excludes": [
         "node_modules/**",
         ".git/**",
-        "test/**"
+        "docs/**"
     ],
     // declarative definitions of new rules
     "rules": [
@@ -52,6 +52,14 @@ const genericConfig = {
             "description": "Ensure that named parameters that appear in the source string are also used in the translated string",
             "note": "The named parameter '{matchString}' from the source string does not appear in the target string",
             "regexps": [ "\\{\\w+\\}" ]
+        },
+        {
+            "type": "source-checker",
+            "name": "source-no-normalize",
+            "severity": "warning",
+            "description": "Ensure that the normalize function is not called.",
+            "note": "Do not call the normalize function, as it is deprecated.",
+            "regexps": [ "\\.normalize\\s*\\(" ]
         }
     ],
     "formatters": [
@@ -72,6 +80,9 @@ const genericConfig = {
             // so this both includes the rule in the rule set and instantiates
             // it with the "localeOnly" option
             "resource-quote-matcher": "localeOnly"
+        },
+        "js-rules": {
+            "source-no-normalize": true
         }
     },
     // defines common settings for a particular types of file
@@ -86,12 +97,13 @@ const genericConfig = {
             "template": "[dir]/[localeDir]/[basename].json"
         },
         "javascript": {
-            "rulesets": [
-                "react-rules"
+            "type": "source",
+            "ruleset": [
+                "js-rules"
             ]
         },
         "jsx": {
-            "rulesets": [
+            "ruleset": [
                 "react-rules"
             ]
         }
@@ -100,7 +112,7 @@ const genericConfig = {
     "paths": {
         // use the file type defined above
         "src/**/*.json": "json",
-        "src/**/*.js": "javascript",
+        "{src,test}/**/*.js": "javascript",
         "src/**/*.jsx": "jsx",
         // define a file type on the fly
         "**/*.xliff": {
@@ -325,6 +337,68 @@ export const testProject = {
             const ruleMgr = pluginMgr.getRuleManager();
             const rule = ruleMgr.get("resource-test");
             test.ok(rule);
+
+            test.done();
+        });
+    },
+
+    testProjectWalk: function(test) {
+        test.expect(6);
+
+        const project = new Project("x", {pluginManager}, genericConfig);
+        test.ok(project);
+
+        const pluginMgr = project.getPluginManager();
+        test.ok(pluginMgr);
+
+        project.init().then((result) => {
+            // verify that the init indeed loaded the test plugin
+            test.ok(result);
+
+            const files = project.walk("./test/testfiles/js");
+            test.ok(files);
+            test.equal(files.length, 1);
+            test.equal(files[0].getFilePath(), "test/testfiles/js/Path.js");
+
+            test.done();
+        });
+    },
+
+    testProjectFindIssues: function(test) {
+        test.expect(20);
+
+        const project = new Project("x", {pluginManager}, genericConfig);
+        test.ok(project);
+
+        const pluginMgr = project.getPluginManager();
+        test.ok(pluginMgr);
+
+        project.init().then((result) => {
+            // verify that the init indeed loaded the test plugin
+            test.ok(result);
+
+            project.walk("./test/testfiles/js");
+            const results = project.findIssues(genericConfig.locales);
+            test.ok(results);
+            test.equal(results.length, 3);
+
+            test.equal(results[0].severity, "warning");
+            test.equal(results[0].description, "Do not call the normalize function, as it is deprecated.");
+            test.equal(results[0].highlight, '    pathname = Path<e0>.normalize(</e0>pathname);');
+            test.equal(results[0].pathName, "test/testfiles/js/Path.js");
+            test.equal(results[0].lineNumber, 51);
+
+            test.equal(results[1].severity, "warning");
+            test.equal(results[1].description, "Do not call the normalize function, as it is deprecated.");
+            test.equal(results[1].highlight, '    return (pathname === ".") ? ".." : Path<e0>.normalize(</e0>pathname + "/..");');
+            test.equal(results[1].pathName, "test/testfiles/js/Path.js");
+            test.equal(results[1].lineNumber, 52);
+
+            test.equal(results[2].severity, "warning");
+            test.equal(results[2].description, "Do not call the normalize function, as it is deprecated.");
+            test.equal(results[2].highlight, '    return Path<e0>.normalize(</e0>arr.join("/"));');
+            test.equal(results[2].pathName, "test/testfiles/js/Path.js");
+            test.equal(results[2].lineNumber, 92);
 
             test.done();
         });

@@ -31,11 +31,15 @@ import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 
 const logger = log4js.getLogger("i18nlint.RuleManager");
 
+/**
+ * Map the types in the declarative rules to a Rule subclass that handles
+ * that type.
+ */
 const typeMap = {
     "resource-matcher": ResourceMatcher,
     "resource-source": ResourceSourceChecker,
     "resource-target": ResourceTargetChecker,
-    "sourcefile": SourceRegexpChecker
+    "source-checker": SourceRegexpChecker
 };
 
 /**

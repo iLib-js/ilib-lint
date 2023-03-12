@@ -458,7 +458,7 @@ class Project extends DirItem {
      *
      * @returns {Array.<Result>} a list of results
      */
-    findIssues(ruleset, locales) {
+    findIssues(locales) {
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
 

@@ -98,9 +98,15 @@ class SourceFile extends DirItem {
             return this.resources;
         } else {
             const data = fs.readFileSync(this.filePath, "utf-8");
-            this.lines = data.split(/\n/g);
-            this.type = "line";
-            return this.lines;
+            if (this.filetype.getType() === "line") {
+                this.lines = data.split(/\n/g);
+                this.type = "line";
+                return this.lines;
+            } else {
+                this.source = data;
+                this.type = "source";
+                return this.source;
+            }
         }
     }
 
@@ -121,12 +127,13 @@ class SourceFile extends DirItem {
             return issues;
         }
 
+        let result;
         const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === this.type));
         rules.forEach(rule => {
             switch (this.type) {
             case "line":
                 for (let i = 0; i < this.lines.length; i++) {
-                    const result = rule.match({
+                    result = rule.match({
                         line: this.lines[i],
                         locale: detectedLocale,
                         file: this.filePath
@@ -136,7 +143,7 @@ class SourceFile extends DirItem {
                 break;
             case "resource":
                 this.resources.forEach(resource => {
-                    const result = rule.match({
+                    result = rule.match({
                         locale: resource.getTargetLocale(),
                         resource,
                         file: this.filePath
@@ -144,10 +151,18 @@ class SourceFile extends DirItem {
                     if (result) issues = issues.concat(result);
                 });
                 break;
+            case "source":
+                result = rule.match({
+                    source: this.source,
+                    locale: detectedLocale,
+                    file: this.filePath
+                });
+                if (result) issues = issues.concat(result);
+                break;
             default:
                 // all other cases -- don't iterate, just call the rule
                 // with the whole intermediate format
-                const result = rule.match({
+                result = rule.match({
                     locale: resource.getTargetLocale(),
                     intermediateFormat: this.intermediateFormat,
                     file: this.filePath

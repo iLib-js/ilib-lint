@@ -216,5 +216,71 @@ export const testSourceRegexpChecker = {
 
         test.done();
     },
+
+    testSourceRegexpCheckerTestSeverity: function(test) {
+        test.expect(8);
+
+        const rule = new SourceRegexpChecker({
+            ...noNormalize,
+            severity: "warning"
+        });
+        test.ok(rule);
+
+        const source = `
+            Path.join = function(var_args) {
+                var arr = [];
+                for (var i = 0; i < arguments.length; i++) {
+                    arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : ".");
+                }
+                return Path.normalize(arr.join("/"));
+            };`;
+
+        const actual = rule.match({
+            source,
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].description, "Calls to the deprecated normalize function are not allowed.");
+        test.equal(actual[0].highlight, '                return Path<e0>.normalize(</e0>arr.join("/"));');
+        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].lineNumber, 7);
+        test.equal(actual[0].severity, "warning");
+
+        test.done();
+    },
+
+    testSourceRegexpCheckerTestSeverityDefault: function(test) {
+        test.expect(9);
+
+        const rule = new SourceRegexpChecker(noNormalize);
+        test.ok(rule);
+
+        const source = `
+            Path.join = function(var_args) {
+                var arr = [];
+                for (var i = 0; i < arguments.length; i++) {
+                    arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : ".");
+                }
+                return Path.normalize(arr.join("/"));
+            };`;
+
+        const actual = rule.match({
+            source,
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].description, "Calls to the deprecated normalize function are not allowed.");
+        test.equal(actual[0].highlight, '                return Path<e0>.normalize(</e0>arr.join("/"));');
+        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].lineNumber, 7);
+        test.equal(actual[0].severity, "error"); // default severity
+
+        test.done();
+    },
 };
 

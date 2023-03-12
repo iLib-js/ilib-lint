@@ -79,12 +79,11 @@ class DirItem {
     /**
      * Check the directory item and return a list of issues found in it.
      *
-     * @param {RuleSet} ruleset a set of rules to apply
      * @param {Array.<Locale>} locales a set of locales to apply
      * @returns {Array.<Result>} a list of natch results
      * @abstract
      */
-    findIssues(ruleset, locales) {}
+    findIssues(locales) {}
 };
 
 export default DirItem;

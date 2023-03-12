@@ -20,6 +20,7 @@
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 import XliffParser from '../src/plugins/XliffParser.js';
+import FileType from '../src/FileType.js';
 import SourceFile from '../src/SourceFile.js';
 import Project from '../src/Project.js';
 import PluginManager from '../src/PluginManager.js';
@@ -54,6 +55,11 @@ const config = {
 const project = new Project(".", {
     pluginManager: new PluginManager()
 }, config);
+
+const filetype = new FileType({
+    name: "javascript",
+    project
+});
 
 export const testSourceFile = {
     testSourceFile: function(test) {
@@ -193,13 +199,14 @@ export const testSourceFile = {
         test.expect(3);
 
         const sf = new SourceFile("test/ilib-mock/index.js", {
+            filetype,
             settings: {
             }
         }, project);
         test.ok(sf);
-        const lines = sf.parse();
-        test.ok(lines);
-        test.equal(lines.length, 4);
+        const source = sf.parse();
+        test.ok(source);
+        test.equal(source.length, 117); // how many chars in this source file?
 
         test.done();
     },
@@ -208,13 +215,14 @@ export const testSourceFile = {
         test.expect(3);
 
         const sf = new SourceFile("test/ilib-mock/index.js", {
+            filetype,
             settings: {
             }
         }, project);
         test.ok(sf);
         test.equal(sf.getType(), "line");
         const resources = sf.parse();
-        test.equal(sf.getType(), "line");
+        test.equal(sf.getType(), "source");
 
         test.done();
     }
