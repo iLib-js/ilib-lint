@@ -287,12 +287,12 @@ Here is an example of a configuration file:
             ]
         },
         "javascript": {
-            "rulesets": [
+            "ruleset": [
                 "react-rules"
             ]
         },
         "jsx": {
-            "rulesets": [
+            "ruleset": [
                 "react-rules"
             ]
         }
@@ -393,16 +393,22 @@ multiple instances of each class during the run of the program.
 ### Parsers
 
 The job of the parser is to convert a source file into an intermediate representation
-that rules can easily digest. There are two standard representations that many
+that rules can easily digest. There are a few standard representations that many
 rules use, but your parser and rules can use their own representation, as
-long as the parser and the rules agree on what that format is. Typically, the
-parser will produce something like an abstract syntax tree (AST) that the rules
-know how to traverse and interpret.
+long as the parser and the rules agree on what that format is. Typically, a
+sophisticated parser will produce something like an abstract syntax tree (AST) that
+the rules know how to traverse and interpret. The standard representations are
+much simpler than that. These parsers should pick a unique name for their
+representation so that the appropriate rules can parse that representation.
 
-The two standard representations are:
+The standard representations are:
 
-- resources - the file is converted into a set of Resource instances
+- resources - the file is converted into an array of
+  [Resource](https://github.com/iLib-js/ilib-tools-common/blob/main/src/Resource.js)
+  instances
 - lines - the file in converted into a simple array of lines
+- source - the file is not parsed. Instead, the entire text of the file is used to
+  search for problems. (Usually with regular expressions.)
 
 The resources representation is intended to represent entries in resource files
 such as xliff files, gnu po files, or java properties files. Each entry in the
@@ -466,9 +472,9 @@ Each declarative rule should have the following properties:
     * resource-target - check resources in a resource file. If
       the regular expressions match in the target string of a
       resource, a result will be generated
-    * sourcefile - Check the text in a source file, such as a
+    * source-checker - Check the text in a source file, such as a
       java file or a python file. Regular expressions that match
-      in the source file will generate results
+      anywhere in the source file will generate results
 * name (String) - a unique dash-separated name of this rule.
   eg. "resource-url-match",
 * description (String) - a description of what this rule is trying
@@ -488,6 +494,8 @@ Each declarative rule should have the following properties:
   and avoided in the future. Often, this is a link to a markdown file
   in the docs folder on the github repo for the plugin, but it can be
   any link you like.
+* severity (String) - the severity of this result if this check fails.
+  This should be one of "error", "warning", or "suggestion".
 
 Programmatic rules are used when the requirements for the rules are more complicated
 than a simple regular expression string can handle. For example, a rule that checks
@@ -643,6 +651,8 @@ limitations under the License.
 
 ### v1.4.0
 
+- added the ability to scan source code files and apply rules
+    - added source-checker Rule for declarative rules
 - added rules to detect some double-byte (fullwidth) characters
 
 ### v1.3.0
