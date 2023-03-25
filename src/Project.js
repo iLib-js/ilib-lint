@@ -183,7 +183,7 @@ class Project extends DirItem {
             if (stat) {
                 if (stat.isDirectory()) {
                     const configFileName = path.join(root, "ilib-lint-config.json");
-                    if (fs.existsSync(configFileName)) {
+                    if (root !== this.root && fs.existsSync(configFileName)) {
                         const data = fs.readFileSync(configFileName, "utf-8");
                         const config = JSON5.parse(data);
                         const newProject = new Project(root, this.getOptions(), config);
@@ -191,8 +191,7 @@ class Project extends DirItem {
                         excludes = newProject.getExcludes();
                         logger.trace(`New project ${newProject.getName()}`);
                         this.add(newProject);
-                        project = newProject;
-                        newProject.scan(root);
+                        newProject.scan([root]);
                     } else {
                         list = fs.readdirSync(root);
                         logger.trace(`Searching dir ${root}`);
