@@ -64,15 +64,19 @@ class SourceRegexpChecker extends Rule {
     }
 
     getRuleType() {
-        return "source";
+        // this rule processes files as whole strings using regular expressions
+        return "string";
     }
 
     /**
      * @override
      */
     match(options) {
-        const { source, file } = options || {};
+        const { ir } = options || {};
         const _this = this;
+
+        // different type means no checking and no results
+        if (ir.getType() !== "string") return;
 
         /**
          * @private
@@ -129,7 +133,7 @@ class SourceRegexpChecker extends Rule {
                 results.push(new Result({
                     severity: _this.severity,
                     rule: _this,
-                    pathName: file,
+                    pathName: ir.getPath(),
                     highlight: snippet,
                     description: _this.note.replace(/\{matchString\}/g, match[0]),
                     lineNumber
@@ -141,7 +145,7 @@ class SourceRegexpChecker extends Rule {
 
         let results = [];
         this.re.forEach(re => {
-            results = results.concat(checkString(re, source));
+            results = results.concat(checkString(re, ir.getRepresentation()));
         });
         results = results.filter(result => result);
         return results && results.length ? results : undefined;

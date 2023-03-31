@@ -163,15 +163,19 @@ export const testSourceFile = {
     },
 
     testSourceFileParseRightContents: function(test) {
-        test.expect(6);
+        test.expect(9);
 
         const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
         test.ok(sf);
-        const resources = sf.parse();
-        test.ok(resources);
+        const ir = sf.parse();
+        test.ok(ir);
+        test.ok(Array.isArray(ir));
+        test.equal(ir.length, 1);
+        test.equal(ir[0].getType(), "resource");
+        const resources = ir[0].getRepresentation();
         test.equal(resources.length, 1);
         test.equal(resources[0].source, "Asdf asdf");
         test.equal(resources[0].target, "foobarfoo");
@@ -188,15 +192,15 @@ export const testSourceFile = {
             }
         }, project);
         test.ok(sf);
-        test.equal(sf.getType(), "line");
-        const resources = sf.parse();
+        test.equal(sf.getType(), "string");
+        sf.parse();
         test.equal(sf.getType(), "resource");
 
         test.done();
     },
 
     testSourceFileParseNonResourceFile: function(test) {
-        test.expect(3);
+        test.expect(7);
 
         const sf = new SourceFile("test/ilib-mock/index.js", {
             filetype,
@@ -204,7 +208,12 @@ export const testSourceFile = {
             }
         }, project);
         test.ok(sf);
-        const source = sf.parse();
+        const ir = sf.parse();
+        test.ok(ir);
+        test.ok(Array.isArray(ir));
+        test.equal(ir.length, 1);
+        test.equal(ir[0].getType(), "string");
+        const source = ir[0].getRepresentation();
         test.ok(source);
         test.equal(source.length, 117); // how many chars in this source file?
 
@@ -220,9 +229,9 @@ export const testSourceFile = {
             }
         }, project);
         test.ok(sf);
-        test.equal(sf.getType(), "line");
+        test.equal(sf.getType(), "string");
         const resources = sf.parse();
-        test.equal(sf.getType(), "source");
+        test.equal(sf.getType(), "string");
 
         test.done();
     }

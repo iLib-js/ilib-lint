@@ -17,10 +17,13 @@
  * limitations under the License.
  */
 
+import log4js from 'log4js';
 import LocaleInfo from 'ilib-localeinfo';
 import { TranslationSet } from 'ilib-tools-common';
 
 import { Rule, Result } from 'i18nlint-common';
+
+const logger = log4js.getLogger("i18nlint.Rule.ResourceUniqueKeys");
 
 /**
  * @class Represent an ilib-lint rule.
@@ -54,6 +57,7 @@ class ResourceUniqueKeys extends Rule {
         const other = this.ts.get(hash);
 
         if (other) {
+            logger.trace(`hash '${hash}' already found in the translation set!`);
             let value = {
                 severity: "error",
                 id: resource.getKey(),

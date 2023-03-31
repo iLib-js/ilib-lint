@@ -11,11 +11,11 @@
     "categories": {
         "default": {
             "appenders": [ "default" ],
-            "level": "info"
+            "level": "trace"
         },
         "ilib-lint.root": {
             "appenders": [ "default" ],
-            "level": "info"
+            "level": "trace"
         }
     }
 }

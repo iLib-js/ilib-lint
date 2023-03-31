@@ -19,6 +19,8 @@
  */
 
 import fs from 'node:fs';
+import { IntermediateRepresentation } from 'i18nlint-common';
+
 import SourceRegexpChecker from '../src/rules/SourceRegexpChecker.js';
 
 const noNormalize = {
@@ -116,8 +118,13 @@ export const testSourceRegexpChecker = {
                 return Path.normalize(arr.join("/"));
             };`;
 
+        const ir = new IntermediateRepresentation({
+            type: "string",
+            ir: source,
+            filePath: "x/y"
+        });
         const actual = rule.match({
-            source,
+            ir,
             file: "x/y"
         });
         test.ok(actual);
@@ -147,8 +154,13 @@ export const testSourceRegexpChecker = {
                 return arr.join("/");
             };`;
 
+        const ir = new IntermediateRepresentation({
+            type: "string",
+            ir: source,
+            filePath: "x/y"
+        });
         const actual = rule.match({
-            source,
+            ir,
             file: "x/y"
         });
         test.ok(!actual);
@@ -164,8 +176,13 @@ export const testSourceRegexpChecker = {
 
         const source = `Path.join = function(var_args) { var arr = []; for (var i = 0; i < arguments.length; i++) { arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : "."); } return Path.normalize(arr.join("/")); };                                                                                                                                                                                                           `;
 
+        const ir = new IntermediateRepresentation({
+            type: "string",
+            ir: source,
+            filePath: "x/y"
+        });
         const actual = rule.match({
-            source,
+            ir,
             file: "x/y"
         });
         test.ok(actual);
@@ -189,8 +206,13 @@ export const testSourceRegexpChecker = {
 
         const source = fs.readFileSync("./test/testfiles/js/Path.js", "utf-8");
 
+        const ir = new IntermediateRepresentation({
+            type: "string",
+            ir: source,
+            filePath: "x/y"
+        });
         const actual = rule.match({
-            source,
+            ir,
             file: "x/y"
         });
         test.ok(actual);
@@ -235,8 +257,13 @@ export const testSourceRegexpChecker = {
                 return Path.normalize(arr.join("/"));
             };`;
 
+        const ir = new IntermediateRepresentation({
+            type: "string",
+            ir: source,
+            filePath: "x/y"
+        });
         const actual = rule.match({
-            source,
+            ir,
             file: "x/y"
         });
         test.ok(actual);
@@ -266,8 +293,13 @@ export const testSourceRegexpChecker = {
                 return Path.normalize(arr.join("/"));
             };`;
 
+        const ir = new IntermediateRepresentation({
+            type: "string",
+            ir: source,
+            filePath: "x/y"
+        });
         const actual = rule.match({
-            source,
+            ir,
             file: "x/y"
         });
         test.ok(actual);
@@ -281,6 +313,6 @@ export const testSourceRegexpChecker = {
         test.equal(actual[0].severity, "error"); // default severity
 
         test.done();
-    },
+    }
 };
 

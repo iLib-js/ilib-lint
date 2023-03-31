@@ -62,7 +62,8 @@ class DirItem {
     /**
      * Parse the current directory item.
      *
-     * @returns {Object} the parsed representation of this file
+     * @returns {Array.<IntermediateRepresentation>} the parsed
+     * representations of this file
      * @abstract
      */
     parse() {}

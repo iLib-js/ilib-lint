@@ -85,6 +85,7 @@ class Project extends DirItem {
             this.excludes = config.excludes;
             this.name = config.name;
         }
+        this.sourceLocale = options?.opt?.sourceLocale;
 
         this.pluginMgr = this.options.pluginManager;
         const ruleMgr = this.pluginMgr.getRuleManager();
@@ -242,7 +243,7 @@ class Project extends DirItem {
                             filetype
                         }, this));
                     } else {
-                        logger.trace(`${pathName} ... excluded`);
+                        logger.trace(`${root} ... excluded`);
                     }
                 } // else just ignore it
             } else {
@@ -341,6 +342,16 @@ class Project extends DirItem {
     }
 
     /**
+     * Get the source locale for this project. This is the locale in
+     * which the strings and source code are written.
+     *
+     * @returns {String} the source locale for this project.
+     */
+    getSourceLocale() {
+        return this.sourceLocale;
+    }
+
+    /**
      * Return the list of global locales for this project.
      * @returns {Array.<String>} the list of global locales for this project
      */
@@ -391,7 +402,6 @@ class Project extends DirItem {
      * there is no such file type
      */
     getFileType(name) {
-
     }
 
     /**

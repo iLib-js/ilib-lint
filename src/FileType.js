@@ -132,6 +132,10 @@ class FileType {
         const set = new RuleSet();
         this.ruleset.forEach(ruleSetName => {
             const definitions = ruleMgr.getRuleSetDefinition(ruleSetName);
+            if (!definitions) {
+                logger.error(`Could not find rule set ${ruleSetName}`);
+                return;
+            }
             for (let ruleName in definitions) {
                 if (typeof(definitions[ruleName]) === 'boolean') {
                     if (definitions[ruleName]) {

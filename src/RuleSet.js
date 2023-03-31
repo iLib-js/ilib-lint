@@ -16,6 +16,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import log4js from 'log4js';
+
+const logger = log4js.getLogger("i18nlint.RuleSet");
 
 /**
  * @class Represent a set of ilib-lint rules. The rule manager keeps
@@ -44,6 +47,7 @@ class RuleSet {
      */
     addRule(rule) {
         if (!rule || typeof(rule) !== 'object' || !rule.getName()) return;
+        logger.trace(`Adding rule ${rule.getName()} to the set`);
         this.rules[rule.getName()] = rule;
     }
 

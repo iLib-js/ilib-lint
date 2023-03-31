@@ -172,10 +172,12 @@ logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 // loads and manage the plugins
 
 const pluginMgr = new PluginManager({
-    rulesData: config.rules
+    rulesData: config.rules,
+    sourceLocale: options.opt.sourceLocale
 });
 
 const rootProject = new Project(".", {
+    ...options,
     pluginManager: pluginMgr
 }, config);
 

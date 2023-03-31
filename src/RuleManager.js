@@ -57,12 +57,15 @@ class RuleManager {
      *
      * This factory function can create Rule instances out for any type of
      * rule.
+     * @params {Object} options options controlling the construction of this object
      * @constructor
      */
-    constructor() {
+    constructor(options) {
+        this.API = options && options.API;
         this.ruleCache = {};
         this.ruleDefs = {};
         this.descriptions = {};
+        this.sourceLocale = options && options.sourceLocale;
 
         // some built-in default rules
         this.addRule(ResourceICUPlurals);
@@ -87,10 +90,16 @@ class RuleManager {
             const ruleClass = typeMap[ruleConfig.type];
             return new ruleClass({
                 ...ruleConfig,
-                ...options
+                ...options,
+                API: this.API,
+                sourceLocale: this.sourceLocale
             });
         } else {
-            return new ruleConfig(options);
+            return new ruleConfig({
+                ...options,
+                API: this.API,
+                sourceLocale: this.sourceLocale
+            });
         }
     }
 
@@ -100,10 +109,13 @@ class RuleManager {
     addRule(rule) {
         if (rule) {
             if (typeof(rule) === 'function' && Object.getPrototypeOf(rule).name === "Rule") {
-                const p = new rule({});
+                const p = new rule({
+                    API: this.API,
+                    sourceLocale: this.sourceLocale
+                });
                 this.ruleCache[p.getName()] = rule;
                 this.descriptions[p.getName()] = p.getDescription();
-                logger.trace(`Added rule ${p.getName} to the rule manager.`);
+                logger.trace(`Added rule ${p.getName()} to the rule manager.`);
             } else if (typeof(rule) === 'object') {
                 if (typeof(rule.type) !== 'string' || typeof(rule.name) !== 'string' ||
                     typeof(rule.description) !== 'string' || typeof(rule.note) !== 'string' ||
@@ -209,6 +221,7 @@ class RuleManager {
     addRuleSetDefinition(name, ruleDefs) {
         if (typeof(ruleDefs) !== 'object') return;
 
+        logger.trace(`Added ruleset definition for set ${name}`);
         // this will override any existing one with the same name
         this.ruleDefs[name] = ruleDefs;
     }
