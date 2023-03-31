@@ -69,15 +69,6 @@ class DirItem {
     parse() {}
 
     /**
-     * Return the type of this file, resource or line or project.
-     * @returns {String} the type of this file
-     * @abstract
-     */
-    getType() {
-        return this.type;
-    }
-
-    /**
      * Check the directory item and return a list of issues found in it.
      *
      * @param {Array.<Locale>} locales a set of locales to apply

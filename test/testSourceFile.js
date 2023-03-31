@@ -184,17 +184,19 @@ export const testSourceFile = {
         test.done();
     },
 
-    testSourceFileParseRightType: function(test) {
-        test.expect(3);
+    testSourceFileParseRightTypeResource: function(test) {
+        test.expect(5);
 
         const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
         test.ok(sf);
-        test.equal(sf.getType(), "string");
-        sf.parse();
-        test.equal(sf.getType(), "resource");
+        const ir = sf.parse();
+        test.ok(ir);
+        test.ok(Array.isArray(ir));
+        test.equal(ir.length, 1);
+        test.equal(ir[0].getType(), "resource");
 
         test.done();
     },
@@ -216,22 +218,6 @@ export const testSourceFile = {
         const source = ir[0].getRepresentation();
         test.ok(source);
         test.equal(source.length, 117); // how many chars in this source file?
-
-        test.done();
-    },
-
-    testSourceFileParseNonResRightType: function(test) {
-        test.expect(3);
-
-        const sf = new SourceFile("test/ilib-mock/index.js", {
-            filetype,
-            settings: {
-            }
-        }, project);
-        test.ok(sf);
-        test.equal(sf.getType(), "string");
-        const resources = sf.parse();
-        test.equal(sf.getType(), "string");
 
         test.done();
     }

@@ -117,13 +117,18 @@ class Project extends DirItem {
         if (this.config.paths) {
             this.mappings = this.config.paths;
             for (let glob in this.mappings) {
-                if (typeof(this.mappings[glob]) === 'object') {
+                let mapping = this.mappings[glob];
+                if (typeof(mapping) === 'object') {
                     // this is an "on-the-fly" file type
                     this.filetypes[glob] = new FileType({
                         name: glob,
                         project: this,
-                        ...this.mappings[glob]
+                        ...mapping
                     });
+                } else if (typeof(mapping) === 'string') {
+                    if (!this.filetypes[mapping]) {
+                        throw `Mapping ${glob} is configured to use unknown filetype ${mapping}`;
+                    }
                 }
             }
         }

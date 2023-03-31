@@ -181,8 +181,6 @@ const rootProject = new Project(".", {
     pluginManager: pluginMgr
 }, config);
 
-rootProject.scan(paths);
-
 // this will load all the plugins, so we can print out the list of
 // them below if needed
 rootProject.init().then(() => {
@@ -229,6 +227,7 @@ rootProject.init().then(() => {
     }
 
     // main loop
+    rootProject.scan(paths);
     const exitValue = rootProject.run();
 
     process.exit(exitValue);

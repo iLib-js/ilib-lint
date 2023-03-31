@@ -54,7 +54,6 @@ class SourceFile extends DirItem {
             throw "Incorrect options given to SourceFile constructor";
         }
         this.filePath = filePath;
-        this.type = "string";
 
         this.filetype = options.filetype;
 
@@ -106,21 +105,18 @@ class SourceFile extends DirItem {
                     settings: this.settings
                 });
                 this.ir = this.ir.concat(p.parse());
-                this.type = p.getType();
             }
         } else {
             const data = fs.readFileSync(this.filePath, "utf-8");
             if (this.filetype.getType() === "line") {
-                this.type = "line";
                 this.ir.push(new IntermediateRepresentation({
-                    type: this.type,
+                    type: "line",
                     ir: data.split(/\n/g),
                     filePath: this.filePath
                 }));
             } else {
-                this.type = "string";
                 this.ir.push(new IntermediateRepresentation({
-                    type: this.type,
+                    type: "string",
                     ir: data,
                     filePath: this.filePath
                 }));
@@ -146,9 +142,10 @@ class SourceFile extends DirItem {
             return issues;
         }
 
-        const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === this.type));
-        rules.forEach(rule => {
-            this.ir.forEach(ir => {
+        this.ir.forEach(ir => {
+            // find the rules that are appropriate for this intermediate representation and then apply them
+            const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === ir.getType()));
+            rules.forEach(rule => {
                 const representation = ir.getRepresentation();
                 switch (ir.getType()) {
                 case "line":
