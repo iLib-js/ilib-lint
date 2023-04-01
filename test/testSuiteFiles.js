@@ -24,6 +24,7 @@ const files = [
     "testPluginManager.js",
     "testProject.js",
     "testResourceMatcher.js",
+    "testResourceTargetChecker.js",
     "testRules.js",
     "testRuleManager.js",
     "testRuleSet.js",

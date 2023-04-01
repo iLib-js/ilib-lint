@@ -49,6 +49,14 @@ export const regexRules = [
         note: "The named parameter '{matchString}' from the source string does not appear in the target string",
         regexps: [ "\\{\\w+\\}" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-named-params.md"
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-fullwidth",
+        description: "Ensure that the target does not contain any full width characters, digits, or punctuation.",
+        note: "The full width characters '{matchString}' are not allowed in the target string. Use ASCII instead.",
+        regexps: [ "[\\uFF01-\\uFFE6]+" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth.md"
     }
 ];
 
