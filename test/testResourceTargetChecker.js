@@ -24,7 +24,7 @@ import { regexRules } from '../src/PluginManager.js';
 import { Result } from 'i18nlint-common';
 
 export const testResourceTargetChecker = {
-    testResourceNoFullwidth: function(test) {
+    testResourceNoFullwidthLatin: function(test) {
         test.expect(9);
 
         const rule = new ResourceTargetChecker(regexRules[2]);
@@ -47,7 +47,7 @@ export const testResourceTargetChecker = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "The full width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII instead.");
+        test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[0].highlight, "Target: <e0>Ｂｏｘ</e0>にアップロード");
         test.equal(actual[0].source, 'Upload to Box');
         test.equal(actual[0].pathName, "x/y");
@@ -55,7 +55,7 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
-    testResourceNoFullwidthSuccess: function(test) {
+    testResourceNoFullwidthLatinSuccess: function(test) {
         test.expect(2);
 
         const rule = new ResourceTargetChecker(regexRules[2]);
@@ -78,7 +78,7 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
-    testResourceNoFullwidthMultiple: function(test) {
+    testResourceNoFullwidthLatinMultiple: function(test) {
         test.expect(15);
 
         const rule = new ResourceTargetChecker(regexRules[2]);
@@ -101,16 +101,108 @@ export const testResourceTargetChecker = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "The full width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII instead.");
+        test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[0].highlight, "Target: プロ<e0>Ｂｏｘ</e0>にアップロードＢｏｘ");
         test.equal(actual[0].source, 'Upload to Box');
         test.equal(actual[0].pathName, "x/y");
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].id, "matcher.test");
-        test.equal(actual[1].description, "The full width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII instead.");
+        test.equal(actual[1].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[1].highlight, "Target: プロＢｏｘにアップロード<e0>Ｂｏｘ</e0>");
         test.equal(actual[1].source, 'Upload to Box');
+        test.equal(actual[1].pathName, "x/y");
+
+        test.done();
+    },
+
+    testResourceNoFullwidthDigits: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceTargetChecker(regexRules[3]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: 'Box12345',
+                targetLocale: "ja-JP",
+                target: "Box１２３４５",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "The full-width characters '１２３４５' are not allowed in the target string. Use ASCII digits instead.");
+        test.equal(actual[0].highlight, "Target: Box<e0>１２３４５</e0>");
+        test.equal(actual[0].source, 'Box12345');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    },
+
+    testResourceNoFullwidthDigitsSuccess: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(regexRules[3]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: 'Upload to Box',
+                targetLocale: "ja-JP",
+                target: "Boxにアップロード",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceNoFullwidthDigitsMultiple: function(test) {
+        test.expect(15);
+
+        const rule = new ResourceTargetChecker(regexRules[3]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: '12345Box12345',
+                targetLocale: "ja-JP",
+                target: "５４３２１Box１２３４５",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 2);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "The full-width characters '５４３２１' are not allowed in the target string. Use ASCII digits instead.");
+        test.equal(actual[0].highlight, "Target: <e0>５４３２１</e0>Box１２３４５");
+        test.equal(actual[0].source, '12345Box12345');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.equal(actual[1].severity, "error");
+        test.equal(actual[1].id, "matcher.test");
+        test.equal(actual[1].description, "The full-width characters '１２３４５' are not allowed in the target string. Use ASCII digits instead.");
+        test.equal(actual[1].highlight, "Target: ５４３２１Box<e0>１２３４５</e0>");
+        test.equal(actual[1].source, '12345Box12345');
         test.equal(actual[1].pathName, "x/y");
 
         test.done();
