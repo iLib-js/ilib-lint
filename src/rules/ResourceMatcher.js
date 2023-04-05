@@ -66,7 +66,7 @@ class ResourceMatcher extends Rule {
         this.sourceLocale = this.sourceLocale || "en-US";
 
         // this may throw if you got to the regexp syntax wrong:
-        this.re = this.regexps.map(regexp => new RegExp(regexp, "g"));
+        this.re = this.regexps.map(regexp => new RegExp(regexp, "gu"));
     }
 
     getRuleType() {

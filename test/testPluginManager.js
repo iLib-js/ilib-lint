@@ -285,7 +285,7 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
     },
 
     testPluginManagerGetLoadPluginRightRuleSets: function(test) {
-        test.expect(8);
+        test.expect(7);
 
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
@@ -303,10 +303,30 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
             test.ok(set);
             test.ok(set["resource-test"]);
             test.equal(typeof(set["resource-test"]), 'boolean');
-            test.ok(typeof(set["resource-test"]));
 
             test.done();
         });
+    },
+
+    testPluginManagerGetBuiltInRuleSets: function(test) {
+        test.expect(8);
+
+        const plgmgr = new PluginManager();
+        test.ok(plgmgr);
+        const rm = plgmgr.getRuleManager();
+        test.ok(rm);
+        const size = rm.sizeRuleSetDefinitions();
+
+        test.equal(rm.sizeRuleSetDefinitions(), 1);
+
+        const set = rm.getRuleSetDefinition("generic");
+        test.ok(set);
+        test.ok(set["resource-icu-plurals"]);
+        test.ok(set["resource-url-match"]);
+        test.equal(typeof(set["resource-icu-plurals"]), 'boolean');
+        test.equal(typeof(set["resource-url-match"]), 'boolean');
+
+        test.done();
     }
 };
 

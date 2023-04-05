@@ -49,8 +49,41 @@ export const regexRules = [
         note: "The named parameter '{matchString}' from the source string does not appear in the target string",
         regexps: [ "\\{\\w+\\}" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-named-params.md"
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-fullwidth-latin",
+        description: "Ensure that the target does not contain any full-width Latin characters.",
+        note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII letters instead.",
+        regexps: [ "[\\uFF21-\\uFF3A\\uFF41-\\uFF5A]+" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth.md"
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-fullwidth-digits",
+        description: "Ensure that the target does not contain any full-width digits.",
+        note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII digits instead.",
+        regexps: [ "[\\uFF10-\\uFF19]+" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-digits.md"
     }
 ];
+
+// built-in ruleset that contains all the built-in rules
+export const builtInRulesets = {
+    generic: {
+        // programmatic rules
+        "resource-icu-plurals": true,
+        "resource-quote-style": true,
+        "resource-state-checker": true,
+        "resource-unique-keys": true,
+
+        // declarative rules from above
+        "resource-url-match": true,
+        "resource-named-params": true,
+        "resource-no-fullwidth-latin": true,
+        "resource-no-fullwidth-digits": true
+    }
+};
 
 /**
  * @private
@@ -146,9 +179,12 @@ class PluginManager {
                 this.ruleMgr.add(options.rulesData);
             }
             if (options.rulesets) {
-                this.ruleMgr.addRuleSets(options.rulesets);
+                this.ruleMgr.addRuleSetDefinitions(options.rulesets);
             }
         }
+
+        // add the default "generic" ruleset above
+        this.ruleMgr.addRuleSetDefinitions(builtInRulesets);
 
         // install the default formatter
         this.formatterMgr.add(AnsiConsoleFormatter);

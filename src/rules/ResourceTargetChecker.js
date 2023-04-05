@@ -1,5 +1,5 @@
 /*
- * ResourceMatcher.js - rule to check if URLs in the source string also
+ * ResourceTargetChecker.js - rule to check if URLs in the source string also
  * appear in the target string
  *
  * Copyright © 2022-2023 JEDLSoft
@@ -21,21 +21,11 @@
 import { Rule, Result } from 'i18nlint-common';
 import { stripPlurals } from './utils.js';
 
-function findMissing(source, target) {
-    let missing = [];
-    for (var i = 0; i < source.length; i++) {
-        if (target.indexOf(source[i]) < 0) {
-            missing.push(source[i]);
-        }
-    }
-    return missing;
-}
-
 /**
  * @class Resource checker class that checks that any regular expressions
  * that matches in the source also appears in the translation.
  */
-class ResourceMatcher extends Rule {
+class ResourceTargetChecker extends Rule {
     /**
      * Construct a new regular expression-based resource checker.
      *
@@ -65,7 +55,7 @@ class ResourceMatcher extends Rule {
         this.sourceLocale = this.sourceLocale || "en-US";
 
         // this may throw if you got to the regexp syntax wrong:
-        this.re = this.regexps.map(regexp => new RegExp(regexp, "g"));
+        this.re = this.regexps.map(regexp => new RegExp(regexp, "gu"));
     }
 
     getRuleType() {
@@ -84,44 +74,31 @@ class ResourceMatcher extends Rule {
          */
         function checkString(re, src, tar) {
             re.lastIndex = 0;
-            let sourceMatches = [];
-            const strippedSrc = stripPlurals(src);
+            let matches = [];
             const strippedTar = stripPlurals(tar);
 
-            let match = re.exec(strippedSrc);
+            // check the target only
+            re.lastIndex = 0;
+            let match = re.exec(strippedTar);
             while (match) {
-                sourceMatches.push(match[0]);
-                match = re.exec(strippedSrc);
+                let value = {
+                    severity: "error",
+                    id: resource.getKey(),
+                    source: src,
+                    rule: _this,
+                    pathName: file,
+                    highlight: `Target: ${tar.substring(0, match.index)}<e0>${match[0]}</e0>${tar.substring(match.index+match[0].length)}`,
+                    description: _this.note.replace(/\{matchString\}/g, match[0])
+                };
+                if (typeof(options.lineNumber) !== 'undefined') {
+                    value.lineNumber = options.lineNumber;
+                }
+                matches.push(new Result(value));
+
+                match = re.exec(strippedTar);
             }
 
-            if (sourceMatches.length > 0) {
-                // contains URLs, so check the target
-                re.lastIndex = 0;
-                let targetMatches = [];
-                match = re.exec(strippedTar);
-                while (match) {
-                    targetMatches.push(match[0]);
-                    match = re.exec(strippedTar);
-                }
-                const missing = findMissing(sourceMatches, targetMatches);
-                if (missing.length > 0) {
-                    return missing.map(missing => {
-                        let value = {
-                            severity: "error",
-                            id: resource.getKey(),
-                            source: src,
-                            rule: _this,
-                            pathName: file,
-                            highlight:`Target: ${tar}<e0></e0>`,
-                            description: _this.note.replace(/\{matchString\}/g, missing)
-                        };
-                        if (typeof(options.lineNumber) !== 'undefined') {
-                            value.lineNumber = options.lineNumber;
-                        }
-                        return new Result(value);
-                    });
-                }
-            }
+            return matches;
         }
 
         function checkRegExps(src, tar) {
@@ -159,15 +136,9 @@ class ResourceMatcher extends Rule {
                 const srcPlural = resource.getSource();
                 const tarPlural = resource.getTarget();
                 if (tarPlural) {
-                    const hasQuotes = categories.find(category => {
-                        return (srcPlural[category] && srcPlural[category].contains(srcQuote));
+                    return categories.map(category => {
+                        if (tarPlural[category]) return checkRegExps(srcPlural.other, tarPlural[category]);
                     });
-
-                    if (hasQuotes) {
-                        return categories.map(category => {
-                            return checkRegExps(srcPlural.other, tarPlural[category]);
-                        });
-                    }
                 }
                 break;
         }
@@ -177,4 +148,4 @@ class ResourceMatcher extends Rule {
     return;
 }
 
-export default ResourceMatcher;
+export default ResourceTargetChecker;
