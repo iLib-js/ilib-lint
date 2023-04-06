@@ -591,6 +591,10 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.4.0
+
+- added rules to detect some double-byte (fullwidth) characters
+
 ### v1.3.0
 
 - added resource-state-checker Rule so that you can ensure that all

@@ -89,7 +89,8 @@ export const builtInRulesets = {
         "resource-url-match": true,
         "resource-named-params": true,
         "resource-no-fullwidth-latin": true,
-        "resource-no-fullwidth-digits": true
+        "resource-no-fullwidth-digits": true,
+        "resource-no-fullwidth-punctuation-subset": true
     }
 };
 
