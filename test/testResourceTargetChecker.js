@@ -206,6 +206,124 @@ export const testResourceTargetChecker = {
         test.equal(actual[1].pathName, "x/y");
 
         test.done();
+    },
+
+    testResourceNoFullwidthPunctuationSubset: function(test) {
+        const illegalPunctuations = ["？", "！", "％"];
+        test.expect(1 + illegalPunctuations.length * 8);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
+        );
+        test.ok(rule);
+
+        for (const symbol of illegalPunctuations) {
+            const matchSubject = {
+                locale: "ja-JP",
+                resource: new ResourceString({
+                    key: "matcher.test",
+                    sourceLocale: "en-US",
+                    source: `test${symbol} test`,
+                    targetLocale: "ja-JP",
+                    target: `テスト${symbol} テスト`,
+                    pathName: "a/b/c.xliff",
+                }),
+                file: "x/y",
+            };
+
+            const actual = rule.match(matchSubject);
+            test.ok(actual);
+            test.equal(actual.length, 1);
+
+            test.equal(actual[0].severity, "error");
+            test.equal(
+                actual[0].description,
+                `The full-width characters '${symbol}' are not allowed in the target string. Use ASCII symbols instead.`
+            );
+            test.equal(actual[0].highlight, `Target: テスト<e0>${symbol}</e0> テスト`);
+            test.equal(actual[0].id, "matcher.test");
+            test.equal(actual[0].source, `test${symbol} test`);
+            test.equal(actual[0].pathName, "x/y");
+        }
+
+        test.done();
+    },
+
+    testResourceNoFullwidthPunctuationSubsetSuccess: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
+        );
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Really? Yes! 100%",
+                targetLocale: "ja-JP",
+                target: "本当? はい! 100%",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceNoFullwidthPunctuationSubsetMultiple: function(test) {
+        test.expect(21);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
+        );
+        test.ok(rule);
+
+        const matchSubject = {
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Really? Yes! 100%",
+                targetLocale: "ja-JP",
+                target: "本当？ はい！ 100％",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        };
+        const actual = rule.match(matchSubject);
+        test.ok(actual);
+        test.equal(actual.length, 3);
+
+        for (const a of actual) {
+            test.equal(a.severity, "error");
+            test.equal(a.id, "matcher.test");
+            test.equal(a.source, "Really? Yes! 100%");
+            test.equal(a.pathName, "x/y");
+        }
+
+        test.equal(
+            actual[0].description,
+            "The full-width characters '？' are not allowed in the target string. Use ASCII symbols instead."
+        );
+        test.equal(actual[0].highlight, "Target: 本当<e0>？</e0> はい！ 100％");
+
+        test.equal(
+            actual[1].description,
+            "The full-width characters '！' are not allowed in the target string. Use ASCII symbols instead."
+        );
+        test.equal(actual[1].highlight, "Target: 本当？ はい<e0>！</e0> 100％");
+
+        test.equal(
+            actual[2].description,
+            "The full-width characters '％' are not allowed in the target string. Use ASCII symbols instead."
+        );
+        test.equal(actual[2].highlight, "Target: 本当？ はい！ 100<e0>％</e0>");
+
+        test.done();
     }
 };
 
