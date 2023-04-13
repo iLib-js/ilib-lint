@@ -21,6 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
+import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
 
 import { Result } from 'i18nlint-common';
 
@@ -1182,6 +1183,74 @@ export const testRules = {
             source: '{count, plural, one {This is singular} other {This is plural}}'
         });
         test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceCompleteness: function(test) {
+        test.expect(5);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subjects = [
+            {},
+            { key: "completeness.test.source-missing", source: undefined },
+            { key: "completeness.test.target-missing", target: undefined },
+            { key: "completeness.test.both-missing", source: undefined, target: undefined },
+        ]
+            .map((overrides) => ({
+                key: "completeness.test",
+                sourceLocale: "en-US",
+                source: "Some source string.",
+                targetLocale: "de-DE",
+                target: "Some target string.",
+                pathName: "completeness-test.xliff",
+                state: "translated",
+                ...overrides, // override some of properties
+            }))
+            .map((props) => new ResourceString(props))
+            .map((resource) => ({ locale: "de-DE", resource, file: "x/y" }));
+
+        const results = subjects.map((subject) => rule.match(subject));
+
+        test.equal(results[0], undefined);
+
+        const commonResultProps = {
+            severity: "error",
+            rule,
+            pathName: "x/y",
+            locale: "de-DE",
+            description: "Resource must have both source and target element defined",
+        };
+        
+        test.deepEqual(
+            results[1],
+            new Result({
+                ...commonResultProps,
+                id: "completeness.test.source-missing",
+                source: undefined,
+                highlight: "The following elements are missing in the resource: <e0>source</e0>",
+            })
+        );
+        test.deepEqual(
+            results[2],
+            new Result({
+                ...commonResultProps,
+                id: "completeness.test.target-missing",
+                source: "Some source string.",
+                highlight: "The following elements are missing in the resource: <e0>target</e0>",
+            })
+        );
+        test.deepEqual(
+            results[3],
+            new Result({
+                ...commonResultProps,
+                id: "completeness.test.both-missing",
+                source: undefined,
+                highlight: "The following elements are missing in the resource: <e0>source, target</e0>",
+            })
+        );
 
         test.done();
     }
