@@ -1187,71 +1187,139 @@ export const testRules = {
         test.done();
     },
 
-    testResourceCompleteness: function(test) {
-        test.expect(5);
+    testResourceCompletenessResourceComplete: function(test) {
+        test.expect(2);
 
         const rule = new ResourceCompleteness();
         test.ok(rule);
 
-        const subjects = [
-            {},
-            { key: "completeness.test.source-missing", source: undefined },
-            { key: "completeness.test.target-missing", target: undefined },
-            { key: "completeness.test.both-missing", source: undefined, target: undefined },
-        ]
-            .map((overrides) => ({
-                key: "completeness.test",
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.complete",
                 sourceLocale: "en-US",
                 source: "Some source string.",
                 targetLocale: "de-DE",
                 target: "Some target string.",
                 pathName: "completeness-test.xliff",
                 state: "translated",
-                ...overrides, // override some of properties
-            }))
-            .map((props) => new ResourceString(props))
-            .map((resource) => ({ locale: "de-DE", resource, file: "x/y" }));
-
-        const results = subjects.map((subject) => rule.match(subject));
-
-        test.equal(results[0], undefined);
-
-        const commonResultProps = {
-            severity: "error",
-            rule,
-            pathName: "x/y",
-            locale: "de-DE",
-            description: "Resource must have both source and target element defined",
+            }),
         };
-        
-        test.deepEqual(
-            results[1],
-            new Result({
-                ...commonResultProps,
-                id: "completeness.test.source-missing",
+
+        const result = rule.match(subject);
+        test.equal(result, undefined); // for a valid resource match result should not be produced
+        test.done();
+    },
+
+    testResourceCompletenessResourceSourceMissing: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.source-missing",
+                sourceLocale: "en-US",
                 source: undefined,
+                targetLocale: "de-DE",
+                target: "Some target string.",
+                pathName: "completeness-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: undefined,
+                id: "resource-completeness-test.source-missing",
+                description: "Resource must have both source and target element defined",
                 highlight: "The following elements are missing in the resource: <e0>source</e0>",
             })
         );
-        test.deepEqual(
-            results[2],
-            new Result({
-                ...commonResultProps,
-                id: "completeness.test.target-missing",
+        test.done();
+    },
+
+    testResourceCompletenessResourceTargetMissing: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.target-missing",
+                sourceLocale: "en-US",
                 source: "Some source string.",
+                targetLocale: "de-DE",
+                target: undefined,
+                pathName: "completeness-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string.",
+                id: "resource-completeness-test.target-missing",
+                description: "Resource must have both source and target element defined",
                 highlight: "The following elements are missing in the resource: <e0>target</e0>",
             })
         );
-        test.deepEqual(
-            results[3],
-            new Result({
-                ...commonResultProps,
-                id: "completeness.test.both-missing",
+        test.done();
+    },
+
+    testResourceCompletenessResourceSourceAndTargetMissing: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.source-and-target-missing",
+                sourceLocale: "en-US",
                 source: undefined,
+                targetLocale: "de-DE",
+                target: undefined,
+                pathName: "completeness-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: undefined,
+                id: "resource-completeness-test.source-and-target-missing",
+                description: "Resource must have both source and target element defined",
                 highlight: "The following elements are missing in the resource: <e0>source, target</e0>",
             })
         );
-
         test.done();
     }
 };
