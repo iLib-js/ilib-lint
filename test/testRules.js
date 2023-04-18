@@ -1212,7 +1212,7 @@ export const testRules = {
         test.done();
     },
 
-    testResourceCompletenessResourceSourceMissing: function(test) {
+    testResourceCompletenessResourceExtraTarget: function(test) {
         test.expect(2);
 
         const rule = new ResourceCompleteness();
@@ -1222,7 +1222,7 @@ export const testRules = {
             locale: "de-DE",
             file: "x/y",
             resource: new ResourceString({
-                key: "resource-completeness-test.source-missing",
+                key: "resource-completeness-test.extra-target",
                 sourceLocale: "en-US",
                 source: undefined,
                 targetLocale: "de-DE",
@@ -1237,13 +1237,13 @@ export const testRules = {
             result,
             new Result({
                 rule,
-                severity: "error",
+                severity: "warning",
                 pathName: "x/y",
                 locale: "de-DE",
                 source: undefined,
-                id: "resource-completeness-test.source-missing",
-                description: "Resource must have both source and target element defined",
-                highlight: "The following elements are missing in the resource: <e0>source</e0>",
+                id: "resource-completeness-test.extra-target",
+                description: "Extra target string in resource",
+                highlight: "<e0>Some target string.</e0>",
             })
         );
         test.done();
@@ -1279,27 +1279,27 @@ export const testRules = {
                 locale: "de-DE",
                 source: "Some source string.",
                 id: "resource-completeness-test.target-missing",
-                description: "Resource must have both source and target element defined",
-                highlight: "The following elements are missing in the resource: <e0>target</e0>",
+                description: "Missing target string in resource",
+                highlight: undefined,
             })
         );
         test.done();
     },
 
-    testResourceCompletenessResourceSourceAndTargetMissing: function(test) {
+    testResourceCompletenessResourceTargetMissingSameLocale: function(test) {
         test.expect(2);
 
         const rule = new ResourceCompleteness();
         test.ok(rule);
 
         const subject = {
-            locale: "de-DE",
+            locale: "en-US",
             file: "x/y",
             resource: new ResourceString({
-                key: "resource-completeness-test.source-and-target-missing",
+                key: "resource-completeness-test.target-missing",
                 sourceLocale: "en-US",
-                source: undefined,
-                targetLocale: "de-DE",
+                source: "Some source string.",
+                targetLocale: "en-US",
                 target: undefined,
                 pathName: "completeness-test.xliff",
                 state: "translated",
@@ -1307,20 +1307,8 @@ export const testRules = {
         };
 
         const result = rule.match(subject);
-        test.deepEqual(
-            result,
-            new Result({
-                rule,
-                severity: "error",
-                pathName: "x/y",
-                locale: "de-DE",
-                source: undefined,
-                id: "resource-completeness-test.source-and-target-missing",
-                description: "Resource must have both source and target element defined",
-                highlight: "The following elements are missing in the resource: <e0>source, target</e0>",
-            })
-        );
-        test.done();
+        test.equal(result, undefined); // no error should be produced
+        test.done()
     }
 };
 

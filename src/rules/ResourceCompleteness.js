@@ -44,31 +44,38 @@ class ResourceCompleteness extends Rule {
      *
      */
     match({ resource, file, locale }) {
-        const elements = {
-            source: resource.getSource(),
-            target: resource.getTarget(),
+        const source = resource.getSource();
+        const target = resource.getTarget();
+
+        const resultMetaProps = {
+            id: resource.getKey(),
+            rule: this,
+            pathName: file,
+            source,
+            locale,
         };
 
-        const elementsExist = Object.entries(elements).map(([name, value]) => ({
-            name,
-            exists: value !== undefined,
-        }));
-
-        if (elementsExist.some((el) => !el.exists)) {
+        // for each source string, a translation must be provided
+        if (undefined === target && undefined !== source
+            // unless the target locale is the same as source locale
+            && (resource.targetLocale !== resource.sourceLocale)
+            ) {
             return new Result({
+                ...resultMetaProps,
                 severity: "error",
-                id: resource.getKey(),
-                rule: this,
-                pathName: file,
-                source: elements.source,
-                locale,
-                highlight: `The following elements are missing in the resource: <e0>${elementsExist
-                    .filter((el) => !el.exists)
-                    .map((el) => el.name)
-                    .join(", ")}</e0>`,
-                description: "Resource must have both source and target element defined"
+                description: "Missing target string in resource"
             });
-        } else return /* no error*/;
+        }
+        // if there's an extra translation string for which there is no source, just warn
+        else if (undefined !== target && undefined === source) {
+            return new Result({
+                ...resultMetaProps,
+                severity: "warning",
+                description: "Extra target string in resource",
+                highlight: `<e0>${target}</e0>`
+            });
+        }
+        else return /* no error */;
     }
 }
 
