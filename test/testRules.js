@@ -1286,7 +1286,7 @@ export const testRules = {
         test.done();
     },
 
-    testResourceCompletenessResourceTargetMissingSameLocale: function(test) {
+    testResourceCompletenessResourceTargetMissingSameLanguage: function(test) {
         test.expect(2);
 
         const rule = new ResourceCompleteness();
@@ -1296,10 +1296,10 @@ export const testRules = {
             locale: "en-US",
             file: "x/y",
             resource: new ResourceString({
-                key: "resource-completeness-test.target-missing",
+                key: "resource-completeness-test.target-missing-same-language",
                 sourceLocale: "en-US",
                 source: "Some source string.",
-                targetLocale: "en-US",
+                targetLocale: "en-GB",
                 target: undefined,
                 pathName: "completeness-test.xliff",
                 state: "translated",
@@ -1307,7 +1307,10 @@ export const testRules = {
         };
 
         const result = rule.match(subject);
-        test.equal(result, undefined); // no error should be produced
+        // no error should be produced -
+        // en-US and en-GB have same language so target value is optional in this case
+        // (it can be ommited for those resources where target is equal to source)
+        test.equal(result, undefined);
         test.done()
     }
 };

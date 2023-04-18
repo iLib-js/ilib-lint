@@ -18,6 +18,7 @@
  */
 
 import { Rule, Result } from "i18nlint-common";
+import Locale from "ilib-locale";
 
 /** Rule to check that a resource has both source and target elements */
 class ResourceCompleteness extends Rule {
@@ -47,6 +48,10 @@ class ResourceCompleteness extends Rule {
         const source = resource.getSource();
         const target = resource.getTarget();
 
+        // note: language specifiers for comparison - "en-US" should match "en-GB" (same language, only different region)
+        const sourceLangSpec = new Locale(resource.sourceLocale).getLangSpec();
+        const targetLangSpec = new Locale(resource.targetLocale).getLangSpec();
+
         const resultMetaProps = {
             id: resource.getKey(),
             rule: this,
@@ -57,8 +62,8 @@ class ResourceCompleteness extends Rule {
 
         // for each source string, a translation must be provided
         if (undefined === target && undefined !== source
-            // unless the target locale is the same as source locale
-            && (resource.targetLocale !== resource.sourceLocale)
+            // unless the target language is the same as source language
+            && (sourceLangSpec !== targetLangSpec)
             ) {
             return new Result({
                 ...resultMetaProps,
