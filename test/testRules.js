@@ -1243,7 +1243,7 @@ export const testRules = {
                 source: " some source string.",
                 id: "resource-edge-whitespace.leading-space-missing",
                 description: "Leading whitespace in target does not match leading whitespace in source",
-                highlight: `Source: <e0> </e0>some source string.\nTarget: <e0></e0>some target string.`,
+                highlight: `Source: "<e0> </e0>some…" Target: "<e1></e1>some…"`,
             })
         );
         test.done();
@@ -1280,7 +1280,7 @@ export const testRules = {
                 source: "Some source string.",
                 id: "resource-edge-whitespace.leading-space-extra",
                 description: "Leading whitespace in target does not match leading whitespace in source",
-                highlight: `Source: <e0></e0>Some source string.\nTarget: <e0> </e0>Some target string.`,
+                highlight: `Source: "<e0></e0>Some…" Target: "<e1> </e1>Some…"`,
             })
         );
         test.done();
@@ -1317,7 +1317,7 @@ export const testRules = {
                 source: "Some source string ",
                 id: "resource-edge-whitespace.trailing-space-missing",
                 description: "Trailing whitespace in target does not match trailing whitespace in source",
-                highlight: `Source: Some source string<e0> </e0>\nTarget: Some target string<e0></e0>`,
+                highlight: `Source: "…ring<e0> </e0>" Target: "…ring<e1></e1>"`,
             })
         );
         test.done();
@@ -1354,7 +1354,7 @@ export const testRules = {
                 source: "Some source string.",
                 id: "resource-edge-whitespace.trailing-space-extra",
                 description: "Trailing whitespace in target does not match trailing whitespace in source",
-                highlight: `Source: Some source string.<e0></e0>\nTarget: Some target string.<e0> </e0>`,
+                highlight: `Source: "…ing.<e0></e0>" Target: "…ing.<e1> </e1>"`,
             })
         );
         test.done();
@@ -1391,7 +1391,7 @@ export const testRules = {
                 source: "Some source string ",
                 id: "resource-edge-whitespace.trailing-space-extra-more",
                 description: "Trailing whitespace in target does not match trailing whitespace in source",
-                highlight: `Source: Some source string<e0> </e0>\nTarget: Some target string<e0>  </e0>`,
+                highlight: `Source: "…ring<e0> </e0>" Target: "…ring<e1>  </e1>"`,
             })
         );
         test.done();
@@ -1427,7 +1427,7 @@ export const testRules = {
                 source: " some source string ",
                 id: "resource-edge-whitespace.both-spaces-missing",
                 description: "Leading whitespace in target does not match leading whitespace in source",
-                highlight: "Source: <e0> </e0>some source string \nTarget: <e0></e0>some target string",
+                highlight: `Source: "<e0> </e0>some…" Target: "<e1></e1>some…"`,
             }),
             new Result({
                 rule,
@@ -1437,7 +1437,7 @@ export const testRules = {
                 source: " some source string ",
                 id: "resource-edge-whitespace.both-spaces-missing",
                 description: "Trailing whitespace in target does not match trailing whitespace in source",
-                highlight: "Source:  some source string<e0> </e0>\nTarget: some target string<e0></e0>",
+                highlight: `Source: "…ring<e0> </e0>" Target: "…ring<e1></e1>"`,
             }),
         ]);
         test.done();
@@ -1499,7 +1499,7 @@ export const testRules = {
                 source: " ",
                 id: "resource-edge-whitespace.spaces-only-extra",
                 description: "Leading whitespace in target does not match leading whitespace in source",
-                highlight: `Source: <e0> </e0>\nTarget: <e0>  </e0>`,
+                highlight: `Source: "<e0> </e0>" Target: "<e1>  </e1>"`,
             })
         );
         test.done();

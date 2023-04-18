@@ -36,13 +36,12 @@ class ResourceEdgeWhitespace extends Rule {
         return this.ruleType;
     }
 
-    /** @TODO
+    /**
      * @override
      * @param {object} options
      * @param {import("ilib-tools-common").Resource} options.resource
      * @param {string} options.file
      * @param {string} options.locale
-     *
      */
     match({ resource, file, locale }) {
         const source = resource.getSource();
@@ -59,7 +58,6 @@ class ResourceEdgeWhitespace extends Rule {
 
         const /** @type {Result[]} */ results = [];
         const resultMetaProps = {
-            severity: "error",
             id: resource.getKey(),
             rule: this,
             pathName: file,
@@ -71,15 +69,16 @@ class ResourceEdgeWhitespace extends Rule {
             results.push(
                 new Result({
                     ...resultMetaProps,
+                    severity: "error",
                     description: "Leading whitespace in target does not match leading whitespace in source",
                     highlight:
-                        `Source: ` +
+                        `Source: "` +
                         `<e0>${source.slice(0, whitespaces.source.leading.length)}</e0>` +
-                        source.slice(whitespaces.source.leading.length) +
-                        `\n` +
-                        `Target: ` +
-                        `<e0>${target.slice(0, whitespaces.target.leading.length)}</e0>` +
-                        target.slice(whitespaces.target.leading.length),
+                        this._truncateFromEnd(source.slice(whitespaces.source.leading.length)) +
+                        `" Target: "` +
+                        `<e1>${target.slice(0, whitespaces.target.leading.length)}</e1>` +
+                        this._truncateFromEnd(target.slice(whitespaces.target.leading.length)) +
+                        `"`,
                 })
             );
         }
@@ -88,20 +87,22 @@ class ResourceEdgeWhitespace extends Rule {
             results.push(
                 new Result({
                     ...resultMetaProps,
+                    severity: "error",
                     description: "Trailing whitespace in target does not match trailing whitespace in source",
                     highlight:
-                        `Source: ` +
-                        source.slice(0, source.length-whitespaces.source.trailing.length) +
-                        `<e0>${source.slice(source.length-whitespaces.source.trailing.length)}</e0>` +
-                        `\n` +
-                        `Target: ` +
-                        target.slice(0, target.length-whitespaces.target.trailing.length) +
-                        `<e0>${target.slice(target.length-whitespaces.target.trailing.length)}</e0>`,
+                        `Source: "` +
+                        this._truncateFromStart(source.slice(0, source.length - whitespaces.source.trailing.length)) +
+                        `<e0>${source.slice(source.length - whitespaces.source.trailing.length)}</e0>"` +
+                        ` Target: "` +
+                        this._truncateFromStart(target.slice(0, target.length - whitespaces.target.trailing.length)) +
+                        `<e1>${target.slice(target.length - whitespaces.target.trailing.length)}</e1>"`,
                 })
             );
         }
 
-        return results.length > 1 ? results : results[0];
+        if (results.length > 1) return results;
+        else if (results.length === 1) return results[0];
+        else return undefined;
     }
 
     _getEdgeWhitespaces(/** @type {string} */ str) {
@@ -114,6 +115,26 @@ class ResourceEdgeWhitespace extends Rule {
             leading,
             trailing,
         };
+    }
+
+    _truncateFromStart(/** @type {string} */ str) {
+        const maxLength = 5;
+        const truncationMark = "…";
+
+        if (str.length <= maxLength) {
+            return str;
+        }
+        return truncationMark + str.slice(str.length - (maxLength - truncationMark.length));
+    }
+
+    _truncateFromEnd(/** @type {string} */ str) {
+        const maxLength = 5;
+        const truncationMark = "…";
+        
+        if (str.length <= maxLength) {
+            return str;
+        }
+        return str.slice(0, maxLength - truncationMark.length) + truncationMark;
     }
 }
 
