@@ -20,7 +20,7 @@
 
 import Locale from 'ilib-locale';
 
-import { Rule, Result, isKababCase, isCamelCase, isSnakeCase } from 'i18nlint-common';
+import { Rule, Result } from 'i18nlint-common';
 
 /**
  * @class Represent an ilib-lint rule.
@@ -52,12 +52,11 @@ class ResourceNoTranslation extends Rule {
         const target = resource.getTarget();
         const sourceLocale = new Locale(resource.getSourceLocale());
         const targetLocale = new Locale(resource.getTargetLocale());
+        const sourceWords = source.split(/\s+/g).length; // does not work for Asian languages
 
         if (    !source ||
-                isKababCase(source) ||
-                isCamelCase(source) ||
-                isSnakeCase(source) ||
                 resource.dnt ||
+                sourceWords < 2 ||
                 (target && sourceLocale.getLangSpec() === targetLocale.getLangSpec())) {
             // in all these cases the source and target are allowed to be the
             // same or different, so we don't even need to check
