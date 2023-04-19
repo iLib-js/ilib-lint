@@ -1503,6 +1503,56 @@ export const testRules = {
             })
         );
         test.done();
+    },
+
+    testResourceEdgeWhitespaceUndefinedSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // missing source
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.undefined-source",
+                sourceLocale: "en-US",
+                source: undefined,
+                targetLocale: "de-DE",
+                target: " ",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.equal(result, undefined); // this rule should not process a resource where source is not a string
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceUndefinedTarget: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // missing target
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.undefined-target",
+                sourceLocale: "en-US",
+                source: " ",
+                targetLocale: "de-DE",
+                target: undefined,
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.equal(result, undefined); // this rule should not process a resource where target is not a string
+        test.done();
     }
 };
 
