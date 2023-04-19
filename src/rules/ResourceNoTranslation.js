@@ -52,7 +52,7 @@ class ResourceNoTranslation extends Rule {
         const target = resource.getTarget();
         const sourceLocale = new Locale(resource.getSourceLocale());
         const targetLocale = new Locale(resource.getTargetLocale());
-        
+
         if (    !source ||
                 isKababCase(source) ||
                 isCamelCase(source) ||
