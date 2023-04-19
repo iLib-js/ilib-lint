@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { Rule, Result } from "i18nlint-common";
+import { Rule, Result, withVisibleWhitespace } from "i18nlint-common";
 
 /** Rule to check that whitespaces on edges of target match those on edges of source */
 class ResourceEdgeWhitespace extends Rule {
@@ -72,13 +72,12 @@ class ResourceEdgeWhitespace extends Rule {
                     severity: "error",
                     description: "Leading whitespace in target does not match leading whitespace in source",
                     highlight:
-                        `Source: "` +
-                        `<e0>${source.slice(0, whitespaces.source.leading.length)}</e0>` +
+                        `Source: ` +
+                        `<e0>${withVisibleWhitespace(whitespaces.source.leading)}</e0>` +
                         this._truncateFromEnd(source.slice(whitespaces.source.leading.length)) +
-                        `" Target: "` +
-                        `<e1>${target.slice(0, whitespaces.target.leading.length)}</e1>` +
-                        this._truncateFromEnd(target.slice(whitespaces.target.leading.length)) +
-                        `"`,
+                        ` Target: ` +
+                        `<e1>${withVisibleWhitespace(whitespaces.target.leading)}</e1>` +
+                        this._truncateFromEnd(target.slice(whitespaces.target.leading.length)),
                 })
             );
         }
@@ -90,12 +89,12 @@ class ResourceEdgeWhitespace extends Rule {
                     severity: "error",
                     description: "Trailing whitespace in target does not match trailing whitespace in source",
                     highlight:
-                        `Source: "` +
+                        `Source: ` +
                         this._truncateFromStart(source.slice(0, source.length - whitespaces.source.trailing.length)) +
-                        `<e0>${source.slice(source.length - whitespaces.source.trailing.length)}</e0>"` +
-                        ` Target: "` +
+                        `<e0>${withVisibleWhitespace(whitespaces.source.trailing)}</e0>` +
+                        ` Target: ` +
                         this._truncateFromStart(target.slice(0, target.length - whitespaces.target.trailing.length)) +
-                        `<e1>${target.slice(target.length - whitespaces.target.trailing.length)}</e1>"`,
+                        `<e1>${withVisibleWhitespace(whitespaces.target.trailing)}</e1>`,
                 })
             );
         }
