@@ -1130,6 +1130,40 @@ export const testRules = {
         test.done();
     },
 
+    testResourceNoTranslationSameAsSourceDifferingInCaseOnly: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceNoTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "translation.test",
+                sourceLocale: "en-US",
+                source: 'This is the source string.',
+                targetLocale: "de-DE",
+                target: "This is the Source String.",
+                pathName: "a/b/c.xliff",
+                state: "new"
+            }),
+            file: "x/y"
+        });
+        const expected = new Result({
+            severity: "warning",
+            description: "Target string is the same as the source string. This is probably an untranslated resource.",
+            id: "translation.test",
+            highlight: 'Target: <e0>This is the Source String.</e0>',
+            rule,
+            pathName: "x/y",
+            locale: "de-DE",
+            source: 'This is the source string.'
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
     testResourceNoTranslationSameAsSourceButSourceLanguage: function(test) {
         test.expect(2);
 

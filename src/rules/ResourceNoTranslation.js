@@ -66,7 +66,9 @@ class ResourceNoTranslation extends Rule {
 
         // if the source & target are the same or they are the same after normalizing the
         // whitespace, then produce a warning
-        if (!target || source === target || source.replace(/\s+/g, "") === target.replace(/\s+/g, "")) {
+        if (    !target ||
+                source === target ||
+                source.replace(/\s+/g, "").toLowerCase() === target.replace(/\s+/g, "").toLowerCase()) {
             let value = {
                 severity: "warning",
                 id: resource.getKey(),
