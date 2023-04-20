@@ -658,16 +658,8 @@ export const testRules = {
             }),
             file: "x/y"
         });
-        const expected = new Result({
-            severity: "error",
-            description: "Missing plural categories in source string: one. Expecting these: one, other",
-            id: "plural.test",
-            highlight: 'Source: {count, plural, other {This is plural}}<e0></e0>',
-            rule,
-            pathName: "x/y",
-            source: '{count, plural, other {This is plural}}'
-        });
-        test.deepEqual(actual, expected);
+        // this rule does not test for problems in the source string
+        test.ok(!actual);
 
         test.done();
     },
