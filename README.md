@@ -591,6 +591,10 @@ limitations under the License.
 
 ## Release Notes
 
+### Pending release
+
+- added rule to check if resources have both source and target defined
+
 ### v1.4.0
 
 - added rules to detect some double-byte (fullwidth) characters
