@@ -30,6 +30,7 @@ import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
+import ResourceCompleteness from './rules/ResourceCompleteness.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -86,6 +87,7 @@ export const builtInRulesets = {
         "resource-state-checker": true,
         "resource-unique-keys": true,
         "resource-edge-whitespace": true,
+        "resource-completeness": true,
 
         // declarative rules from above
         "resource-url-match": true,
@@ -183,6 +185,7 @@ class PluginManager {
             ResourceQuoteStyle,
             ResourceUniqueKeys,
             ResourceEdgeWhitespace,
+            ResourceCompleteness,
         ]);
         this.ruleMgr.add(regexRules);
 

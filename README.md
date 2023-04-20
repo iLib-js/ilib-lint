@@ -594,6 +594,15 @@ limitations under the License.
 ### Pending release
 
 - added rule to ensure whitespaces at the edges of string are preserved in the same form
+- added rule to check if resources have both source and target defined
+
+### v1.5.0
+
+- removed ability for the ICU plural rule to report results on the
+  source text
+    - now it only checks the target text
+    - a different rule should be implemented to check the
+      source text
 
 ### v1.4.0
 
