@@ -591,6 +591,10 @@ limitations under the License.
 
 ## Release Notes
 
+### Pending release
+
+- added rule to check if resources have both source and target defined
+
 ### v1.5.0
 
 - removed ability for the ICU plural rule to report results on the

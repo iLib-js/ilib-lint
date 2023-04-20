@@ -21,6 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
+import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
 
 import { Result } from 'i18nlint-common';
 
@@ -1176,6 +1177,133 @@ export const testRules = {
         test.deepEqual(actual, expected);
 
         test.done();
+    },
+
+    testResourceCompletenessResourceComplete: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.complete",
+                sourceLocale: "en-US",
+                source: "Some source string.",
+                targetLocale: "de-DE",
+                target: "Some target string.",
+                pathName: "completeness-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.equal(result, undefined); // for a valid resource match result should not be produced
+        test.done();
+    },
+
+    testResourceCompletenessResourceExtraTarget: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.extra-target",
+                sourceLocale: "en-US",
+                source: undefined,
+                targetLocale: "de-DE",
+                target: "Some target string.",
+                pathName: "completeness-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "warning",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: undefined,
+                id: "resource-completeness-test.extra-target",
+                description: "Extra target string in resource",
+                highlight: "<e0>Some target string.</e0>",
+            })
+        );
+        test.done();
+    },
+
+    testResourceCompletenessResourceTargetMissing: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.target-missing",
+                sourceLocale: "en-US",
+                source: "Some source string.",
+                targetLocale: "de-DE",
+                target: undefined,
+                pathName: "completeness-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string.",
+                id: "resource-completeness-test.target-missing",
+                description: "Missing target string in resource",
+                highlight: undefined,
+            })
+        );
+        test.done();
+    },
+
+    testResourceCompletenessResourceTargetMissingSameLanguage: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceCompleteness();
+        test.ok(rule);
+
+        const subject = {
+            locale: "en-US",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-completeness-test.target-missing-same-language",
+                sourceLocale: "en-US",
+                source: "Some source string.",
+                targetLocale: "en-GB",
+                target: undefined,
+                pathName: "completeness-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        // no error should be produced -
+        // en-US and en-GB have same language so target value is optional in this case
+        // (it can be ommited for those resources where target is equal to source)
+        test.equal(result, undefined);
+        test.done()
     }
 };
 
