@@ -591,6 +591,10 @@ limitations under the License.
 
 ## Release Notes
 
+### Pending release
+
+- added rule to ensure whitespaces at the edges of string are preserved in the same form
+
 ### v1.4.0
 
 - added rules to detect some double-byte (fullwidth) characters
