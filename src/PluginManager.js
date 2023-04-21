@@ -29,6 +29,7 @@ import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
+import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from './rules/ResourceCompleteness.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
@@ -85,6 +86,7 @@ export const builtInRulesets = {
         "resource-quote-style": true,
         "resource-state-checker": true,
         "resource-unique-keys": true,
+        "resource-edge-whitespace": true,
         "resource-completeness": true,
 
         // declarative rules from above
@@ -182,6 +184,7 @@ class PluginManager {
             ResourceICUPlurals,
             ResourceQuoteStyle,
             ResourceUniqueKeys,
+            ResourceEdgeWhitespace,
             ResourceCompleteness,
         ]);
         this.ruleMgr.add(regexRules);

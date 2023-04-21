@@ -21,6 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
+import ResourceEdgeWhitespace from '../src/rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
 
 import { Result } from 'i18nlint-common';
@@ -1179,6 +1180,374 @@ export const testRules = {
         test.done();
     },
 
+    testResourceEdgeWhitespaceEdgesMatch: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.both-edges-match",
+                sourceLocale: "en-US",
+                source: "Some source string. ",
+                targetLocale: "de-DE",
+                target: "Some target string. ",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.equal(result, undefined); // for a valid resource match result should not be produced
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceLeadingSpaceMissing: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // accidentally ommited space in front of target string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.leading-space-missing",
+                sourceLocale: "en-US",
+                source: " some source string.",
+                targetLocale: "de-DE",
+                target: "some target string.",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: " some source string.",
+                id: "resource-edge-whitespace.leading-space-missing",
+                description: "Leading whitespace in target does not match leading whitespace in source",
+                highlight: `Source: <e0>⎵</e0>some… Target: <e1></e1>some…`,
+            })
+        );
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceLeadingSpaceExtra: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // accidentally added space in front of target string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.leading-space-extra",
+                sourceLocale: "en-US",
+                source: "Some source string.",
+                targetLocale: "de-DE",
+                target: " Some target string.",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string.",
+                id: "resource-edge-whitespace.leading-space-extra",
+                description: "Leading whitespace in target does not match leading whitespace in source",
+                highlight: `Source: <e0></e0>Some… Target: <e1>⎵</e1>Some…`,
+            })
+        );
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceTrailingSpaceMissing: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // accidentally ommited space in the end of target string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.trailing-space-missing",
+                sourceLocale: "en-US",
+                source: "Some source string ",
+                targetLocale: "de-DE",
+                target: "Some target string",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string ",
+                id: "resource-edge-whitespace.trailing-space-missing",
+                description: "Trailing whitespace in target does not match trailing whitespace in source",
+                highlight: `Source: …ring<e0>⎵</e0> Target: …ring<e1></e1>`,
+            })
+        );
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceTrailingSpaceExtra: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // accidentally added space in the end of target string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.trailing-space-extra",
+                sourceLocale: "en-US",
+                source: "Some source string.",
+                targetLocale: "de-DE",
+                target: "Some target string. ",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string.",
+                id: "resource-edge-whitespace.trailing-space-extra",
+                description: "Trailing whitespace in target does not match trailing whitespace in source",
+                highlight: `Source: …ing.<e0></e0> Target: …ing.<e1>⎵</e1>`,
+            })
+        );
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceTrailingSpaceExtraMore: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // accidentally added space in the end of target string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.trailing-space-extra-more",
+                sourceLocale: "en-US",
+                source: "Some source string ",
+                targetLocale: "de-DE",
+                target: "Some target string  ",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string ",
+                id: "resource-edge-whitespace.trailing-space-extra-more",
+                description: "Trailing whitespace in target does not match trailing whitespace in source",
+                highlight: `Source: …ring<e0>⎵</e0> Target: …ring<e1>⎵⎵</e1>`,
+            })
+        );
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceBothEdgesSpaceMissing: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // accidentally ommited space in front and in the end of target string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.both-spaces-missing",
+                sourceLocale: "en-US",
+                source: " some source string ",
+                targetLocale: "de-DE",
+                target: "some target string",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.deepEqual(result, [
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: " some source string ",
+                id: "resource-edge-whitespace.both-spaces-missing",
+                description: "Leading whitespace in target does not match leading whitespace in source",
+                highlight: `Source: <e0>⎵</e0>some… Target: <e1></e1>some…`,
+            }),
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: " some source string ",
+                id: "resource-edge-whitespace.both-spaces-missing",
+                description: "Trailing whitespace in target does not match trailing whitespace in source",
+                highlight: `Source: …ring<e0>⎵</e0> Target: …ring<e1></e1>`,
+            }),
+        ]);
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceSpacesOnlyMatch: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // all-whitespace string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.spaces-only-match",
+                sourceLocale: "en-US",
+                source: " ",
+                targetLocale: "de-DE",
+                target: " ",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.equal(result, undefined); // for a valid resource match result should not be produced
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceSpacesOnlyExtra: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // all-whitespace string
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.spaces-only-extra",
+                sourceLocale: "en-US",
+                source: " ",
+                targetLocale: "de-DE",
+                target: "  ",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: " ",
+                id: "resource-edge-whitespace.spaces-only-extra",
+                description: "Leading whitespace in target does not match leading whitespace in source",
+                highlight: `Source: <e0>⎵</e0> Target: <e1>⎵⎵</e1>`,
+            })
+        );
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceUndefinedSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // missing source
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.undefined-source",
+                sourceLocale: "en-US",
+                source: undefined,
+                targetLocale: "de-DE",
+                target: " ",
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.equal(result, undefined); // this rule should not process a resource where source is not a string
+        test.done();
+    },
+
+    testResourceEdgeWhitespaceUndefinedTarget: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceEdgeWhitespace();
+        test.ok(rule);
+
+        const subject = {
+            // missing target
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-edge-whitespace.undefined-target",
+                sourceLocale: "en-US",
+                source: " ",
+                targetLocale: "de-DE",
+                target: undefined,
+                pathName: "resource-edge-whitespace-test.xliff",
+                state: "translated",
+            }),
+        };
+        const result = rule.match(subject);
+        test.equal(result, undefined); // this rule should not process a resource where target is not a string
+        test.done();
+    },
+
     testResourceCompletenessResourceComplete: function(test) {
         test.expect(2);
 
@@ -1304,6 +1673,6 @@ export const testRules = {
         // (it can be ommited for those resources where target is equal to source)
         test.equal(result, undefined);
         test.done()
-    }
+    },
 };
 

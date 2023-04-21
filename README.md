@@ -593,6 +593,7 @@ limitations under the License.
 
 ### Pending release
 
+- added rule to ensure whitespaces at the edges of string are preserved in the same form
 - added rule to check if resources have both source and target defined
 
 ### v1.5.0
