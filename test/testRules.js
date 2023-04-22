@@ -23,6 +23,7 @@ import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
 import ResourceEdgeWhitespace from '../src/rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
+import ResourceDNTTerms from '../src/rules/ResourceDNTTerms.js';
 
 import { Result } from 'i18nlint-common';
 
@@ -1673,6 +1674,47 @@ export const testRules = {
         // (it can be ommited for those resources where target is equal to source)
         test.equal(result, undefined);
         test.done()
+    },
+
+    testResourceDNTTerms: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            terms: [
+                "Some DNT term"
+            ]
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-dnt-test.dnt-missing",
+                sourceLocale: "en-US",
+                source: "Some source string with Some DNT term in it.",
+                targetLocale: "de-DE",
+                target: "Some target string with an incorrecly translated DNT term in it.",
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            [new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string with Some DNT term in it.",
+                id: "resource-dnt-test.dnt-missing",
+                description: "A DNT term is missing in target string.",
+                highlight: `Missing term: <e0>Some DNT term</e0>`,
+            })]
+        );
+        test.done();
     },
 };
 
