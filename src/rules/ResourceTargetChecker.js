@@ -122,13 +122,12 @@ class ResourceTargetChecker extends Rule {
                 const srcArray = resource.getSource();
                 const tarArray = resource.getTarget();
                 if (tarArray) {
-                    return srcArray.map((item, i) => {
+                    const results = srcArray.map((item, i) => {
                         if (i < tarArray.length && tarArray[i]) {
                             return checkRegExps(srcArray[i], tarArray[i]);
                         }
-                    }).filter(element => {
-                        return element;
-                    });
+                    }).flat().filter(element => element);
+                    return (results && results.length ? results : undefined);
                 }
                 break;
 
@@ -136,9 +135,10 @@ class ResourceTargetChecker extends Rule {
                 const srcPlural = resource.getSource();
                 const tarPlural = resource.getTarget();
                 if (tarPlural) {
-                    return categories.map(category => {
+                    const results = Object.keys(tarPlural).map(category => {
                         if (tarPlural[category]) return checkRegExps(srcPlural.other, tarPlural[category]);
-                    });
+                    }).flat().filter(element => element);
+                    return (results && results.length ? results : undefined);
                 }
                 break;
         }
