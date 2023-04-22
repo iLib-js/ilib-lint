@@ -32,7 +32,9 @@ class ResourceDNTTerms extends Rule {
      * @readonly
      * @type {string[]}
      */
-    dntTerms = [];
+    _dntTerms = [];
+    
+    get dntTerms() { return this._dntTerms; }
 
     constructor(
         /** @type {{terms?: string[]; termsFilePath?: string; termsFileType?: ("json"|"txt")}} */ {
@@ -65,7 +67,7 @@ class ResourceDNTTerms extends Rule {
             }
         }
 
-        this.dntTerms = [...new Set(terms.filter((t) => t.length > 0))];
+        this._dntTerms = [...new Set(terms.filter((t) => t.length > 0))];
     }
 
     /** @override */
@@ -99,7 +101,7 @@ class ResourceDNTTerms extends Rule {
 
         const /** @type {Result[]} */ results = [];
 
-        for (const term of this.dntTerms) {
+        for (const term of this._dntTerms) {
             if (source.includes(term) && !target.includes(term)) {
                 results.push(
                     new Result({

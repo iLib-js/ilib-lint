@@ -1716,5 +1716,39 @@ export const testRules = {
         );
         test.done();
     },
+
+    testResourceDNTTermsLoadTermsFromJSONFile: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            termsFileType: "json",
+            termsFilePath: "./test/testfiles/dnt-test.json"
+        });
+        test.ok(rule);
+
+        test.deepEqual(rule.dntTerms, [
+            "Some DNT term",
+            "Another DNT term"
+        ]);
+
+        test.done();
+    },
+
+    testResourceDNTTermsLoadTermsFromTxtFile: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            termsFileType: "txt",
+            termsFilePath: "./test/testfiles/dnt-test.txt"
+        });
+        test.ok(rule);
+
+        test.deepEqual(rule.dntTerms, [
+            "Some DNT term",
+            "Another DNT term"
+        ]);
+
+        test.done();
+    },
 };
 
