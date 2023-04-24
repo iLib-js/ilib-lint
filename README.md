@@ -594,6 +594,8 @@ limitations under the License.
 ### Pending release
 
 - added rule to check if resources have both source and target defined
+- fixed bug where resources of type array or plural were not getting
+  processed properly in the declarative rules
 
 ### v1.5.0
 
