@@ -9,12 +9,8 @@ the two are the same:
 then the translation can be the same as the source, as it is very common for
 dialects of a language to use the same words.
 1. If the source has the "do not translate" flag turned on.
-1. If the source has one of the following cases and does not contain any other
-text. These type of source strings are typically things like control strings
-or names of fonts, or other such things that should not be translated.
-    - kabab case eg. this-is-kabab-case
-    - camel case eg. thisIsCamelCase
-    - snake case eg. this_is_snake_case
+1. If the source string is a single word. To reduce the false positives, this rule
+only checks resources where there are multiple words in the source string.
 
 Example failure case:
 
@@ -33,7 +29,7 @@ Example cases which do not cause problems:
         <target>Dies ist ein Zielzeichenfolge.</target>
       </trans-unit>
       <trans-unit id="2" resname="foobar2" restype="string" datatype="plaintext">
-        <source>thisIsACamelCaseString</source>
-        <target>thisIsACamelCaseString</target>
+        <source>thisIsASingleWordCamelCaseString</source>
+        <target>thisIsASingleWordCamelCaseString</target>
       </trans-unit>
 ```
