@@ -33,37 +33,50 @@ class ResourceDNTTerms extends Rule {
      * @type {string[]}
      */
     _dntTerms = [];
-    
-    get dntTerms() { return this._dntTerms; }
 
-    constructor(
-        /** @type {{terms?: string[]; termsFilePath?: string; termsFileType?: ("json"|"txt")}} */ {
-            terms,
-            termsFilePath,
-            termsFileType = "json",
-        }
-    ) {
+    get dntTerms() {
+        return [...this._dntTerms];
+    }
+
+    /**
+     * @typedef ExplicitTerms
+     * @type {object}
+     * @property {string[]} terms Explicit list of DNT terms to check
+     */
+
+    /**
+     * @typedef FileTerms
+     * @type {object}
+     * @property {string} termsFilePath Path to DNT terms file (either absolute or relative to current working directory)
+     * @property {("json"|"txt")} termsFileType Determines how DNT file should be parsed - either as JSON or as TXT with one term per line
+     */
+
+    constructor(/** @type {ExplicitTerms | FileTerms} */ params) {
         super({});
+        let /** @type {string[]} */ terms = [];
 
-        if (undefined === terms) {
-            // if the terms are not provided explicitly, parse them from a file
-            if (undefined === termsFilePath) {
-                throw new Error("Neither DNT terms nor path to a DNT terms file were provided");
-            }
-            switch (termsFileType) {
-                case "json":
-                    terms = ResourceDNTTerms._parseTermsFromJsonFile(termsFilePath);
-                    break;
-                case "txt":
-                    terms = ResourceDNTTerms._parseTermsFromTxtFile(termsFilePath);
-                    break;
-                default:
-                    throw new Error(`"${termsFileType}" is not a valid DNT terms file type`);
-            }
-        } else {
+        if ("terms" in params) {
+            // explicit terms from config
+            terms = params.terms;
             // ensure valid type
             if (!Array.isArray(terms) || !terms.every((term) => "string" === typeof term)) {
                 throw new Error(`DNT terms provided in an unexpected format; expected string[]`);
+            }
+        } else {
+            // if the terms are not provided explicitly, parse them from a file
+            if ("string" !== typeof params.termsFilePath) {
+                throw new Error("Neither DNT terms nor path to a DNT terms file were provided");
+            }
+
+            switch (params.termsFileType) {
+                case "json":
+                    terms = ResourceDNTTerms._parseTermsFromJsonFile(params.termsFilePath);
+                    break;
+                case "txt":
+                    terms = ResourceDNTTerms._parseTermsFromTxtFile(params.termsFilePath);
+                    break;
+                default:
+                    throw new Error(`"${params.termsFileType}" is not a valid DNT terms file type`);
             }
         }
 

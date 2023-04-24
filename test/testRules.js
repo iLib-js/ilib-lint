@@ -1805,6 +1805,7 @@ export const testRules = {
         test.expect(2);
 
         try{
+            // @ts-ignore
             new ResourceDNTTerms({});
         } catch (e) {
             test.ok(e instanceof Error);
