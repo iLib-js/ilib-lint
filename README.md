@@ -595,6 +595,7 @@ limitations under the License.
 
 - added rule to ensure whitespaces at the edges of string are preserved in the same form
 - added rule to check if resources have both source and target defined
+- added rule to check Do Not Translate terms in resources
 
 ### v1.5.0
 
