@@ -51,7 +51,7 @@ class ResourceDNTTerms extends Rule {
      * @property {("json"|"txt")} termsFileType Determines how DNT file should be parsed - either as JSON or as TXT with one term per line
      */
 
-    constructor(/** @type {ExplicitTerms | FileTerms} */ params) {
+    constructor(/** @type {ExplicitTerms | FileTerms | {}} */ params) {
         super({});
         let /** @type {string[]} */ terms = [];
 
@@ -62,12 +62,8 @@ class ResourceDNTTerms extends Rule {
             if (!Array.isArray(terms) || !terms.every((term) => "string" === typeof term)) {
                 throw new Error(`DNT terms provided in an unexpected format; expected string[]`);
             }
-        } else {
+        } else if ("termsFilePath" in params) {
             // if the terms are not provided explicitly, parse them from a file
-            if ("string" !== typeof params.termsFilePath) {
-                throw new Error("Neither DNT terms nor path to a DNT terms file were provided");
-            }
-
             switch (params.termsFileType) {
                 case "json":
                     terms = ResourceDNTTerms._parseTermsFromJsonFile(params.termsFilePath);
@@ -78,6 +74,9 @@ class ResourceDNTTerms extends Rule {
                 default:
                     throw new Error(`"${params.termsFileType}" is not a valid DNT terms file type`);
             }
+        } else {
+            // no terms provided
+            terms = [];
         }
 
         this._dntTerms = [...new Set(terms.filter((t) => t.length > 0))];

@@ -1804,14 +1804,10 @@ export const testRules = {
     testResourceDNTTermsLoadTermsNotProvided: function(test) {
         test.expect(2);
 
-        try{
-            // @ts-ignore
-            new ResourceDNTTerms({});
-        } catch (e) {
-            test.ok(e instanceof Error);
-            test.equal(/** @type {Error} */ (e).message, "Neither DNT terms nor path to a DNT terms file were provided");
-        }
-
+        const rule = new ResourceDNTTerms({});
+        test.ok(rule);
+        test.deepEqual(rule.dntTerms, []);
+        
         test.done();
     },
 
