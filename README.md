@@ -618,6 +618,11 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.6.0
+
+- added the ability to scan source code files and apply rules
+    - added source-checker Rule for declarative rules
+
 ### v1.5.2
 
 - update the documentation above to enumerate all the current resource plugins
@@ -651,8 +656,6 @@ limitations under the License.
 
 ### v1.4.0
 
-- added the ability to scan source code files and apply rules
-    - added source-checker Rule for declarative rules
 - added rules to detect some double-byte (fullwidth) characters
 
 ### v1.3.0
