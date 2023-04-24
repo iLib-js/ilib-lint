@@ -18,7 +18,8 @@
  * limitations under the License.
  */
 
-import { Rule, Result } from 'i18nlint-common';
+import { Result } from 'i18nlint-common';
+import DeclarativeResourceRule from './DeclarativeResourceRule.js';
 import { stripPlurals } from './utils.js';
 
 function findMissing(source, target) {
@@ -35,7 +36,7 @@ function findMissing(source, target) {
  * @class Resource checker class that checks that any regular expressions
  * that matches in the source also appears in the translation.
  */
-class ResourceMatcher extends Rule {
+class ResourceMatcher extends DeclarativeResourceRule {
     /**
      * Construct a new regular expression-based resource checker.
      *
@@ -60,121 +61,52 @@ class ResourceMatcher extends Rule {
      */
     constructor(options) {
         super(options);
-
-        if (!options || !options.name || !options.description || !options.note || !options.regexps) {
-            throw "Missing required options for the ResourceMatcher constructor";
-        }
-        ["name", "description", "regexps", "note", "sourceLocale", "link", "severity"].forEach(prop => {
-            this[prop] = options[prop];
-        });
-        this.sourceLocale = this.sourceLocale || "en-US";
-        this.severity = this.severity || "error";
-
-        // this may throw if you got to the regexp syntax wrong:
-        this.re = this.regexps.map(regexp => new RegExp(regexp, "gu"));
-    }
-
-    getRuleType() {
-        return "resource";
     }
 
     /**
      * @override
      */
-    match(options) {
-        const { locale, resource, file } = options || {};
-        const _this = this;
+    checkString(re, src, tar, file, resource) {
+        re.lastIndex = 0;
+        let sourceMatches = [];
+        const strippedSrc = stripPlurals(src);
+        const strippedTar = stripPlurals(tar);
 
-        /**
-         * @private
-         */
-        function checkString(re, src, tar) {
+        let match = re.exec(strippedSrc);
+        while (match) {
+            sourceMatches.push(match[0]);
+            match = re.exec(strippedSrc);
+        }
+
+        if (sourceMatches.length > 0) {
+            // contains the things we are looking for, so check the target
             re.lastIndex = 0;
-            let sourceMatches = [];
-            const strippedSrc = stripPlurals(src);
-            const strippedTar = stripPlurals(tar);
-
-            let match = re.exec(strippedSrc);
+            let targetMatches = [];
+            match = re.exec(strippedTar);
             while (match) {
-                sourceMatches.push(match[0]);
-                match = re.exec(strippedSrc);
-            }
-
-            if (sourceMatches.length > 0) {
-                // contains URLs, so check the target
-                re.lastIndex = 0;
-                let targetMatches = [];
+                targetMatches.push(match[0]);
                 match = re.exec(strippedTar);
-                while (match) {
-                    targetMatches.push(match[0]);
-                    match = re.exec(strippedTar);
-                }
-                const missing = findMissing(sourceMatches, targetMatches);
-                if (missing.length > 0) {
-                    return missing.map(missing => {
-                        let value = {
-                            severity: _this.severity,
-                            id: resource.getKey(),
-                            source: src,
-                            rule: _this,
-                            pathName: file,
-                            highlight:`Target: ${tar}<e0></e0>`,
-                            description: _this.note.replace(/\{matchString\}/g, missing)
-                        };
-                        if (typeof(options.lineNumber) !== 'undefined') {
-                            value.lineNumber = options.lineNumber;
-                        }
-                        return new Result(value);
-                    });
-                }
             }
-        }
-
-        function checkRegExps(src, tar) {
-            let results = [];
-            _this.re.forEach(re => {
-                results = results.concat(checkString(re, src, tar));
-            });
-            results = results.filter(result => result);
-            return results && results.length ? results : undefined;
-        }
-
-        switch (resource.getType()) {
-            case 'string':
-                const tarString = resource.getTarget();
-                if (tarString) {
-                    return checkRegExps(resource.getSource(), tarString);
-                }
-                break;
-
-            case 'array':
-                const srcArray = resource.getSource();
-                const tarArray = resource.getTarget();
-                if (tarArray) {
-                    const results = srcArray.map((item, i) => {
-                        if (i < tarArray.length && tarArray[i]) {
-                            return checkRegExps(srcArray[i], tarArray[i]);
-                        }
-                    }).flat().filter(element => element);
-                    return (results && results.length ? results : undefined);
-                }
-                break;
-
-            case 'plural':
-                const srcPlural = resource.getSource();
-                const tarPlural = resource.getTarget();
-                if (tarPlural) {
-                    const results = Object.keys(tarPlural).map(category => {
-                        return checkRegExps(srcPlural[category] || srcPlural.other, tarPlural[category]);
-                    }).flat().filter(element => element);
-                    return (results && results.length ? results : undefined);
-                }
-                break;
+            const missing = findMissing(sourceMatches, targetMatches);
+            if (missing.length > 0) {
+                return missing.map(missing => {
+                    let value = {
+                        severity: this.severity,
+                        id: resource.getKey(),
+                        source: src,
+                        rule: this,
+                        pathName: file,
+                        highlight:`Target: ${tar}<e0></e0>`,
+                        description: this.note.replace(/\{matchString\}/g, missing)
+                    };
+                    if (typeof(resource.lineNumber) !== 'undefined') {
+                        value.lineNumber = resource.lineNumber;
+                    }
+                    return new Result(value);
+                });
+            }
         }
     }
-
-    // no match
-    return;
 }
 
 export default ResourceMatcher;
