@@ -595,6 +595,8 @@ limitations under the License.
 
 - added rule to ensure whitespaces at the edges of string are preserved in the same form
 - added rule to check if resources have both source and target defined
+- fixed bug where resources of type array or plural were not getting
+  processed properly in the declarative rules
 
 ### v1.5.0
 

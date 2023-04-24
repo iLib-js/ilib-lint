@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ResourceString } from 'ilib-tools-common';
+import { ResourceString, ResourceArray, ResourcePlural } from 'ilib-tools-common';
 
 import ResourceTargetChecker from '../src/rules/ResourceTargetChecker.js';
 import { regexRules } from '../src/PluginManager.js';
@@ -55,6 +55,77 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
+    testResourceNoFullwidthLatinArray: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceTargetChecker(regexRules[2]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceArray({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: [
+                    'Upload to Box'
+                ],
+                targetLocale: "ja-JP",
+                target: [
+                    "Ｂｏｘにアップロード"
+                ],
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
+        test.equal(actual[0].highlight, "Target: <e0>Ｂｏｘ</e0>にアップロード");
+        test.equal(actual[0].source, 'Upload to Box');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    },
+
+    testResourceNoFullwidthLatinPlural: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceTargetChecker(regexRules[2]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourcePlural({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: {
+                    one: 'Upload it',
+                    other: 'Upload to Box'
+                },
+                targetLocale: "ja-JP",
+                target: {
+                    other: "Ｂｏｘにアップロード"
+                },
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
+        test.equal(actual[0].highlight, "Target: <e0>Ｂｏｘ</e0>にアップロード");
+        test.equal(actual[0].source, 'Upload to Box');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    },
+
     testResourceNoFullwidthLatinSuccess: function(test) {
         test.expect(2);
 
@@ -69,6 +140,61 @@ export const testResourceTargetChecker = {
                 source: 'Upload to Box',
                 targetLocale: "ja-JP",
                 target: "Boxにアップロード",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceNoFullwidthLatinSuccessArray: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(regexRules[2]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceArray({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: [
+                    'Upload to Box'
+                ],
+                targetLocale: "ja-JP",
+                target: [
+                    "Boxにアップロード"
+                ],
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceNoFullwidthLatinSuccessPlural: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(regexRules[2]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceArray({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: {
+                    one: "Upload it",
+                    other: "Upload to Box"
+                },
+                targetLocale: "ja-JP",
+                target: {
+                    other: "Boxにアップロード"
+                },
                 pathName: "a/b/c.xliff"
             }),
             file: "x/y"

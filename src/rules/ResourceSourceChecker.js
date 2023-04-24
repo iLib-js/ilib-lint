@@ -116,18 +116,20 @@ class ResourceSourceChecker extends Rule {
 
             case 'array':
                 const srcArray = resource.getSource();
-                return srcArray.map((item, i) => {
-                    return checkRegExps(srcArray[i]);
-                }).filter(element => {
-                    return element;
-                });
+                if (srcArray) {
+                    const results = srcArray.map((item, i) => {
+                        return checkRegExps(srcArray[i]);
+                    }).flat().filter(element => element);
+                    return (results && results.length ? results : undefined);
+                }
                 break;
 
             case 'plural':
                 const srcPlural = resource.getSource();
-                return categories.map(category => {
+                const results = Object.keys(srcPlural).map(category => {
                     if (srcPlural[category]) return checkRegExps(srcPlural[category]);
-                });
+                }).flat().filter(element => element);
+                return (results && results.length ? results : undefined);
                 break;
         }
     }
