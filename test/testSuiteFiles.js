@@ -23,7 +23,7 @@ const files = [
     "testParserManager.js",
     "testPluginManager.js",
     "testProject.js",
-    "testResourceICUPluralTranslations.js",
+    "testResourceICUPluralTranslation.js",
     "testResourceMatcher.js",
     "testResourceTargetChecker.js",
     "testRules.js",

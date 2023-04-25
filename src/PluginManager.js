@@ -27,6 +27,7 @@ import RuleSet from './RuleSet.js';
 import XliffPlugin from './plugins/XliffPlugin.js';
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
+import ResourceICUPluralTranslation from './rules/ResourceICUPluralTranslation.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
@@ -88,6 +89,7 @@ export const builtInRulesets = {
         "resource-unique-keys": true,
         "resource-edge-whitespace": true,
         "resource-completeness": true,
+        "resource-icu-plurals-translated": true,
 
         // declarative rules from above
         "resource-url-match": true,
@@ -182,6 +184,7 @@ class PluginManager {
         // default rules
         this.ruleMgr.add([
             ResourceICUPlurals,
+            ResourceICUPluralTranslation,
             ResourceQuoteStyle,
             ResourceUniqueKeys,
             ResourceEdgeWhitespace,

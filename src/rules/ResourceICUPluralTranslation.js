@@ -22,33 +22,6 @@ import { IntlMessageFormat } from 'intl-messageformat';
 import Locale from 'ilib-locale';
 import { Rule, Result } from 'i18nlint-common';
 
-// all the plural categories from CLDR
-const allCategories = ["zero", "one", "two", "few", "many", "other"];
-
-// Map the language to the set of plural categories that the language
-// uses. If the language is not listed below, it uses the default
-// list of plurals: "one" and "other"
-const categoriesForLang = {
-    "ja": [ "other" ],
-    "zh": [ "other" ],
-    "ko": [ "other" ],
-    "th": [ "other" ],
-    "lv": [ "zero", "one", "other" ],
-    "ga": [ "one", "two", "other" ],
-    "ro": [ "one", "few", "other" ],
-    "lt": [ "one", "few", "other" ],
-    "ru": [ "one", "few", "other" ],
-    "uk": [ "one", "few", "other" ],
-    "be": [ "one", "few", "other" ],
-    "sr": [ "one", "few", "other" ],
-    "hr": [ "one", "few", "other" ],
-    "cs": [ "one", "few", "other" ],
-    "sk": [ "one", "few", "other" ],
-    "pl": [ "one", "few", "other" ],
-    "sl": [ "one", "two", "few", "other" ],
-    "ar": [ "zero", "one", "two", "few", "many", "other" ]
-}
-
 /**
  * @class Represent an ilib-lint rule.
  */
@@ -75,65 +48,119 @@ class ResourceICUPluralTranslation extends Rule {
         for (let i = 0; i < nodes.length; i++) {
             switch (nodes[i].type) {
                 case 1:
-                    result += ` {${source[i].value} `;
+                    result += ` {${nodes[i].value}} `;
                     break;
 
                 case 2:
-                    result += ` {${source[i].value}, number, ${source[i].style}} `;
+                    result += ` {${nodes[i].value}, number, ${nodes[i].style}} `;
                     break;
-                
+
                 case 3:
-                    result += ` {${source[i].value}, date, ${source[i].style}} `;
+                    result += ` {${nodes[i].value}, date, ${nodes[i].style}} `;
                     break;
 
                 case 4:
-                    result += ` {${source[i].value}, time, ${source[i].style}} `;
+                    result += ` {${nodes[i].value}, time, ${nodes[i].style}} `;
                     break;
 
+                // for select ordinals and plurals, replace them with a fixed string
+                // so that we don't match on the details of those subparts
                 case 5:
-                    result += ` {${source[i].value}, selectordinal, `;
-                    for (const category in source[i].options) {
-                        result += `${category} {${reconstruct(source[i].options[category].value)} }`;
-                    }
-                    result += '} ';
+                    result += ` {selectordinal} `;
                     break;
 
                 case 6:
-                    result += ` {${source[i].value}, plural, `;
-                    for (const category in source[i].options) {
-                        result += `${category} {${reconstruct(source[i].options[category].value)} }`;
-                    }
-                    result += '} ';
+                    result += ` {plural} `;
                     break;
 
                 case 7:
                     result += " # ";
                     break;
 
-                default:
-                    substr += source[i].value;
+                case 8:
+                    result += `<${nodes[i].value}/>`;
                     break;
-                
+
+                default:
+                    result += nodes[i].value;
+                    break;
             }
         }
 
-        return result;
+        return result.replace(/\s+/g, " ").trim();
     }
 
-    traverse(source, target) {
-        let substr = "";
+    traverse(resource, file, source, target) {
+        let sourcePlurals = {};
+        let targetPlurals = {};
+        let sourceTags = {};
+        let targetTags = {};
+
+        // Find the plurals and tags in this string and remember them according to their
+        // unique name. We do this because the order of plurals and tags may change in
+        // translations, so we have to go by the only part that doesn't change -- the name
         for (let i = 0; i < source.length; i++) {
-            switch (source[i].type) {
-                case 6:
-                    for (const category in source[i].options) {
-                        
-                    }
-                    break;
-                default:
-                    substr += source[i].value;
-                    break;
+            // selectordinal or plural
+            if (source[i].type === 5 || source[i].type === 6) {
+                sourcePlurals[source[i].value] = source[i];
+            } else if (source[i].type === 8) {
+                sourceTags[source[i].value] = source[i];
+            }
+            if (target[i].type === 5 || target[i].type === 6) {
+                targetPlurals[target[i].value] = target[i];
+            } else if (target[i].type === 8) {
+                targetTags[target[i].value] = target[i];
             }
         }
+
+        // for each plural, try to match it up with the target plural by name and check if
+        // there is a translation
+        let results = Object.keys(sourcePlurals).map(name => {
+            const sourcePlural = sourcePlurals[name];
+            const targetPlural = targetPlurals[name];
+            if (!targetPlural) {
+                // missing target plurals are for a different rule, so don't report it here
+                return;
+            }
+            return Object.keys(sourcePlural.options).map(category => {
+                const sourceStr = this.reconstruct(sourcePlural.options[category].value);
+                const targetStr = this.reconstruct(targetPlural.options[category].value);
+                let result = [];
+
+                // use case- and whitespace-insensitive match
+                if (sourceStr.toLowerCase() === targetStr.toLowerCase()) {
+                    let value = {
+                        severity: "warning",
+                        description: `Translation of the category \'${category}\' is the same as the source.`,
+                        rule: this,
+                        id: resource.getKey(),
+                        source: `${category} {${sourceStr}}`,
+                        highlight: `Target: <e0>${category} {${targetStr}}</e0>`,
+                        pathName: file,
+                        locale: resource.getTargetLocale()
+                    };
+                    if (typeof(resource.lineNumber) !== 'undefined') {
+                        value.lineNumber = resource.lineNumber;
+                    }
+                    result.push(new Result(value));
+                }
+
+                // now the plurals may have plurals nested in them, so recursively check them too
+                return result.concat(this.traverse(resource, file, sourcePlural.options[category].value, targetPlural.options[category].value));
+             }).flat().filter(result => result);
+        }).flat().filter(result => result);
+
+        // now recursively handle the tags
+        results = results.concat(Object.keys(sourceTags).map(name => {
+            const sourceTag = sourceTags[name];
+            const targetTag = targetTags[name];
+            if (!targetTag) {
+                // missing target tags are for a different rule, so don't report it here
+                return;
+            }
+            return this.traverse(resource, file, sourceTag.children, targetTag.children);
+        }).flat().filter(result => result));
+        return results.length < 2 ? results[0] : results;
     }
 
     checkString(src, tar, file, resource, sourceLocale, targetLocale, lineNumber) {
@@ -144,43 +171,22 @@ class ResourceICUPluralTranslation extends Rule {
         // the source
         if (sLoc.getLangSpec() === tLoc.getLangSpec()) return;
 
-        let results;
-        let problems = [];
-        let sourceCategories;
+        let sourceAst;
+        let targetAst;
         try {
             let imf = new IntlMessageFormat(src, sourceLocale);
-            let ast = imf.getAst();
-            sourceCategories = (ast && ast[0]?.options) || {};
+            sourceAst = imf.getAst();
 
             imf = new IntlMessageFormat(tar, targetLocale);
-            ast = imf.getAst();
-            targetCategories = (ast && ast[0]?.options) || {};
+            targetAst = imf.getAst();
         } catch (e) {
             // ignore plural syntax errors -- that's a different rule
             return;
         }
 
-        const categories = Object.keys(targetCategories);
+        const results = this.traverse(resource, file, sourceAst, targetAst);
 
-        categories.forEach((category) => {
-            if (sourceCategories[category] && targetCategories[category] === sourceCategories[category]) {
-                let value = {
-                    severity: "warning",
-                    description: `Plural category \'${category}\' is the same as the source and does not seem to be translated.`,
-                    rule: this,
-                    id: resource.getKey(),
-                    source: src,
-                    highlight: `Target: <e0>${category} {${targetCategories[category]}}</e0>`,
-                    pathName: file
-                };
-                if (typeof(lineNumber) !== 'undefined') {
-                    value.lineNumber = lineNumber;
-                }
-                problems.push(new Result(value));
-            }
-        });
-
-        return problems.length < 2 ? problems[0] : problems;
+        return (results && results.length < 2) ? results[0] : results;
     }
 
     /**
@@ -224,9 +230,6 @@ class ResourceICUPluralTranslation extends Rule {
                 break;
         }
     }
-
-    // no match
-    return;
 }
 
 export default ResourceICUPluralTranslation;
