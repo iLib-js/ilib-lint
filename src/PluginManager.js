@@ -83,7 +83,7 @@ export const regexRules = [
         description: "Ensure that the target does not contain double-byte space characters.",
         note: "Double-byte space characters should not be used in the target string. Use ASCII symbols instead.",
         // per https://en.wikipedia.org/wiki/Whitespace_character
-        regexps: [ "[\\u1680|\\u2000|\\u2001|\\u2002|\\u2003|\\u2004|\\u2005|\\u2006|\\u2007|\\u2008|\\u2009|\\u200A|\\u2028|\\u2029|\\u202F|\\u205F|\\u3000]+" ],
+        regexps: [ "[\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-double-byte-space.md",
         severity: "warning",
     },
