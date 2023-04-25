@@ -137,18 +137,25 @@ class ResourceDNTTerms extends Rule {
         /** @type {{[category: string]: string;}} */ target
     ) {
         const partialResults = [];
-
-        // in plurals, if ANY category in source contains the DNT term, then expect EVERY target category to contain it as well
         for (const term of this._dntTerms) {
-            const matchingSourceItem = Object.values(source).find((sourceItem) => sourceItem.includes(term));
-            if (
-                undefined !== matchingSourceItem &&
-                !Object.values(target).every((targetItem) => targetItem.includes(term))
-            ) {
-                partialResults.push({
-                    source: matchingSourceItem,
-                    highlight: `Missing term: <e0>${term}</e0>`,
-                });
+            let matchedCategories = Object.keys(source).filter((category) => source[category].includes(term));
+            let requiredCategories;
+
+            if (matchedCategories.length === Object.keys(source).length) {
+                // ALL categories contain DNT term, so ALL target categories should contain it as well
+                requiredCategories = Object.keys(target);
+            } else {
+                // only SOME categories contain DNT term, so only the same categories in target need to contain it
+                requiredCategories = Object.keys(target).filter((category) => matchedCategories.includes(category));
+            }
+
+            for (const category of requiredCategories) {
+                if (!target[category].includes(term)) {
+                    partialResults.push({
+                        source: source[category],
+                        highlight: `Missing term: <e0>${term}</e0>`,
+                    });
+                }
             }
         }
         return partialResults;

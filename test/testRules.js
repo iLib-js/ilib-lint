@@ -1897,7 +1897,7 @@ export const testRules = {
         test.done();
     },
 
-    testResourceDNTTermsResourcePlural: function(test) {
+    testResourceDNTTermsResourcePluralAllCategories: function(test) {
         test.expect(2);
 
         const rule = new ResourceDNTTerms({
@@ -1912,7 +1912,7 @@ export const testRules = {
             locale: "de-DE",
             file: "x/y",
             resource: new ResourcePlural({
-                key: "resource-dnt-test.dnt-missing-resource-plural",
+                key: "resource-dnt-test.dnt-missing-resource-plural-all-categories",
                 sourceLocale: "en-US",
                 source: {
                     "one": "This is Some DNT term singular",
@@ -1922,7 +1922,7 @@ export const testRules = {
                 target: {
                     "one": "This is incorrectly translated DNT term singular",
                     "two": "This is incorrectly translated DNT term double",
-                    "many": "This is translated Some DNT term many"
+                    "many": "This is correctly translated Some DNT term many"
                 },
                 pathName: "dnt-test.xliff",
                 state: "translated",
@@ -1930,19 +1930,76 @@ export const testRules = {
         };
 
         const result = rule.match(subject);
-        test.deepEqual(
-            result,
-            [new Result({
+        test.deepEqual(result, [
+            new Result({
                 rule,
                 severity: "error",
                 pathName: "x/y",
                 locale: "de-DE",
                 source: "This is Some DNT term singular",
-                id: "resource-dnt-test.dnt-missing-resource-plural",
+                id: "resource-dnt-test.dnt-missing-resource-plural-all-categories",
                 description: "A DNT term is missing in target string.",
                 highlight: `Missing term: <e0>Some DNT term</e0>`,
-            })]
-        );
+            }),
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: undefined, // no category `two` defined in source
+                id: "resource-dnt-test.dnt-missing-resource-plural-all-categories",
+                description: "A DNT term is missing in target string.",
+                highlight: `Missing term: <e0>Some DNT term</e0>`,
+            }),
+        ]);
+        test.done();
+    },
+
+    testResourceDNTTermsResourcePluralSomeCategories: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            terms: [
+                "Some DNT term",
+                "Another DNT term"
+            ]
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourcePlural({
+                key: "resource-dnt-test.dnt-missing-resource-plural-some-categories",
+                sourceLocale: "en-US",
+                source: {
+                    "one": "This is Some DNT term singular",
+                    "many": "This is not a DNT term many"
+                },
+                targetLocale: "de-DE",
+                target: {
+                    "one": "This is incorrectly translated DNT term singular",
+                    "two": "This is incorrectly translated DNT term double",
+                    "many": "This is correctly translated Some DNT term many"
+                },
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(result, [
+            new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "This is Some DNT term singular",
+                id: "resource-dnt-test.dnt-missing-resource-plural-some-categories",
+                description: "A DNT term is missing in target string.",
+                highlight: `Missing term: <e0>Some DNT term</e0>`,
+            })
+        ]);
         test.done();
     },
 
@@ -2004,7 +2061,7 @@ export const testRules = {
         test.done();
     },
 
-    testResourceDNTTermsOkPlural: function(test) {
+    testResourceDNTTermsOkPluralAllCategories: function(test) {
         test.expect(2);
 
         const rule = new ResourceDNTTerms({
@@ -2018,7 +2075,7 @@ export const testRules = {
             locale: "de-DE",
             file: "x/y",
             resource: new ResourcePlural({
-                key: "resource-dnt-test.dnt-missing-resource-plural",
+                key: "resource-dnt-test.dnt-ok-resource-plural-all-categories",
                 sourceLocale: "en-US",
                 source: {
                     "one": "This is Some DNT term singular",
@@ -2029,6 +2086,42 @@ export const testRules = {
                     "one": "This is correctly translated Some DNT term singular",
                     "two": "This is correctly translated Some DNT term double",
                     "many": "This is correctly translated Some DNT term many"
+                },
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(result, []);
+        test.done();
+    },
+
+    testResourceDNTTermsOkPluralSomeCategories: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            terms: [
+                "Some DNT term"
+            ]
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourcePlural({
+                key: "resource-dnt-test.dnt-ok-resource-plural-some-categories",
+                sourceLocale: "en-US",
+                source: {
+                    "one": "This is Some DNT term singular",
+                    "many": "This is not a DNT term many"
+                },
+                targetLocale: "de-DE",
+                target: {
+                    "one": "This is correctly translated Some DNT term singular",
+                    "two": "This is correctly translated not a DNT term double",
+                    "many": "This is correctly translated not a DNT term many"
                 },
                 pathName: "dnt-test.xliff",
                 state: "translated",
