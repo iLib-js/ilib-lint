@@ -1723,7 +1723,6 @@ export const testRules = {
         // "Some DNT term" from TXT file should be matched
 
         const rule = new ResourceDNTTerms({
-            termsFileType: "txt",
             termsFilePath: "./test/testfiles/dnt-test.txt",
         });
         test.ok(rule);
@@ -1765,7 +1764,6 @@ export const testRules = {
         // "Some DNT term" from JSON file should be matched
 
         const rule = new ResourceDNTTerms({
-            termsFileType: "json",
             termsFilePath: "./test/testfiles/dnt-test.json",
         });
         test.ok(rule);

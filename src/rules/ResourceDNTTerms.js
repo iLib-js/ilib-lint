@@ -20,6 +20,7 @@
 import { Rule, Result } from "i18nlint-common";
 import { Resource, ResourcePlural } from "ilib-tools-common";
 import fs from "node:fs";
+import path from "node:path";
 
 /** Rule to ensure that Do Not Translate terms have not been translated;
  * i.e., if a DNT term appears in source, it has to appear in target as well */
@@ -46,7 +47,7 @@ class ResourceDNTTerms extends Rule {
      * @typedef FileTerms
      * @type {object}
      * @property {string} termsFilePath Path to DNT terms file (either absolute or relative to current working directory)
-     * @property {("json"|"txt")} termsFileType Determines how DNT file should be parsed - either as JSON or as TXT with one term per line
+     * @property {("json"|"txt")} [termsFileType] Determines how DNT file should be parsed - either as JSON or as TXT with one term per line
      */
 
     constructor(/** @type {ExplicitTerms | FileTerms | {}} */ params) {
@@ -62,7 +63,8 @@ class ResourceDNTTerms extends Rule {
             }
         } else if ("termsFilePath" in params) {
             // if the terms are not provided explicitly, parse them from a file
-            switch (params.termsFileType) {
+            let termsFileType = params.termsFileType ?? path.extname(params.termsFilePath).slice(1).toLowerCase();
+            switch (termsFileType) {
                 case "json":
                     terms = ResourceDNTTerms.parseTermsFromJsonFile(params.termsFilePath);
                     break;
@@ -70,7 +72,7 @@ class ResourceDNTTerms extends Rule {
                     terms = ResourceDNTTerms.parseTermsFromTxtFile(params.termsFilePath);
                     break;
                 default:
-                    throw new Error(`"${params.termsFileType}" is not a valid DNT terms file type`);
+                    throw new Error(`"${termsFileType}" is not a valid DNT terms file type`);
             }
         } else {
             // no terms provided
