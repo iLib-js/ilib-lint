@@ -1861,8 +1861,7 @@ export const testRules = {
 
         const rule = new ResourceDNTTerms({
             terms: [
-                "Some DNT term",
-                "Another DNT term"
+                "Some DNT term"
             ]
         });
         test.ok(rule);
@@ -1966,6 +1965,71 @@ export const testRules = {
                 source: "Some source string with Some DNT term in it.",
                 targetLocale: "de-DE",
                 target: "Some target string with Some DNT term in it.",
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(result, []);
+        test.done();
+    },
+
+    testResourceDNTTermsOkArray: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            terms: [
+                "Some DNT term"
+            ]
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceArray({
+                key: "resource-dnt-test.dnt-ok-resource-array",
+                sourceLocale: "en-US",
+                source: ["not a DNT term item", "Some DNT term item"],
+                targetLocale: "de-DE",
+                target: ["translated term item", "correctly translated Some DNT term item"],
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(result, []);
+        test.done();
+    },
+
+    testResourceDNTTermsOkPlural: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            terms: [
+                "Some DNT term"
+            ]
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourcePlural({
+                key: "resource-dnt-test.dnt-missing-resource-plural",
+                sourceLocale: "en-US",
+                source: {
+                    "one": "This is Some DNT term singular",
+                    "many": "This is Some DNT term many"
+                },
+                targetLocale: "de-DE",
+                target: {
+                    "one": "This is correctly translated Some DNT term singular",
+                    "two": "This is correctly translated Some DNT term double",
+                    "many": "This is correctly translated Some DNT term many"
+                },
                 pathName: "dnt-test.xliff",
                 state: "translated",
             }),

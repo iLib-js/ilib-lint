@@ -103,7 +103,7 @@ class ResourceDNTTerms extends Rule {
             description: "A DNT term is missing in target string.",
         };
 
-        return this._matchResource(resource)?.map((partialResult) => new Result({ ...resultProps, ...partialResult }));
+        return this._matchResource(resource)?.map((partialResult) => new Result({ ...resultProps, ...partialResult })) ?? [];
     }
 
     _matchString(/** @type {string} */ source, /** @type {string} */ target) {
