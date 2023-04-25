@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ResourceString } from 'ilib-tools-common';
+import { ResourceArray, ResourcePlural, ResourceString } from 'ilib-tools-common';
 
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
@@ -1852,6 +1852,97 @@ export const testRules = {
                     highlight: `Missing term: <e0>Another DNT term</e0>`,
                 })
             ]
+        );
+        test.done();
+    },
+
+    testResourceDNTTermsResourceArray: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            terms: [
+                "Some DNT term",
+                "Another DNT term"
+            ]
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceArray({
+                key: "resource-dnt-test.dnt-missing-resource-array",
+                sourceLocale: "en-US",
+                source: ["not a DNT term item", "Some DNT term item"],
+                targetLocale: "de-DE",
+                target: ["translated term item", "incorrecly translated DNT term item"],
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            [new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some DNT term item",
+                id: "resource-dnt-test.dnt-missing-resource-array",
+                description: "A DNT term is missing in target string.",
+                highlight: `Missing term: <e0>Some DNT term</e0>`,
+            })]
+        );
+        test.done();
+    },
+
+    testResourceDNTTermsResourcePlural: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceDNTTerms({
+            terms: [
+                "Some DNT term",
+                "Another DNT term"
+            ]
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourcePlural({
+                key: "resource-dnt-test.dnt-missing-resource-plural",
+                sourceLocale: "en-US",
+                source: {
+                    "one": "This is Some DNT term singular",
+                    "many": "This is Some DNT term many"
+                },
+                targetLocale: "de-DE",
+                target: {
+                    "one": "This is incorrectly translated DNT term singular",
+                    "two": "This is incorrectly translated DNT term double",
+                    "many": "This is translated Some DNT term many"
+                },
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            [new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "This is Some DNT term singular",
+                id: "resource-dnt-test.dnt-missing-resource-plural",
+                description: "A DNT term is missing in target string.",
+                highlight: `Missing term: <e0>Some DNT term</e0>`,
+            })]
         );
         test.done();
     },

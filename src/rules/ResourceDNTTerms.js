@@ -18,6 +18,7 @@
  */
 
 import { Rule, Result } from "i18nlint-common";
+import { Resource, ResourcePlural } from "ilib-tools-common";
 import fs from "node:fs";
 
 /** Rule to ensure that Do Not Translate terms have not been translated;
@@ -87,43 +88,114 @@ class ResourceDNTTerms extends Rule {
     /** Check that a given resource has both source and target tags set
      * @override
      * @param {object} options
-     * @param {import("ilib-tools-common").Resource} options.resource
+     * @param {Resource} options.resource
      * @param {string} options.file
      * @param {string} options.locale
      *
      */
     match({ resource, file, locale }) {
-        const source = resource.getSource();
-        const target = resource.getTarget();
-
-        if ("string" !== typeof source || "string" !== typeof target) {
-            return /* don't check when either source or target string is not defined */;
-        }
-
-        const resultMetaProps = {
+        const resultProps = {
             id: resource.getKey(),
             rule: this,
             pathName: file,
-            source,
             locale,
+            severity: "error",
+            description: "A DNT term is missing in target string.",
         };
 
-        const /** @type {Result[]} */ results = [];
+        return this._matchResource(resource)?.map((partialResult) => new Result({ ...resultProps, ...partialResult }));
+    }
+
+    _matchString(/** @type {string} */ source, /** @type {string} */ target) {
+        const partialResults = [];
 
         for (const term of this._dntTerms) {
             if (source.includes(term) && !target.includes(term)) {
-                results.push(
-                    new Result({
-                        ...resultMetaProps,
-                        severity: "error",
-                        description: "A DNT term is missing in target string.",
-                        highlight: `Missing term: <e0>${term}</e0>`,
-                    })
-                );
+                partialResults.push({
+                    source,
+                    highlight: `Missing term: <e0>${term}</e0>`,
+                });
             }
         }
+        return partialResults;
+    }
 
-        return results;
+    _matchArray(/** @type {string[]} */ source, /** @type {string[]} */ target) {
+        const partialResults = [];
+
+        // in arrays, simply sequentially compare each item
+        source.forEach((sourceItem, idx) => {
+            const targetItem = target[idx] ?? "";
+            partialResults.push(...this._matchString(sourceItem, targetItem));
+        });
+
+        return partialResults;
+    }
+
+    _matchPlural(
+        /** @type {{[category: string]: string;}} */ source,
+        /** @type {{[category: string]: string;}} */ target
+    ) {
+        const partialResults = [];
+
+        // in plurals, if ANY category in source contains the DNT term, then expect EVERY target category to contain it as well
+        for (const term of this._dntTerms) {
+            const matchingSourceItem = Object.values(source).find((sourceItem) => sourceItem.includes(term));
+            if (
+                undefined !== matchingSourceItem &&
+                !Object.values(target).every((targetItem) => targetItem.includes(term))
+            ) {
+                partialResults.push({
+                    source: matchingSourceItem,
+                    highlight: `Missing term: <e0>${term}</e0>`,
+                });
+            }
+        }
+        return partialResults;
+    }
+
+    _matchResource(/** @type {Resource} */ resource) {
+        const source = resource.getSource();
+        const target = resource.getTarget();
+
+        switch (resource.getType()) {
+            case "string":
+                // in ResourceString, both source and target should be just strings
+                if ("string" !== typeof source || "string" !== typeof target) {
+                    return /* don't check when either source or target is not available */;
+                }
+                return this._matchString(source, target);
+            case "array":
+                // in ResourceArray, both source and target should be arrays of strings
+                if (
+                    !(
+                        Array.isArray(source) &&
+                        source.every((s) => "string" === typeof s) &&
+                        Array.isArray(target) &&
+                        target.every((t) => "string" === typeof t)
+                    )
+                ) {
+                    return /** don't check, unexpected types */;
+                }
+                return this._matchArray(/** @type {string[]} */ (source), /** @type {string[]} */ (target));
+            case "plural":
+                // in ResourcePlural, both source and target should be string dictionaries keyed by Unicode CLDR plural category names
+                if (
+                    !(
+                        source instanceof Object &&
+                        target instanceof Object &&
+                        [...Object.entries(source), ...Object.entries(target)].every(
+                            ([k, v]) => ResourcePlural.validPluralCategories.includes(k) && "string" === typeof v
+                        )
+                    )
+                ) {
+                    return /** don't check, unexpected types */;
+                }
+                return this._matchPlural(source, target);
+            default:
+                /** don't check an unknown resource type */
+                return;
+        }
     }
 
     /** Parse DNT terms from a JSON `string[]` file
@@ -144,12 +216,15 @@ class ResourceDNTTerms extends Rule {
     }
 
     /** Parse DNT terms from a text file by treating each line in file as a separate term
-     * 
+     *
      * While parsing, it excludes empty lines and trims leading/trailing whitespace on each line
      */
     static parseTermsFromTxtFile(/** @type {string} */ path) {
         const text = fs.readFileSync(path, "utf8");
-        return text.split(/[\r\n]+/).map(line => line.trim()).filter(line => line.length > 0);
+        return text
+            .split(/[\r\n]+/)
+            .map((line) => line.trim())
+            .filter((line) => line.length > 0);
     }
 }
 
