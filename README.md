@@ -597,6 +597,7 @@ limitations under the License.
 - added rule to check if resources have both source and target defined
 - fixed bug where resources of type array or plural were not getting
   processed properly in the declarative rules
+- added rule to warn against half-width kana characters
 
 ### v1.5.0
 

@@ -450,6 +450,56 @@ export const testResourceTargetChecker = {
         test.equal(actual[2].highlight, "Target: 本当？ はい！ 100<e0>％</e0>");
 
         test.done();
-    }
+    },
+
+    testResourceNoHalfWidthKana: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-halfwidth-kana-characters")
+        );
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: 'Communication',
+                targetLocale: "ja-JP",
+                target: "ｺﾐｭﾆｹｰｼｮﾝ",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+
+        test.done();
+    },
+
+    testResourceNoHalfWidthKanaSuccess: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-halfwidth-kana-characters")
+        );
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: 'Communication',
+                targetLocale: "ja-JP",
+                target: "コミュニケーション",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
 };
 
