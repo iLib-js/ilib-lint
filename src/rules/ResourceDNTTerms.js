@@ -29,14 +29,11 @@ class ResourceDNTTerms extends Rule {
     /** @readonly */ ruleType = "resource";
 
     /**
+     * @protected
      * @readonly
      * @type {string[]}
      */
     _dntTerms = [];
-
-    get dntTerms() {
-        return [...this._dntTerms];
-    }
 
     /**
      * @typedef ExplicitTerms
@@ -66,10 +63,10 @@ class ResourceDNTTerms extends Rule {
             // if the terms are not provided explicitly, parse them from a file
             switch (params.termsFileType) {
                 case "json":
-                    terms = ResourceDNTTerms._parseTermsFromJsonFile(params.termsFilePath);
+                    terms = ResourceDNTTerms.parseTermsFromJsonFile(params.termsFilePath);
                     break;
                 case "txt":
-                    terms = ResourceDNTTerms._parseTermsFromTxtFile(params.termsFilePath);
+                    terms = ResourceDNTTerms.parseTermsFromTxtFile(params.termsFilePath);
                     break;
                 default:
                     throw new Error(`"${params.termsFileType}" is not a valid DNT terms file type`);
@@ -132,7 +129,7 @@ class ResourceDNTTerms extends Rule {
     /** Parse DNT terms from a JSON `string[]` file
      * @param path Path to a DNT dictionary stored as JSON `string[]` file
      */
-    static _parseTermsFromJsonFile(/** @type {string} */ path) {
+    static parseTermsFromJsonFile(/** @type {string} */ path) {
         const text = fs.readFileSync(path, "utf8");
         let content = undefined;
         try {
@@ -146,10 +143,13 @@ class ResourceDNTTerms extends Rule {
         return /** @type {string[]} */ (content);
     }
 
-    /** Parse DNT terms from a text file by treating each line in file as a separate term */
-    static _parseTermsFromTxtFile(/** @type {string} */ path) {
+    /** Parse DNT terms from a text file by treating each line in file as a separate term
+     * 
+     * While parsing, it excludes empty lines and trims leading/trailing whitespace on each line
+     */
+    static parseTermsFromTxtFile(/** @type {string} */ path) {
         const text = fs.readFileSync(path, "utf8");
-        return text.split(/\r?\n/);
+        return text.split(/[\r\n]+/).map(line => line.trim()).filter(line => line.length > 0);
     }
 }
 

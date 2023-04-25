@@ -1717,6 +1717,90 @@ export const testRules = {
         test.done();
     },
 
+    testResourceDNTTermsWithTermsFromTxtFile: function(test) {
+        test.expect(2);
+
+        // "Some DNT term" from TXT file should be matched
+
+        const rule = new ResourceDNTTerms({
+            termsFileType: "txt",
+            termsFilePath: "./test/testfiles/dnt-test.txt",
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-dnt-test.dnt-terms-from-txt",
+                sourceLocale: "en-US",
+                source: "Some source string with Some DNT term in it.",
+                targetLocale: "de-DE",
+                target: "Some target string with an incorrecly translated DNT term in it.",
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            [new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string with Some DNT term in it.",
+                id: "resource-dnt-test.dnt-terms-from-txt",
+                description: "A DNT term is missing in target string.",
+                highlight: `Missing term: <e0>Some DNT term</e0>`,
+            })]
+        );
+        test.done();
+    },
+
+    testResourceDNTTermsWithTermsFromJsonFile: function(test) {
+        test.expect(2);
+
+        // "Some DNT term" from JSON file should be matched
+
+        const rule = new ResourceDNTTerms({
+            termsFileType: "json",
+            termsFilePath: "./test/testfiles/dnt-test.json",
+        });
+        test.ok(rule);
+
+        const subject = {
+            locale: "de-DE",
+            file: "x/y",
+            resource: new ResourceString({
+                key: "resource-dnt-test.dnt-terms-from-json",
+                sourceLocale: "en-US",
+                source: "Some source string with Some DNT term in it.",
+                targetLocale: "de-DE",
+                target: "Some target string with an incorrecly translated DNT term in it.",
+                pathName: "dnt-test.xliff",
+                state: "translated",
+            }),
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(
+            result,
+            [new Result({
+                rule,
+                severity: "error",
+                pathName: "x/y",
+                locale: "de-DE",
+                source: "Some source string with Some DNT term in it.",
+                id: "resource-dnt-test.dnt-terms-from-json",
+                description: "A DNT term is missing in target string.",
+                highlight: `Missing term: <e0>Some DNT term</e0>`,
+            })]
+        );
+        test.done();
+    },
+
     testResourceDNTTermsMultiple: function(test) {
         test.expect(2);
 
@@ -1800,46 +1884,13 @@ export const testRules = {
         test.deepEqual(result, []);
         test.done();
     },
-
-    testResourceDNTTermsLoadTermsNotProvided: function(test) {
-        test.expect(2);
-
-        const rule = new ResourceDNTTerms({});
-        test.ok(rule);
-        test.deepEqual(rule.dntTerms, []);
-        
-        test.done();
-    },
-
-    testResourceDNTTermsLoadTermsFromConfig: function(test) {
-        test.expect(2);
-
-        const rule = new ResourceDNTTerms({
-            terms: [
-                "Some DNT term",
-                "Another DNT term"
-            ]
-        });
-        test.ok(rule);
-
-        test.deepEqual(rule.dntTerms, [
-            "Some DNT term",
-            "Another DNT term"
-        ]);
-
-        test.done();
-    },
     
-    testResourceDNTTermsLoadTermsFromJSONFile: function(test) {
-        test.expect(2);
+    testResourceDNTTermsParseTermsFromJSONFile: function(test) {
+        test.expect(1);
 
-        const rule = new ResourceDNTTerms({
-            termsFileType: "json",
-            termsFilePath: "./test/testfiles/dnt-test.json"
-        });
-        test.ok(rule);
+        const terms = ResourceDNTTerms.parseTermsFromJsonFile("./test/testfiles/dnt-test.json");
 
-        test.deepEqual(rule.dntTerms, [
+        test.deepEqual(terms, [
             "Some DNT term",
             "Another DNT term"
         ]);
@@ -1847,18 +1898,17 @@ export const testRules = {
         test.done();
     },
 
-    testResourceDNTTermsLoadTermsFromTxtFile: function(test) {
-        test.expect(2);
+    testResourceDNTTermsParseTermsFromTxtFile: function(test) {
+        test.expect(1);
 
-        const rule = new ResourceDNTTerms({
-            termsFileType: "txt",
-            termsFilePath: "./test/testfiles/dnt-test.txt"
-        });
-        test.ok(rule);
+        const terms = ResourceDNTTerms.parseTermsFromTxtFile("./test/testfiles/dnt-test.txt");
 
-        test.deepEqual(rule.dntTerms, [
+        test.deepEqual(terms, [
             "Some DNT term",
-            "Another DNT term"
+            "Another DNT term",
+            "A DNT term that should be trimmed",
+            "Yet another DNT temr that should be trimmed",
+            "A DNT term after an empty line",
         ]);
 
         test.done();
