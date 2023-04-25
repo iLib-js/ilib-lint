@@ -76,7 +76,16 @@ export const regexRules = [
         note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII symbols instead.",
         regexps: [ "[\\uFF01|\\uFF05|\\uFF1F]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-punctuation-subset.md"
-    }
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-space-with-fullwidth-punctuation",
+        description: "Ensure that there is no whitespace adjacent to the fullwidth punctuation characters.",
+        note: "There should be no space adjacent to fullwidth punctuation characters '{matchString}'. Remove it.",
+        regexps: [ "(\\s+[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]|[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]\\s+)" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-with-fullwidth-punctuation.md",
+        severity: "warning",
+    },
 ];
 
 // built-in ruleset that contains all the built-in rules
