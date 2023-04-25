@@ -42,6 +42,11 @@ class ResourceICUPluralTranslation extends Rule {
         return "resource";
     }
 
+    /**
+     * Given some ast nodes, reconstruct the string that it came from, glossing
+     * over the plurals and selects, which will be compared separately anyways.
+     * @private
+     */
     reconstruct(nodes) {
         let result = "";
 
@@ -90,6 +95,11 @@ class ResourceICUPluralTranslation extends Rule {
         return result.replace(/\s+/g, " ").trim();
     }
 
+    /**
+     * Traverse an array of ast nodes to find any embedded selects or plurals
+     * or tags, and then process those separately.
+     * @private
+     */
     traverse(resource, file, source, target) {
         let sourcePlurals = {};
         let targetPlurals = {};
@@ -163,6 +173,10 @@ class ResourceICUPluralTranslation extends Rule {
         return results.length < 2 ? results[0] : results;
     }
 
+    /**
+     * Check a string in a resource for missing translations of plurals or selects.
+     * @private
+     */
     checkString(src, tar, file, resource, sourceLocale, targetLocale, lineNumber) {
         const sLoc = new Locale(sourceLocale);
         const tLoc = new Locale(targetLocale);

@@ -591,20 +591,19 @@ limitations under the License.
 
 ## Release Notes
 
-### Pending release
+### v1.5.0
 
 - added rule to ensure whitespaces at the edges of string are preserved in the same form
 - added rule to check if resources have both source and target defined
 - fixed bug where resources of type array or plural were not getting
   processed properly in the declarative rules
-
-### v1.5.0
-
 - removed ability for the ICU plural rule to report results on the
   source text
     - now it only checks the target text
     - a different rule should be implemented to check the
       source text
+- added rule to check if any of the categories of a plural, select,
+  or selectordinal are not translated
 
 ### v1.4.0
 
