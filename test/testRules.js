@@ -2153,7 +2153,7 @@ export const testRules = {
             "Some DNT term",
             "Another DNT term",
             "A DNT term that should be trimmed",
-            "Yet another DNT temr that should be trimmed",
+            "Yet another DNT term that should be trimmed",
             "A DNT term after an empty line",
         ]);
 
