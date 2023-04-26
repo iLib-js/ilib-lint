@@ -104,7 +104,8 @@ export const builtInRulesets = {
         "resource-named-params": true,
         "resource-no-fullwidth-latin": true,
         "resource-no-fullwidth-digits": true,
-        "resource-no-fullwidth-punctuation-subset": true
+        "resource-no-fullwidth-punctuation-subset": true,
+        "resource-no-space-with-fullwidth-punctuation": true,
     }
 };
 
