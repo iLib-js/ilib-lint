@@ -2,8 +2,8 @@
 
 This rule ensures that each resource in a resource file has a translation. This rule
 looks to see if the source and target strings in a resource are different from
-each other. There are some exceptions to this where it does not report a problem if
-the two are the same:
+each other case- and whitespace-insensitively. There are some exceptions to this
+where it does not report a problem if the two are the same:
 
 1. If the source locale and the target locale share a common language and script,
 then the translation can be the same as the source, as it is very common for
