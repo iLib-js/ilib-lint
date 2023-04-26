@@ -31,6 +31,7 @@ import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from './rules/ResourceCompleteness.js';
+import ResourceDNTTerms from './rules/ResourceDNTTerms.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -196,6 +197,7 @@ class PluginManager {
             ResourceUniqueKeys,
             ResourceEdgeWhitespace,
             ResourceCompleteness,
+            ResourceDNTTerms,
         ]);
         this.ruleMgr.add(regexRules);
 
