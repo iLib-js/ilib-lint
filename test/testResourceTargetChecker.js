@@ -494,7 +494,7 @@ export const testResourceTargetChecker = {
             };
 
             const result = rule.match(subject);
-            test.deepEqual(result, new Result({
+            test.deepEqual(result, [new Result({
                 rule,
                 severity: "warning",
                 pathName: "x/y",
@@ -503,7 +503,7 @@ export const testResourceTargetChecker = {
                 id: "matcher.test",
                 description: "Double-byte space characters should not be used in the target string. Use ASCII symbols instead.",
                 highlight: `Target: テスト<e0>${symbol}</e0>テスト`,
-            }));
+            })]);
         }
 
         test.done();
