@@ -28,12 +28,16 @@ function concatIntlAstText(/** @type {import("@formatjs/icu-messageformat-parser
                     return element.value;
                 case 1: // argument
                     return "{" + element.value + "}";
+                case 5: // select
                 case 6: // plural
                     // take each variation of a given plural, recursively convert its ast to text,
                     // then join all stripped variants into single string separating them by single space
                     return Object.values(element.options)
                         .map((pluralOption) => concatIntlAstText(pluralOption.value))
                         .join(" ");
+                case 8: // tag
+                    // recursively process elements inside of a tag
+                    return concatIntlAstText(element.children);
                 default:
                     return "value" in element ? element.value : "";
             }
