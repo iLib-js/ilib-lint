@@ -76,6 +76,15 @@ export const regexRules = [
         note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII symbols instead.",
         regexps: [ "[\\uFF01|\\uFF05|\\uFF1F]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-punctuation-subset.md"
+    },
+        {
+        type: "resource-target",
+        name: "resource-no-space-between-hankaku-and-zenkaku",
+        description: "Ensure that the target does not contain a space character between a full-width kana (zenkaku) and half-width kana (hankaku).",
+        note: "The space character is not allowed in the target string. Remove the space character.",
+        regexps: [ "[ァ-ン]\s+[ｧ-ﾝﾞﾟ]|[ｧ-ﾝﾞﾟ]\s+[ァ-ン]" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-between-hankaku-and-zenkaku.md",
+        severity: "warning",
     }
 ];
 
