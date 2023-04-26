@@ -1,7 +1,7 @@
 /*
- * testRegExpRules.js - test the built-in regular-expression-based rules
+ * testResourceMatcher.js - test the built-in regular-expression-based rules
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ResourceString } from 'ilib-tools-common';
+import { ResourceString, ResourceArray, ResourcePlural } from 'ilib-tools-common';
 
 import ResourceMatcher from '../src/rules/ResourceMatcher.js';
 import { regexRules } from '../src/PluginManager.js';
@@ -112,6 +112,90 @@ export const testResourceMatcher = {
         test.done();
     },
 
+    testResourceURLMatchArray: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceMatcher(regexRules[0]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceArray({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: [
+                    'This has an URL in it http://www.box.com'
+                ],
+                targetLocale: "de-DE",
+                target: [
+                    "Dies hat ein URL http://www.box.com"
+                ],
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceURLMatchPlural: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceMatcher(regexRules[0]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceArray({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: {
+                    one: 'This has an URL in it http://www.box.com',
+                    other: "x"
+                },
+                targetLocale: "de-DE",
+                target: {
+                    one: "Dies hat ein URL http://www.box.com",
+                    other: "y"
+                },
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceURLMatchPluralTargetDoesNotUseCategory: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceMatcher(regexRules[0]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceArray({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: {
+                    one: 'This has an URL in it http://www.box.com',
+                    other: "x"
+                },
+                targetLocale: "ja-JP",
+                target: {
+                    other: "y"
+                },
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
     testResourceURLMatchMismatch: function(test) {
         test.expect(9);
 
@@ -126,6 +210,80 @@ export const testResourceMatcher = {
                 source: 'This has an URL in it http://www.box.com',
                 targetLocale: "de-DE",
                 target: "Dies hat ein URL http://www.yahoo.com",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "url.test");
+        test.equal(actual[0].description, "URL 'http://www.box.com' from the source string does not appear in the target string");
+        test.equal(actual[0].highlight, "Target: Dies hat ein URL http://www.yahoo.com<e0></e0>");
+        test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    },
+
+    testResourceURLMatchMismatchArray: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceMatcher(regexRules[0]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceArray({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: [
+                    'This has an URL in it http://www.box.com',
+                    'This also has an URL in it http://www.google.com'
+                ],
+                targetLocale: "de-DE",
+                target: [
+                    "Dies hat ein URL http://www.yahoo.com",
+                    "Dies hat auch ein URL darin http://www.google.com"
+                ],
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "url.test");
+        test.equal(actual[0].description, "URL 'http://www.box.com' from the source string does not appear in the target string");
+        test.equal(actual[0].highlight, "Target: Dies hat ein URL http://www.yahoo.com<e0></e0>");
+        test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
+        test.equal(actual[0].pathName, "x/y");
+
+        test.done();
+    },
+
+    testResourceURLMatchMismatchPlural: function(test) {
+        test.expect(9);
+
+        const rule = new ResourceMatcher(regexRules[0]);
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourcePlural({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: {
+                    one: "This has an URL in it http://www.box.com",
+                    other: "This also has an URL in it http://www.google.com"
+                },
+                targetLocale: "de-DE",
+                target: {
+                    one: "Dies hat ein URL http://www.yahoo.com",
+                    other: "Dies hat auch ein URL darin http://www.google.com"
+                },
                 pathName: "a/b/c.xliff"
             }),
             file: "x/y"
