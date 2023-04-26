@@ -52,6 +52,7 @@ class ResourceTargetChecker extends Rule {
         ["name", "description", "regexps", "note", "sourceLocale", "link"].forEach(prop => {
             this[prop] = options[prop];
         });
+        this.severity = options.severity || "error";
         this.sourceLocale = this.sourceLocale || "en-US";
 
         // this may throw if you got to the regexp syntax wrong:
@@ -82,7 +83,7 @@ class ResourceTargetChecker extends Rule {
             let match = re.exec(strippedTar);
             while (match) {
                 let value = {
-                    severity: "error",
+                    severity: _this.severity,
                     id: resource.getKey(),
                     source: src,
                     rule: _this,
