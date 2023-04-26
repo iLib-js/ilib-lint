@@ -85,6 +85,7 @@ class ResourceTargetChecker extends Rule {
                 let value = {
                     severity: _this.severity,
                     id: resource.getKey(),
+                    locale,
                     source: src,
                     rule: _this,
                     pathName: file,

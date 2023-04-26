@@ -85,6 +85,7 @@ class ResourceSourceChecker extends Rule {
                 let value = {
                     severity: _this.severity,
                     id: resource.getKey(),
+                    locale,
                     rule: _this,
                     pathName: file,
                     highlight: `Source: ${src.substring(0, match.index)}<e0>${match[0]}</e0>${src.substring(match.index+match[0].length)}`,
