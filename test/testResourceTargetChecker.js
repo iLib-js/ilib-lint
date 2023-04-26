@@ -452,7 +452,7 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
-    testResourceNoSpaceAfterDoubleBytePunct: function(test) {
+    testResourceNoSpaceWithFullwidthPunctSpaceAfter: function(test) {
         const applicableCharacters = [
             "、",
             "。",
@@ -484,6 +484,67 @@ export const testResourceTargetChecker = {
 
         for (const symbol of applicableCharacters) {
             const illegalSequence = symbol + " ";
+            const subject = {
+                locale: "ja-JP",
+                resource: new ResourceString({
+                    key: "matcher.test",
+                    sourceLocale: "en-US",
+                    source: `test${illegalSequence}test`,
+                    targetLocale: "ja-JP",
+                    target: `テスト${illegalSequence}テスト`,
+                    pathName: "a/b/c.xliff",
+                }),
+                file: "x/y",
+            };
+
+            const result = rule.match(subject);
+            test.deepEqual(result, [new Result({
+                rule,
+                severity: "warning",
+                pathName: "x/y",
+                locale: "ja-JP",
+                source: `test${illegalSequence}test`,
+                id: "matcher.test",
+                description: `There should be no space adjacent to fullwidth punctuation characters '${illegalSequence}'. Remove it.`,
+                highlight: `Target: テスト<e0>${illegalSequence}</e0>テスト`,
+            })]);
+        }
+
+        test.done();
+    },
+
+    testResourceNoSpaceWithFullwidthPunctSpaceBefore: function(test) {
+        const applicableCharacters = [
+            "、",
+            "。",
+            "〈", 
+            "〉",
+            "《",
+            "》",
+            "「",
+            "」",
+            "『",
+            "』",
+            "【",
+            "】",
+            "〔",
+            "〕",
+            "〖",
+            "〗",
+            "〘",
+            "〙",
+            "〚",
+            "〛",
+        ];
+        test.expect(1 + applicableCharacters.length);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-space-with-fullwidth-punctuation")
+        );
+        test.ok(rule);
+
+        for (const symbol of applicableCharacters) {
+            const illegalSequence = " " + symbol;
             const subject = {
                 locale: "ja-JP",
                 resource: new ResourceString({
