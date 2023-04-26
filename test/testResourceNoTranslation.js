@@ -272,7 +272,7 @@ export const testResourceNoTranslation = {
         test.done();
     },
 
-    testResourceNoTranslationKababText: function(test) {
+    testResourceNoTranslationSingleWordText1: function(test) {
         test.expect(2);
 
         const rule = new ResourceNoTranslation();
@@ -292,13 +292,13 @@ export const testResourceNoTranslation = {
             file: "x/y"
         });
 
-        // no results because kabab text is automatically DNT
+        // no results because single-word text is automatically DNT
         test.ok(!actual);
 
         test.done();
     },
 
-    testResourceNoTranslationCamelText: function(test) {
+    testResourceNoTranslationSingleWordText2: function(test) {
         test.expect(2);
 
         const rule = new ResourceNoTranslation();
@@ -309,42 +309,16 @@ export const testResourceNoTranslation = {
             resource: new ResourceString({
                 key: "translation.test",
                 sourceLocale: "en-US",
-                source: 'thisIsCamelCaseText',
+                source: 'test',
                 targetLocale: "de-DE",
-                target: "thisIsCamelCaseText",
+                target: "test",
                 pathName: "a/b/c.xliff",
                 state: "new"
             }),
             file: "x/y"
         });
 
-        // no results because camel case text is automatically DNT
-        test.ok(!actual);
-
-        test.done();
-    },
-
-    testResourceNoTranslationSnakeText: function(test) {
-        test.expect(2);
-
-        const rule = new ResourceNoTranslation();
-        test.ok(rule);
-
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'this_is_snake_text',
-                targetLocale: "de-DE",
-                target: "this_is_snake_text",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
-        });
-
-        // no results because snake text is automatically DNT
+        // no results because single word text is automatically DNT
         test.ok(!actual);
 
         test.done();

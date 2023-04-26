@@ -598,9 +598,8 @@ limitations under the License.
 - fixed bug where resources of type array or plural were not getting
   processed properly in the declarative rules
 - added rule to check Do Not Translate terms in resources
-
-### v1.5.0
-
+- added rule to check whether or not there is a translation for each source string in
+  a resource
 - removed ability for the ICU plural rule to report results on the
   source text
     - now it only checks the target text
