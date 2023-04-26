@@ -76,7 +76,7 @@ class ResourceTargetChecker extends Rule {
         function checkString(re, src, tar) {
             re.lastIndex = 0;
             let matches = [];
-            const strippedTar = stripPlurals(tar);
+            const strippedTar = stripPlurals(tar); // @TODO fix: this replaces all whitespaces with regular space so the whitespace matching rule does not work as intended
 
             // check the target only
             re.lastIndex = 0;
