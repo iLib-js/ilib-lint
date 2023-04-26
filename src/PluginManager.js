@@ -76,6 +76,15 @@ export const regexRules = [
         note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII symbols instead.",
         regexps: [ "[\\uFF01|\\uFF05|\\uFF1F]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-punctuation-subset.md"
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-halfwidth-kana-characters",
+        description: "Ensure that the target does not contain half-width kana characters.",
+        note: "The half-width kana characters are not allowed in the target string. Use full-width characters.",
+        regexps: [ "[ｧ-ﾝﾞﾟ]+" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-halfwidth-kana-characters.md",
+        severity: "warning",
     }
 ];
 
@@ -95,7 +104,8 @@ export const builtInRulesets = {
         "resource-named-params": true,
         "resource-no-fullwidth-latin": true,
         "resource-no-fullwidth-digits": true,
-        "resource-no-fullwidth-punctuation-subset": true
+        "resource-no-fullwidth-punctuation-subset": true,
+        "resource-no-halfwidth-kana-characters": true,
     }
 };
 
