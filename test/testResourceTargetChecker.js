@@ -460,46 +460,31 @@ export const testResourceTargetChecker = {
         );
         test.ok(rule);
 
-        const actual = rule.match({
+        const subject = {
             locale: "ja-JP",
             resource: new ResourceString({
                 key: "matcher.test",
                 sourceLocale: "en-US",
-                source: 'Communication',
+                source: "Communication",
                 targetLocale: "ja-JP",
                 target: "ｺﾐｭﾆｹｰｼｮﾝ",
-                pathName: "a/b/c.xliff"
+                pathName: "a/b/c.xliff",
             }),
-            file: "x/y"
-        });
-        test.ok(actual);
+            file: "x/y",
+        };
 
-        test.done();
-    },
-
-    testResourceNoHalfWidthKanaSuccess: function(test) {
-        test.expect(2);
-
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-halfwidth-kana-characters")
-        );
-        test.ok(rule);
-
-        const actual = rule.match({
+        const result = rule.match(subject);
+        test.deepEqual(result, [new Result({
+            rule,
+            severity: "warning",
             locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: 'Communication',
-                targetLocale: "ja-JP",
-                target: "コミュニケーション",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
-        });
-        test.ok(!actual);
+            pathName: "x/y",
+            source: "Communication",
+            id: "matcher.test",
+            description: "The half-width kana characters are not allowed in the target string. Use full-width characters.",
+            highlight: "Target: <e0>ｺﾐｭﾆｹｰｼｮﾝ</e0>",
+        })]);
 
         test.done();
     },
 };
-
