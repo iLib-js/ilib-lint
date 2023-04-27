@@ -452,6 +452,99 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
+    testResourceNoHalfWidthKana: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-halfwidth-kana-characters")
+        );
+        test.ok(rule);
+
+        const subject = {
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Communication",
+                targetLocale: "ja-JP",
+                target: "ｺﾐｭﾆｹｰｼｮﾝ",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(result, [new Result({
+            rule,
+            severity: "warning",
+            locale: "ja-JP",
+            pathName: "x/y",
+            source: "Communication",
+            id: "matcher.test",
+            description: "The half-width kana characters are not allowed in the target string. Use full-width characters.",
+            highlight: "Target: <e0>ｺﾐｭﾆｹｰｼｮﾝ</e0>",
+        })]);
+
+        test.done();
+    },
+
+    testResourceNoDoubleByteSpace: function(test) {
+        const illegalCharacters = [
+            "\u1680",
+            "\u2000",
+            "\u2001",
+            "\u2002",
+            "\u2003",
+            "\u2004",
+            "\u2005",
+            "\u2006",
+            "\u2007",
+            "\u2008",
+            "\u2009",
+            "\u200A",
+            "\u2028",
+            "\u2029",
+            "\u202F",
+            "\u205F",
+            "\u3000",
+        ];
+        test.expect(1 + illegalCharacters.length);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-double-byte-space")
+        );
+        test.ok(rule);
+
+        for (const symbol of illegalCharacters) {
+            const subject = {
+                locale: "ja-JP",
+                resource: new ResourceString({
+                    key: "matcher.test",
+                    sourceLocale: "en-US",
+                    source: `test${symbol}test`,
+                    targetLocale: "ja-JP",
+                    target: `テスト${symbol}テスト`,
+                    pathName: "a/b/c.xliff",
+                }),
+                file: "x/y",
+            };
+
+            const result = rule.match(subject);
+            test.deepEqual(result, [new Result({
+                rule,
+                severity: "warning",
+                pathName: "x/y",
+                locale: "ja-JP",
+                source: `test${symbol}test`,
+                id: "matcher.test",
+                description: "Double-byte space characters should not be used in the target string. Use ASCII symbols instead.",
+                highlight: `Target: テスト<e0>${symbol}</e0>テスト`,
+            })]);
+        }
+
+        test.done();
+    },
+
     testResourceNoSpaceWithFullwidthPunctSpaceAfter: function(test) {
         const applicableCharacters = [
             "、",
@@ -574,4 +667,3 @@ export const testResourceTargetChecker = {
         test.done();
     },
 };
-

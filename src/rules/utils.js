@@ -19,61 +19,40 @@
 
 import { IntlMessageFormat } from 'intl-messageformat';
 
-function processNode(node) {
-    let text = "";
-    switch (node.type) {
-        case 0:
-            text = node.value;
-            break;
-
-        // Actual parameter
-        case 1:
-            text = `{${node.value}}`;
-            break;
-
-        case 6:
-            if (node.options) {
-                text = Object.keys(node.options).map(category => {
-                    return concatText(node.options[category].value);
-                }).join(" ");
+/** @returns {string} */
+function concatIntlAstText(/** @type {import("@formatjs/icu-messageformat-parser").MessageFormatElement[]} */ astElements) {
+    return astElements
+        .map((element) => {
+            switch (element.type) {
+                case 0: // literal
+                    return element.value;
+                case 1: // argument
+                    return "{" + element.value + "}";
+                case 5: // select
+                case 6: // plural
+                    // take each variation of a given plural, recursively convert its ast to text,
+                    // then join all stripped variants into single string separating them by single space
+                    return Object.values(element.options)
+                        .map((pluralOption) => concatIntlAstText(pluralOption.value))
+                        .join(" ");
+                case 8: // tag
+                    // recursively process elements inside of a tag
+                    return concatIntlAstText(element.children);
+                default:
+                    return "value" in element ? element.value : "";
             }
-            break;
-    }
+        })
+        .join("");
+};
 
-    if (node.children) {
-        text += concatText(node.children);
-    }
-
-    return text;
-}
-
-function concatText(ast) {
-    if (!ast) return "";
-
-    let result = "";
-
-    if (Array.isArray(ast)) {
-        result += ast.map(node => {
-            return processNode(node);
-        }).join(" ");
-    } else if (typeof(ast) === "Object") {
-        result = processNode(node);
-    } else if (typeof(ast) === "string") {
-        result = ast;
-    } // else just ignore
-
-    return result;
-}
-
-export function stripPlurals(str, locale) {
+export function stripPlurals(/** @type {string} */ message, /** @type {string} */ locale) {
     try {
-        const imf = new IntlMessageFormat(str, locale);
+        const imf = new IntlMessageFormat(message, locale);
         const ast = imf.getAst();
-
-        return concatText(ast).replace(/\s+/g, " ");
+        return concatIntlAstText(ast);
     } catch (e) {
         // punt
-        return str;
+        return message;
     }
 }
 
