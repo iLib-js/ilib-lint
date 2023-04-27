@@ -1,6 +1,6 @@
-# resource-no-space-between-double-byte-kana-and-single-byte-character
+# resource-no-space-between-double-and-single-byte-character
 
-Ensure that translations do not contain a space character between a double-byte kana and single-byte character.",
+Ensure that translations do not contain a space character between a double-byte and single-byte character.",
 
 Examples:
 

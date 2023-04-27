@@ -667,11 +667,11 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
-    testResourceNoSpaceBetweenDoubleByteKanaAndSingleByteCharacter: function(test) {
+    testResourceNoSpaceBetweenDoubleAndSingleByteCharacter: function(test) {
         test.expect(2);
 
         const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-space-between-double-byte-kana-and-single-byte-character")
+            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
         );
         test.ok(rule);
 

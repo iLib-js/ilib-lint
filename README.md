@@ -601,7 +601,7 @@ limitations under the License.
 - added rule to warn against half-width kana characters
 - added rule to warn against double-byte whitespace characters
 - added rule to warn of whitespace adjacent to certain fullwidth punctuation characters
-- added rule to warn of a space between double-byte kana character and single-byte character 
+- added rule to warn of a space between double-byte and single-byte character 
 
 ### v1.5.0
 
