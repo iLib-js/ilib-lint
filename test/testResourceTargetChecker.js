@@ -666,4 +666,65 @@ export const testResourceTargetChecker = {
 
         test.done();
     },
+
+    testResourceNoSpaceBetweenDoubleAndSingleByteCharacter: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
+        );
+        test.ok(rule);
+
+        const subject = {
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Box Embed Widget",
+                targetLocale: "ja-JP",
+                target: "Box 埋め込みウィジェット",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(result, [new Result({
+            rule,
+            severity: "warning",
+            locale: "ja-JP",
+            pathName: "x/y",
+            source: "Box Embed Widget",
+            id: "matcher.test",
+            description: 'The space character is not allowed in the target string. Remove the space character.',
+            highlight: 'Target: Bo<e0>x 埋</e0>め込みウィジェット',
+        })]);
+
+        test.done();
+    },
+
+    testResourceNoSpaceBetweenDoubleAndSingleByteCharacterSuccess: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
+        );
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Box Embed Widget",
+                targetLocale: "ja-JP",
+                target: "EXIFおよびXMPメタデータ",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        });
+        test.ok(!actual);
+   
+        test.done();
+    },
 };
