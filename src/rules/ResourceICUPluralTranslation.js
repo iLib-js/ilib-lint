@@ -45,6 +45,13 @@ class ResourceICUPluralTranslation extends Rule {
     /**
      * Given some ast nodes, reconstruct the string that it came from, glossing
      * over the plurals and selects, which will be compared separately anyways.
+     * Add spaces in between the parts so that later we can compress all the
+     * spaces to normalize them. The idea is that we can show the following
+     * have equivalent text in them:
+     * "x" + "y" vs. " x" + " y "
+     * Without adding the spaces and then compressing them before comparison,
+     * the two would not be the same, even though the actual translatable text
+     * in them is the same, which is what we were trying to get at. 
      * @private
      */
     reconstruct(nodes) {
