@@ -666,4 +666,56 @@ export const testResourceTargetChecker = {
 
         test.done();
     },
+
+    testResourceNoSpaceBetweenDoubleByteKanaAndSingleByteCharacter: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-space-between-double-byte-kana-and-single-byte-character")
+        );
+        test.ok(rule);
+
+        // const actual = rule.match({
+        //     locale: "ja-JP",
+        //     resource: new ResourceString({
+        //         key: "matcher.test",
+        //         sourceLocale: "en-US",
+        //         source: "Box Embed Widget",
+        //         targetLocale: "ja-JP",
+        //         target: "Box 埋め込みウィジェット",
+        //         pathName: "a/b/c.xliff"
+        //     }),
+        //     file: "x/y"
+        // });
+        // console.log(actual);
+        // test.ok(actual);
+
+        const subject = {
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Box Embed Widget",
+                targetLocale: "ja-JP",
+                target: "Box 埋め込みウィジェット",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        };
+
+        const result = rule.match(subject);
+        console.log(result)
+        test.deepEqual(result, [new Result({
+            rule,
+            severity: "warning",
+            locale: "ja-JP",
+            pathName: "x/y",
+            source: "Box Embed Widget",
+            id: "matcher.test",
+            description: "Ensure that the target does not contain a space character between a double-byte kana and single-byte character.",
+            highlight: 'Target: Bo<e0>x 埋</e0>め込みウィジェット',
+        })]);
+
+        test.done();
+    },
 };
