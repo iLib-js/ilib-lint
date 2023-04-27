@@ -1,7 +1,7 @@
 /*
  * testRules.js - test the built-in rules
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
 import ResourceEdgeWhitespace from '../src/rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
 import ResourceDNTTerms from '../src/rules/ResourceDNTTerms.js';
+import ResourceNoTranslation from '../src/rules/ResourceNoTranslation.js';
 
 import { Result } from 'i18nlint-common';
 

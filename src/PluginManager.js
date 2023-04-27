@@ -32,6 +32,7 @@ import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from './rules/ResourceCompleteness.js';
 import ResourceDNTTerms from './rules/ResourceDNTTerms.js';
+import ResourceNoTranslation from './rules/ResourceNoTranslation.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -74,7 +75,7 @@ export const regexRules = [
         name: "resource-no-fullwidth-punctuation-subset",
         description: "Ensure that the target does not contain specific full-width punctuation: percent sign, question mark, or exclamation mark.",
         note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII symbols instead.",
-        regexps: [ "[\\uFF01|\\uFF05|\\uFF1F]+" ],
+        regexps: [ "[\\uFF01\\uFF05\\uFF1F]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-punctuation-subset.md"
     },
         {
@@ -126,6 +127,7 @@ export const builtInRulesets = {
         "resource-unique-keys": true,
         "resource-edge-whitespace": true,
         "resource-completeness": true,
+        "resource-no-translation": true,
 
         // declarative rules from above
         "resource-url-match": true,
@@ -135,6 +137,7 @@ export const builtInRulesets = {
         "resource-no-fullwidth-punctuation-subset": true,
         "resource-no-space-between-double-and-single-byte-character": true,
         "resource-no-halfwidth-kana-characters": true,
+        "resource-no-double-byte-space": true,
         "resource-no-space-with-fullwidth-punctuation": true,
     }
 };
@@ -228,6 +231,7 @@ class PluginManager {
             ResourceEdgeWhitespace,
             ResourceCompleteness,
             ResourceDNTTerms,
+            ResourceNoTranslation
         ]);
         this.ruleMgr.add(regexRules);
 
