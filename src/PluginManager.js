@@ -32,6 +32,7 @@ import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from './rules/ResourceCompleteness.js';
 import ResourceDNTTerms from './rules/ResourceDNTTerms.js';
+import ResourceNoTranslation from './rules/ResourceNoTranslation.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -117,6 +118,7 @@ export const builtInRulesets = {
         "resource-unique-keys": true,
         "resource-edge-whitespace": true,
         "resource-completeness": true,
+        "resource-no-translation": true,
 
         // declarative rules from above
         "resource-url-match": true,
@@ -218,6 +220,7 @@ class PluginManager {
             ResourceEdgeWhitespace,
             ResourceCompleteness,
             ResourceDNTTerms,
+            ResourceNoTranslation
         ]);
         this.ruleMgr.add(regexRules);
 
