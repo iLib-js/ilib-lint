@@ -597,6 +597,8 @@ limitations under the License.
 - added rule to check if resources have both source and target defined
 - fixed bug where resources of type array or plural were not getting
   processed properly in the declarative rules
+- added rule to check Do Not Translate terms in resources
+- added rule to warn against half-width kana characters
 - removed ability for the ICU plural rule to report results on the
   source text
     - now it only checks the target text
