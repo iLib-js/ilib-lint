@@ -600,6 +600,7 @@ limitations under the License.
 - added rule to check Do Not Translate terms in resources
 - added rule to warn against half-width kana characters
 - added rule to warn against double-byte whitespace characters
+- added rule to warn of whitespace adjacent to certain fullwidth punctuation characters
 
 ### v1.5.0
 

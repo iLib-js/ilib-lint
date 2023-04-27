@@ -96,6 +96,15 @@ export const regexRules = [
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-double-byte-space.md",
         severity: "warning",
     },
+    {
+        type: "resource-target",
+        name: "resource-no-space-with-fullwidth-punctuation",
+        description: "Ensure that there is no whitespace adjacent to the fullwidth punctuation characters.",
+        note: "There should be no space adjacent to fullwidth punctuation characters '{matchString}'. Remove it.",
+        regexps: [ "(\\s+[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]|[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]\\s+)" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-with-fullwidth-punctuation.md",
+        severity: "warning",
+    },
 ];
 
 // built-in ruleset that contains all the built-in rules
@@ -116,6 +125,7 @@ export const builtInRulesets = {
         "resource-no-fullwidth-digits": true,
         "resource-no-fullwidth-punctuation-subset": true,
         "resource-no-halfwidth-kana-characters": true,
+        "resource-no-space-with-fullwidth-punctuation": true,
     }
 };
 
