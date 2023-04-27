@@ -79,11 +79,11 @@ export const regexRules = [
     },
         {
         type: "resource-target",
-        name: "resource-no-space-between-hankaku-and-zenkaku",
-        description: "Ensure that the target does not contain a space character between a full-width kana (zenkaku) and half-width kana (hankaku).",
+        name: "resource-no-space-between-double-byte-kana-and-single-byte-character",
+        description: "Ensure that the target does not contain a space character between a double-byte kana and single-byte character.",
         note: "The space character is not allowed in the target string. Remove the space character.",
-        regexps: [ "[ァ-ン]\s+[ｧ-ﾝﾞﾟ]|[ｧ-ﾝﾞﾟ]\s+[ァ-ン]" ],
-        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-between-hankaku-and-zenkaku.md",
+        regexp: [ "([\u3040-\u309F]|[\u30A0-\u30FF]|[\u4E00-\u9FAF])\s+[\x00-\xFF]|[\x00-\xFF]\s+([\u3040-\u309F]|[\u30A0-\u30FF]|[\u4E00-\u9FAF])" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-between-double-byte-kana-and-single-byte-character.md",
         severity: "warning",
     }
 ];
@@ -105,7 +105,7 @@ export const builtInRulesets = {
         "resource-no-fullwidth-latin": true,
         "resource-no-fullwidth-digits": true,
         "resource-no-fullwidth-punctuation-subset": true,
-        "resource-no-space-between-hankaku-and-zenkaku": true,
+        "resource-no-space-between-double-byte-kana-and-single-byte-character": true,
     }
 };
 
