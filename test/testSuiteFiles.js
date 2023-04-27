@@ -26,6 +26,7 @@ const files = [
     "testResourceICUPluralTranslation.js",
     "testResourceMatcher.js",
     "testResourceNoTranslation.js",
+    "testResourceQuoteStyle.js",
     "testResourceTargetChecker.js",
     "testRules.js",
     "testRuleManager.js",
