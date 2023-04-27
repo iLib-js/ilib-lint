@@ -414,5 +414,166 @@ export const testResourceQuoteStyle = {
 
         test.done();
     },
+
+    testResourceQuoteStyleApostropheInTarget: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: 'This string contains "quotes" in it.',
+                targetLocale: "fr-FR",
+                target: "L'expression contient de « guillemets ». C'est tres bizarre !",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleQuoteApostropheInTargetNoneInSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: 'This string does not contain quotes in it.',
+                targetLocale: "fr-FR",
+                target: "L'expression ne contient pas de guillemets.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleRegularApostropheInTargetNoneInSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: 'This string does not contain quotes in it.',
+                targetLocale: "fr-FR",
+                target: "L’expression ne contient pas de guillemets.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleIgnoreQuoteAsApostropheInSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string's contents do not contain quotes in it.",
+                targetLocale: "fr-FR",
+                target: "L'expression ne contient pas de guillemets.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleIgnoreRegularApostropheInSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string’s contents do not contain quotes in it.",
+                targetLocale: "fr-FR",
+                target: "L'expression ne contient pas de guillemets.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleIgnoreRegularApostropheInTarget: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "This string’s contents do not contain quotes in it.",
+                targetLocale: "fr-FR",
+                target: "L’expression ne contient pas de guillemets.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceQuoteStyleIgnoreSApostropheInSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: "These strings' contents do not contain quotes in it.",
+                targetLocale: "fr-FR",
+                target: "L'expressions ne contient pas de guillemets.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
 };
 
