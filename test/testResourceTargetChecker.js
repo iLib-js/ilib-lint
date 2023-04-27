@@ -452,6 +452,42 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
+    testResourceNoHalfWidthKana: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-halfwidth-kana-characters")
+        );
+        test.ok(rule);
+
+        const subject = {
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Communication",
+                targetLocale: "ja-JP",
+                target: "ｺﾐｭﾆｹｰｼｮﾝ",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        };
+
+        const result = rule.match(subject);
+        test.deepEqual(result, [new Result({
+            rule,
+            severity: "warning",
+            locale: "ja-JP",
+            pathName: "x/y",
+            source: "Communication",
+            id: "matcher.test",
+            description: "The half-width kana characters are not allowed in the target string. Use full-width characters.",
+            highlight: "Target: <e0>ｺﾐｭﾆｹｰｼｮﾝ</e0>",
+        })]);
+
+        test.done();
+    },
+
     testResourceNoDoubleByteSpace: function(test) {
         const illegalCharacters = [
             "\u1680",
@@ -509,4 +545,3 @@ export const testResourceTargetChecker = {
         test.done();
     },
 };
-

@@ -79,6 +79,15 @@ export const regexRules = [
     },
     {
         type: "resource-target",
+        name: "resource-no-halfwidth-kana-characters",
+        description: "Ensure that the target does not contain half-width kana characters.",
+        note: "The half-width kana characters are not allowed in the target string. Use full-width characters.",
+        regexps: [ "[ｧ-ﾝﾞﾟ]+" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-halfwidth-kana-characters.md",
+        severity: "warning",
+    },
+    {
+        type: "resource-target",
         name: "resource-no-double-byte-space",
         description: "Ensure that the target does not contain double-byte space characters.",
         note: "Double-byte space characters should not be used in the target string. Use ASCII symbols instead.",
@@ -105,7 +114,8 @@ export const builtInRulesets = {
         "resource-named-params": true,
         "resource-no-fullwidth-latin": true,
         "resource-no-fullwidth-digits": true,
-        "resource-no-fullwidth-punctuation-subset": true
+        "resource-no-fullwidth-punctuation-subset": true,
+        "resource-no-halfwidth-kana-characters": true,
     }
 };
 
