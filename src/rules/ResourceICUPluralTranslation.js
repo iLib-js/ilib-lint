@@ -92,7 +92,7 @@ class ResourceICUPluralTranslation extends Rule {
             }
         }
 
-        return result.replace(/\s+/g, " ").trim();
+        return result;
     }
 
     /**
@@ -133,8 +133,10 @@ class ResourceICUPluralTranslation extends Rule {
                 return;
             }
             return Object.keys(sourcePlural.options).map(category => {
-                const sourceStr = this.reconstruct(sourcePlural.options[category].value);
-                const targetStr = this.reconstruct(targetPlural.options[category].value);
+                if (!targetPlural.options[category]) return; // nothing to check!
+
+                const sourceStr = this.reconstruct(sourcePlural.options[category].value).replace(/\s+/g, " ").trim();
+                const targetStr = this.reconstruct(targetPlural.options[category].value).replace(/\s+/g, " ").trim();
                 let result = [];
 
                 // use case- and whitespace-insensitive match
@@ -157,8 +159,8 @@ class ResourceICUPluralTranslation extends Rule {
 
                 // now the plurals may have plurals nested in them, so recursively check them too
                 return result.concat(this.traverse(resource, file, sourcePlural.options[category].value, targetPlural.options[category].value));
-             }).flat().filter(result => result);
-        }).flat().filter(result => result);
+             }).flat();
+        }).flat();
 
         // now recursively handle the tags
         results = results.concat(Object.keys(sourceTags).map(name => {
@@ -169,8 +171,8 @@ class ResourceICUPluralTranslation extends Rule {
                 return;
             }
             return this.traverse(resource, file, sourceTag.children, targetTag.children);
-        }).flat().filter(result => result));
-        return results.length < 2 ? results[0] : results;
+        }).flat());
+        return results;
     }
 
     /**
@@ -198,7 +200,7 @@ class ResourceICUPluralTranslation extends Rule {
             return;
         }
 
-        const results = this.traverse(resource, file, sourceAst, targetAst);
+        const results = this.traverse(resource, file, sourceAst, targetAst).filter(result => result);
 
         return (results && results.length < 2) ? results[0] : results;
     }
@@ -237,7 +239,7 @@ class ResourceICUPluralTranslation extends Rule {
                 const srcPlural = resource.getSource();
                 const tarPlural = resource.getTarget();
                 if (tarPlural) {
-                    return categories.map(category => {
+                    return Object.keys(srcPlural).map(category => {
                         return this.checkString(srcPlural.other, tarPlural[category], file, resource, sourceLocale, options.locale, options.lineNumber);
                     });
                 }
