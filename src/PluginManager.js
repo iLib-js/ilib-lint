@@ -33,6 +33,7 @@ import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from './rules/ResourceCompleteness.js';
 import ResourceDNTTerms from './rules/ResourceDNTTerms.js';
+import ResourceNoTranslation from './rules/ResourceNoTranslation.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -75,7 +76,7 @@ export const regexRules = [
         name: "resource-no-fullwidth-punctuation-subset",
         description: "Ensure that the target does not contain specific full-width punctuation: percent sign, question mark, or exclamation mark.",
         note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII symbols instead.",
-        regexps: [ "[\\uFF01|\\uFF05|\\uFF1F]+" ],
+        regexps: [ "[\\uFF01\\uFF05\\uFF1F]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-punctuation-subset.md"
     },
     {
@@ -86,7 +87,26 @@ export const regexRules = [
         regexps: [ "[ｧ-ﾝﾞﾟ]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-halfwidth-kana-characters.md",
         severity: "warning",
-    }
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-double-byte-space",
+        description: "Ensure that the target does not contain double-byte space characters.",
+        note: "Double-byte space characters should not be used in the target string. Use ASCII symbols instead.",
+        // per https://en.wikipedia.org/wiki/Whitespace_character
+        regexps: [ "[\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]+" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-double-byte-space.md",
+        severity: "warning",
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-space-with-fullwidth-punctuation",
+        description: "Ensure that there is no whitespace adjacent to the fullwidth punctuation characters.",
+        note: "There should be no space adjacent to fullwidth punctuation characters '{matchString}'. Remove it.",
+        regexps: [ "(\\s+[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]|[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]\\s+)" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-with-fullwidth-punctuation.md",
+        severity: "warning",
+    },
 ];
 
 // built-in ruleset that contains all the built-in rules
@@ -99,6 +119,7 @@ export const builtInRulesets = {
         "resource-unique-keys": true,
         "resource-edge-whitespace": true,
         "resource-completeness": true,
+        "resource-no-translation": true,
         "resource-icu-plurals-translated": true,
 
         // declarative rules from above
@@ -108,6 +129,8 @@ export const builtInRulesets = {
         "resource-no-fullwidth-digits": true,
         "resource-no-fullwidth-punctuation-subset": true,
         "resource-no-halfwidth-kana-characters": true,
+        "resource-no-double-byte-space": true,
+        "resource-no-space-with-fullwidth-punctuation": true,
     }
 };
 
@@ -201,6 +224,7 @@ class PluginManager {
             ResourceEdgeWhitespace,
             ResourceCompleteness,
             ResourceDNTTerms,
+            ResourceNoTranslation
         ]);
         this.ruleMgr.add(regexRules);
 
