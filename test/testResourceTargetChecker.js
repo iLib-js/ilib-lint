@@ -702,4 +702,29 @@ export const testResourceTargetChecker = {
 
         test.done();
     },
+
+    testResourceNoSpaceBetweenDoubleAndSingleByteCharacterSuccess: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
+        );
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: "Box Embed Widget",
+                targetLocale: "ja-JP",
+                target: "EXIFおよびXMPメタデータ",
+                pathName: "a/b/c.xliff",
+            }),
+            file: "x/y",
+        });
+        test.ok(!actual);
+   
+        test.done();
+    },
 };
