@@ -1,6 +1,6 @@
 /*
  * DeclarativeResourceRule.js - subclass of ResourceRule that can iterate over
- * an arrays of regular expressions to apply to a resource 
+ * an arrays of regular expressions to apply to a resource
  *
  * Copyright © 2023 JEDLSoft
  *

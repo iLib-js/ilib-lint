@@ -1,6 +1,6 @@
 /*
  * ResourceRule.js - subclass of Rule that can iterate over arrays
- * and plurals to check individual strings 
+ * and plurals to check individual strings
  *
  * Copyright © 2023 JEDLSoft
  *
