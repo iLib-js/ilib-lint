@@ -39,15 +39,6 @@ class ResourceRule extends Rule {
      */
     constructor(options) {
         super(options);
-
-        if (!options || !options.name || !options.description || !options.note) {
-            throw "Missing required options for the ResourceRule constructor";
-        }
-        ["name", "description", "note", "sourceLocale", "link", "severity"].forEach(prop => {
-            this[prop] = options[prop];
-        });
-        this.sourceLocale = this.sourceLocale || "en-US";
-        this.severity = this.severity || "error";
     }
 
     /**

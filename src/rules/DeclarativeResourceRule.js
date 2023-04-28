@@ -36,9 +36,15 @@ class DeclarativeResourceRule extends ResourceRule {
     constructor(options) {
         super(options);
 
-        if (!options || !options.regexps) {
+        if (!options || !options.name || !options.description || !options.note || !options.regexps) {
             throw "Missing required options for the DeclarativeResourceRule constructor";
         }
+
+        ["name", "description", "note", "sourceLocale", "link", "severity"].forEach(prop => {
+            this[prop] = options[prop];
+        });
+        this.sourceLocale = this.sourceLocale || "en-US";
+        this.severity = this.severity || "error";
 
         // this may throw if you got to the regexp syntax wrong:
         this.re = options.regexps.map(regexp => new RegExp(regexp, "gu"));

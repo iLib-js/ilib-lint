@@ -148,6 +148,7 @@ export const testRules = {
             source: '{count, plural, one {This is singular} other {This is plural}}',
             highlight: 'Target: {count, plural, one {{Dies <e0>ist einzigartig} other {Dies ist mehrerartig}}</e0>',
             rule,
+            locale: "de-DE",
             pathName: "x/y"
         });
         test.deepEqual(actual, expected);
@@ -180,6 +181,7 @@ export const testRules = {
             source: '{count, plural, one {This is singular} other {This is plural}}',
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}<e0></e0>',
             rule,
+            locale: "de-DE",
             pathName: "x/y"
         });
         test.deepEqual(actual, expected);
@@ -212,6 +214,7 @@ export const testRules = {
             source: '{count, plural, one {This is singular} other {This is plural}}',
             highlight: 'Target: {count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}<e0>}</e0>',
             rule,
+            locale: "de-DE",
             pathName: "x/y"
         });
         test.deepEqual(actual, expected);
@@ -231,7 +234,7 @@ export const testRules = {
                 key: "plural.test",
                 sourceLocale: "en-US",
                 source: '{count, plural, one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
+                targetLocale: "ru-RU",
                 target: "{count, plural, one {Это единственное число} other {это множественное число}}",
                 pathName: "a/b/c.xliff"
             }),
@@ -244,6 +247,7 @@ export const testRules = {
             source: '{count, plural, one {This is singular} other {This is plural}}',
             highlight: 'Target: {count, plural, one {Это единственное число} other {это множественное число}}<e0></e0>',
             rule,
+            locale: "ru-RU",
             pathName: "x/y"
         });
         test.deepEqual(actual, expected);
@@ -263,7 +267,7 @@ export const testRules = {
                 key: "plural.test",
                 sourceLocale: "en-US",
                 source: '{count, plural, other {This is plural}}',
-                targetLocale: "de-DE",
+                targetLocale: "ru-RU",
                 target: "{count, plural, one {Это единственное число} few {это множественное число} other {это множественное число}}",
                 pathName: "a/b/c.xliff"
             }),
@@ -300,6 +304,7 @@ export const testRules = {
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
             pathName: "x/y",
+            locale: "de-DE",
             source: '{count, plural, one {This is singular} other {This is plural}}'
         });
         test.deepEqual(actual, expected);
@@ -355,6 +360,7 @@ export const testRules = {
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
             pathName: "x/y",
+            locale: "de-DE",
             source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}'
         });
         test.deepEqual(actual, expected);
@@ -442,6 +448,7 @@ export const testRules = {
                 '                }<e0></e0>',
             rule,
             pathName: "x/y",
+            locale: "ru-RU",
             source: `{count, plural,
                     one {
                         {total, plural,
@@ -541,6 +548,7 @@ export const testRules = {
                     '                }<e0></e0>',
                 rule,
                 pathName: "x/y",
+                locale: "ru-RU",
                 source: `{count, plural,
                     one {
                         {total, plural,
@@ -583,6 +591,7 @@ export const testRules = {
                     '                }<e0></e0>',
                 rule,
                 pathName: "x/y",
+                locale: "ru-RU",
                 source: `{count, plural,
                     one {
                         {total, plural,
