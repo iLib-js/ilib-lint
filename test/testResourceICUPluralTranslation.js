@@ -645,5 +645,29 @@ export const testResourceICUPluralTranslation = {
 
         test.done();
     },
+
+    testResourceICUPluralTranslationsNoCrashIfSourceHasPluralTargetDoesnt: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                targetLocale: "de-DE",
+                target: "Es gibt Dateien in dem Ordner.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
 };
 
