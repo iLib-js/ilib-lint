@@ -34,6 +34,7 @@ import ResourceEdgeWhitespace from './rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from './rules/ResourceCompleteness.js';
 import ResourceDNTTerms from './rules/ResourceDNTTerms.js';
 import ResourceNoTranslation from './rules/ResourceNoTranslation.js';
+import ResourceStateChecker from './rules/ResourceStateChecker.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -234,7 +235,8 @@ class PluginManager {
             ResourceEdgeWhitespace,
             ResourceCompleteness,
             ResourceDNTTerms,
-            ResourceNoTranslation
+            ResourceNoTranslation,
+            ResourceStateChecker
         ]);
         this.ruleMgr.add(regexRules);
 
