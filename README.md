@@ -613,6 +613,8 @@ limitations under the License.
 ### v1.5.2
 
 - update the documentation above to enumerate all the current resource plugins
+- fixed a bug where some resources cause a crash in the
+  resource-icu-plurals-translated rule
 
 ### v1.5.1
 

@@ -116,17 +116,22 @@ class ResourceICUPluralTranslation extends Rule {
         // Find the plurals and tags in this string and remember them according to their
         // unique name. We do this because the order of plurals and tags may change in
         // translations, so we have to go by the only part that doesn't change -- the name
-        for (let i = 0; i < source.length; i++) {
-            // selectordinal or plural
-            if (source[i].type === 5 || source[i].type === 6) {
-                sourcePlurals[source[i].value] = source[i];
-            } else if (source[i].type === 8) {
-                sourceTags[source[i].value] = source[i];
+        const maxNodes = Math.max(source.length, target.length);
+        for (let i = 0; i < maxNodes; i++) {
+            if (i < source.length) {
+                // selectordinal or plural
+                if (source[i].type === 5 || source[i].type === 6) {
+                    sourcePlurals[source[i].value] = source[i];
+                } else if (source[i].type === 8) {
+                    sourceTags[source[i].value] = source[i];
+                }
             }
-            if (target[i].type === 5 || target[i].type === 6) {
-                targetPlurals[target[i].value] = target[i];
-            } else if (target[i].type === 8) {
-                targetTags[target[i].value] = target[i];
+            if (i < target.length) {
+                if (target[i].type === 5 || target[i].type === 6) {
+                    targetPlurals[target[i].value] = target[i];
+                } else if (target[i].type === 8) {
+                    targetTags[target[i].value] = target[i];
+                }
             }
         }
 
