@@ -20,12 +20,14 @@
 
 import { IntlMessageFormat } from 'intl-messageformat';
 import Locale from 'ilib-locale';
-import { Rule, Result } from 'i18nlint-common';
+import { Result } from 'i18nlint-common';
+
+import ResourceRule from './ResourceRule.js';
 
 /**
  * @class Represent an ilib-lint rule.
  */
-class ResourceICUPluralTranslation extends Rule {
+class ResourceICUPluralTranslation extends ResourceRule {
     /**
      * Make a new rule instance.
      * @constructor
@@ -36,10 +38,6 @@ class ResourceICUPluralTranslation extends Rule {
         this.description = "Ensure that plurals in translated resources are also translated";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
         this.link = "https://gihub.com/ilib-js/i18nlint/blob/main/docs/resource-icu-plurals-translated.md";
-    }
-
-    getRuleType() {
-        return "resource";
     }
 
     /**
@@ -188,11 +186,11 @@ class ResourceICUPluralTranslation extends Rule {
 
     /**
      * Check a string in a resource for missing translations of plurals or selects.
-     * @private
+     * @override
      */
-    checkString(src, tar, file, resource, sourceLocale, targetLocale, lineNumber) {
-        const sLoc = new Locale(sourceLocale);
-        const tLoc = new Locale(targetLocale);
+    matchString({source, target, file, resource}) {
+        const sLoc = new Locale(resource.getSourceLocale());
+        const tLoc = new Locale(resource.getTargetLocale());
 
         // same language and script means that the translations are allowed to be the same as
         // the source
@@ -201,10 +199,10 @@ class ResourceICUPluralTranslation extends Rule {
         let sourceAst;
         let targetAst;
         try {
-            let imf = new IntlMessageFormat(src, sourceLocale);
+            let imf = new IntlMessageFormat(source, sLoc.getSpec());
             sourceAst = imf.getAst();
 
-            imf = new IntlMessageFormat(tar, targetLocale);
+            imf = new IntlMessageFormat(target, tLoc.getSpec());
             targetAst = imf.getAst();
         } catch (e) {
             // ignore plural syntax errors -- that's a different rule
@@ -214,48 +212,6 @@ class ResourceICUPluralTranslation extends Rule {
         const results = this.traverse(resource, file, sourceAst, targetAst).filter(result => result);
 
         return (results && results.length < 2) ? results[0] : results;
-    }
-
-    /**
-     * @override
-     */
-    match(options) {
-        const { resource, file } = options;
-        const sourceLocale = this.sourceLocale;
-        let problems = [];
-
-        switch (resource.getType()) {
-            case 'string':
-                const tarString = resource.getTarget();
-                if (tarString) {
-                    return this.checkString(resource.getSource(), tarString, file, resource, sourceLocale, options.locale, options.lineNumber);
-                }
-                break;
-
-            case 'array':
-                const srcArray = resource.getSource();
-                const tarArray = resource.getTarget();
-                if (tarArray) {
-                    return srcArray.map((item, i) => {
-                        if (i < tarArray.length && tarArray[i]) {
-                            return this.checkString(srcArray[i], tarArray[i], file, resource, sourceLocale, options.locale, options.lineNumber);
-                        }
-                    }).filter(element => {
-                        return element;
-                    });
-                }
-                break;
-
-            case 'plural':
-                const srcPlural = resource.getSource();
-                const tarPlural = resource.getTarget();
-                if (tarPlural) {
-                    return Object.keys(srcPlural).map(category => {
-                        return this.checkString(srcPlural.other, tarPlural[category], file, resource, sourceLocale, options.locale, options.lineNumber);
-                    });
-                }
-                break;
-        }
     }
 }
 
