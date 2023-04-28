@@ -24,6 +24,12 @@ class DeclarativeResourceRule extends ResourceRule {
     /**
      * Construct a new regular expression-based declarative resource rule.
      *
+     * In addition to the options required by the ResourceRule class, the
+     * options must contain the following required properties:
+     *
+     * - regexps - an array of strings that encode regular expressions to
+     *   look for
+     *
      * @param {Object} options options as documented above
      * @constructor
      */
@@ -33,33 +39,35 @@ class DeclarativeResourceRule extends ResourceRule {
         if (!options || !options.regexps) {
             throw "Missing required options for the DeclarativeResourceRule constructor";
         }
-        this.regexps = options?.regexps;
 
         // this may throw if you got to the regexp syntax wrong:
-        this.re = this.regexps.map(regexp => new RegExp(regexp, "gu"));
+        this.re = options.regexps.map(regexp => new RegExp(regexp, "gu"));
     }
 
     /**
      * Check a specific source/target pair for a match with the given regular expression.
      *
+     * The params object will contain the following properties:
+     *
+     * - {RegExp} re the regular expression to match
+     * - {String|undefined} source the source string to match against
+     * - {String|undefined} target the target string to match against
+     * - {String} file path to the file where this resource was found
+     * - {Resource} resource the resource where this pair of strings is from
+     *
      * @abstract
-     * @param {RegExp} re the regular expression to match
-     * @param {String|undefined} source the source string to match against
-     * @param {String|undefined} target the target string to match against
-     * @param {String} file path to the file where this resource was found
-     * @param {Resource} resource the resource where this pair of strings is from
      * @returns {Result|Array.<Result>|undefined} the Result objects detailing
      * any matches to the regular expression
      */
-    checkString(re, source, target, file, resource) {}
+    checkString(params) {}
 
     /**
      * @override
      */
-    matchString(locale, source, target, file, resource) {
+    matchString({source, target, file, resource}) {
         let results = [];
         this.re.forEach(re => {
-            results = results.concat(this.checkString(re, source, target, file, resource));
+            results = results.concat(this.checkString({re, source, target, file, resource}));
         });
         results = results.filter(result => result);
         return results && results.length ? results : undefined;

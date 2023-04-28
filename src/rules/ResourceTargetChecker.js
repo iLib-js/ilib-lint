@@ -1,6 +1,6 @@
 /*
- * ResourceTargetChecker.js - rule to check if URLs in the source string also
- * appear in the target string
+ * ResourceTargetChecker.js - implement a declarative rule to check
+ * target strings for problems
  *
  * Copyright © 2022-2023 JEDLSoft
  *
@@ -34,10 +34,10 @@ class ResourceTargetChecker extends DeclarativeResourceRule {
      *
      * - name - a unique name for this rule
      * - description - a one-line description of what this rule checks for.
-     *   Example: "Check that URLs in the source also appear in the target"
+     *   Example: "Check that URLs in the target are valid."
      * - note - a one-line note that will be printed on screen when the
-     *   check fails. Example: "The URL {matchString} did not appear in the
-     *   the target." (Currently, matchString is the only replacement
+     *   check fails. Example: "The URL {matchString} is not valid."
+     *   (Currently, matchString is the only replacement
      *   param that is supported.)
      * - regexps - an array of strings that encode regular expressions to
      *   look for
@@ -51,10 +51,10 @@ class ResourceTargetChecker extends DeclarativeResourceRule {
     /**
      * @override
      */
-    checkString(re, src, tar, file, resource) {
+    checkString({re, source, target, file, resource}) {
         re.lastIndex = 0;
         let matches = [];
-        const strippedTar = stripPlurals(tar);
+        const strippedTar = stripPlurals(target);
 
         // check the target only, but we need the source in order
         // to construct a Result if necessary
@@ -64,11 +64,12 @@ class ResourceTargetChecker extends DeclarativeResourceRule {
             let value = {
                 severity: this.severity,
                 id: resource.getKey(),
-                source: src,
+                source,
                 rule: this,
                 pathName: file,
-                highlight: `Target: ${tar.substring(0, match.index)}<e0>${match[0]}</e0>${tar.substring(match.index+match[0].length)}`,
-                description: this.note.replace(/\{matchString\}/g, match[0])
+                highlight: `Target: ${target.substring(0, match.index)}<e0>${match[0]}</e0>${target.substring(match.index+match[0].length)}`,
+                description: this.note.replace(/\{matchString\}/g, match[0]),
+                locale: resource.getTargetLocale()
             };
             if (typeof(resource.lineNumber) !== 'undefined') {
                 value.lineNumber = resource.lineNumber;

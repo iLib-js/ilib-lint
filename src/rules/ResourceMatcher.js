@@ -66,11 +66,11 @@ class ResourceMatcher extends DeclarativeResourceRule {
     /**
      * @override
      */
-    checkString(re, src, tar, file, resource) {
+    checkString({re, source, target, file, resource}) {
         re.lastIndex = 0;
         let sourceMatches = [];
-        const strippedSrc = stripPlurals(src);
-        const strippedTar = stripPlurals(tar);
+        const strippedSrc = stripPlurals(source);
+        const strippedTar = stripPlurals(target);
 
         let match = re.exec(strippedSrc);
         while (match) {
@@ -93,11 +93,12 @@ class ResourceMatcher extends DeclarativeResourceRule {
                     let value = {
                         severity: this.severity,
                         id: resource.getKey(),
-                        source: src,
+                        source: source,
                         rule: this,
                         pathName: file,
-                        highlight:`Target: ${tar}<e0></e0>`,
-                        description: this.note.replace(/\{matchString\}/g, missing)
+                        highlight:`Target: ${target}<e0></e0>`,
+                        description: this.note.replace(/\{matchString\}/g, missing),
+                        locale: resource.getTargetLocale()
                     };
                     if (typeof(resource.lineNumber) !== 'undefined') {
                         value.lineNumber = resource.lineNumber;

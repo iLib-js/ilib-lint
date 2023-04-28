@@ -22,7 +22,7 @@ import { Rule } from 'i18nlint-common';
 
 class ResourceRule extends Rule {
     /**
-     * Construct a new regular expression-based resource checker.
+     * Construct a new resource checker rule.
      *
      * The options must contain the following required properties:
      *
@@ -33,8 +33,7 @@ class ResourceRule extends Rule {
      *   check fails. Example: "The URL {matchString} did not appear in the
      *   the target." (Currently, matchString is the only replacement
      *   param that is supported.)
-     * - regexps - an array of strings that encode regular expressions to
-     *   look for
+     *
      * @param {Object} options options as documented above
      * @constructor
      */
@@ -66,35 +65,47 @@ class ResourceRule extends Rule {
      * parameters may be undefined or the empty string. It is up to the subclass
      * to determine what to do with that situation.
      *
+     * The params object will contain the following properties:
+     *
+     * - {String|undefined} source the source string to check
+     * - {String|undefined} target the target string to check
+     * - {String} file the path to the file where this resource was found
+     * - {Resource} resource the resource where this string came from
+     *
      * @abstract
-     * @param {Locale} locale locale of this resource
-     * @param {String|undefined} source the source string to check
-     * @param {String|undefined} target the target string to check
-     * @param {String} file the path to the file where this resource was found
-     * @param {Resource} resource the resource where this string came from
+     * @param {Object} params
      * @returns {Result|Array.<Result>|undefined} any results
      * found in this string or undefined if no problems were
      * found.
      */
-    matchString(locale, source, target, file, resource) {}
+    matchString(params) {}
 
     /**
      * @override
      */
     match(options) {
-        const { locale, resource, file } = options || {};
+        const { resource, file } = options || {};
         let results;
 
         switch (resource.getType()) {
             case 'string':
-                const tarString = resource.getTarget();
-                return this.matchString(locale, resource.getSource(), tarString, file, resource);
+                return this.matchString({
+                    source: resource.getSource(),
+                    target: resource.getTarget(),
+                    file,
+                    resource
+                });
 
             case 'array':
                 const srcArray = resource.getSource();
                 const tarArray = resource.getTarget() || [];
                 results = srcArray.map((item, i) => {
-                    return this.matchString(locale, srcArray[i], tarArray[i], file, resource);
+                    return this.matchString({
+                        source: srcArray[i],
+                        target: tarArray[i],
+                        file,
+                        resource
+                    });
                 }).flat().filter(element => element);
                 return (results && results.length ? results : undefined);
 
@@ -104,7 +115,12 @@ class ResourceRule extends Rule {
                 const categorySet = new Set(Object.keys(srcPlural).concat(Object.keys(tarPlural)));
 
                 results = Array.from(categorySet).map(category => {
-                    return this.matchString(locale, srcPlural[category], tarPlural[category], file, resource);
+                    return this.matchString({
+                        source: srcPlural[category],
+                        target: tarPlural[category],
+                        file,
+                        resource
+                    });
                 }).flat().filter(element => element);
                 return (results && results.length ? results : undefined);
         }
