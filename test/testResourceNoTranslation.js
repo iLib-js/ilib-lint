@@ -42,12 +42,12 @@ export const testResourceNoTranslation = {
         });
         const expected = new Result({
             severity: "warning",
-            description: "Target string is the same as the source string. This is probably an untranslated resource.",
+            description: "Target string is missing a translation.",
             id: "translation.test",
             highlight: 'Target: <e0></e0>',
             rule,
             pathName: "x/y",
-            locale: "de-DE",
+            locale: "en-US",
             source: 'This is the source string.'
         });
         test.deepEqual(actual, expected);
@@ -76,7 +76,7 @@ export const testResourceNoTranslation = {
         });
         const expected = new Result({
             severity: "warning",
-            description: "Target string is the same as the source string. This is probably an untranslated resource.",
+            description: "Target string is missing a translation.",
             id: "translation.test",
             highlight: 'Target: <e0></e0>',
             rule,
