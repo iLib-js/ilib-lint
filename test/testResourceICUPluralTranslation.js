@@ -459,5 +459,145 @@ export const testResourceICUPluralTranslation = {
 
         test.done();
     },
+
+    testResourceICUPluralTranslationsAddCategoryTranslated: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ru-RU",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                targetLocale: "ru-RU",
+                target: 'There {count, plural, one {is # file (Russian)} few {are # files (Russian)} other {are # files (Russian)}} in the folder.',
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralTranslationsAddCategoryNotTranslated: function(test) {
+        test.expect(5);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ru-RU",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                targetLocale: "ru-RU",
+                target: 'There {count, plural, one {is # file} few {are # files} other {are # files}} in the folder.',
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+        test.ok(Array.isArray(actual));
+        test.equal(actual.length, 3);
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: "Translation of the category 'one' is the same as the source.",
+                id: "plural.test",
+                highlight: 'Target: <e0>one {is # file}</e0>',
+                rule,
+                pathName: "x/y",
+                locale: "ru-RU",
+                source: 'one {is # file}'
+            }),
+            new Result({
+                severity: "warning",
+                description: "Translation of the category 'few' is the same as the source.",
+                id: "plural.test",
+                highlight: 'Target: <e0>few {are # files}</e0>',
+                rule,
+                pathName: "x/y",
+                locale: "ru-RU",
+                source: 'other {are # files}'
+            }),
+            new Result({
+                severity: "warning",
+                description: "Translation of the category 'other' is the same as the source.",
+                id: "plural.test",
+                highlight: 'Target: <e0>other {are # files}</e0>',
+                rule,
+                pathName: "x/y",
+                locale: "ru-RU",
+                source: 'other {are # files}'
+            }),
+        ];
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceICUPluralTranslationsSubtractCategoryTranslated: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                targetLocale: "ja-JP",
+                target: 'There {count, plural, other {are # files (Japanese)}} in the folder.',
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralTranslationsSubtractCategoryNotTranslated: function(test) {
+        test.expect(3);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "ja-JP",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                targetLocale: "ja-JP",
+                target: 'There {count, plural, other {are # files}} in the folder.',
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(actual);
+
+        const expected = new Result({
+            severity: "warning",
+            description: "Translation of the category 'other' is the same as the source.",
+            id: "plural.test",
+            highlight: 'Target: <e0>other {are # files}</e0>',
+            rule,
+            pathName: "x/y",
+            locale: "ja-JP",
+            source: 'other {are # files}'
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
 };
 

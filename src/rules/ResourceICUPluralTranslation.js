@@ -139,10 +139,12 @@ class ResourceICUPluralTranslation extends Rule {
                 // missing target plurals are for a different rule, so don't report it here
                 return;
             }
-            return Object.keys(sourcePlural.options).map(category => {
-                if (!targetPlural.options[category]) return; // nothing to check!
+            return Object.keys(targetPlural.options).map(category => {
+                const sourceCategory = sourcePlural.options[category] ? category : "other";
+                const sourcePluralCat = sourcePlural.options[sourceCategory];
+                if (!sourcePluralCat) return; // nothing to check!
 
-                const sourceStr = this.reconstruct(sourcePlural.options[category].value).replace(/\s+/g, " ").trim();
+                const sourceStr = this.reconstruct(sourcePluralCat.value).replace(/\s+/g, " ").trim();
                 const targetStr = this.reconstruct(targetPlural.options[category].value).replace(/\s+/g, " ").trim();
                 let result = [];
 
@@ -153,7 +155,7 @@ class ResourceICUPluralTranslation extends Rule {
                         description: `Translation of the category \'${category}\' is the same as the source.`,
                         rule: this,
                         id: resource.getKey(),
-                        source: `${category} {${sourceStr}}`,
+                        source: `${sourceCategory} {${sourceStr}}`,
                         highlight: `Target: <e0>${category} {${targetStr}}</e0>`,
                         pathName: file,
                         locale: resource.getTargetLocale()
@@ -165,7 +167,7 @@ class ResourceICUPluralTranslation extends Rule {
                 }
 
                 // now the plurals may have plurals nested in them, so recursively check them too
-                return result.concat(this.traverse(resource, file, sourcePlural.options[category].value, targetPlural.options[category].value));
+                return result.concat(this.traverse(resource, file, sourcePluralCat.value, targetPlural.options[category].value));
              }).flat();
         }).flat();
 
