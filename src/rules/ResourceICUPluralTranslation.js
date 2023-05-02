@@ -123,6 +123,8 @@ class ResourceICUPluralTranslation extends Rule {
             } else if (source[i].type === 8) {
                 sourceTags[source[i].value] = source[i];
             }
+        }
+        for (let i = 0; i < target.length; i++) {
             if (target[i].type === 5 || target[i].type === 6) {
                 targetPlurals[target[i].value] = target[i];
             } else if (target[i].type === 8) {

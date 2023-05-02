@@ -599,5 +599,75 @@ export const testResourceICUPluralTranslation = {
 
         test.done();
     },
+
+    testResourceICUPluralTranslationsNonPlural: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "fr-FR",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'Maximum custodians',
+                targetLocale: "fr-FR",
+                target: "Depositaires maximaux",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralTranslationsNonPluralWithOtherFormatjsStuff: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "fr-FR",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'Maximum {max} custodians',
+                targetLocale: "fr-FR",
+                target: "Depositaires maximaux {max}",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralTranslationsNoCrashIfSourceHasPluralTargetDoesnt: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                targetLocale: "de-DE",
+                target: "Es gibt Dateien in dem Ordner.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
 };
 
