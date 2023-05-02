@@ -323,20 +323,39 @@ This apply mostly to resource files, such as XLIFF files.
 
 The built-in rules are:
 
-- resource-icu-plurals - check for ICU-style plurals. Also works with formatjs
+- [resource-completeness](./docs/resource-completeness.md) - Make sure every resource has a source and
+  a target string
+- [resource-dnt-terms](./docs/resource-dnt-terms.md) - Error if a "do not translate" terms is transalted
+- [resource-edge-whitespace](./docs/resource-edge-whitespace.md) - Error if the leading and trailing whitespace
+  in the target does not match the source
+- [resource-icu-plurals](./docs/resource-icu-plurals.md) - Check for ICU-style plurals. Also works with formatjs
   plurals, as it has the same syntax.
-- resource-quote-style - if the source string has quotes, check that the target
-  string also has quotes and that those quotes are appropriate for the locale
-- resource-url-match - if the source string contains references to URLs, check
-  that the target string also contains references to the same URLs
-- resource-named-params - Ensure that named parameters that appear in the source
+- [resource-named-params](./docs/resource-named-params.md) - Ensure that named parameters that appear in the source
   string are also used in the translated string
-- resource-unique-key - Ensure that the keys are unique within a locale across
-  all resource files
-- resource-state-checker - Ensure that all resources have a particular state
+- [resource-no-double-byte-space](./docs/resource-no-double-byte-space.md) - Do not use "double-byte" whitespace characters
+- [resource-no-fullwidth-digits](./docs/resource-no-fullwidth-digits.md) -Do not use "full width" digits
+- [resource-no-fullwidth-latin](./docs/resource-no-fullwidth-latin.md) - Do not use "full width" Latin letters (Romaji)
+- [resource-no-fullwidth-punctuation-subset](./docs/resource-no-fullwidth-punctuation-subset.md) - Do not use certain
+  "full width" punctuation characters
+- [resource-no-halfwidth-kana-characters](./docs/resource-no-halfwidth-kana-characters.md) - Do not use "half width"
+  Japanese kana characters
+- [resource-no-space-between-double-and-single-byte-character](./docs/resource-no-space-between-double-and-single-byte-character.md) - Do not put a space between a double-byte
+  and a single-byte character
+- [resource-no-space-with-fullwidth-punctuation](./docs/resource-no-space-with-fullwidth-punctuation.md) - Do not put spaces before or after certain
+  "full width" punctuation characters.
+- [resource-no-translation](./docs/resource-no-translation.md) - Warning the target translation comes back the same as
+  the original source string
+- [resource-quote-style](./docs/resource-quote-style.md) - If the source string has quotes, check that the target
+  string also has quotes and that those quotes are appropriate for the locale
+- [resource-state-checker](./docs/resource-state-checker.md) - Ensure that all resources have a particular state
   field value, or one of an array of state field values. The parameter for this
   rule should either be a string or an array of strings that name the allowed
   values.
+- [resource-unique-keys](./docs/resource-unique-keys.md) - Ensure that the keys are unique within a locale across
+  all resource files
+- [resource-url-match](./docs/resource-url-match.md) - If the source string contains references to URLs, check
+  that the target string also contains references to the same URLs
+
 
 ## Writing Plugins
 
@@ -590,6 +609,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 ## Release Notes
+
+### v1.5.2
+
+- update the documentation above to enumerate all the current resource plugins
 
 ### v1.5.1
 
