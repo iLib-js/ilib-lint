@@ -105,8 +105,9 @@ export const testResourceQuoteStyle = {
             description: "Quote style for the the locale de-DE should be „text“",
             id: "quote.test",
             source: 'This string contains “quotes” in it.',
-            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e1>\'</e1>.',
             rule,
+            locale: "de-DE",
             pathName: "x"
         });
         test.deepEqual(actual, expected);
@@ -140,8 +141,9 @@ export const testResourceQuoteStyle = {
             description: "Quote style for the the locale de-DE should be „text“",
             id: "quote.test",
             source: 'This string contains “quotes” in it.',
-            highlight: 'Target: Diese Zeichenfolge enthält <e0>"</e0>Anführungszeichen<e0>"</e0>.',
+            highlight: 'Target: Diese Zeichenfolge enthält <e0>"</e0>Anführungszeichen<e1>"</e1>.',
             rule,
+            locale: "de-DE",
             pathName: "x"
         });
         test.deepEqual(actual, expected);
@@ -268,8 +270,9 @@ export const testResourceQuoteStyle = {
             description: "Quote style for the the locale de-DE should be „text“",
             id: "quote.test",
             source: 'This string contains "quotes" in it.',
-            highlight: "Target: Diese Zeichenfolge enthält <e0>'</e0>Anführungszeichen<e0>'</e0>.",
+            highlight: "Target: Diese Zeichenfolge enthält <e0>'</e0>Anführungszeichen<e1>'</e1>.",
             rule,
+            locale: "de-DE",
             pathName: "x/y"
         });
         test.deepEqual(actual, expected);
@@ -300,8 +303,9 @@ export const testResourceQuoteStyle = {
             description: "Quote style for the the locale de-DE should be ‚text‘",
             id: "quote.test",
             source: "This string contains ‘quotes’ in it.",
-            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e0>\'</e0>.',
+            highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e1>\'</e1>.',
             rule,
+            locale: "de-DE",
             pathName: "a/b"
         });
 
@@ -564,7 +568,7 @@ export const testResourceQuoteStyle = {
         test.done();
     },
 
-    testResourceQuoteStyleApostropheInTargetSpace: function(test) {
+    testResourceQuoteStyleApostropheInTargetWithNBSpace: function(test) {
         test.expect(2);
 
         const rule = new ResourceQuoteStyle();
