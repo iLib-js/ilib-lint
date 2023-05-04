@@ -99,6 +99,9 @@ ilib-lint accepts the following command-line parameters:
   with status 2 if there are errors, and status 0 if there are warnings. This
   flag allows you to squelch the warnings and only fail a script if there are
   actual errors.
+* formatter - name the formatter to use to format the results
+* list - list out all the known rulesets and all of the known plugins: parsers,
+  rules, and formatters. This can assist you with creating your own configuration.
 * locales - Locales you want your app to support globally. Value is a comma-separated
   list of BCP-47 style locale tags. File types can override this list.
   Default: the top 20 locales on the internet by traffic.
