@@ -36,6 +36,15 @@ log4js.configure(path.join(__dirname, '..', 'log4js.json'));
 
 const logger = log4js.getLogger("ilib-lint.root");
 
+function validateInt(paramName, arg, replace) {
+    const num = parseInt(arg);
+    if (!isNaN(num)) {
+        replace(num);
+        return true;
+    }
+    return `Argument to parameter ${paramName} must be an integer.`;
+}
+
 const optionConfig = {
     help: {
         short: "h",
@@ -47,6 +56,7 @@ const optionConfig = {
     },
     config: {
         short: "c",
+        varName: "PATH",
         help: "Give an explicit path to a configuration file instead of trying to find it in the current directory."
     },
     errorsOnly: {
@@ -57,6 +67,7 @@ const optionConfig = {
     },
     formatter: {
         short: "f",
+        varName: "NAME",
         "default": "ansi-console-formatter",
         help: "Name the formatter that should be used to format the output."
     },
@@ -66,6 +77,7 @@ const optionConfig = {
     },
     locales: {
         short: "l",
+        varName: "LOCALES",
         "default": "en-AU,en-CA,en-GB,en-IN,en-NG,en-PH,en-PK,en-US,en-ZA,de-DE,fr-CA,fr-FR,es-AR,es-ES,es-MX,id-ID,it-IT,ja-JP,ko-KR,pt-BR,ru-RU,tr-TR,vi-VN,zxx-XX,zh-Hans-CN,zh-Hant-HK,zh-Hant-TW,zh-Hans-SG",
         help: "Locales you want your app to support. Value is a comma-separated list of BCP-47 style locale tags. Default: the top 20 locales on the internet by traffic."
     },
@@ -83,6 +95,29 @@ const optionConfig = {
         short: "v",
         flag: true,
         help: "Produce lots of progress output during the run."
+    },
+    "max-errors": {
+        short: "me",
+        varName: "NUMBER",
+        help: "Give the maximum acceptable number of errors allowed in this run. Default: 0",
+        type: validateInt.bind(null, "max-errors")
+    },
+    "max-warnings": {
+        short: "mw",
+        varName: "NUMBER",
+        help: "Give the maximum acceptable number of warnings allowed in this run. Default: 0",
+        type: validateInt.bind(null, "max-warnings")
+    },
+    "max-suggestions": {
+        short: "ms",
+        varName: "NUMBER",
+        help: "Give the maximum acceptable number of suggestions allowed in this run. Default: no maximum",
+        type: validateInt.bind(null, "max-suggestions")
+    },
+    "min-score": {
+        varName: "NUMBER",
+        help: "Give the minimum acceptable I18N score allowed in this run. Valid values are 0-100. Default: no minimum",
+        type: validateInt.bind(null, "min-score")
     }
 };
 
@@ -125,6 +160,8 @@ options.opt.locales = options.opt.locales.map(spec => {
     }
     return loc.getSpec();
 });
+
+// make sure the mins and maxes are numeric
 
 // used if no explicit config is found or given
 const defaultConfig = {
