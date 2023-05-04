@@ -61,7 +61,6 @@ class RuleManager {
      * @constructor
      */
     constructor(options) {
-        this.API = options && options.API;
         this.ruleCache = {};
         this.ruleDefs = {};
         this.descriptions = {};
@@ -91,14 +90,14 @@ class RuleManager {
             return new ruleClass({
                 ...ruleConfig,
                 ...options,
-                API: this.API,
-                sourceLocale: this.sourceLocale
+                sourceLocale: this.sourceLocale,
+                getLogger: log4js.getLogger.bind(log4js)
             });
         } else {
             return new ruleConfig({
                 ...options,
-                API: this.API,
-                sourceLocale: this.sourceLocale
+                sourceLocale: this.sourceLocale,
+                getLogger: log4js.getLogger.bind(log4js)
             });
         }
     }
@@ -110,8 +109,8 @@ class RuleManager {
         if (rule) {
             if (typeof(rule) === 'function' && Object.getPrototypeOf(rule).name === "Rule") {
                 const p = new rule({
-                    API: this.API,
-                    sourceLocale: this.sourceLocale
+                    sourceLocale: this.sourceLocale,
+                    getLogger: log4js.getLogger.bind(log4js)
                 });
                 this.ruleCache[p.getName()] = rule;
                 this.descriptions[p.getName()] = p.getDescription();

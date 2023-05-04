@@ -200,7 +200,7 @@ function attemptLoadPath(name) {
  *
  * @private
  */
-function loadPlugin(name, API) {
+function loadPlugin(name) {
     return attemptLoad(name).catch(e1 => {
         logger.trace(e1);
         const name2 = `ilib-lint-${name}`;
@@ -226,7 +226,9 @@ function loadPlugin(name, API) {
     }).then((module) => {
         logger.trace(`Module ${name} successfully loaded.`);
         const Main = module.default;
-        const plugin = new Main({API});
+        const plugin = new Main({
+            getLogger: log4js.getLogger.bind(log4js)
+        });
         plugin.init();
         return plugin;
     }).catch(e2 => {
@@ -234,18 +236,6 @@ function loadPlugin(name, API) {
         logger.trace(e2);
         return undefined;
     });
-};
-
-function getAPI() {
-    return {
-        /**
-         * Return the i18nlint's log4js logger so that the plugin can put its output into
-         * the regular i18nlint stream.
-         * @param {string} category the logger category to return
-         * @returns {Logger} a logger instance
-         */
-        getLogger: category => log4js.getLogger(category)
-    };
 };
 
 /**
@@ -257,10 +247,9 @@ class PluginManager {
      * Construct a new plugin manager.
      */
     constructor(options) {
-        this.API = getAPI();
-        this.parserMgr = new ParserManager({API: this.API});
-        this.formatterMgr = new FormatterManager({API: this.API});
-        this.ruleMgr = new RuleManager({API: this.API});
+        this.parserMgr = new ParserManager();
+        this.formatterMgr = new FormatterManager();
+        this.ruleMgr = new RuleManager();
         this.sourceLocale = options && options.sourceLocale;
 
         // default rules
@@ -293,7 +282,9 @@ class PluginManager {
         this.formatterMgr.add(AnsiConsoleFormatter);
 
         // install the default parser, rules
-        this.add(new XliffPlugin({API: this.API}));
+        this.add(new XliffPlugin({
+            getLogger: log4js.getLogger.bind(log4js)
+        }));
     }
 
     /**
@@ -369,12 +360,11 @@ class PluginManager {
      * @reject the plugins could not be found or loaded
      */
     load(names) {
-        const API = getAPI();
         if (typeof(name) === 'string') {
             names = [ names ];
         }
         return Promise.allSettled(names.map(name => {
-            return loadPlugin(name, API).then((plugin) => {
+            return loadPlugin(name).then((plugin) => {
                 this.add(plugin);
             });
         }));

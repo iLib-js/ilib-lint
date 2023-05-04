@@ -41,7 +41,6 @@ class FormatterManager {
         this.descriptions = {};
         this.add([AnsiConsoleFormatter]);
         if (options) {
-            this.API = options.API;
             if (options.formatters) {
                 this.add(options.formatters);
             }
@@ -65,12 +64,12 @@ class FormatterManager {
             return new ConfigBasedFormatter({
                 ...formatConfig,
                 ...options,
-                API: this.API
+                getLogger: log4js.getLogger.bind(log4js)
             });
         }
         return formatConfig ? new formatConfig({
             ...options,
-            API: this.API
+            getLogger: log4js.getLogger.bind(log4js)
         }) : undefined;
     }
 
@@ -88,7 +87,7 @@ class FormatterManager {
             if (fmt) {
                 if (typeof(fmt) === 'function' && Object.getPrototypeOf(fmt).name === "Formatter") {
                     formatter = new fmt({
-                        API: this.API
+                        getLogger: log4js.getLogger.bind(log4js)
                     });
                     this.formatterCache[formatter.getName()] = fmt;
                     this.descriptions[formatter.getName()] = formatter.getDescription();

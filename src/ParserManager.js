@@ -38,7 +38,6 @@ class ParserManager {
      * @constructor
      */
     constructor(options) {
-        this.API = options && options.API;
         this.parserCache = {};
         this.descriptions = {};
     }
@@ -65,7 +64,7 @@ class ParserManager {
         for (const parser of parsers) {
             if (parser && typeof(parser) === 'function' && Object.getPrototypeOf(parser).name === "Parser") {
                 const p = new parser({
-                    API: this.API
+                    getLogger: log4js.getLogger.bind(log4js)
                 });
                 for (const extension of p.getExtensions()) {
                     if (!this.parserCache[extension]) {
