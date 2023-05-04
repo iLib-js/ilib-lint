@@ -520,14 +520,19 @@ class Project extends DirItem {
         const fmt = new Intl.NumberFormat("en-US", {
             maxFractionDigits: 2
         });
-        logger.info(`Files scanned: ${this.files.length}`);
+        logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
+        logger.info(`                   Total     ${`${String(this.files.length)} Files`.padEnd(15, ' ')}${`${String(this.files.length)} Lines`.padEnd(15, ' ')}`);
         if (results.length) {
-            logger.info(`Errors: ${errors}, avg per file: ${fmt.format(errors/this.files.length)}`);
+            logger.info(
+                    `Errors:            ${String(errors).padEnd(10, ' ')}${fmt.format(errors/this.files.length).padEnd(15, ' ')}`);
             if (!this.options.errorsOnly) {
-                logger.info(`Warnings: ${warnings}, avg per file: ${fmt.format(warnings/this.files.length)}`);
-                logger.info(`Suggestions: ${suggestions}, avg per file: ${fmt.format(suggestions/this.files.length)}`);
+                logger.info(
+                    `Warnings:          ${String(warnings).padEnd(10, ' ')}${fmt.format(warnings/this.files.length).padEnd(15, ' ')}`);
+                logger.info(
+                    `Suggestions:       ${String(suggestions).padEnd(10, ' ')}${fmt.format(suggestions/this.files.length).padEnd(15, ' ')}`);
             }
         }
+        logger.info(`I18N Score (0-100) ${String(this.files.length)}`);
 
         return exitValue;
     }
