@@ -622,6 +622,9 @@ limitations under the License.
 
 - added the ability to scan source code files and apply rules
     - added source-checker Rule for declarative rules
+- moved functionality into Project class
+    - main loop moved from index.js into the run() method
+    - directory walk function moved to a method of Project
 
 ### v1.5.2
 
@@ -662,10 +665,6 @@ limitations under the License.
 
 - added resource-state-checker Rule so that you can ensure that all
   resources have a particular state field value
-- moved functionality into Project class
-    - main loop moved from index.js into the run() method
-    - directory walk function moved to a method of Project
-
 ### v1.2.1
 
 - fixed packaging problem where the test plugin was listed in the
