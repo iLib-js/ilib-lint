@@ -20,6 +20,8 @@
 
 import { Plugin } from 'i18nlint-common';
 import XliffParser from './XliffParser.js';
+import LineParser from './LineParser.js';
+import StringParser from './StringParser.js';
 
 /**
  * @class ilib-lint plugin that can parse XLIFF files
@@ -41,7 +43,7 @@ class BuiltinPlugin extends Plugin {
      * plugin
      */
     getParsers() {
-        return [XliffParser];
+        return [XliffParser, LineParser, StringParser];
     }
 };
 

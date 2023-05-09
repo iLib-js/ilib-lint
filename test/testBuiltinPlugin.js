@@ -1,7 +1,7 @@
 /*
- * testBuiltinPlugin.js - test the Xliff plugin
+ * testBuiltinPlugin.js - test the built-in plugin
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ export const testBuiltinPlugin = {
         test.ok(xp);
 
         const parsers = xp.getParsers();
-        test.equal(parsers.length, 1);
+        test.equal(parsers.length, 3);
 
         const xliff = new parsers[0]({
             filePath: "x"
@@ -55,7 +55,7 @@ export const testBuiltinPlugin = {
 
         const parsers = xp.getParsers();
         test.ok(parsers);
-        test.equal(parsers.length, 1);
+        test.equal(parsers.length, 3);
 
         test.done();
     },
@@ -91,9 +91,9 @@ export const testBuiltinPlugin = {
 
         const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
         test.ok(parser);
-        parser.parse();
+        const ir = parser.parse();
 
-        const resources = parser.getResources();
+        const resources = ir[0].getRepresentation();
         test.ok(resources);
         test.equal(resources.length, 1);
 
@@ -113,9 +113,9 @@ export const testBuiltinPlugin = {
 
         const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
         test.ok(parser);
-        parser.parse();
+        const ir = parser.parse();
 
-        const resources = parser.getResources();
+        const resources = ir[0].getRepresentation();
         test.ok(resources);
 
         test.equal(resources[0].source, "Asdf asdf");

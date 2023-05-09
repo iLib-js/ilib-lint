@@ -14,9 +14,9 @@
         "package.json"
     ],
     "dependencies": {
-        "i18nlint-common": "^1.2.0",
-        "ilib-locale": "^1.1.1",
-        "ilib-tools-common": "^1.2.0",
-        "json5": "^2.2.1"
+        "i18nlint-common": "^2.0.0",
+        "ilib-locale": "^1.2.2",
+        "ilib-tools-common": "^1.6.0",
+        "json5": "^2.2.3"
     }
 }

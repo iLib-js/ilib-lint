@@ -50,7 +50,9 @@ class ParserManager {
      * the given type of file
      */
     get(extension) {
-        return this.parserCache[extension] || [];
+        // the '*' extension means any extension, which gives all the
+        // parsers that can handle any text file
+        return this.parserCache[extension] || this.parserCache['*'] || [];
     }
 
     /**
