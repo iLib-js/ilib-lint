@@ -34,7 +34,7 @@ const files = [
     "testSourceFile.js",
     "testSourceRegexpChecker.js",
     "testwalk.js",
-    "testXliffPlugin.js"
+    "testBuiltinPlugin.js"
 ];
 
 export default files;

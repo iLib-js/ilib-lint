@@ -25,7 +25,7 @@ import FormatterManager from './FormatterManager.js';
 import ParserManager from './ParserManager.js';
 import RuleManager from './RuleManager.js';
 import RuleSet from './RuleSet.js';
-import XliffPlugin from './plugins/XliffPlugin.js';
+import BuiltinPlugin from './plugins/BuiltinPlugin.js';
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceICUPluralTranslation from './rules/ResourceICUPluralTranslation.js';
@@ -281,8 +281,8 @@ class PluginManager {
         // install the default formatter
         this.formatterMgr.add(AnsiConsoleFormatter);
 
-        // install the default parser, rules
-        this.add(new XliffPlugin({
+        // install the default parsers, rules, etc.
+        this.add(new BuiltinPlugin({
             getLogger: log4js.getLogger.bind(log4js)
         }));
     }

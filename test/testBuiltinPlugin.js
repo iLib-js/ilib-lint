@@ -1,5 +1,5 @@
 /*
- * testXliffPlugin.js - test the Xliff plugin
+ * testBuiltinPlugin.js - test the Xliff plugin
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -17,23 +17,23 @@
  * limitations under the License.
  */
 
-import XliffPlugin from '../src/plugins/XliffPlugin.js';
+import BuiltinPlugin from '../src/plugins/BuiltinPlugin.js';
 import { Parser } from 'i18nlint-common';
 
-export const testXliffPlugin = {
-    testXliffPlugin: function(test) {
+export const testBuiltinPlugin = {
+    testBuiltinPlugin: function(test) {
         test.expect(1);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         test.done();
     },
 
-    testXliffPluginGetExtensions: function(test) {
+    testBuiltinPluginGetExtensions: function(test) {
         test.expect(3);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
@@ -47,10 +47,10 @@ export const testXliffPlugin = {
         test.done();
     },
 
-    testXliffPluginGetParser: function(test) {
+    testBuiltinPluginGetParser: function(test) {
         test.expect(3);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
@@ -63,7 +63,7 @@ export const testXliffPlugin = {
     testXliffParser: function(test) {
         test.expect(4);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
@@ -81,7 +81,7 @@ export const testXliffPlugin = {
     testXliffParserGetResources: function(test) {
         test.expect(5);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
@@ -103,7 +103,7 @@ export const testXliffPlugin = {
     testXliffParserGetResourcesRight: function(test) {
         test.expect(12);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
