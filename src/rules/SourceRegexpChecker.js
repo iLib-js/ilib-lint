@@ -26,7 +26,7 @@ import { Rule, Result } from 'i18nlint-common';
  */
 class SourceRegexpChecker extends Rule {
     /**
-     * Construct a new regular expression-based source checker.
+     * Construct a new declarative regular expression-based source checker.
      *
      * The options must contain the following required properties:
      *
@@ -51,7 +51,7 @@ class SourceRegexpChecker extends Rule {
         super(options);
 
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
-            throw "Missing required options for the ResourceMatcher constructor";
+            throw "Missing required options for the SourceRegexpChecker constructor";
         }
         ["name", "description", "regexps", "note", "sourceLocale", "link", "severity"].forEach(prop => {
             this[prop] = options[prop];
@@ -69,90 +69,86 @@ class SourceRegexpChecker extends Rule {
     }
 
     /**
+     * @private
+     */
+    checkString(re, src, ir) {
+        re.lastIndex = 0;
+        let results = [];
+        let lineNumber = 1; // line numbers are 1-based, not 0-based
+        let lastCharChecked = 0;
+
+        let match = re.exec(src);
+        while (match) {
+            let snippet = "";
+            if (typeof(match.index) !== 'undefined') {
+                // find the current line number
+                for (let i = lastCharChecked; i < match.index; i++) {
+                    if (src[i] === '\n') lineNumber++;
+                }
+                lastCharChecked = match.index;
+
+                // work backwards and forwards to find the start and end of the line, with reasonable limits
+                let start = match.index;
+                let count = 0;
+
+                // look back for the beginning of the line with a max of 100 chars
+                while (start >= 0 && src[start] !== '\n' && count < 100) {
+                    start--;
+                    count++;
+                }
+                if (count >= 100) {
+                    snippet += "...";
+                }
+                snippet += src.substring(start+1, match.index);
+                snippet += "<e0>";
+                snippet += match[0];
+                snippet += "</e0>";
+
+                // look forward for the end of the line with a max of 100 chars
+                let end = match.index + match[0].length;
+                count = 0;
+                while (end < src.length && src[end] !== '\n' && count < 100) {
+                    end++;
+                    count++;
+                }
+                snippet += src.substring(match.index + match[0].length, end);
+
+                if (count >= 100) {
+                    snippet += "...";
+                }
+            } else {
+                snippet = match[0];
+            }
+
+            results.push(new Result({
+                severity: this.severity,
+                rule: this,
+                pathName: ir.getPath(),
+                highlight: snippet,
+                description: this.note.replace(/\{matchString\}/g, match[0]),
+                lineNumber
+            }));
+            match = re.exec(src);
+        }
+        return results;
+    }
+
+    /**
      * @override
      */
     match(options) {
         const { ir } = options || {};
-        const _this = this;
 
         // different type means no checking and no results
         if (ir.getType() !== "string") return;
 
-        /**
-         * @private
-         */
-        function checkString(re, src) {
-            re.lastIndex = 0;
-            let results = [];
-            let lineNumber = 1; // line numbers are 1-based, not 0-based
-            let lastCharChecked = 0;
-
-            let match = re.exec(src);
-            while (match) {
-                let snippet = "";
-                if (typeof(match.index) !== 'undefined') {
-                    // find the current line number
-                    for (let i = lastCharChecked; i < match.index; i++) {
-                        if (src[i] === '\n') lineNumber++;
-                    }
-                    lastCharChecked = match.index;
-
-                    // work backwards and forwards to find the start and end of the line, with reasonable limits
-                    let start = match.index;
-                    let count = 0;
-
-                    // look back for the beginning of the line with a max of 100 chars
-                    while (start >= 0 && src[start] !== '\n' && count < 100) {
-                        start--;
-                        count++;
-                    }
-                    if (count >= 100) {
-                        snippet += "...";
-                    }
-                    snippet += src.substring(start+1, match.index);
-                    snippet += "<e0>";
-                    snippet += match[0];
-                    snippet += "</e0>";
-
-                    // look forward for the end of the line with a max of 100 chars
-                    let end = match.index + match[0].length;
-                    count = 0;
-                    while (end < src.length && src[end] !== '\n' && count < 100) {
-                        end++;
-                        count++;
-                    }
-                    snippet += src.substring(match.index + match[0].length, end);
-
-                    if (count >= 100) {
-                        snippet += "...";
-                    }
-                } else {
-                    snippet = match[0];
-                }
-
-                results.push(new Result({
-                    severity: _this.severity,
-                    rule: _this,
-                    pathName: ir.getPath(),
-                    highlight: snippet,
-                    description: _this.note.replace(/\{matchString\}/g, match[0]),
-                    lineNumber
-                }));
-                match = re.exec(src);
-            }
-            return results;
-        }
-
         let results = [];
         this.re.forEach(re => {
-            results = results.concat(checkString(re, ir.getRepresentation()));
+            results = results.concat(this.checkString(re, ir.getRepresentation(), ir));
         });
         results = results.filter(result => result);
         return results && results.length ? results : undefined;
     }
-
-    // no match
-    return;
 }
 
 export default SourceRegexpChecker;
