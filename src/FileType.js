@@ -69,7 +69,7 @@ class FileType {
             }
         });
 
-        this.type = this.type || "source";
+        this.type = this.type || "string";
 
         if (this.ruleset) {
             if (typeof(this.ruleset) === 'string') {

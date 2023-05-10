@@ -128,11 +128,11 @@ class LineRegexpChecker extends Rule {
     /**
      * @override
      */
-    match(options) {
-        const { ir } = options || {};
+    match(options = {}) {
+        const { ir } = options;
 
         // different type means no checking and no results
-        if (ir.getType() !== "line") return;
+        if (!ir || ir.getType() !== "line") return;
 
         let results = [];
         // representation should be an array of lines 

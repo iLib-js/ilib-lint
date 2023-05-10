@@ -136,11 +136,11 @@ class SourceRegexpChecker extends Rule {
     /**
      * @override
      */
-    match(options) {
-        const { ir } = options || {};
+    match(options = {}) {
+        const { ir } = options;
 
         // different type means no checking and no results
-        if (ir.getType() !== "string") return;
+        if (!ir || ir.getType() !== "string") return;
 
         let results = [];
         this.re.forEach(re => {
