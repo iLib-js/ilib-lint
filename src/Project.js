@@ -23,6 +23,8 @@ import log4js from 'log4js';
 import mm from 'micromatch';
 import JSON5 from 'json5';
 
+import { FileStats } from 'i18nlint-common';
+
 import SourceFile from './SourceFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
@@ -473,12 +475,50 @@ class Project extends DirItem {
      * @returns {Array.<Result>} a list of results
      */
     findIssues(locales) {
+        this.fileStats = new FileStats();
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
 
-            file.parse();
-            return file.findIssues(locales);
+            const ir = file.parse();
+            if (ir.stats) {
+                this.fileStats.addStats(ir.stats);
+            } else {
+                // no stats? At least we know there was a file, so count that
+                this.fileStats.addFile(1);
+            }
+            return file.findIssues(locales, ir);
         }).flat();
+    }
+    
+    /**
+     * Return the I18N Score of this project. The score is a number from
+     * zero to 100 which gives the approximate localization readiness of
+     * the whole project. The absolute number of the score is not as
+     * important as the relative movement of the score, as the increase
+     * in score shows an improvement in localizability.
+     *
+     * In this particular score, errors are weighted most heavily,
+     * followed by warnings at a medium level, and suggestions at a
+     * very light level.
+     *
+     * @param {Array.<Result>} results the array of result instances
+     * @returns {Number} the score (0-100) for this project.
+     */
+    getScore(results) {
+        if (!this.fileStats) {
+            throw "Attempt to calculate the I18N score without having retrieved the issues first.";
+        }
+        let errors = 0, warnings = 0, suggestions = 0;
+        results.forEach(result => {
+            if (result.severity === "error") {
+                errors++;
+            } else if (result.severity === "warning") {
+                warnings++;
+            } else {
+                suggestions++;
+            }
+        });
+        
     }
 
     /**

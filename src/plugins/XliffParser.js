@@ -54,19 +54,10 @@ class XliffParser extends Parser {
             filePath: this.path,
             stats: new FileStats({
                 lines: this.xliff.getLines(),
+                bytes: this.xliff.size(),
                 modules: resources.length
             })
         })];
-    }
-
-    /**
-     * For a "resource" type of plugin, this returns a list of Resource instances
-     * that result from parsing the file.
-     *
-     * @returns {Array.<Resource>} list of Resource instances in this file
-     */
-    getResources() {
-        return this.xliff.getResources();
     }
 
     getType() {
