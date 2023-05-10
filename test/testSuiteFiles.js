@@ -18,8 +18,10 @@
  */
 
 const files = [
+    "testBuiltinPlugin.js",
     "testFileType.js",
     "testFormatterManager.js",
+    "testLineRegexpChecker.js",
     "testParserManager.js",
     "testPluginManager.js",
     "testProject.js",
@@ -34,7 +36,6 @@ const files = [
     "testSourceFile.js",
     "testSourceRegexpChecker.js",
     "testwalk.js",
-    "testBuiltinPlugin.js"
 ];
 
 export default files;

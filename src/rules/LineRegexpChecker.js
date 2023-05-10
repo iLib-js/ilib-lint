@@ -71,22 +71,14 @@ class LineRegexpChecker extends Rule {
     /**
      * @private
      */
-    checkString(re, src) {
+    checkString(re, src, lineNumber, ir) {
         re.lastIndex = 0;
         let results = [];
-        let lineNumber = 1; // line numbers are 1-based, not 0-based
-        let lastCharChecked = 0;
 
         let match = re.exec(src);
         while (match) {
             let snippet = "";
             if (typeof(match.index) !== 'undefined') {
-                // find the current line number
-                for (let i = lastCharChecked; i < match.index; i++) {
-                    if (src[i] === '\n') lineNumber++;
-                }
-                lastCharChecked = match.index;
-
                 // work backwards and forwards to find the start and end of the line, with reasonable limits
                 let start = match.index;
                 let count = 0;
@@ -121,11 +113,11 @@ class LineRegexpChecker extends Rule {
             }
 
             results.push(new Result({
-                severity: _this.severity,
-                rule: _this,
+                severity: this.severity,
+                rule: this,
                 pathName: ir.getPath(),
                 highlight: snippet,
-                description: _this.note.replace(/\{matchString\}/g, match[0]),
+                description: this.note.replace(/\{matchString\}/g, match[0]),
                 lineNumber
             }));
             match = re.exec(src);
@@ -146,9 +138,9 @@ class LineRegexpChecker extends Rule {
         // representation should be an array of lines 
         const lines = ir.getRepresentation();
 
-        lines.forEach(line => {
+        lines.forEach((line, i) => {
             this.re.forEach(re => {
-                results = results.concat(this.checkString(re, line));
+                results = results.concat(this.checkString(re, line, i, ir));
             });
         });
         results = results.filter(result => result);

@@ -1,6 +1,6 @@
 /*
- * testSourceRegexpChecker.js - test the regular-expression-based rule
- * for source files
+ * testLineRegexpChecker.js - test the regular-expression-based rule
+ * for plain text files
  *
  * Copyright © 2023 JEDLSoft
  *
@@ -21,7 +21,7 @@
 import fs from 'node:fs';
 import { IntermediateRepresentation } from 'i18nlint-common';
 
-import SourceRegexpChecker from '../src/rules/SourceRegexpChecker.js';
+import LineRegexpChecker from '../src/rules/LineRegexpChecker.js';
 
 const noNormalize = {
     name: "source-no-normalize",
@@ -32,11 +32,11 @@ const noNormalize = {
 
 import { Result } from 'i18nlint-common';
 
-export const testSourceRegexpChecker = {
-    testSourceRegexpChecker: function(test) {
+export const testLineRegexpChecker = {
+    testLineRegexpChecker: function(test) {
         test.expect(1);
 
-        const rule = new SourceRegexpChecker({
+        const rule = new LineRegexpChecker({
             name: "z",
             description: "a",
             note: "b",
@@ -47,11 +47,11 @@ export const testSourceRegexpChecker = {
         test.done();
     },
 
-    testSourceRegexpCheckerMissingName: function(test) {
+    testLineRegexpCheckerMissingName: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new SourceRegexpChecker({
+            const rule = new LineRegexpChecker({
                 description: "a",
                 note: "b",
                 regexps: [ "a" ]
@@ -61,11 +61,11 @@ export const testSourceRegexpChecker = {
         test.done();
     },
 
-    testSourceRegexpCheckerMissingDescription: function(test) {
+    testLineRegexpCheckerMissingDescription: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new SourceRegexpChecker({
+            const rule = new LineRegexpChecker({
                 name: "a",
                 note: "b",
                 regexps: [ "a" ]
@@ -75,11 +75,11 @@ export const testSourceRegexpChecker = {
         test.done();
     },
 
-    testSourceRegexpCheckerMissingNote: function(test) {
+    testLineRegexpCheckerMissingNote: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new SourceRegexpChecker({
+            const rule = new LineRegexpChecker({
                 name: "a",
                 description: "a",
                 regexps: [ "a" ]
@@ -89,11 +89,11 @@ export const testSourceRegexpChecker = {
         test.done();
     },
 
-    testSourceRegexpCheckerMissingRegexps: function(test) {
+    testLineRegexpCheckerMissingRegexps: function(test) {
         test.expect(1);
 
         test.throws(() => {
-            const rule = new SourceRegexpChecker({
+            const rule = new LineRegexpChecker({
                 name: "a",
                 description: "a",
                 note: "b"
@@ -103,24 +103,24 @@ export const testSourceRegexpChecker = {
         test.done();
     },
 
-    testSourceRegexpCheckerSimpleRegexp: function(test) {
+    testLineRegexpCheckerSimpleRegexp: function(test) {
         test.expect(8);
 
-        const rule = new SourceRegexpChecker(noNormalize);
+        const rule = new LineRegexpChecker(noNormalize);
         test.ok(rule);
 
-        const source = `
+        const lines = `
             Path.join = function(var_args) {
                 var arr = [];
                 for (var i = 0; i < arguments.length; i++) {
                     arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : ".");
                 }
                 return Path.normalize(arr.join("/"));
-            };`;
+            };`.split(/\n/g);
 
         const ir = new IntermediateRepresentation({
-            type: "string",
-            ir: source,
+            type: "line",
+            ir: lines,
             filePath: "x/y"
         });
         const actual = rule.match({
@@ -134,29 +134,29 @@ export const testSourceRegexpChecker = {
         test.equal(actual[0].description, "Calls to the deprecated normalize function are not allowed.");
         test.equal(actual[0].highlight, '                return Path<e0>.normalize(</e0>arr.join("/"));');
         test.equal(actual[0].pathName, "x/y");
-        test.equal(actual[0].lineNumber, 7);
+        test.equal(actual[0].lineNumber, 6);
 
         test.done();
     },
 
-    testSourceRegexpCheckerSimpleRegexpNoMatch: function(test) {
+    testLineRegexpCheckerSimpleRegexpNoMatch: function(test) {
         test.expect(2);
 
-        const rule = new SourceRegexpChecker(noNormalize);
+        const rule = new LineRegexpChecker(noNormalize);
         test.ok(rule);
 
-        const source = `
+        const lines = `
             Path.join = function(var_args) {
                 var arr = [];
                 for (var i = 0; i < arguments.length; i++) {
                     arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : ".");
                 }
                 return arr.join("/");
-            };`;
+            };`.split(/\n/g);
 
         const ir = new IntermediateRepresentation({
-            type: "string",
-            ir: source,
+            type: "line",
+            ir: lines,
             filePath: "x/y"
         });
         const actual = rule.match({
@@ -168,17 +168,17 @@ export const testSourceRegexpChecker = {
         test.done();
     },
 
-    testSourceRegexpCheckerSimpleRegexpReallyLongLine: function(test) {
+    testLineRegexpCheckerSimpleRegexpReallyLongLine: function(test) {
         test.expect(8);
 
-        const rule = new SourceRegexpChecker(noNormalize);
+        const rule = new LineRegexpChecker(noNormalize);
         test.ok(rule);
 
-        const source = `Path.join = function(var_args) { var arr = []; for (var i = 0; i < arguments.length; i++) { arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : "."); } return Path.normalize(arr.join("/")); };                                                                                                                                                                                                           `;
+        const lines = [`Path.join = function(var_args) { var arr = []; for (var i = 0; i < arguments.length; i++) { arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : "."); } return Path.normalize(arr.join("/")); };                                                                                                                                                                                                           `];
 
         const ir = new IntermediateRepresentation({
-            type: "string",
-            ir: source,
+            type: "line",
+            ir: lines,
             filePath: "x/y"
         });
         const actual = rule.match({
@@ -193,22 +193,22 @@ export const testSourceRegexpChecker = {
         test.equal(actual[0].description, "Calls to the deprecated normalize function are not allowed.");
         test.equal(actual[0].highlight, '...ength; i++) { arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : "."); } return Path<e0>.normalize(</e0>arr.join("/")); };                                                                                  ...');
         test.equal(actual[0].pathName, "x/y");
-        test.equal(actual[0].lineNumber, 1);
+        test.equal(actual[0].lineNumber, 0);
 
         test.done();
     },
 
-    testSourceRegexpCheckerRegexpMultipleMatches: function(test) {
+    testLineRegexpCheckerRegexpMultipleMatches: function(test) {
         test.expect(18);
 
-        const rule = new SourceRegexpChecker(noNormalize);
+        const rule = new LineRegexpChecker(noNormalize);
         test.ok(rule);
 
         const source = fs.readFileSync("./test/testfiles/js/Path.js", "utf-8");
 
         const ir = new IntermediateRepresentation({
-            type: "string",
-            ir: source,
+            type: "line",
+            ir: source.split(/\n/g),
             filePath: "x/y"
         });
         const actual = rule.match({
@@ -222,44 +222,44 @@ export const testSourceRegexpChecker = {
         test.equal(actual[0].description, "Calls to the deprecated normalize function are not allowed.");
         test.equal(actual[0].highlight, '    pathname = Path<e0>.normalize(</e0>pathname);');
         test.equal(actual[0].pathName, "x/y");
-        test.equal(actual[0].lineNumber, 51);
+        test.equal(actual[0].lineNumber, 50);
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].description, "Calls to the deprecated normalize function are not allowed.");
         test.equal(actual[1].highlight, '    return (pathname === ".") ? ".." : Path<e0>.normalize(</e0>pathname + "/..");');
         test.equal(actual[1].pathName, "x/y");
-        test.equal(actual[1].lineNumber, 52);
+        test.equal(actual[1].lineNumber, 51);
 
         test.equal(actual[2].severity, "error");
         test.equal(actual[2].description, "Calls to the deprecated normalize function are not allowed.");
         test.equal(actual[2].highlight, '    return Path<e0>.normalize(</e0>arr.join("/"));');
         test.equal(actual[2].pathName, "x/y");
-        test.equal(actual[2].lineNumber, 92);
+        test.equal(actual[2].lineNumber, 91);
 
         test.done();
     },
 
-    testSourceRegexpCheckerTestSeverity: function(test) {
+    testLineRegexpCheckerTestSeverity: function(test) {
         test.expect(8);
 
-        const rule = new SourceRegexpChecker({
+        const rule = new LineRegexpChecker({
             ...noNormalize,
             severity: "warning"
         });
         test.ok(rule);
 
-        const source = `
+        const lines = `
             Path.join = function(var_args) {
                 var arr = [];
                 for (var i = 0; i < arguments.length; i++) {
                     arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : ".");
                 }
                 return Path.normalize(arr.join("/"));
-            };`;
+            };`.split(/\n/g);
 
         const ir = new IntermediateRepresentation({
-            type: "string",
-            ir: source,
+            type: "line",
+            ir: lines,
             filePath: "x/y"
         });
         const actual = rule.match({
@@ -272,30 +272,30 @@ export const testSourceRegexpChecker = {
         test.equal(actual[0].description, "Calls to the deprecated normalize function are not allowed.");
         test.equal(actual[0].highlight, '                return Path<e0>.normalize(</e0>arr.join("/"));');
         test.equal(actual[0].pathName, "x/y");
-        test.equal(actual[0].lineNumber, 7);
+        test.equal(actual[0].lineNumber, 6);
         test.equal(actual[0].severity, "warning");
 
         test.done();
     },
 
-    testSourceRegexpCheckerTestSeverityDefault: function(test) {
+    testLineRegexpCheckerTestSeverityDefault: function(test) {
         test.expect(9);
 
-        const rule = new SourceRegexpChecker(noNormalize);
+        const rule = new LineRegexpChecker(noNormalize);
         test.ok(rule);
 
-        const source = `
+        const lines = `
             Path.join = function(var_args) {
                 var arr = [];
                 for (var i = 0; i < arguments.length; i++) {
                     arr.push(arguments[i] && arguments[i].length > 0 ? arguments[i] : ".");
                 }
                 return Path.normalize(arr.join("/"));
-            };`;
+            };`.split(/\n/g);
 
         const ir = new IntermediateRepresentation({
-            type: "string",
-            ir: source,
+            type: "line",
+            ir: lines,
             filePath: "x/y"
         });
         const actual = rule.match({
@@ -309,7 +309,7 @@ export const testSourceRegexpChecker = {
         test.equal(actual[0].description, "Calls to the deprecated normalize function are not allowed.");
         test.equal(actual[0].highlight, '                return Path<e0>.normalize(</e0>arr.join("/"));');
         test.equal(actual[0].pathName, "x/y");
-        test.equal(actual[0].lineNumber, 7);
+        test.equal(actual[0].lineNumber, 6);
         test.equal(actual[0].severity, "error"); // default severity
 
         test.done();

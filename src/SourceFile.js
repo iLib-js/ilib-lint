@@ -98,29 +98,12 @@ class SourceFile extends DirItem {
     parse() {
         if (!this.filePath) return;
         logger.trace(`===================\nParsing file ${this.filePath}`);
-        if (this.parserClasses && this.parserClasses.length) {
-            for (const parser of this.parserClasses) {
-                const p = new parser({
-                    filePath: this.filePath,
-                    settings: this.settings
-                });
-                this.ir = this.ir.concat(p.parse());
-            }
-        } else {
-            const data = fs.readFileSync(this.filePath, "utf-8");
-            if (this.filetype.getType() === "line") {
-                this.ir.push(new IntermediateRepresentation({
-                    type: "line",
-                    ir: data.split(/\n/g),
-                    filePath: this.filePath
-                }));
-            } else {
-                this.ir.push(new IntermediateRepresentation({
-                    type: "string",
-                    ir: data,
-                    filePath: this.filePath
-                }));
-            }
+        for (const parser of this.parserClasses) {
+            const p = new parser({
+                filePath: this.filePath,
+                settings: this.settings
+            });
+            this.ir = this.ir.concat(p.parse());
         }
         return this.ir;
     }
