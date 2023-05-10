@@ -626,6 +626,11 @@ limitations under the License.
     - main loop moved from index.js into the run() method
     - directory walk function moved to a method of Project
 
+### v1.5.3
+
+- fixed a problem where the quote checker rule would not handle ASCII single quote
+  characters used as apostophes properly.
+
 ### v1.5.2
 
 - update the documentation above to enumerate all the current resource plugins
