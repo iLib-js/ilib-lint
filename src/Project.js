@@ -509,10 +509,10 @@ class Project extends DirItem {
      */
     getScore() {
         if (!this.fileStats) {
-            throw "Attempt to calculate the I18N score without having retrieved the issues first.";
+            throw new Error("Attempt to calculate the I18N score without having retrieved the issues first.");
         }
 
-        const base = (this.fileStats.modules || this.fileStats.lines || this.fileStats.files);
+        const base = (this.fileStats.modules || this.fileStats.lines || this.fileStats.files || this.fileStats.bytes || 1);
         const demeritPoints = this.resultStats.errors * 5 + this.resultStats.warnings * 3 + this.resultStats.suggestions;
 
         // divide demerit points by the base so that larger projects are not penalized for

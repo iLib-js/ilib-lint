@@ -36,6 +36,7 @@ log4js.configure(path.join(__dirname, '..', 'log4js.json'));
 
 const logger = log4js.getLogger("ilib-lint.root");
 
+// make sure the mins and maxes are numeric
 function validateInt(paramName, arg, replace) {
     const num = parseInt(arg);
     if (!isNaN(num)) {
@@ -160,8 +161,6 @@ options.opt.locales = options.opt.locales.map(spec => {
     }
     return loc.getSpec();
 });
-
-// make sure the mins and maxes are numeric
 
 // used if no explicit config is found or given
 const defaultConfig = {
