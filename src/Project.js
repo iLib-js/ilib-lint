@@ -479,14 +479,18 @@ class Project extends DirItem {
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
 
-            const ir = file.parse();
-            if (ir.stats) {
-                this.fileStats.addStats(ir.stats);
-            } else {
-                // no stats? At least we know there was a file, so count that
-                this.fileStats.addFile(1);
+            const irArray = file.parse();
+            if (irArray) {
+                irArray.forEach(ir => {
+                    if (ir.stats) {
+                        this.fileStats.addStats(ir.stats);
+                    } else {
+                        // no stats? At least we know there was a file, so count that
+                        this.fileStats.addFiles(1);
+                    }
+                });
             }
-            return file.findIssues(locales, ir);
+            return file.findIssues(locales);
         }).flat();
     }
     
@@ -501,26 +505,21 @@ class Project extends DirItem {
      * followed by warnings at a medium level, and suggestions at a
      * very light level.
      *
-     * @param {Array.<Result>} results the array of result instances
      * @returns {Number} the score (0-100) for this project.
      */
-    getScore(results) {
+    getScore() {
         if (!this.fileStats) {
             throw "Attempt to calculate the I18N score without having retrieved the issues first.";
         }
-        let errors = 0, warnings = 0, suggestions = 0;
-        results.forEach(result => {
-            if (result.severity === "error") {
-                errors++;
-            } else if (result.severity === "warning") {
-                warnings++;
-            } else {
-                suggestions++;
-            }
-        });
 
-        const demeritPoints = errors * 5 + warnings * 3 + suggestions;
-        return demeritPoints / this.fileStats.lines;
+        const base = (this.fileStats.modules || this.fileStats.lines || this.fileStats.files);
+        const demeritPoints = this.resultStats.errors * 5 + this.resultStats.warnings * 3 + this.resultStats.suggestions;
+
+        // divide demerit points by the base so that larger projects are not penalized for
+        // having more issues just because they have more files, lines, or modules
+        // y intercept = 100
+        // lim(x->infinity) of f(x) = 0
+        return 100 / (1.0 + demeritPoints/base);
     }
 
     /**
@@ -531,9 +530,11 @@ class Project extends DirItem {
     run() {
         let exitValue = 0;
         const results = this.findIssues(this.options.locales);
-        let errors = 0;
-        let warnings = 0;
-        let suggestions = 0;
+        this.resultStats = {
+            errors: 0,
+            warnings: 0,
+            suggestions: 0
+        };
 
         if (results) {
             results.forEach(result => {
@@ -542,15 +543,15 @@ class Project extends DirItem {
                     if (result.severity === "error") {
                         logger.error(str);
                         exitValue = 2;
-                        errors++;
+                        this.resultStats.errors++;
                     } else if (result.severity === "warning") {
-                        warnings++;
+                        this.resultStats.warnings++;
                         if (!this.options.errorsOnly) {
                             logger.warn(str);
                             exitValue = Math.max(exitValue, 1);
                         }
                     } else {
-                        suggestions++;
+                        this.resultStats.suggestions++;
                         if (!this.options.errorsOnly) {
                             logger.info(str);
                         }
@@ -562,19 +563,19 @@ class Project extends DirItem {
         const fmt = new Intl.NumberFormat("en-US", {
             maxFractionDigits: 2
         });
-        logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
-        logger.info(`                   Total     ${`${String(this.files.length)} Files`.padEnd(15, ' ')}${`${String(this.files.length)} Lines`.padEnd(15, ' ')}`);
+        logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
+        logger.info(`                   Total     ${`${String(this.fileStats.files)} Files`.padEnd(15, ' ')}${`${String(this.fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(this.fileStats.lines)} Lines`.padEnd(15, ' ')}`);
         if (results.length) {
             logger.info(
-                    `Errors:            ${String(errors).padEnd(10, ' ')}${fmt.format(errors/this.files.length).padEnd(15, ' ')}`);
+                    `Errors:            ${String(this.resultStats.errors).padEnd(10, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.lines).padEnd(15, ' ')}`);
             if (!this.options.errorsOnly) {
                 logger.info(
-                    `Warnings:          ${String(warnings).padEnd(10, ' ')}${fmt.format(warnings/this.files.length).padEnd(15, ' ')}`);
+                    `Warnings:          ${String(this.resultStats.warnings).padEnd(10, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.lines).padEnd(15, ' ')}`);
                 logger.info(
-                    `Suggestions:       ${String(suggestions).padEnd(10, ' ')}${fmt.format(suggestions/this.files.length).padEnd(15, ' ')}`);
+                    `Suggestions:       ${String(this.resultStats.suggestions).padEnd(10, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.lines).padEnd(15, ' ')}`);
             }
         }
-        logger.info(`I18N Score (0-100) ${Math.round(this.getScore(results)*100)/100}`);
+        logger.info(`I18N Score (0-100) ${fmt.format(this.getScore(results))}`);
 
         return exitValue;
     }
