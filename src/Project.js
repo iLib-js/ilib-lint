@@ -518,7 +518,9 @@ class Project extends DirItem {
                 suggestions++;
             }
         });
-        
+
+        const demeritPoints = errors * 5 + warnings * 3 + suggestions;
+        return demeritPoints / this.fileStats.lines;
     }
 
     /**
@@ -572,7 +574,7 @@ class Project extends DirItem {
                     `Suggestions:       ${String(suggestions).padEnd(10, ' ')}${fmt.format(suggestions/this.files.length).padEnd(15, ' ')}`);
             }
         }
-        logger.info(`I18N Score (0-100) ${String(this.files.length)}`);
+        logger.info(`I18N Score (0-100) ${Math.round(this.getScore(results)*100)/100}`);
 
         return exitValue;
     }
