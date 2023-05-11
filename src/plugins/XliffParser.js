@@ -19,7 +19,7 @@
 
 import fs from 'node:fs';
 import { ResourceXliff } from 'ilib-tools-common';
-import { Parser, IntermediateRepresentation } from 'i18nlint-common';
+import { FileStats, Parser, IntermediateRepresentation } from 'i18nlint-common';
 
 /**
  * @class Parser for XLIFF files based on the ilib-xliff library.
@@ -47,21 +47,17 @@ class XliffParser extends Parser {
     parse() {
         const data = fs.readFileSync(this.path, "utf-8");
         this.xliff.parse(data);
+        const resources = this.xliff.getResources();
         return [new IntermediateRepresentation({
             type: "resource",
-            ir: this.xliff.getResources(),
-            filePath: this.path
+            ir: resources,
+            filePath: this.path,
+            stats: new FileStats({
+                lines: this.xliff.getLines(),
+                bytes: this.xliff.size(),
+                modules: resources.length
+            })
         })];
-    }
-
-    /**
-     * For a "resource" type of plugin, this returns a list of Resource instances
-     * that result from parsing the file.
-     *
-     * @returns {Array.<Resource>} list of Resource instances in this file
-     */
-    getResources() {
-        return this.xliff.getResources();
     }
 
     getType() {

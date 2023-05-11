@@ -99,6 +99,9 @@ ilib-lint accepts the following command-line parameters:
   with status 2 if there are errors, and status 0 if there are warnings. This
   flag allows you to squelch the warnings and only fail a script if there are
   actual errors.
+* formatter - name the formatter to use to format the results
+* list - list out all the known rulesets and all of the known plugins: parsers,
+  rules, and formatters. This can assist you with creating your own configuration.
 * locales - Locales you want your app to support globally. Value is a comma-separated
   list of BCP-47 style locale tags. File types can override this list.
   Default: the top 20 locales on the internet by traffic.
@@ -107,13 +110,34 @@ ilib-lint accepts the following command-line parameters:
 * quiet - Produce no progress output during the run, except for errors running
   the tool such as the inability to load a plugin. Instead exit with a return
   value. Zero indicates no errors, and a positive exit value indicates errors.
+* max-errors {number} - specify the maximum number of acceptable errors. If
+  this number is exceeded, the linter will exit with an exit code of 2. The
+  default maximum number is zero.
+* max-warnings {number} - specify the maximum number of acceptable warnings.
+  If the maximum number of errors is not exceeded, but the maximum number of
+  warnings is, the linter will exit with an exit code of 1. The
+  default maximum number is zero.
+* max-suggestions {number} - specify the maximum number of acceptable suggestions.
+  If the maximum number of errors and warnings are not exceeded, but the maximum
+  number of suggestions is, the linter will exit with an exit code of 1. The
+  default maximum number is unlimited. (That is, suggestions will not cause an
+  exit code unless this command-line parameter is given.)
+* min-score {number} - specify the minimum acceptable I18N score for the project.
+  If the minimum score it not reached, the linter will exit with an exit code
+  of 2. There is no default minimum, so the linter will not give an exit code
+  unless this parameter is specified or unless one of the other limits is
+  exceeded.
+
+If multiple limits are exceeded (maximum number of errors, warnings, or suggestions,
+or minimum I18N score), the exit code will be the the most severe amongst them
+all. (Usually "2".)
 
 ## Exit Status
 
 If you want to use this linter in a script, you can check for the following
 exit status:
 
-* 0 - no problems found
+* 0 - no problems or only suggestions found
 * 1 - warnings found
 * 2 - errors found
 
@@ -496,6 +520,17 @@ Each declarative rule should have the following properties:
   any link you like.
 * severity (String) - the severity of this result if this check fails.
   This should be one of "error", "warning", or "suggestion".
+    - Errors are typically things that block localization completely,
+      cause exceptions or crashes in code, or which are unacceptable
+      from a localization point of view. Teams should strive for
+      zero errors in their project.
+    - Warnings are things that are not quite as severe as errors
+      and therefore do not block localization or cause crashes, but
+      which should still be fixed to improve the quality of the
+      translations.
+    - Suggestions are things that may not necessarily be wrong, but
+      where a better way exists or where a recommended practice should
+      be followed.
 
 Programmatic rules are used when the requirements for the rules are more complicated
 than a simple regular expression string can handle. For example, a rule that checks
@@ -599,6 +634,70 @@ violate the rules implemented in the plugin so that the linter will produce some
 Clone the project, cd to the lint directory, run `npm install`, and then `npm run lint`
 to see the results.
 
+## I18N Score
+
+At the end of each run, the i18n tool can generate a score that gives you an idea numerically
+of how ready your project is for localization. The score goes from 0 to 100 where 0 means
+that your project is not localization ready at all, and 100 means it is completely ready for
+localization.
+
+Many projects do not have a perfect 100 score, and that can be acceptable. It is still possible
+to produce a reasonably localized version of the project without achieving 100. The recommended
+goal for each project should be to continually increase the score as development proceeds up to
+a minimal acceptable threshold that your team agrees to with your localization team. Nicely
+localized projects typically have a score in the range of 80 to 100. Often teams will decide
+that they want a maximum of zero errors, but allow up to N number of warnings, and M number of
+suggestions.
+
+### Calculations
+
+There are actually a number of things calculated at the end of the run:
+
+- percentage of source files containing errors, warnings, suggestions, and total problems
+- percentage of source lines containing errors, warnings, suggestions, and total problems
+- the overall score across the whole project
+
+The overall score takes into account the following factors:
+
+- the number of source files
+- the number of lines in each source file
+- the number and type of results from applying rules
+- the number of rules being applied
+- the scores from subprojects
+
+Errors weigh heaviest in the calculations, followed by warnings, and finally suggestions. That
+is, a project with 5 errors in it will have a lower score than one with 5 warnings or 5
+suggestions.
+
+As such, it should be noted that the I18N score is not a percentage, but a
+unit-less score which may change over time as the linter changes, even if your project does
+not change. The relative movement of the score is the most important thing to look at to
+see if the project is improving. As new rules are implemented and set into your configuration
+after updating a newer version of the linter or installing new plugins, the score for a
+project may go down for a while until the problems manifested by the new rules are resolved. This
+does not mean the quality of your project has gone down, just that new things have been
+identified to work on.
+
+When your project contains subprojects, each subproject will get its own report and I18N
+score. The reports and scores for subprojects will be rolled up to the main project, which
+will have an overall federated score across the current project and all all subprojects. This
+way, you will be able to measure the progress in libraries, services, or subprojects independently
+of your main project.
+
+For example, your project may use a mono-repo which contains "frontend", "backend", and "services"
+subprojects within it, each being developed by different teams. They can each have their
+own I18N scores and the overall project has a federated score based on the scores of the
+subprojects.
+
+### Using the Score as a CI/CD Pipeline Check
+
+The linter now includes command-line flags where you can specify minimums and maximums
+for various numbers. The linter will exit with an exit code if the minimums or maximums are
+not satisfied. You can use this exit code to determine if your CI/CD pipeline has failed or
+succeeded.
+
+See the section above on command-line parameters for details on these.
+
 ## License
 
 Copyright © 2022-2023, JEDLSoft
@@ -625,6 +724,12 @@ limitations under the License.
 - moved functionality into Project class
     - main loop moved from index.js into the run() method
     - directory walk function moved to a method of Project
+- added I18N score into the summary at the end of the run
+    - gives a score from 0 to 100 where 0 means your project
+      is not localization ready at all, and 100 means it is completely
+      ready for localization.
+    - added command-line parameters to control the exit code
+      from the linter based on the score
 
 ### v1.5.3
 
@@ -670,6 +775,7 @@ limitations under the License.
 
 - added resource-state-checker Rule so that you can ensure that all
   resources have a particular state field value
+
 ### v1.2.1
 
 - fixed packaging problem where the test plugin was listed in the

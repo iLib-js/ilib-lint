@@ -23,6 +23,8 @@ import log4js from 'log4js';
 import mm from 'micromatch';
 import JSON5 from 'json5';
 
+import { FileStats } from 'i18nlint-common';
+
 import SourceFile from './SourceFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
@@ -473,12 +475,51 @@ class Project extends DirItem {
      * @returns {Array.<Result>} a list of results
      */
     findIssues(locales) {
+        this.fileStats = new FileStats();
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
 
-            file.parse();
+            const irArray = file.parse();
+            if (irArray) {
+                irArray.forEach(ir => {
+                    if (ir.stats) {
+                        this.fileStats.addStats(ir.stats);
+                    } else {
+                        // no stats? At least we know there was a file, so count that
+                        this.fileStats.addFiles(1);
+                    }
+                });
+            }
             return file.findIssues(locales);
         }).flat();
+    }
+
+    /**
+     * Return the I18N Score of this project. The score is a number from
+     * zero to 100 which gives the approximate localization readiness of
+     * the whole project. The absolute number of the score is not as
+     * important as the relative movement of the score, as the increase
+     * in score shows an improvement in localizability.
+     *
+     * In this particular score, errors are weighted most heavily,
+     * followed by warnings at a medium level, and suggestions at a
+     * very light level.
+     *
+     * @returns {Number} the score (0-100) for this project.
+     */
+    getScore() {
+        if (!this.fileStats) {
+            throw new Error("Attempt to calculate the I18N score without having retrieved the issues first.");
+        }
+
+        const base = (this.fileStats.modules || this.fileStats.lines || this.fileStats.files || this.fileStats.bytes || 1);
+        const demeritPoints = this.resultStats.errors * 5 + this.resultStats.warnings * 3 + this.resultStats.suggestions;
+
+        // divide demerit points by the base so that larger projects are not penalized for
+        // having more issues just because they have more files, lines, or modules
+        // y intercept = 100
+        // lim(x->infinity) of f(x) = 0
+        return 100 / (1.0 + demeritPoints/base);
     }
 
     /**
@@ -489,9 +530,11 @@ class Project extends DirItem {
     run() {
         let exitValue = 0;
         const results = this.findIssues(this.options.locales);
-        let errors = 0;
-        let warnings = 0;
-        let suggestions = 0;
+        this.resultStats = {
+            errors: 0,
+            warnings: 0,
+            suggestions: 0
+        };
 
         if (results) {
             results.forEach(result => {
@@ -499,16 +542,14 @@ class Project extends DirItem {
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
-                        exitValue = 2;
-                        errors++;
+                        this.resultStats.errors++;
                     } else if (result.severity === "warning") {
-                        warnings++;
+                        this.resultStats.warnings++;
                         if (!this.options.errorsOnly) {
                             logger.warn(str);
-                            exitValue = Math.max(exitValue, 1);
                         }
                     } else {
-                        suggestions++;
+                        this.resultStats.suggestions++;
                         if (!this.options.errorsOnly) {
                             logger.info(str);
                         }
@@ -520,15 +561,32 @@ class Project extends DirItem {
         const fmt = new Intl.NumberFormat("en-US", {
             maxFractionDigits: 2
         });
-        logger.info(`Files scanned: ${this.files.length}`);
+        logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
+        logger.info(`                   Total     ${`${String(this.fileStats.files)} Files`.padEnd(15, ' ')}${`${String(this.fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(this.fileStats.lines)} Lines`.padEnd(15, ' ')}`);
         if (results.length) {
-            logger.info(`Errors: ${errors}, avg per file: ${fmt.format(errors/this.files.length)}`);
+            logger.info(
+                    `Errors:            ${String(this.resultStats.errors).padEnd(10, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.lines).padEnd(15, ' ')}`);
             if (!this.options.errorsOnly) {
-                logger.info(`Warnings: ${warnings}, avg per file: ${fmt.format(warnings/this.files.length)}`);
-                logger.info(`Suggestions: ${suggestions}, avg per file: ${fmt.format(suggestions/this.files.length)}`);
+                logger.info(
+                    `Warnings:          ${String(this.resultStats.warnings).padEnd(10, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.lines).padEnd(15, ' ')}`);
+                logger.info(
+                    `Suggestions:       ${String(this.resultStats.suggestions).padEnd(10, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.lines).padEnd(15, ' ')}`);
             }
         }
+        const score = this.getScore();
+        logger.info(`I18N Score (0-100) ${fmt.format(score)}`);
 
+        if (this.options.opt["max-errors"]) {
+            exitValue = this.resultStats.errors > this.options.opt["max-errors"] ? 2 : 0;
+        } else if (this.options.opt["max-warnings"]) {
+            exitValue = this.resultStats.warnings > this.options.opt["max-warnings"] ? 1 : 0;
+        } else if (this.options.opt["max-suggestions"]) {
+            exitValue = this.resultStats.suggestions > this.options.opt["max-suggestions"] ? 1 : 0;
+        } else if (this.options.opt["min-score"]) {
+            exitValue = score < this.options.opt["min-score"] ? 2 : 0;
+        } else {
+            exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
+        }
         return exitValue;
     }
 
