@@ -29,7 +29,6 @@ import log4js from 'log4js';
 
 import PluginManager from './PluginManager.js';
 import Project from './Project.js';
-import walk from './walk.js';
 import { wrap, indent } from './rules/utils.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
@@ -173,93 +172,65 @@ logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 // loads and manage the plugins
 
 const pluginMgr = new PluginManager({
-    rulesData: config.rules
+    rulesData: config.rules,
+    sourceLocale: options.opt.sourceLocale
 });
 
 const rootProject = new Project(".", {
+    ...options,
     pluginManager: pluginMgr
 }, config);
 
-paths.forEach(pathName => {
-    walk(pathName, rootProject);
-});
+// this will load all the plugins, so we can print out the list of
+// them below if needed
+rootProject.init().then(() => {
+    if (options.opt.list) {
+        const ruleMgr = pluginMgr.getRuleManager();
+        const ruleDescriptions = ruleMgr.getDescriptions();
+        const ruleSetDefinitions = ruleMgr.getRuleSetDefinitions();
+        const parserMgr = pluginMgr.getParserManager();
+        const parserDescriptions = parserMgr.getDescriptions();
+        const formatterMgr = pluginMgr.getFormatterManager();
+        const formatterDescriptions = formatterMgr.getDescriptions();
 
-await rootProject.init();
+        let name;
 
-if (options.opt.list) {
-    const ruleMgr = pluginMgr.getRuleManager();
-    const ruleDescriptions = ruleMgr.getDescriptions();
-    const ruleSetDefinitions = ruleMgr.getRuleSetDefinitions();
-    const parserMgr = pluginMgr.getParserManager();
-    const parserDescriptions = parserMgr.getDescriptions();
-    const formatterMgr = pluginMgr.getFormatterManager();
-    const formatterDescriptions = formatterMgr.getDescriptions();
-
-    let name;
-
-    let output = [
-        "These items are available to use in your configuration",
-        "",
-        "Parsers:"
-    ];
-    for (name in parserDescriptions) {
-        output = output.concat(indent(wrap(`${name} - ${parserDescriptions[name]}`, 76, "  "), 2));
-    }
-    output.push("");
-
-    output.push("Rules:");
-    for (name in ruleDescriptions) {
-        output = output.concat(indent(wrap(`${name} - ${ruleDescriptions[name]}`, 76, "  "), 2));
-    }
-    output.push("");
-
-    output.push("Rulesets:");
-    for (name in ruleSetDefinitions) {
-        output = output.concat(indent(wrap(`${name} - ${ruleSetDefinitions[name].join(", ")}`, 76, "  "), 2));
-    }
-    output.push("");
-
-    output.push("Formatters:");
-    for (name in formatterDescriptions) {
-        output = output.concat(indent(wrap(`${name} - ${formatterDescriptions[name]}`, 76, "  "), 2));
-    }
-
-    console.log(output.join('\n'));
-    process.exit(0);
-}
-
-const fm = pluginMgr.getFormatterManager();
-const fmt = fm.get(options.opt.formatter);
-if (!fmt) {
-    logger.error(`Could not find formatter ${options.opt}. Aborting...`);
-    process.exit(3);
-}
-
-// main loop
-let exitValue = 0;
-const results = rootProject.findIssues(options.opt.locales);
-let errors = 0;
-let warnings = 0;
-
-results.forEach(result => {
-    const str = fmt.format(result);
-    if (str) {
-        if (result.severity === "error") {
-            logger.error(str);
-            exitValue = 2;
-            errors++;
-        } else {
-            warnings++;
-            if (!options.opt.errorsOnly) {
-                logger.warn(str);
-                exitValue = Math.max(exitValue, 1);
-            }
+        let output = [
+            "These items are available to use in your configuration",
+            "",
+            "Parsers:"
+        ];
+        for (name in parserDescriptions) {
+            output = output.concat(indent(wrap(`${name} - ${parserDescriptions[name]}`, 76, "  "), 2));
         }
+        output.push("");
+
+        output.push("Rules:");
+        for (name in ruleDescriptions) {
+            output = output.concat(indent(wrap(`${name} - ${ruleDescriptions[name]}`, 76, "  "), 2));
+        }
+        output.push("");
+
+        output.push("Rulesets:");
+        for (name in ruleSetDefinitions) {
+            output = output.concat(indent(wrap(`${name} - ${ruleSetDefinitions[name].join(", ")}`, 76, "  "), 2));
+        }
+        output.push("");
+
+        output.push("Formatters:");
+        for (name in formatterDescriptions) {
+            output = output.concat(indent(wrap(`${name} - ${formatterDescriptions[name]}`, 76, "  "), 2));
+        }
+
+        console.log(output.join('\n'));
+        process.exit(0);
     }
+
+    // main loop
+    rootProject.scan(paths);
+    const exitValue = rootProject.run();
+
+    process.exit(exitValue);
+}).catch(e => {
+    logger.error(e);
 });
-
-if (results.length) {
-    logger.info(options.opt.errorsOnly ? `Errors: ${errors}` : `Errors: ${errors}, Warnings: ${warnings}`);
-}
-
-process.exit(exitValue);

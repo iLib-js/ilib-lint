@@ -19,9 +19,19 @@
 
 import path from 'node:path';
 import fs from 'node:fs';
+import log4js from 'log4js';
 import { getLocaleFromPath, TranslationSet } from 'ilib-tools-common';
+import { IntermediateRepresentation } from 'i18nlint-common';
 
 import DirItem from './DirItem.js';
+
+const logger = log4js.getLogger("i18nlint.RuleSet");
+
+function makeArray(obj) {
+    if (!obj) return [];
+    if (Array.isArray(obj)) return obj;
+    return [ obj ];
+}
 
 /**
  * @class Represent a source file
@@ -44,7 +54,6 @@ class SourceFile extends DirItem {
             throw "Incorrect options given to SourceFile constructor";
         }
         this.filePath = filePath;
-        this.type = "line";
 
         this.filetype = options.filetype;
 
@@ -56,6 +65,13 @@ class SourceFile extends DirItem {
             const pm = project.getParserManager();
             this.parserClasses = pm.get(extension);
         }
+
+        // the intermediate representations are an array because some
+        // file types can be parsed by multiple parsers. For example,
+        // a single HTML file may be parsed by the HTML parser, the
+        // Javascript parser, and the CSS parser. Each would have
+        // their own representation of what's in the file.
+        this.ir = [];
     }
 
     /**
@@ -76,30 +92,20 @@ class SourceFile extends DirItem {
      * Parse the current source file into a list of resources (in the case of
      * resource files, or lines in the case of other types of files.
      * @param {Array.<Parser>} parsers parsers for the current source file
-     * @returns {Object} the parsed representation of this file
+     * @returns {Array.<IntermediateRepresentation>} the parsed representations
+     * of this file
      */
     parse() {
         if (!this.filePath) return;
-        if (this.parserClasses && this.parserClasses.length) {
-            const ts = new TranslationSet();
-            for (const parser of this.parserClasses) {
-                const p = new parser({
-                    filePath: this.filePath,
-                    settings: this.settings
-                });
-                p.parse();
-                this.type = "resource";
-                ts.addAll(p.getResources());
-            }
-
-            this.resources = ts.getAll();
-            return this.resources;
-        } else {
-            const data = fs.readFileSync(this.filePath, "utf-8");
-            this.lines = data.split(/\n/g);
-            this.type = "line";
-            return this.lines;
+        logger.trace(`===================\nParsing file ${this.filePath}`);
+        for (const parser of this.parserClasses) {
+            const p = new parser({
+                filePath: this.filePath,
+                settings: this.settings
+            });
+            this.ir = this.ir.concat(p.parse());
         }
+        return this.ir;
     }
 
     /**
@@ -111,7 +117,7 @@ class SourceFile extends DirItem {
      * @returns {Array.<Result>} a list of natch results
      */
     findIssues(locales) {
-        let issues = [], names;
+        let issues = [], names, result;
         const detectedLocale = this.getLocaleFromPath();
 
         if (detectedLocale && locales.indexOf(detectedLocale) < -1) {
@@ -119,30 +125,45 @@ class SourceFile extends DirItem {
             return issues;
         }
 
-        const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === this.type));
-        rules.forEach(rule => {
-            switch (this.type) {
-            case "line":
-                for (let i = 0; i < this.lines.length; i++) {
-                    const result = rule.match({
-                        line: this.lines[i],
-                        locale: detectedLocale,
-                        file: this.filePath
+        this.ir.forEach(ir => {
+            // find the rules that are appropriate for this intermediate representation and then apply them
+            const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === ir.getType()));
+            rules.forEach(rule => {
+                const representation = ir.getRepresentation();
+                switch (ir.getType()) {
+                case "line":
+                    for (let i = 0; i < representation.length; i++) {
+                        result = rule.match({
+                            ir,
+                            line: representation[i],
+                            locale: detectedLocale || this.project.getSourceLocale(),
+                            file: ir.getFilePath()
+                        });
+                        if (result) issues = issues.concat(makeArray(result));
+                    }
+                    break;
+                case "resource":
+                    representation.forEach(resource => {
+                        logger.trace(`Applying rule ${rule.getName()} to resource ${resource.reskey}`);
+                        result = rule.match({
+                            ir,
+                            locale: resource.getTargetLocale(),
+                            resource,
+                            file: this.filePath
+                        });
+                        if (result) issues = issues.concat(makeArray(result));
                     });
-                    if (result) issues = issues.concat(result);
+                    break;
+                default:
+                    // all other cases -- don't iterate, just call the rule
+                    // with the whole intermediate representation
+                    result = rule.match({
+                        ir,
+                        locale: detectedLocale || this.project.getSourceLocale()
+                    });
+                    if (result) issues = issues.concat(makeArray(result));
                 }
-                break;
-            case "resource":
-                this.resources.forEach(resource => {
-                    const result = rule.match({
-                        locale: resource.getTargetLocale(),
-                        resource,
-                        file: this.filePath
-                    });
-                    if (result) issues = issues.concat(result);
-                });
-                break;
-            }
+            });
         });
 
         return issues;

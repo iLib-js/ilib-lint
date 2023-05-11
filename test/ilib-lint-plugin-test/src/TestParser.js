@@ -19,7 +19,7 @@
 
 import fs from 'node:fs';
 
-import { Parser } from 'i18nlint-common';
+import { Parser, IntermediateRepresentation } from 'i18nlint-common';
 import json5 from 'json5';
 import { ResourceString, TranslationSet } from 'ilib-tools-common';
 
@@ -61,10 +61,12 @@ class TestParser extends Parser {
         // parse the xyz files as json for simplicity
         const data = fs.readFileSync(this.filePath, "utf-8");
         this.parseData(data);
-    }
-
-    getResources() {
-        return this.ts.getAll();
+        return [new IntermediateRepresentation({
+            ir: this.ts.getAll(),
+            filePath: this.filePath,
+            locale: "en-US",
+            type: "resource"
+        })];
     }
 }
 

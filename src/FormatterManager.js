@@ -33,14 +33,17 @@ const logger = log4js.getLogger("i18nlint.FormatterManager");
 class FormatterManager {
     /**
      * Create a new formatter manager instance.
+     * @params {Object} options options controlling the construction of this object
      * @constructor
      */
     constructor(options) {
         this.formatterCache = {};
         this.descriptions = {};
         this.add([AnsiConsoleFormatter]);
-        if (options && options.formatters) {
-            this.add(options.formatters);
+        if (options) {
+            if (options.formatters) {
+                this.add(options.formatters);
+            }
         }
     }
 
@@ -60,10 +63,14 @@ class FormatterManager {
         if (typeof(formatConfig) === 'object') {
             return new ConfigBasedFormatter({
                 ...formatConfig,
-                ...options
+                ...options,
+                getLogger: log4js.getLogger.bind(log4js)
             });
         }
-        return formatConfig ? new formatConfig(options) : undefined;
+        return formatConfig ? new formatConfig({
+            ...options,
+            getLogger: log4js.getLogger.bind(log4js)
+        }) : undefined;
     }
 
     /**
@@ -79,7 +86,9 @@ class FormatterManager {
             let formatter;
             if (fmt) {
                 if (typeof(fmt) === 'function' && Object.getPrototypeOf(fmt).name === "Formatter") {
-                    formatter = new fmt();
+                    formatter = new fmt({
+                        getLogger: log4js.getLogger.bind(log4js)
+                    });
                     this.formatterCache[formatter.getName()] = fmt;
                     this.descriptions[formatter.getName()] = formatter.getDescription();
                     logger.trace(`Added programmatic formatter ${formatter.getName()} to the formatter manager`);

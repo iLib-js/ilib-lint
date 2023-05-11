@@ -62,29 +62,20 @@ class DirItem {
     /**
      * Parse the current directory item.
      *
-     * @returns {Object} the parsed representation of this file
+     * @returns {Array.<IntermediateRepresentation>} the parsed
+     * representations of this file
      * @abstract
      */
     parse() {}
 
     /**
-     * Return the type of this file, resource or line or project.
-     * @returns {String} the type of this file
-     * @abstract
-     */
-    getType() {
-        return this.type;
-    }
-
-    /**
      * Check the directory item and return a list of issues found in it.
      *
-     * @param {RuleSet} ruleset a set of rules to apply
      * @param {Array.<Locale>} locales a set of locales to apply
      * @returns {Array.<Result>} a list of natch results
      * @abstract
      */
-    findIssues(ruleset, locales) {}
+    findIssues(locales) {}
 };
 
 export default DirItem;

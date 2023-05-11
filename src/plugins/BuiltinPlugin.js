@@ -1,5 +1,6 @@
 /*
- * XliffPlugin.js - plugin that can parse an Xliff file
+ * BuiltinPlugin.js - plugin that houses all of the built-in
+ * rules and parsers
  *
  * Copyright © 2022-2023 JEDLSoft
  *
@@ -19,11 +20,13 @@
 
 import { Plugin } from 'i18nlint-common';
 import XliffParser from './XliffParser.js';
+import LineParser from './LineParser.js';
+import StringParser from './StringParser.js';
 
 /**
  * @class ilib-lint plugin that can parse XLIFF files
  */
-class XliffPlugin extends Plugin {
+class BuiltinPlugin extends Plugin {
     /**
      * Create a new xliff plugin instance.
      * @constructor
@@ -40,8 +43,8 @@ class XliffPlugin extends Plugin {
      * plugin
      */
     getParsers() {
-        return [XliffParser];
+        return [XliffParser, LineParser, StringParser];
     }
 };
 
-export default XliffPlugin;
+export default BuiltinPlugin;

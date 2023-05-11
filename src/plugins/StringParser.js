@@ -1,5 +1,5 @@
 /*
- * XliffParser.js - Parser for XLIFF files
+ * StringParser.js - Parser for plain text files
  *
  * Copyright © 2022-2023 JEDLSoft
  *
@@ -18,27 +18,24 @@
  */
 
 import fs from 'node:fs';
-import { ResourceXliff } from 'ilib-tools-common';
 import { Parser, IntermediateRepresentation } from 'i18nlint-common';
 
 /**
- * @class Parser for XLIFF files based on the ilib-xliff library.
+ * @class Parser for plain text files that treats the whole file as a
+ * simple string.
  */
-class XliffParser extends Parser {
+class StringParser extends Parser {
     /**
      * Construct a new plugin.
      * @constructor
      */
-    constructor(options) {
+    constructor(options = {}) {
         super(options);
         this.path = options.filePath;
-        this.xliff = new ResourceXliff({
-            path: options.filePath
-        });
 
-        this.extensions = [ "xliff", "xlif", "xlf" ];
-        this.name = "xliff";
-        this.description = "A parser for xliff files. This can handle xliff v1.2 and v2.0 format files."
+        this.extensions = [ "*" ]; // can parse any text file
+        this.name = "string";
+        this.description = "A parser for plain text files treats the whole file as a simple string."
     }
 
     /**
@@ -46,26 +43,15 @@ class XliffParser extends Parser {
      */
     parse() {
         const data = fs.readFileSync(this.path, "utf-8");
-        this.xliff.parse(data);
         return [new IntermediateRepresentation({
-            type: "resource",
-            ir: this.xliff.getResources(),
+            type: "string",
+            ir: data,
             filePath: this.path
         })];
     }
 
-    /**
-     * For a "resource" type of plugin, this returns a list of Resource instances
-     * that result from parsing the file.
-     *
-     * @returns {Array.<Resource>} list of Resource instances in this file
-     */
-    getResources() {
-        return this.xliff.getResources();
-    }
-
     getType() {
-        return "resource";
+        return "string";
     }
 
     getExtensions() {
@@ -73,4 +59,4 @@ class XliffParser extends Parser {
     }
 };
 
-export default XliffParser;
+export default StringParser;

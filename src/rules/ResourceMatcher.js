@@ -1,5 +1,5 @@
 /*
- * ResourceMatcher.js - rule to check if URLs in the source string also
+ * ResourceMatcher.js - rule to check if regexps in the source string also
  * appear in the target string
  *
  * Copyright © 2022-2023 JEDLSoft
@@ -48,6 +48,10 @@ class ResourceMatcher extends Rule {
      *   check fails. Example: "The URL {matchString} did not appear in the
      *   the target." (Currently, matchString is the only replacement
      *   param that is supported.)
+     * - sourceLocale - locale (if any) of the source
+     * - link - an URL to a document that explains this rule in more detail
+     * - severity - severity of the results of this rule. This should be one of
+     *   "error", "warning", or "suggestion".
      * - regexps - an array of strings that encode regular expressions to
      *   look for
      *
@@ -60,10 +64,11 @@ class ResourceMatcher extends Rule {
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
             throw "Missing required options for the ResourceMatcher constructor";
         }
-        ["name", "description", "regexps", "note", "sourceLocale", "link"].forEach(prop => {
+        ["name", "description", "regexps", "note", "sourceLocale", "link", "severity"].forEach(prop => {
             this[prop] = options[prop];
         });
         this.sourceLocale = this.sourceLocale || "en-US";
+        this.severity = this.severity || "error";
 
         // this may throw if you got to the regexp syntax wrong:
         this.re = this.regexps.map(regexp => new RegExp(regexp, "gu"));
@@ -108,7 +113,7 @@ class ResourceMatcher extends Rule {
                 if (missing.length > 0) {
                     return missing.map(missing => {
                         let value = {
-                            severity: "error",
+                            severity: _this.severity,
                             id: resource.getKey(),
                             source: src,
                             rule: _this,

@@ -23,7 +23,7 @@ import log4js from 'log4js';
 import ResourceMatcher from './rules/ResourceMatcher.js';
 import ResourceSourceChecker from './rules/ResourceSourceChecker.js';
 import ResourceTargetChecker from './rules/ResourceTargetChecker.js';
-import SourceFileChecker from './rules/SourceFileChecker.js';
+import SourceRegexpChecker from './rules/SourceRegexpChecker.js';
 
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
@@ -31,11 +31,15 @@ import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 
 const logger = log4js.getLogger("i18nlint.RuleManager");
 
+/**
+ * Map the types in the declarative rules to a Rule subclass that handles
+ * that type.
+ */
 const typeMap = {
     "resource-matcher": ResourceMatcher,
     "resource-source": ResourceSourceChecker,
     "resource-target": ResourceTargetChecker,
-    "sourcefile": SourceFileChecker
+    "source-checker": SourceRegexpChecker
 };
 
 /**
@@ -53,12 +57,14 @@ class RuleManager {
      *
      * This factory function can create Rule instances out for any type of
      * rule.
+     * @params {Object} options options controlling the construction of this object
      * @constructor
      */
-    constructor() {
+    constructor(options) {
         this.ruleCache = {};
         this.ruleDefs = {};
         this.descriptions = {};
+        this.sourceLocale = options && options.sourceLocale;
 
         // some built-in default rules
         this.addRule(ResourceICUPlurals);
@@ -83,10 +89,16 @@ class RuleManager {
             const ruleClass = typeMap[ruleConfig.type];
             return new ruleClass({
                 ...ruleConfig,
-                ...options
+                ...options,
+                sourceLocale: this.sourceLocale,
+                getLogger: log4js.getLogger.bind(log4js)
             });
         } else {
-            return new ruleConfig(options);
+            return new ruleConfig({
+                ...options,
+                sourceLocale: this.sourceLocale,
+                getLogger: log4js.getLogger.bind(log4js)
+            });
         }
     }
 
@@ -96,10 +108,13 @@ class RuleManager {
     addRule(rule) {
         if (rule) {
             if (typeof(rule) === 'function' && Object.getPrototypeOf(rule).name === "Rule") {
-                const p = new rule({});
+                const p = new rule({
+                    sourceLocale: this.sourceLocale,
+                    getLogger: log4js.getLogger.bind(log4js)
+                });
                 this.ruleCache[p.getName()] = rule;
                 this.descriptions[p.getName()] = p.getDescription();
-                logger.trace(`Added rule ${p.getName} to the rule manager.`);
+                logger.trace(`Added rule ${p.getName()} to the rule manager.`);
             } else if (typeof(rule) === 'object') {
                 if (typeof(rule.type) !== 'string' || typeof(rule.name) !== 'string' ||
                     typeof(rule.description) !== 'string' || typeof(rule.note) !== 'string' ||
@@ -205,6 +220,7 @@ class RuleManager {
     addRuleSetDefinition(name, ruleDefs) {
         if (typeof(ruleDefs) !== 'object') return;
 
+        logger.trace(`Added ruleset definition for set ${name}`);
         // this will override any existing one with the same name
         this.ruleDefs[name] = ruleDefs;
     }

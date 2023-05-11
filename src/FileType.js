@@ -44,6 +44,9 @@ class FileType {
      *
      * - locales (Array of String) - list of locales to use with this file type,
      *   which overrides the global locales for the project
+     * - type (String) - specifies the way that files of this file type
+     *   are parsed. This can be one of "resource", "source", "line", or
+     *   "ast".
      * - template (String) - the path name template for this file type
      *   which shows how to extract the locale from the path
      *   name if the path includes it. Many file types do not
@@ -60,11 +63,13 @@ class FileType {
         if (!options || !options.name || !options.project) {
             throw "Missing required options to the FileType constructor";
         }
-        ["name", "project", "locales", "ruleset", "template"].forEach(prop => {
+        ["name", "project", "locales", "ruleset", "template", "type"].forEach(prop => {
             if (typeof(options[prop]) !== 'undefined') {
                 this[prop] = options[prop];
             }
         });
+
+        this.type = this.type || "string";
 
         if (this.ruleset) {
             if (typeof(this.ruleset) === 'string') {
@@ -99,6 +104,10 @@ class FileType {
         return this.template;
     }
 
+    getType() {
+        return this.type;
+    }
+
     /**
      * Return an array of names of rule sets.
      *
@@ -123,6 +132,10 @@ class FileType {
         const set = new RuleSet();
         this.ruleset.forEach(ruleSetName => {
             const definitions = ruleMgr.getRuleSetDefinition(ruleSetName);
+            if (!definitions) {
+                logger.error(`Could not find rule set ${ruleSetName}`);
+                return;
+            }
             for (let ruleName in definitions) {
                 if (typeof(definitions[ruleName]) === 'boolean') {
                     if (definitions[ruleName]) {

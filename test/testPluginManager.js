@@ -111,7 +111,7 @@ export const testPluginManager = {
     },
 
     testPluginManagerGetLoadPluginParserWorks: function(test) {
-        test.expect(11);
+        test.expect(12);
 
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
@@ -123,15 +123,12 @@ export const testPluginManager = {
 
             const pm = plgmgr.getParserManager();
             const parsers = pm.get("xyz");
-            const testParser = new parsers[0]();
+            const testParser = new parsers[0]({filePath: "./test/testfiles/strings.xyz"});
             test.ok(testParser);
+            test.equal(testParser.getName(), "parser-xyz");
 
-            testParser.parseData(`{
-                "string1": "value1",
-                "string2": "value2",
-                "string3": "value3"
-            }`);
-            const resources = testParser.getResources();
+            const ir = testParser.parse();
+            const resources = ir[0].getRepresentation();
             test.ok(resources);
             test.equal(resources.length, 3);
 

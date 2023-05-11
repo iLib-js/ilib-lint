@@ -20,6 +20,7 @@
 import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 import XliffParser from '../src/plugins/XliffParser.js';
+import FileType from '../src/FileType.js';
 import SourceFile from '../src/SourceFile.js';
 import Project from '../src/Project.js';
 import PluginManager from '../src/PluginManager.js';
@@ -54,6 +55,11 @@ const config = {
 const project = new Project(".", {
     pluginManager: new PluginManager()
 }, config);
+
+const filetype = new FileType({
+    name: "javascript",
+    project
+});
 
 export const testSourceFile = {
     testSourceFile: function(test) {
@@ -144,7 +150,7 @@ export const testSourceFile = {
     testSourceFileParse: function(test) {
         test.expect(3);
 
-        const sf = new SourceFile("test/testfiles/test.xliff", {
+        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
@@ -157,15 +163,19 @@ export const testSourceFile = {
     },
 
     testSourceFileParseRightContents: function(test) {
-        test.expect(6);
+        test.expect(9);
 
-        const sf = new SourceFile("test/testfiles/test.xliff", {
+        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
         test.ok(sf);
-        const resources = sf.parse();
-        test.ok(resources);
+        const ir = sf.parse();
+        test.ok(ir);
+        test.ok(Array.isArray(ir));
+        test.equal(ir.length, 1);
+        test.equal(ir[0].getType(), "resource");
+        const resources = ir[0].getRepresentation();
         test.equal(resources.length, 1);
         test.equal(resources[0].source, "Asdf asdf");
         test.equal(resources[0].target, "foobarfoo");
@@ -174,47 +184,40 @@ export const testSourceFile = {
         test.done();
     },
 
-    testSourceFileParseRightType: function(test) {
-        test.expect(3);
+    testSourceFileParseRightTypeResource: function(test) {
+        test.expect(5);
 
-        const sf = new SourceFile("test/testfiles/test.xliff", {
+        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
             }
         }, project);
         test.ok(sf);
-        test.equal(sf.getType(), "line");
-        const resources = sf.parse();
-        test.equal(sf.getType(), "resource");
+        const ir = sf.parse();
+        test.ok(ir);
+        test.ok(Array.isArray(ir));
+        test.equal(ir.length, 1);
+        test.equal(ir[0].getType(), "resource");
 
         test.done();
     },
 
     testSourceFileParseNonResourceFile: function(test) {
-        test.expect(3);
+        test.expect(7);
 
         const sf = new SourceFile("test/ilib-mock/index.js", {
+            filetype,
             settings: {
             }
         }, project);
         test.ok(sf);
-        const lines = sf.parse();
-        test.ok(lines);
-        test.equal(lines.length, 4);
-
-        test.done();
-    },
-
-    testSourceFileParseNonResRightType: function(test) {
-        test.expect(3);
-
-        const sf = new SourceFile("test/ilib-mock/index.js", {
-            settings: {
-            }
-        }, project);
-        test.ok(sf);
-        test.equal(sf.getType(), "line");
-        const resources = sf.parse();
-        test.equal(sf.getType(), "line");
+        const ir = sf.parse();
+        test.ok(ir);
+        test.ok(Array.isArray(ir));
+        test.equal(ir.length, 1);
+        test.equal(ir[0].getType(), "string");
+        const source = ir[0].getRepresentation();
+        test.ok(source);
+        test.equal(source.length, 117); // how many chars in this source file?
 
         test.done();
     }

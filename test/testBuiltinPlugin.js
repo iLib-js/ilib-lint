@@ -1,7 +1,7 @@
 /*
- * testXliffPlugin.js - test the Xliff plugin
+ * testBuiltinPlugin.js - test the built-in plugin
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2023 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,27 +17,27 @@
  * limitations under the License.
  */
 
-import XliffPlugin from '../src/plugins/XliffPlugin.js';
+import BuiltinPlugin from '../src/plugins/BuiltinPlugin.js';
 import { Parser } from 'i18nlint-common';
 
-export const testXliffPlugin = {
-    testXliffPlugin: function(test) {
+export const testBuiltinPlugin = {
+    testBuiltinPlugin: function(test) {
         test.expect(1);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         test.done();
     },
 
-    testXliffPluginGetExtensions: function(test) {
+    testBuiltinPluginGetExtensions: function(test) {
         test.expect(3);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
-        test.equal(parsers.length, 1);
+        test.equal(parsers.length, 3);
 
         const xliff = new parsers[0]({
             filePath: "x"
@@ -47,15 +47,15 @@ export const testXliffPlugin = {
         test.done();
     },
 
-    testXliffPluginGetParser: function(test) {
+    testBuiltinPluginGetParser: function(test) {
         test.expect(3);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
         test.ok(parsers);
-        test.equal(parsers.length, 1);
+        test.equal(parsers.length, 3);
 
         test.done();
     },
@@ -63,7 +63,7 @@ export const testXliffPlugin = {
     testXliffParser: function(test) {
         test.expect(4);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
@@ -81,7 +81,7 @@ export const testXliffPlugin = {
     testXliffParserGetResources: function(test) {
         test.expect(5);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
@@ -89,11 +89,11 @@ export const testXliffPlugin = {
         
         const XliffParser = parsers[0];
 
-        const parser = new XliffParser({filePath: "./test/testfiles/test.xliff"});
+        const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
         test.ok(parser);
-        parser.parse();
+        const ir = parser.parse();
 
-        const resources = parser.getResources();
+        const resources = ir[0].getRepresentation();
         test.ok(resources);
         test.equal(resources.length, 1);
 
@@ -103,7 +103,7 @@ export const testXliffPlugin = {
     testXliffParserGetResourcesRight: function(test) {
         test.expect(12);
 
-        const xp = new XliffPlugin();
+        const xp = new BuiltinPlugin();
         test.ok(xp);
 
         const parsers = xp.getParsers();
@@ -111,11 +111,11 @@ export const testXliffPlugin = {
         
         const XliffParser = parsers[0];
 
-        const parser = new XliffParser({filePath: "./test/testfiles/test.xliff"});
+        const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
         test.ok(parser);
-        parser.parse();
+        const ir = parser.parse();
 
-        const resources = parser.getResources();
+        const resources = ir[0].getRepresentation();
         test.ok(resources);
 
         test.equal(resources[0].source, "Asdf asdf");

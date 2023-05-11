@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import log4js from 'log4js';
 
@@ -24,7 +25,7 @@ import FormatterManager from './FormatterManager.js';
 import ParserManager from './ParserManager.js';
 import RuleManager from './RuleManager.js';
 import RuleSet from './RuleSet.js';
-import XliffPlugin from './plugins/XliffPlugin.js';
+import BuiltinPlugin from './plugins/BuiltinPlugin.js';
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceICUPluralTranslation from './rules/ResourceICUPluralTranslation.js';
@@ -153,6 +154,35 @@ function attemptLoad(name) {
     return import(name);
 };
 
+/**
+ * Needed because node does not know how to load ES modules
+ * from a path. (Even though that is what it does when you
+ * just name the module without a path. Sigh.)
+ *
+ * @private
+ */
+function attemptLoadPath(name) {
+    logger.trace(`Trying directory module ${name}`);
+    let packagePath = name;
+    const packageName = path.join(name, "package.json");
+    if (fs.existsSync(name) && fs.existsSync(packageName)) {
+        const data = fs.readFileSync(packageName, "utf-8");
+        const json = JSON.parse(data);
+        if (json.type === "module") {
+            let relativePath = json.module;
+            if (!relativePath && json.exports) {
+                const keys = Object.keys(json.exports);
+                relativePath = keys.length && json.exports[keys[0]].import;
+            }
+            if (relativePath) {
+                packagePath = path.join(name, relativePath);
+            }
+        }
+    }
+    logger.trace(`Path to this module is ${packagePath}`);
+    return import(packagePath);
+}
+
 /*
  * Attempt to load the plugin in various places:
  *
@@ -170,16 +200,21 @@ function attemptLoad(name) {
  *
  * @private
  */
-function loadPlugin(name, API) {
+function loadPlugin(name) {
     return attemptLoad(name).catch(e1 => {
+        logger.trace(e1);
         const name2 = `ilib-lint-${name}`;
         return attemptLoad(name2).catch(e2 => {
+            logger.trace(e2);
             const name3 = path.join(process.cwd(), "node_modules", name);
-            return attemptLoad(name3).catch(e3 => {
+            return attemptLoadPath(name3).catch(e3 => {
+                logger.trace(e3);
                 const name4 = path.join(process.cwd(), "node_modules", `ilib-lint-${name}`);
-                return attemptLoad(name4).catch(e4 => {
+                return attemptLoadPath(name4).catch(e4 => {
+                    logger.trace(e4);
                     const name5 = path.join(process.cwd(), "..", "plugins", name + ".js")
                     return attemptLoad(name5).catch(e5 => {
+                        logger.trace(e5);
                         // on the last attempt, don't catch the exception. Just let it
                         // go to the overall `catch` clause below.
                         const name6 = path.join(process.cwd(), "..", "plugins", `ilib-lint-${name}` + ".js")
@@ -189,28 +224,18 @@ function loadPlugin(name, API) {
             });
         });
     }).then((module) => {
+        logger.trace(`Module ${name} successfully loaded.`);
         const Main = module.default;
-        const plugin = new Main(API);
+        const plugin = new Main({
+            getLogger: log4js.getLogger.bind(log4js)
+        });
         plugin.init();
         return plugin;
     }).catch(e2 => {
-        logger.trace(`Could not load plugin ${name}`);
+        logger.error(`Could not load plugin ${name}`);
+        logger.trace(e2);
         return undefined;
     });
-};
-
-function getAPI() {
-    return {
-        /**
-         * Return the i18nlint's log4js logger so that the plugin can put its output into
-         * the regular i18nlint stream.
-         * @param {string} category the logger category to return
-         * @returns {Logger} a logger instance
-         */
-        getLogger: function(category) {
-            return log4js.getLogger(category);
-        }
-    };
 };
 
 /**
@@ -225,6 +250,7 @@ class PluginManager {
         this.parserMgr = new ParserManager();
         this.formatterMgr = new FormatterManager();
         this.ruleMgr = new RuleManager();
+        this.sourceLocale = options && options.sourceLocale;
 
         // default rules
         this.ruleMgr.add([
@@ -255,8 +281,10 @@ class PluginManager {
         // install the default formatter
         this.formatterMgr.add(AnsiConsoleFormatter);
 
-        // install the default parser, rules
-        this.add(new XliffPlugin());
+        // install the default parsers, rules, etc.
+        this.add(new BuiltinPlugin({
+            getLogger: log4js.getLogger.bind(log4js)
+        }));
     }
 
     /**
@@ -332,12 +360,11 @@ class PluginManager {
      * @reject the plugins could not be found or loaded
      */
     load(names) {
-        const API = getAPI();
         if (typeof(name) === 'string') {
             names = [ names ];
         }
         return Promise.allSettled(names.map(name => {
-            return loadPlugin(name, API).then((plugin) => {
+            return loadPlugin(name).then((plugin) => {
                 this.add(plugin);
             });
         }));

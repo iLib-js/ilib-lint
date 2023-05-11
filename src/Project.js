@@ -17,10 +17,13 @@
  * limitations under the License.
  */
 
+import fs from 'node:fs';
 import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
+import JSON5 from 'json5';
 
+import SourceFile from './SourceFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
 
@@ -82,9 +85,11 @@ class Project extends DirItem {
             this.excludes = config.excludes;
             this.name = config.name;
         }
+        this.sourceLocale = options?.opt?.sourceLocale;
 
         this.pluginMgr = this.options.pluginManager;
         const ruleMgr = this.pluginMgr.getRuleManager();
+        const fmtMgr = this.pluginMgr.getFormatterManager();
         if (this.config.rules) {
             ruleMgr.add(this.config.rules);
         }
@@ -93,7 +98,6 @@ class Project extends DirItem {
             ruleMgr.addRuleSetDefinitions(this.config.rulesets);
         }
         if (this.config.formatters) {
-            const fmtMgr = this.pluginMgr.getFormatterManager();
             fmtMgr.add(this.config.formatters);
         }
 
@@ -113,16 +117,164 @@ class Project extends DirItem {
         if (this.config.paths) {
             this.mappings = this.config.paths;
             for (let glob in this.mappings) {
-                if (typeof(this.mappings[glob]) === 'object') {
+                let mapping = this.mappings[glob];
+                if (typeof(mapping) === 'object') {
                     // this is an "on-the-fly" file type
                     this.filetypes[glob] = new FileType({
                         name: glob,
                         project: this,
-                        ...this.mappings[glob]
+                        ...mapping
                     });
+                } else if (typeof(mapping) === 'string') {
+                    if (!this.filetypes[mapping]) {
+                        throw `Mapping ${glob} is configured to use unknown filetype ${mapping}`;
+                    }
                 }
             }
         }
+        this.formatter = fmtMgr.get(options.formatter || "ansi-console-formatter");
+        if (!this.formatter) {
+            logger.error(`Could not find formatter ${options.formatter}. Aborting...`);
+            process.exit(3);
+        }
+    }
+
+    /**
+     *
+     * Recursively walk a directory and return a list of files and directories
+     * within that directory. The walk is controlled via a list of exclude and
+     * include patterns. Each pattern should be a micromatch pattern like this:
+     *
+     * <code>
+     * "*.json"
+     * </code>
+     *
+     * The full path to every file and directory in the top-level directory will
+     * be included, unless it matches an exclude pattern, it which case, it will be
+     * excluded from the output. However, if the path
+     * also matches an include pattern, it will still be included nonetheless. The
+     * idea is that you can exclude a whole category of files (like all json files),
+     * but include specific ones. For example, you may exclude all json files, but
+     * still want to include the "config.json" file.<p>
+
+     * The options parameter may include any of the following optional properties:
+     *
+     * <ul>
+     * <li><i>excludes</i> (Array of strings) - A list of micromatch patterns to
+     * exclude from the output. If a pattern matches a directory, that directory
+     * will not be recursively searched.
+     * <li><i>includes</i> (Array of strings) - A list of micromatch patterns to
+     * include in the walk. If a pattern matches both an exclude and an include, the
+     * include will override the exclude.
+     * </ul>
+     *
+     * @param {String} root Directory to walk
+     * @returns {Array.<DirItem>} an array of file names in the directory, filtered
+     * by the the excludes and includes list
+     * @private
+     */
+    walk(root) {
+        let list;
+
+        if (typeof(root) !== "string") {
+            return [];
+        }
+
+        let includes = this.getIncludes();
+        let excludes = this.getExcludes();
+        let pathName, included, stat, glob;
+
+        try {
+            stat = fs.statSync(root, {throwIfNoEntry: false});
+            if (stat) {
+                if (stat.isDirectory()) {
+                    const configFileName = path.join(root, "ilib-lint-config.json");
+                    if (root !== this.root && fs.existsSync(configFileName)) {
+                        const data = fs.readFileSync(configFileName, "utf-8");
+                        const config = JSON5.parse(data);
+                        const newProject = new Project(root, this.getOptions(), config);
+                        includes = newProject.getIncludes();
+                        excludes = newProject.getExcludes();
+                        logger.trace(`New project ${newProject.getName()}`);
+                        this.add(newProject);
+                        newProject.scan([root]);
+                    } else {
+                        list = fs.readdirSync(root);
+                        logger.trace(`Searching dir ${root}`);
+
+                        if (list && list.length !== 0) {
+                            list.sort().forEach((file) => {
+                                if (file === "." || file === "..") {
+                                    return;
+                                }
+
+                                pathName = path.join(root, file);
+                                included = true;
+
+                                if (excludes) {
+                                    logger.trace(`There are excludes. Relpath is ${pathName}`);
+                                    included = !mm.isMatch(pathName, excludes);
+                                }
+
+                                if (included) {
+                                    this.walk(pathName);
+                                }
+                            });
+                        }
+                    }
+                } else if (stat.isFile()) {
+                    included = false;
+
+                    if (includes) {
+                        logger.trace(`There are includes.`);
+                        mm.match(root, includes, {
+                            onMatch: (params) => {
+                                if (!glob && params.isMatch) {
+                                    glob = params.glob;
+                                    const settings = this.getSettings(glob);
+                                    excludes = settings.excludes || excludes;
+                                    included = excludes ? !mm.isMatch(root, excludes) : true;
+                                }
+                            }
+                        });
+                    }
+
+                    if (included) {
+                        logger.trace(`${root} ... included`);
+                        glob = glob || "**";
+                        const filetype = this.getFileTypeForPath(root);
+                        this.add(new SourceFile(root, {
+                            settings: this.getSettings(glob),
+                            filetype
+                        }, this));
+                    } else {
+                        logger.trace(`${root} ... excluded`);
+                    }
+                } // else just ignore it
+            } else {
+                logger.warn(`File ${root} does not exist.`);
+            }
+        } catch (e) {
+            // if the readdirSync did not work, it's maybe a file?
+            if (fs.existsSync(root)) {
+                this.add(new SourceFile(root, {}, this));
+            }
+        }
+
+        return this.get();
+    }
+
+    /**
+     * Scan the given paths for files and subprojects to process later.
+     * If this method finds a subproject, it will be added to the list
+     * as well, and its scan method will be called.
+     *
+     * @param {Array.<String>} paths an array of paths to scan
+     */
+    scan(paths) {
+        paths.forEach(pathName => {
+            this.walk(pathName);
+        });
     }
 
     /**
@@ -195,6 +347,16 @@ class Project extends DirItem {
     }
 
     /**
+     * Get the source locale for this project. This is the locale in
+     * which the strings and source code are written.
+     *
+     * @returns {String} the source locale for this project.
+     */
+    getSourceLocale() {
+        return this.sourceLocale;
+    }
+
+    /**
      * Return the list of global locales for this project.
      * @returns {Array.<String>} the list of global locales for this project
      */
@@ -245,7 +407,6 @@ class Project extends DirItem {
      * there is no such file type
      */
     getFileType(name) {
-        
     }
 
     /**
@@ -307,17 +468,68 @@ class Project extends DirItem {
 
     /**
      * Find all issues with the files located within this project and
-     * return them.
+     * all subprojects, and return them together in an array.
      *
      * @returns {Array.<Result>} a list of results
      */
-    findIssues(ruleset, locales) {
+    findIssues(locales) {
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
 
             file.parse();
             return file.findIssues(locales);
         }).flat();
+    }
+
+    /**
+     * Find all issues in this project and all subprojects and print
+     * them with the chosen formatter. This is the main loop.
+     * @returns {Number} the exit value
+     */
+    run() {
+        let exitValue = 0;
+        const results = this.findIssues(this.options.locales);
+        let errors = 0;
+        let warnings = 0;
+        let suggestions = 0;
+
+        if (results) {
+            results.forEach(result => {
+                const str = this.formatter.format(result);
+                if (str) {
+                    if (result.severity === "error") {
+                        logger.error(str);
+                        exitValue = 2;
+                        errors++;
+                    } else if (result.severity === "warning") {
+                        warnings++;
+                        if (!this.options.errorsOnly) {
+                            logger.warn(str);
+                            exitValue = Math.max(exitValue, 1);
+                        }
+                    } else {
+                        suggestions++;
+                        if (!this.options.errorsOnly) {
+                            logger.info(str);
+                        }
+                    }
+                }
+            });
+        }
+
+        const fmt = new Intl.NumberFormat("en-US", {
+            maxFractionDigits: 2
+        });
+        logger.info(`Files scanned: ${this.files.length}`);
+        if (results.length) {
+            logger.info(`Errors: ${errors}, avg per file: ${fmt.format(errors/this.files.length)}`);
+            if (!this.options.errorsOnly) {
+                logger.info(`Warnings: ${warnings}, avg per file: ${fmt.format(warnings/this.files.length)}`);
+                logger.info(`Suggestions: ${suggestions}, avg per file: ${fmt.format(suggestions/this.files.length)}`);
+            }
+        }
+
+        return exitValue;
     }
 
     clear() {

@@ -34,9 +34,10 @@ function getSuperClassName(obj) {
 class ParserManager {
     /**
      * Create a new parser manager instance.
+     * @params {Object} options options controlling the construction of this object
      * @constructor
      */
-    constructor() {
+    constructor(options) {
         this.parserCache = {};
         this.descriptions = {};
     }
@@ -49,7 +50,9 @@ class ParserManager {
      * the given type of file
      */
     get(extension) {
-        return this.parserCache[extension] || [];
+        // the '*' extension means any extension, which gives all the
+        // parsers that can handle any text file
+        return this.parserCache[extension] || this.parserCache['*'] || [];
     }
 
     /**
@@ -62,7 +65,9 @@ class ParserManager {
         if (!parsers || !Array.isArray(parsers)) return;
         for (const parser of parsers) {
             if (parser && typeof(parser) === 'function' && Object.getPrototypeOf(parser).name === "Parser") {
-                const p = new parser({});
+                const p = new parser({
+                    getLogger: log4js.getLogger.bind(log4js)
+                });
                 for (const extension of p.getExtensions()) {
                     if (!this.parserCache[extension]) {
                         this.parserCache[extension] = [];
