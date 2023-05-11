@@ -493,7 +493,7 @@ class Project extends DirItem {
             return file.findIssues(locales);
         }).flat();
     }
-    
+
     /**
      * Return the I18N Score of this project. The score is a number from
      * zero to 100 which gives the approximate localization readiness of
@@ -542,13 +542,11 @@ class Project extends DirItem {
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
-                        exitValue = 2;
                         this.resultStats.errors++;
                     } else if (result.severity === "warning") {
                         this.resultStats.warnings++;
                         if (!this.options.errorsOnly) {
                             logger.warn(str);
-                            exitValue = Math.max(exitValue, 1);
                         }
                     } else {
                         this.resultStats.suggestions++;
@@ -575,8 +573,20 @@ class Project extends DirItem {
                     `Suggestions:       ${String(this.resultStats.suggestions).padEnd(10, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.lines).padEnd(15, ' ')}`);
             }
         }
-        logger.info(`I18N Score (0-100) ${fmt.format(this.getScore(results))}`);
+        const score = this.getScore();
+        logger.info(`I18N Score (0-100) ${fmt.format(score)}`);
 
+        if (this.options.opt["max-errors"]) {
+            exitValue = this.resultStats.errors > this.options.opt["max-errors"] ? 2 : 0;
+        } else if (this.options.opt["max-warnings"]) {
+            exitValue = this.resultStats.warnings > this.options.opt["max-warnings"] ? 1 : 0;
+        } else if (this.options.opt["max-suggestions"]) {
+            exitValue = this.resultStats.suggestions > this.options.opt["max-suggestions"] ? 1 : 0;
+        } else if (this.options.opt["min-score"]) {
+            exitValue = score < this.options.opt["min-score"] ? 2 : 0;
+        } else {
+            exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
+        }
         return exitValue;
     }
 
