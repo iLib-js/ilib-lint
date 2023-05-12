@@ -73,7 +73,7 @@ class ResourceStateChecker extends Rule {
      */
     match(options) {
         const { locale, resource, file } = options || {};
-        const state = resource.getState().toLowerCase();
+        const state = resource.getState()?.toLowerCase();
 
         if (state && this.states.indexOf(state) > -1) {
             // recognized state, so return no results
@@ -86,15 +86,16 @@ class ResourceStateChecker extends Rule {
             id: resource.getKey(),
             rule: this,
             pathName: file,
-            highlight: `Resource found with disallowed state: <e0>${state}</e0>`,
+            highlight: state ? `Resource found with disallowed state: <e0>${state}</e0>` : "Resource found with no state.",
             description: (this.states.length > 1) ?
                 `Resources must have one of the following states: ${this.states.join(", ")}` :
                 `Resources must have the following state: ${this.states[0]}`,
             locale,
             source: resource.getSource()
         };
-        if (typeof(options.lineNumber) !== 'undefined') {
-            value.lineNumber = options.lineNumber;
+        if (typeof(resource.lineNumber) !== 'undefined') {
+            value.lineNumber = resource.lineNumber;
+            value.charNumber = resource.charNumber;
         }
         return new Result(value);
     }
