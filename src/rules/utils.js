@@ -20,7 +20,7 @@
 import { IntlMessageFormat } from 'intl-messageformat';
 
 /** @returns {string} */
-function concatIntlAstText(/** @type {import("@formatjs/icu-messageformat-parser").MessageFormatElement[]} */ astElements) {
+function concatIntlAstText(/** @type {import("@formatjs/icu-messageformat-parser").MessageFormatElement[]} */ astElements, stripEntirePlural) {
     return astElements
         .map((element) => {
             switch (element.type) {
@@ -30,14 +30,15 @@ function concatIntlAstText(/** @type {import("@formatjs/icu-messageformat-parser
                     return "{" + element.value + "}";
                 case 5: // select
                 case 6: // plural
+                    if (stripEntirePlural) return "";
                     // take each variation of a given plural, recursively convert its ast to text,
                     // then join all stripped variants into single string separating them by single space
                     return Object.values(element.options)
-                        .map((pluralOption) => concatIntlAstText(pluralOption.value))
+                        .map((pluralOption) => concatIntlAstText(pluralOption.value, stripEntirePlural))
                         .join(" ");
                 case 8: // tag
                     // recursively process elements inside of a tag
-                    return concatIntlAstText(element.children);
+                    return concatIntlAstText(element.children, stripEntirePlural);
                 default:
                     return "value" in element ? element.value : "";
             }
@@ -45,11 +46,11 @@ function concatIntlAstText(/** @type {import("@formatjs/icu-messageformat-parser
         .join("");
 };
 
-export function stripPlurals(/** @type {string} */ message, /** @type {string} */ locale) {
+export function stripPlurals(/** @type {string} */ message, /** @type {string} */ locale, stripEntirePlural) {
     try {
         const imf = new IntlMessageFormat(message, locale);
         const ast = imf.getAst();
-        return concatIntlAstText(ast);
+        return concatIntlAstText(ast, stripEntirePlural);
     } catch (e) {
         // punt
         return message;

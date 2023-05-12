@@ -55,7 +55,8 @@ export const regexRules = [
         description: "Ensure that named parameters that appear in the source string are also used in the translated string",
         note: "The named parameter '{matchString}' from the source string does not appear in the target string",
         regexps: [ "\\{\\w+\\}" ],
-        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-named-params.md"
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-named-params.md",
+        stripEntirePlural: true
     },
     {
         type: "resource-target",
