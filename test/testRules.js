@@ -790,6 +790,42 @@ export const testRules = {
         test.done();
     },
 
+    testResourceStateCheckerNoState: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceStateChecker({
+            // all resources should have this state:
+            param: [ "translated" ]
+        });
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "plural.test",
+                sourceLocale: "en-US",
+                source: '{count, plural, one {This is singular} other {This is plural}}',
+                targetLocale: "de-DE",
+                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Resources must have the following state: translated",
+            id: "plural.test",
+            highlight: 'Resource found with no state.',
+            rule,
+            pathName: "x/y",
+            locale: "de-DE",
+            source: '{count, plural, one {This is singular} other {This is plural}}'
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
     testResourceEdgeWhitespaceEdgesMatch: function(test) {
         test.expect(2);
 

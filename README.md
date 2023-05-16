@@ -721,6 +721,11 @@ limitations under the License.
 
 - resource-quote-style: don't emit error when quotes are missing in SV target
 
+### v1.6.1
+
+- Having no state attribute on the target tag of a translation unit would
+  cause an exception. Now it properly gives an error that no state was found.
+
 ### v1.6.0
 
 - added the ability to scan source code files and apply rules
