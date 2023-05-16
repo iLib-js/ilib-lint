@@ -717,6 +717,10 @@ limitations under the License.
 
 ## Release Notes
 
+### Pending Release
+
+- resource-quote-style: don't emit error when quotes are missing in SV target
+
 ### v1.6.1
 
 - Having no state attribute on the target tag of a translation unit would

@@ -728,5 +728,28 @@ export const testResourceQuoteStyle = {
 
         test.done();
     },
+
+    testResourceQuoteStyleIgnoreMissingSwedishQuotes: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "sv-SE",
+            resource: new ResourceString({
+                key: "quote.test",
+                sourceLocale: "en-US",
+                source: `This is a "string."`,
+                targetLocale: "sv-SE",
+                target: "Det här är ett snöre.",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
 };
 
