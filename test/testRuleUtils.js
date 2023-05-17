@@ -34,7 +34,7 @@ export const testRuleUtils = {
         test.expect(1);
 
         const actual = stripPlurals("text {count, plural, one {a} other {b}} text", "en-US");
-        const expected = "text a b text";
+        const expected = "text  text";
 
         test.equal(actual, expected);
 
@@ -45,7 +45,7 @@ export const testRuleUtils = {
         test.expect(1);
 
         const actual = stripPlurals("text {count, plural, one {test {x} test} other {tester {y} tester}} text", "en-US");
-        const expected = "text test {x} test tester {y} tester text";
+        const expected = "text  text";
 
         test.equal(actual, expected);
 
@@ -56,7 +56,7 @@ export const testRuleUtils = {
         test.expect(1);
 
         const actual = stripPlurals("text {count, plural, one {This is 'quoted' text} other {More \"quotes\"}} text", "en-US");
-        const expected = "text This is 'quoted' text More \"quotes\" text";
+        const expected = "text  text";
 
         test.equal(actual, expected);
 
@@ -67,7 +67,18 @@ export const testRuleUtils = {
         test.expect(1);
 
         const actual = stripPlurals("text {count, plural, one {a} few{c} other {b}} text", "ru-RU");
-        const expected = "text a c b text";
+        const expected = "text  text";
+
+        test.equal(actual, expected);
+
+        test.done();
+    },
+
+    testStripPluralsStripSelect: function(test) {
+        test.expect(1);
+
+        const actual = stripPlurals("text {gender, select, male {a} female {c} other {d}} text", "ja-JP");
+        const expected = "text  text";
 
         test.equal(actual, expected);
 
