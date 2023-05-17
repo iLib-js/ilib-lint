@@ -54,17 +54,17 @@ class ResourceRule extends Rule {
      * Check a string pair for problems. In various resources, there are
      * sometimes no source string or no target string and the source or target
      * parameters may be undefined or the empty string. It is up to the subclass
-     * to determine what to do with that situation.
-     *
-     * The params object will contain the following properties:
-     *
-     * - {String|undefined} source the source string to check
-     * - {String|undefined} target the target string to check
-     * - {String} file the path to the file where this resource was found
-     * - {Resource} resource the resource where this string came from
+     * to determine what to do with that situation. For plural or array
+     * resources, this method will be called multiple times, once for each pair
+     * of array entries, or for each pair of plural category strings.
      *
      * @abstract
-     * @param {Object} params
+     * @param {Object} params parameters for the string matching
+     * @param {String} [source] the source string to match against
+     * @param {String} [target] the target string to match
+     * @param {String} file the file path where the resources came from
+     * @param {Resource} resource the resource that contains the source and/or
+     * target string
      * @returns {Result|Array.<Result>|undefined} any results
      * found in this string or undefined if no problems were
      * found.
@@ -74,47 +74,55 @@ class ResourceRule extends Rule {
     /**
      * @override
      */
-    match(options) {
-        const { resource, file } = options || {};
+    match(options = {}) {
+        const { ir, file } = options;
         let results;
 
-        switch (resource.getType()) {
-            case 'string':
-                return this.matchString({
-                    source: resource.getSource(),
-                    target: resource.getTarget(),
-                    file,
-                    resource
-                });
+        // we can only process resource representations
+        if (!ir || ir.getType() !== "resource") return;
 
-            case 'array':
-                const srcArray = resource.getSource();
-                const tarArray = resource.getTarget() || [];
-                results = srcArray.map((item, i) => {
+        const resources = ir.getRepresentation();
+
+        const resultArray = resources.flatMap(resource => {
+            switch (resource.getType()) {
+                case 'string':
                     return this.matchString({
-                        source: srcArray[i],
-                        target: tarArray[i],
+                        source: resource.getSource(),
+                        target: resource.getTarget(),
                         file,
                         resource
                     });
-                }).flat().filter(element => element);
-                return (results && results.length ? results : undefined);
 
-            case 'plural':
-                const srcPlural = resource.getSource();
-                const tarPlural = resource.getTarget();
-                const categorySet = new Set(Object.keys(srcPlural).concat(Object.keys(tarPlural)));
-
-                results = Array.from(categorySet).map(category => {
-                    return this.matchString({
-                        source: srcPlural[category],
-                        target: tarPlural[category],
-                        file,
-                        resource
-                    });
-                }).flat().filter(element => element);
-                return (results && results.length ? results : undefined);
-        }
+                case 'array':
+                    const srcArray = resource.getSource();
+                    const tarArray = resource.getTarget() || [];
+                    results = srcArray.flatMap((item, i) => {
+                        return this.matchString({
+                            source: srcArray[i],
+                            target: tarArray[i],
+                            file,
+                            resource
+                        });
+                    }).filter(element => element);
+                    return results && results.length ? results : undefined;
+    
+                case 'plural':
+                    const srcPlural = resource.getSource();
+                    const tarPlural = resource.getTarget();
+                    const categorySet = new Set(Object.keys(srcPlural).concat(Object.keys(tarPlural)));
+    
+                    results = Array.from(categorySet).flatMap(category => {
+                        return this.matchString({
+                            source: srcPlural[category] || srcPlural.other,
+                            target: tarPlural[category],
+                            file,
+                            resource
+                        });
+                    }).filter(element => element);
+                    return results && results.length ? results : undefined;
+            }
+        }).filter(element => element);
+        return resultArray?.length > 1 ? resultArray : (resultArray?.length === 1 ? resultArray[0] : undefined);
     }
 }
 

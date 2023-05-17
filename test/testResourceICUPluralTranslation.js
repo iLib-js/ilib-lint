@@ -21,7 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceICUPluralTranslation from "../src/rules/ResourceICUPluralTranslation.js";
 
-import { Result } from 'i18nlint-common';
+import { Result, IntermediateRepresentation } from 'i18nlint-common';
 
 export const testResourceICUPluralTranslation = {
     testResourceICUPluralTranslationsMatchNoError: function(test) {
@@ -31,16 +31,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {count, plural, one {gibt # Datei} other {gibt # Dateien}} in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {count, plural, one {gibt # Datei} other {gibt # Dateien}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -54,16 +57,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {count, plural, one {is # file} other {gibt # Dateien}} in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {count, plural, one {is # file} other {gibt # Dateien}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "warning",
@@ -71,7 +77,7 @@ export const testResourceICUPluralTranslation = {
             id: "plural.test",
             highlight: 'Target: <e0>one {is # file}</e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: 'one {is # file}'
         });
@@ -87,16 +93,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}} other {are # files and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {count, plural, one {gibt # Datei und {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}} other {gibt # Dateien und {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}}} in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}} other {are # files and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {count, plural, one {gibt # Datei und {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}} other {gibt # Dateien und {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.ok(Array.isArray(actual));
@@ -109,7 +118,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>one {{folderCount} folder}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'one {{folderCount} folder}'
             }),
@@ -119,7 +128,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {{folderCount} folders}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'other {{folderCount} folders}'
             }),
@@ -129,7 +138,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>one {{folderCount} folder}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'one {{folderCount} folder}'
             }),
@@ -139,7 +148,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {{folderCount} folders}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'other {{folderCount} folders}'
             })
@@ -156,16 +165,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There <tagName> {folderCount, plural, one {is {folderCount} folder} other {are {folderCount} folders}} </tagName> in the folder.',
-                targetLocale: "de-DE",
-                target: "Er <tagName> {folderCount, plural, one {ist {folderCount} Ordner} other {zeit {folderCount} Ordner}} </tagName> in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There <tagName> {folderCount, plural, one {is {folderCount} folder} other {are {folderCount} folders}} </tagName> in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Er <tagName> {folderCount, plural, one {ist {folderCount} Ordner} other {zeit {folderCount} Ordner}} </tagName> in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -179,16 +191,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There <tagName> {folderCount, plural, one {is {folderCount} folder} other {are {folderCount} folders}} </tagName> in the folder.',
-                targetLocale: "de-DE",
-                target: "Er <tagName> {folderCount, plural, one {is {folderCount} folder} other {are {folderCount} folders}} </tagName> in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There <tagName> {folderCount, plural, one {is {folderCount} folder} other {are {folderCount} folders}} </tagName> in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Er <tagName> {folderCount, plural, one {is {folderCount} folder} other {are {folderCount} folders}} </tagName> in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.ok(Array.isArray(actual));
@@ -201,7 +216,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>one {is {folderCount} folder}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'one {is {folderCount} folder}'
             }),
@@ -211,7 +226,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {are {folderCount} folders}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'other {are {folderCount} folders}'
             })
@@ -228,16 +243,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file and <tagName> {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}} </tagName>} other {are # files}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {count, plural, one {gibt # Datei und <tagName> {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}} </tagName>} other {gibt # Dateien}} in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file and <tagName> {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}} </tagName>} other {are # files}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {count, plural, one {gibt # Datei und <tagName> {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}} </tagName>} other {gibt # Dateien}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.ok(Array.isArray(actual));
@@ -250,7 +268,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>one {{folderCount} folder}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'one {{folderCount} folder}'
             }),
@@ -260,7 +278,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {{folderCount} folders}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'other {{folderCount} folders}'
             })
@@ -277,16 +295,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file and {num, number, currency/GBP} {date, date, medium} {time, time, medium}} other {are # files}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {count, plural, one {gibt # Datei und {num, number, currency/GBP} {date, date, medium} {time, time, medium}} other {gibt # Dateien}} in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file and {num, number, currency/GBP} {date, date, medium} {time, time, medium}} other {are # files}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {count, plural, one {gibt # Datei und {num, number, currency/GBP} {date, date, medium} {time, time, medium}} other {gibt # Dateien}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -300,16 +321,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {num, selectordinal, one {first} two {second} other {nth}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {num, selectordinal, one {first} two {second} other {nth}} in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {num, selectordinal, one {first} two {second} other {nth}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {num, selectordinal, one {first} two {second} other {nth}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.ok(Array.isArray(actual));
@@ -322,7 +346,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>one {first}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'one {first}'
             }),
@@ -332,7 +356,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>two {second}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'two {second}'
             }),
@@ -342,7 +366,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {nth}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'other {nth}'
             })
@@ -359,16 +383,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {foo, select, male {male string} female {female string} other {other string}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {foo, select, male {male string} female {female string} other {other string}} in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {foo, select, male {male string} female {female string} other {other string}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {foo, select, male {male string} female {female string} other {other string}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.ok(Array.isArray(actual));
@@ -381,7 +408,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>male {male string}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'male {male string}'
             }),
@@ -391,7 +418,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>female {female string}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'female {female string}'
             }),
@@ -401,7 +428,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {other string}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'other {other string}'
             })
@@ -418,16 +445,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}} other {are # files and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es {count, plural, one {is # file and {folderCount, plural, one {{folderCount} Ordner} other {{folderCount} Ordner}}} other {are # files and {folderCount, plural, one {{folderCount} Ordner} other {{folderCount} Ordner}}}} in the folder.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}} other {are # files and {folderCount, plural, one {{folderCount} folder} other {{folderCount} folders}}}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es {count, plural, one {is # file and {folderCount, plural, one {{folderCount} Ordner} other {{folderCount} Ordner}}} other {are # files and {folderCount, plural, one {{folderCount} Ordner} other {{folderCount} Ordner}}}} in the folder.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.ok(Array.isArray(actual));
@@ -440,7 +470,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>one {is # file and {plural}}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'one {is # file and {plural}}'
             }),
@@ -450,7 +480,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {are # files and {plural}}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: 'other {are # files and {plural}}'
             })
@@ -467,16 +497,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "ru-RU",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
-                targetLocale: "ru-RU",
-                target: 'There {count, plural, one {is # file (Russian)} few {are # files (Russian)} other {are # files (Russian)}} in the folder.',
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                    targetLocale: "ru-RU",
+                    target: 'There {count, plural, one {is # file (Russian)} few {are # files (Russian)} other {are # files (Russian)}} in the folder.',
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -490,16 +523,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "ru-RU",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
-                targetLocale: "ru-RU",
-                target: 'There {count, plural, one {is # file} few {are # files} other {are # files}} in the folder.',
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                    targetLocale: "ru-RU",
+                    target: 'There {count, plural, one {is # file} few {are # files} other {are # files}} in the folder.',
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.ok(Array.isArray(actual));
@@ -512,7 +548,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>one {is # file}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ru-RU",
                 source: 'one {is # file}'
             }),
@@ -522,7 +558,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>few {are # files}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ru-RU",
                 source: 'other {are # files}'
             }),
@@ -532,7 +568,7 @@ export const testResourceICUPluralTranslation = {
                 id: "plural.test",
                 highlight: 'Target: <e0>other {are # files}</e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ru-RU",
                 source: 'other {are # files}'
             }),
@@ -549,16 +585,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
-                targetLocale: "ja-JP",
-                target: 'There {count, plural, other {are # files (Japanese)}} in the folder.',
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                    targetLocale: "ja-JP",
+                    target: 'There {count, plural, other {are # files (Japanese)}} in the folder.',
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -572,16 +611,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
-                targetLocale: "ja-JP",
-                target: 'There {count, plural, other {are # files}} in the folder.',
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                    targetLocale: "ja-JP",
+                    target: 'There {count, plural, other {are # files}} in the folder.',
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
 
@@ -591,7 +633,7 @@ export const testResourceICUPluralTranslation = {
             id: "plural.test",
             highlight: 'Target: <e0>other {are # files}</e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "ja-JP",
             source: 'other {are # files}'
         });
@@ -607,16 +649,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'Maximum custodians',
-                targetLocale: "fr-FR",
-                target: "Depositaires maximaux",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'Maximum custodians',
+                    targetLocale: "fr-FR",
+                    target: "Depositaires maximaux",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -630,16 +675,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'Maximum {max} custodians',
-                targetLocale: "fr-FR",
-                target: "Depositaires maximaux {max}",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'Maximum {max} custodians',
+                    targetLocale: "fr-FR",
+                    target: "Depositaires maximaux {max}",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -653,16 +701,19 @@ export const testResourceICUPluralTranslation = {
         test.ok(rule);
 
         const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
-                targetLocale: "de-DE",
-                target: "Es gibt Dateien in dem Ordner.",
-                pathName: "a/b/c.xliff"
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: 'There {count, plural, one {is # file} other {are # files}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "Es gibt Dateien in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 

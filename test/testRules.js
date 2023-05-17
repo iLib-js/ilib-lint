@@ -25,7 +25,7 @@ import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
 import ResourceDNTTerms from '../src/rules/ResourceDNTTerms.js';
 import ResourceNoTranslation from '../src/rules/ResourceNoTranslation.js';
 
-import { Result } from 'i18nlint-common';
+import { Result, IntermediateRepresentation } from 'i18nlint-common';
 
 export const testRules = {
     testResourceICUPluralsMatchNoError: function(test) {
@@ -34,17 +34,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -57,17 +59,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, one {{total, plural, one {There is {count} of {total} item available} other {There is {count} of {total} items available}}} other {{total, plural, one {There are {count} of {total} item available} other {There are {count} of {total} items available}}}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, one {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}} other {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {{total, plural, one {There is {count} of {total} item available} other {There is {count} of {total} items available}}} other {{total, plural, one {There are {count} of {total} item available} other {There are {count} of {total} items available}}}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, one {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}} other {{total, plural, one {Es gibt {count} von {total} Arkitel verfügbar} other {Es gibt {count} von {total} Arkitel verfügbar}}}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -80,43 +84,45 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {There is {count} of {total} item available}
-                            other {There is {count} of {total} items available}
-                        }
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: `{count, plural,
+                one {
+                    {total, plural,
+                        one {There is {count} of {total} item available}
+                        other {There is {count} of {total} items available}
                     }
-                    other {
-                        {total, plural,
-                            one {There are {count} of {total} item available}
-                            other {There are {count} of {total} items available}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {There are {count} of {total} item available}
+                        other {There are {count} of {total} items available}
                     }
-                }`,
-                targetLocale: "de-DE",
-                target: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {Es gibt {count} von {total} Arkitel verfügbar}
-                            other {Es gibt {count} von {total} Arkitel verfügbar}
-                        }
+                }
+            }`,
+            targetLocale: "de-DE",
+            target: `{count, plural,
+                one {
+                    {total, plural,
+                        one {Es gibt {count} von {total} Arkitel verfügbar}
+                        other {Es gibt {count} von {total} Arkitel verfügbar}
                     }
-                    other {
-                        {total, plural,
-                            one {Es gibt {count} von {total} Arkitel verfügbar}
-                            other {Es gibt {count} von {total} Arkitel verfügbar}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {Es gibt {count} von {total} Arkitel verfügbar}
+                        other {Es gibt {count} von {total} Arkitel verfügbar}
                     }
-                }`,
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+                }
+            }`,
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -129,17 +135,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, one {{Dies ist einzigartig} other {Dies ist mehrerartig}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, one {{Dies ist einzigartig} other {Dies ist mehrerartig}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -149,7 +157,7 @@ export const testRules = {
             highlight: 'Target: {count, plural, one {{Dies <e0>ist einzigartig} other {Dies ist mehrerartig}}</e0>',
             rule,
             locale: "de-DE",
-            pathName: "x/y"
+            pathName: "a/b/c.xliff"
         });
         test.deepEqual(actual, expected);
 
@@ -162,17 +170,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -182,7 +192,7 @@ export const testRules = {
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}<e0></e0>',
             rule,
             locale: "de-DE",
-            pathName: "x/y"
+            pathName: "a/b/c.xliff"
         });
         test.deepEqual(actual, expected);
 
@@ -195,17 +205,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -215,7 +227,7 @@ export const testRules = {
             highlight: 'Target: {count, plural, eins {Dies ist einzigartig} andere {Dies ist mehrerartig}<e0>}</e0>',
             rule,
             locale: "de-DE",
-            pathName: "x/y"
+            pathName: "a/b/c.xliff"
         });
         test.deepEqual(actual, expected);
 
@@ -228,17 +240,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ru-RU",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, one {This is singular} other {This is plural}}',
-                targetLocale: "ru-RU",
-                target: "{count, plural, one {Это единственное число} other {это множественное число}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "ru-RU",
+            target: "{count, plural, one {Это единственное число} other {это множественное число}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -248,7 +262,7 @@ export const testRules = {
             highlight: 'Target: {count, plural, one {Это единственное число} other {это множественное число}}<e0></e0>',
             rule,
             locale: "ru-RU",
-            pathName: "x/y"
+            pathName: "a/b/c.xliff"
         });
         test.deepEqual(actual, expected);
 
@@ -261,17 +275,17 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, other {This is plural}}',
+            targetLocale: "ru-RU",
+            target: "{count, plural, one {Это единственное число} few {это множественное число} other {это множественное число}}",
+            pathName: "a/b/c.xliff"
+        });
         const actual = rule.match({
             locale: "ru-RU",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, other {This is plural}}',
-                targetLocale: "ru-RU",
-                target: "{count, plural, one {Это единственное число} few {это множественное число} other {это множественное число}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         // this rule does not test for problems in the source string
         test.ok(!actual);
@@ -285,17 +299,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "warning",
@@ -303,7 +319,7 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: '{count, plural, one {This is singular} other {This is plural}}'
         });
@@ -318,17 +334,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, =1 {Dies is eins} one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, =1 {Dies is eins} one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -341,17 +359,19 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
-                targetLocale: "de-DE",
-                target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}',
+            targetLocale: "de-DE",
+            target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -359,7 +379,7 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: '{count, plural, =1 {This is one} one {This is singular} other {This is plural}}'
         });
@@ -374,95 +394,97 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ru-RU",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {There is {count} of {total} item available}
-                            other {There is {count} of {total} items available}
-                        }
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: `{count, plural,
+                one {
+                    {total, plural,
+                        one {There is {count} of {total} item available}
+                        other {There is {count} of {total} items available}
                     }
-                    other {
-                        {total, plural,
-                            one {There are {count} of {total} item available}
-                            other {There are {count} of {total} items available}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {There are {count} of {total} item available}
+                        other {There are {count} of {total} items available}
                     }
-                }`,
-                targetLocale: "ru-RU",
-                target: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {Есть {count} из {total} статьи}
-                            few {Есть {count} из {total} статей}
-                            other {Есть {count} из {total} статей}
-                        }
+                }
+            }`,
+            targetLocale: "ru-RU",
+            target: `{count, plural,
+                one {
+                    {total, plural,
+                        one {Есть {count} из {total} статьи}
+                        few {Есть {count} из {total} статей}
+                        other {Есть {count} из {total} статей}
                     }
-                    few {
-                        {total, plural,
-                            one {Есть {count} из {total} статьи}
-                            other {Есть {count} из {total} статей}
-                        }
+                }
+                few {
+                    {total, plural,
+                        one {Есть {count} из {total} статьи}
+                        other {Есть {count} из {total} статей}
                     }
-                    other {
-                        {total, plural,
-                            one {Есть {count} из {total} статьи}
-                            few {Есть {count} из {total} статей}
-                            other {Есть {count} из {total} статей}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {Есть {count} из {total} статьи}
+                        few {Есть {count} из {total} статей}
+                        other {Есть {count} из {total} статей}
                     }
-                }`,
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+                }
+            }`,
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
             description: "Missing plural categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
             highlight: 'Target: {count, plural,\n' +
-                '                    one {\n' +
-                '                        {total, plural,\n' +
-                '                            one {Есть {count} из {total} статьи}\n' +
-                '                            few {Есть {count} из {total} статей}\n' +
-                '                            other {Есть {count} из {total} статей}\n' +
-                '                        }\n' +
+                '                one {\n' +
+                '                    {total, plural,\n' +
+                '                        one {Есть {count} из {total} статьи}\n' +
+                '                        few {Есть {count} из {total} статей}\n' +
+                '                        other {Есть {count} из {total} статей}\n' +
                 '                    }\n' +
-                '                    few {\n' +
-                '                        {total, plural,\n' +
-                '                            one {Есть {count} из {total} статьи}\n' +
-                '                            other {Есть {count} из {total} статей}\n' +
-                '                        }\n' +
+                '                }\n' +
+                '                few {\n' +
+                '                    {total, plural,\n' +
+                '                        one {Есть {count} из {total} статьи}\n' +
+                '                        other {Есть {count} из {total} статей}\n' +
                 '                    }\n' +
-                '                    other {\n' +
-                '                        {total, plural,\n' +
-                '                            one {Есть {count} из {total} статьи}\n' +
-                '                            few {Есть {count} из {total} статей}\n' +
-                '                            other {Есть {count} из {total} статей}\n' +
-                '                        }\n' +
+                '                }\n' +
+                '                other {\n' +
+                '                    {total, plural,\n' +
+                '                        one {Есть {count} из {total} статьи}\n' +
+                '                        few {Есть {count} из {total} статей}\n' +
+                '                        other {Есть {count} из {total} статей}\n' +
                 '                    }\n' +
-                '                }<e0></e0>',
+                '                }\n' +
+                '            }<e0></e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "ru-RU",
             source: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {There is {count} of {total} item available}
-                            other {There is {count} of {total} items available}
-                        }
+                one {
+                    {total, plural,
+                        one {There is {count} of {total} item available}
+                        other {There is {count} of {total} items available}
                     }
-                    other {
-                        {total, plural,
-                            one {There are {count} of {total} item available}
-                            other {There are {count} of {total} items available}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {There are {count} of {total} item available}
+                        other {There are {count} of {total} items available}
                     }
-                }`
+                }
+            }`
         });
         test.deepEqual(actual, expected);
 
@@ -475,50 +497,52 @@ export const testRules = {
         const rule = new ResourceICUPlurals();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ru-RU",
-            resource: new ResourceString({
-                key: "plural.test",
-                sourceLocale: "en-US",
-                source: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {There is {count} of {total} item available}
-                            other {There is {count} of {total} items available}
-                        }
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: `{count, plural,
+                one {
+                    {total, plural,
+                        one {There is {count} of {total} item available}
+                        other {There is {count} of {total} items available}
                     }
-                    other {
-                        {total, plural,
-                            one {There are {count} of {total} item available}
-                            other {There are {count} of {total} items available}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {There are {count} of {total} item available}
+                        other {There are {count} of {total} items available}
                     }
-                }`,
-                targetLocale: "ru-RU",
-                target: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {Есть {count} из {total} статьи}
-                            few {Есть {count} из {total} статей}
-                            other {Есть {count} из {total} статей}
-                        }
+                }
+            }`,
+            targetLocale: "ru-RU",
+            target: `{count, plural,
+                one {
+                    {total, plural,
+                        one {Есть {count} из {total} статьи}
+                        few {Есть {count} из {total} статей}
+                        other {Есть {count} из {total} статей}
                     }
-                    few {
-                        {total, plural,
-                            one {Есть {count} из {total} статьи}
-                            other {Есть {count} из {total} статей}
-                        }
+                }
+                few {
+                    {total, plural,
+                        one {Есть {count} из {total} статьи}
+                        other {Есть {count} из {total} статей}
                     }
-                    other {
-                        {total, plural,
-                            one {Есть {count} из {total} статьи}
-                            other {Есть {count} из {total} статей}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {Есть {count} из {total} статьи}
+                        other {Есть {count} из {total} статей}
                     }
-                }`,
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+                }
+            }`,
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = [
             new Result({
@@ -526,86 +550,86 @@ export const testRules = {
                 description: "Missing plural categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
                 highlight: 'Target: {count, plural,\n' +
-                    '                    one {\n' +
-                    '                        {total, plural,\n' +
-                    '                            one {Есть {count} из {total} статьи}\n' +
-                    '                            few {Есть {count} из {total} статей}\n' +
-                    '                            other {Есть {count} из {total} статей}\n' +
-                    '                        }\n' +
+                    '                one {\n' +
+                    '                    {total, plural,\n' +
+                    '                        one {Есть {count} из {total} статьи}\n' +
+                    '                        few {Есть {count} из {total} статей}\n' +
+                    '                        other {Есть {count} из {total} статей}\n' +
                     '                    }\n' +
-                    '                    few {\n' +
-                    '                        {total, plural,\n' +
-                    '                            one {Есть {count} из {total} статьи}\n' +
-                    '                            other {Есть {count} из {total} статей}\n' +
-                    '                        }\n' +
+                    '                }\n' +
+                    '                few {\n' +
+                    '                    {total, plural,\n' +
+                    '                        one {Есть {count} из {total} статьи}\n' +
+                    '                        other {Есть {count} из {total} статей}\n' +
                     '                    }\n' +
-                    '                    other {\n' +
-                    '                        {total, plural,\n' +
-                    '                            one {Есть {count} из {total} статьи}\n' +
-                    '                            other {Есть {count} из {total} статей}\n' +
-                    '                        }\n' +
+                    '                }\n' +
+                    '                other {\n' +
+                    '                    {total, plural,\n' +
+                    '                        one {Есть {count} из {total} статьи}\n' +
+                    '                        other {Есть {count} из {total} статей}\n' +
                     '                    }\n' +
-                    '                }<e0></e0>',
+                    '                }\n' +
+                    '            }<e0></e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ru-RU",
                 source: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {There is {count} of {total} item available}
-                            other {There is {count} of {total} items available}
-                        }
+                one {
+                    {total, plural,
+                        one {There is {count} of {total} item available}
+                        other {There is {count} of {total} items available}
                     }
-                    other {
-                        {total, plural,
-                            one {There are {count} of {total} item available}
-                            other {There are {count} of {total} items available}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {There are {count} of {total} item available}
+                        other {There are {count} of {total} items available}
                     }
-                }`
+                }
+            }`
             }),
             new Result({
                 severity: "error",
                 description: "Missing plural categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
                 highlight: 'Target: {count, plural,\n' +
-                    '                    one {\n' +
-                    '                        {total, plural,\n' +
-                    '                            one {Есть {count} из {total} статьи}\n' +
-                    '                            few {Есть {count} из {total} статей}\n' +
-                    '                            other {Есть {count} из {total} статей}\n' +
-                    '                        }\n' +
+                    '                one {\n' +
+                    '                    {total, plural,\n' +
+                    '                        one {Есть {count} из {total} статьи}\n' +
+                    '                        few {Есть {count} из {total} статей}\n' +
+                    '                        other {Есть {count} из {total} статей}\n' +
                     '                    }\n' +
-                    '                    few {\n' +
-                    '                        {total, plural,\n' +
-                    '                            one {Есть {count} из {total} статьи}\n' +
-                    '                            other {Есть {count} из {total} статей}\n' +
-                    '                        }\n' +
+                    '                }\n' +
+                    '                few {\n' +
+                    '                    {total, plural,\n' +
+                    '                        one {Есть {count} из {total} статьи}\n' +
+                    '                        other {Есть {count} из {total} статей}\n' +
                     '                    }\n' +
-                    '                    other {\n' +
-                    '                        {total, plural,\n' +
-                    '                            one {Есть {count} из {total} статьи}\n' +
-                    '                            other {Есть {count} из {total} статей}\n' +
-                    '                        }\n' +
+                    '                }\n' +
+                    '                other {\n' +
+                    '                    {total, plural,\n' +
+                    '                        one {Есть {count} из {total} статьи}\n' +
+                    '                        other {Есть {count} из {total} статей}\n' +
                     '                    }\n' +
-                    '                }<e0></e0>',
+                    '                }\n' +
+                    '            }<e0></e0>',
                 rule,
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ru-RU",
                 source: `{count, plural,
-                    one {
-                        {total, plural,
-                            one {There is {count} of {total} item available}
-                            other {There is {count} of {total} items available}
-                        }
+                one {
+                    {total, plural,
+                        one {There is {count} of {total} item available}
+                        other {There is {count} of {total} items available}
                     }
-                    other {
-                        {total, plural,
-                            one {There are {count} of {total} item available}
-                            other {There are {count} of {total} items available}
-                        }
+                }
+                other {
+                    {total, plural,
+                        one {There are {count} of {total} item available}
+                        other {There are {count} of {total} items available}
                     }
-                }`
+                }
+            }`
             }),
         ]
         test.deepEqual(actual, expected);
@@ -633,7 +657,7 @@ export const testRules = {
                 pathName: "a/b/c.xliff",
                 state: "translated"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -660,7 +684,7 @@ export const testRules = {
                 pathName: "a/b/c.xliff",
                 state: "needs-review"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -687,7 +711,7 @@ export const testRules = {
                 pathName: "a/b/c.xliff",
                 state: "new"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -695,7 +719,7 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Resource found with disallowed state: <e0>new</e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: '{count, plural, one {This is singular} other {This is plural}}'
         });
@@ -724,7 +748,7 @@ export const testRules = {
                 pathName: "a/b/c.xliff",
                 state: "new"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -732,7 +756,7 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Resource found with disallowed state: <e0>new</e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: '{count, plural, one {This is singular} other {This is plural}}'
         });
@@ -758,7 +782,7 @@ export const testRules = {
                 pathName: "a/b/c.xliff",
                 state: "translated"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -782,7 +806,7 @@ export const testRules = {
                 pathName: "a/b/c.xliff",
                 state: "new"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -790,7 +814,7 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Resource found with disallowed state: <e0>new</e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: '{count, plural, one {This is singular} other {This is plural}}'
         });
@@ -818,7 +842,7 @@ export const testRules = {
                 target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
                 pathName: "a/b/c.xliff"
             }),
-            file: "x/y"
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "error",
@@ -826,7 +850,7 @@ export const testRules = {
             id: "plural.test",
             highlight: 'Resource found with no state.',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: '{count, plural, one {This is singular} other {This is plural}}'
         });
@@ -841,21 +865,23 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.both-edges-match",
+            sourceLocale: "en-US",
+            source: "Some source string. ",
+            targetLocale: "de-DE",
+            target: "Some target string. ",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.both-edges-match",
-                sourceLocale: "en-US",
-                source: "Some source string. ",
-                targetLocale: "de-DE",
-                target: "Some target string. ",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
 
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.equal(result, undefined); // for a valid resource match result should not be produced
         test.done();
     },
@@ -866,27 +892,29 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.leading-space-missing",
+            sourceLocale: "en-US",
+            source: " some source string.",
+            targetLocale: "de-DE",
+            target: "some target string.",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // accidentally ommited space in front of target string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.leading-space-missing",
-                sourceLocale: "en-US",
-                source: " some source string.",
-                targetLocale: "de-DE",
-                target: "some target string.",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: " some source string.",
                 id: "resource-edge-whitespace.leading-space-missing",
@@ -903,27 +931,29 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.leading-space-extra",
+            sourceLocale: "en-US",
+            source: "Some source string.",
+            targetLocale: "de-DE",
+            target: " Some target string.",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // accidentally added space in front of target string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.leading-space-extra",
-                sourceLocale: "en-US",
-                source: "Some source string.",
-                targetLocale: "de-DE",
-                target: " Some target string.",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string.",
                 id: "resource-edge-whitespace.leading-space-extra",
@@ -940,27 +970,29 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.trailing-space-missing",
+            sourceLocale: "en-US",
+            source: "Some source string ",
+            targetLocale: "de-DE",
+            target: "Some target string",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // accidentally ommited space in the end of target string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.trailing-space-missing",
-                sourceLocale: "en-US",
-                source: "Some source string ",
-                targetLocale: "de-DE",
-                target: "Some target string",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string ",
                 id: "resource-edge-whitespace.trailing-space-missing",
@@ -977,27 +1009,29 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.trailing-space-extra",
+            sourceLocale: "en-US",
+            source: "Some source string.",
+            targetLocale: "de-DE",
+            target: "Some target string. ",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // accidentally added space in the end of target string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.trailing-space-extra",
-                sourceLocale: "en-US",
-                source: "Some source string.",
-                targetLocale: "de-DE",
-                target: "Some target string. ",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string.",
                 id: "resource-edge-whitespace.trailing-space-extra",
@@ -1014,27 +1048,29 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.trailing-space-extra-more",
+            sourceLocale: "en-US",
+            source: "Some source string ",
+            targetLocale: "de-DE",
+            target: "Some target string  ",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // accidentally added space in the end of target string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.trailing-space-extra-more",
-                sourceLocale: "en-US",
-                source: "Some source string ",
-                targetLocale: "de-DE",
-                target: "Some target string  ",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string ",
                 id: "resource-edge-whitespace.trailing-space-extra-more",
@@ -1051,26 +1087,28 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.both-spaces-missing",
+            sourceLocale: "en-US",
+            source: " some source string ",
+            targetLocale: "de-DE",
+            target: "some target string",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // accidentally ommited space in front and in the end of target string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.both-spaces-missing",
-                sourceLocale: "en-US",
-                source: " some source string ",
-                targetLocale: "de-DE",
-                target: "some target string",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(result, [
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: " some source string ",
                 id: "resource-edge-whitespace.both-spaces-missing",
@@ -1080,7 +1118,7 @@ export const testRules = {
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: " some source string ",
                 id: "resource-edge-whitespace.both-spaces-missing",
@@ -1097,21 +1135,23 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.spaces-only-match",
+            sourceLocale: "en-US",
+            source: " ",
+            targetLocale: "de-DE",
+            target: " ",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // all-whitespace string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.spaces-only-match",
-                sourceLocale: "en-US",
-                source: " ",
-                targetLocale: "de-DE",
-                target: " ",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.equal(result, undefined); // for a valid resource match result should not be produced
         test.done();
     },
@@ -1122,27 +1162,29 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.spaces-only-extra",
+            sourceLocale: "en-US",
+            source: " ",
+            targetLocale: "de-DE",
+            target: "  ",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // all-whitespace string
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.spaces-only-extra",
-                sourceLocale: "en-US",
-                source: " ",
-                targetLocale: "de-DE",
-                target: "  ",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: " ",
                 id: "resource-edge-whitespace.spaces-only-extra",
@@ -1159,21 +1201,23 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.undefined-source",
+            sourceLocale: "en-US",
+            source: undefined,
+            targetLocale: "de-DE",
+            target: " ",
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // missing source
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.undefined-source",
-                sourceLocale: "en-US",
-                source: undefined,
-                targetLocale: "de-DE",
-                target: " ",
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.equal(result, undefined); // this rule should not process a resource where source is not a string
         test.done();
     },
@@ -1184,21 +1228,23 @@ export const testRules = {
         const rule = new ResourceEdgeWhitespace();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-edge-whitespace.undefined-target",
+            sourceLocale: "en-US",
+            source: " ",
+            targetLocale: "de-DE",
+            target: undefined,
+            pathName: "resource-edge-whitespace-test.xliff",
+            state: "translated",
+        });
         const subject = {
             // missing target
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-edge-whitespace.undefined-target",
-                sourceLocale: "en-US",
-                source: " ",
-                targetLocale: "de-DE",
-                target: undefined,
-                pathName: "resource-edge-whitespace-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.equal(result, undefined); // this rule should not process a resource where target is not a string
         test.done();
     },
@@ -1209,21 +1255,23 @@ export const testRules = {
         const rule = new ResourceCompleteness();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-completeness-test.complete",
+            sourceLocale: "en-US",
+            source: "Some source string.",
+            targetLocale: "de-DE",
+            target: "Some target string.",
+            pathName: "completeness-test.xliff",
+            state: "translated",
+        });
         const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-completeness-test.complete",
-                sourceLocale: "en-US",
-                source: "Some source string.",
-                targetLocale: "de-DE",
-                target: "Some target string.",
-                pathName: "completeness-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
 
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.equal(result, undefined); // for a valid resource match result should not be produced
         test.done();
     },
@@ -1234,27 +1282,29 @@ export const testRules = {
         const rule = new ResourceCompleteness();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-completeness-test.extra-target",
+            sourceLocale: "en-US",
+            source: undefined,
+            targetLocale: "de-DE",
+            target: "Some target string.",
+            pathName: "completeness-test.xliff",
+            state: "translated",
+        });
         const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-completeness-test.extra-target",
-                sourceLocale: "en-US",
-                source: undefined,
-                targetLocale: "de-DE",
-                target: "Some target string.",
-                pathName: "completeness-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
 
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "warning",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: undefined,
                 id: "resource-completeness-test.extra-target",
@@ -1271,27 +1321,29 @@ export const testRules = {
         const rule = new ResourceCompleteness();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-completeness-test.target-missing",
+            sourceLocale: "en-US",
+            source: "Some source string.",
+            targetLocale: "de-DE",
+            target: undefined,
+            pathName: "completeness-test.xliff",
+            state: "translated",
+        });
         const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-completeness-test.target-missing",
-                sourceLocale: "en-US",
-                source: "Some source string.",
-                targetLocale: "de-DE",
-                target: undefined,
-                pathName: "completeness-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
 
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         test.deepEqual(
             result,
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string.",
                 id: "resource-completeness-test.target-missing",
@@ -1308,21 +1360,23 @@ export const testRules = {
         const rule = new ResourceCompleteness();
         test.ok(rule);
 
+        const resource = new ResourceString({
+            key: "resource-completeness-test.target-missing-same-language",
+            sourceLocale: "en-US",
+            source: "Some source string.",
+            targetLocale: "en-GB",
+            target: undefined,
+            pathName: "completeness-test.xliff",
+            state: "translated",
+        });
         const subject = {
-            locale: "en-US",
-            file: "x/y",
-            resource: new ResourceString({
-                key: "resource-completeness-test.target-missing-same-language",
-                sourceLocale: "en-US",
-                source: "Some source string.",
-                targetLocale: "en-GB",
-                target: undefined,
-                pathName: "completeness-test.xliff",
-                state: "translated",
-            }),
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         };
 
-        const result = rule.match(subject);
+        const result = rule.matchString(subject);
         // no error should be produced -
         // en-US and en-GB have same language so target value is optional in this case
         // (it can be ommited for those resources where target is equal to source)
@@ -1340,10 +1394,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-missing",
                 sourceLocale: "en-US",
                 source: "Some source string with Some DNT term in it.",
@@ -1351,22 +1405,25 @@ export const testRules = {
                 target: "Some target string with an incorrecly translated DNT term in it.",
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(
             result,
-            [new Result({
+            new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string with Some DNT term in it.",
                 id: "resource-dnt-test.dnt-missing",
                 description: "A DNT term is missing in target string.",
                 highlight: `Missing term: <e0>Some DNT term</e0>`,
-            })]
+            })
         );
         test.done();
     },
@@ -1381,10 +1438,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-terms-from-txt",
                 sourceLocale: "en-US",
                 source: "Some source string with Some DNT term in it.",
@@ -1392,22 +1449,25 @@ export const testRules = {
                 target: "Some target string with an incorrecly translated DNT term in it.",
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(
             result,
-            [new Result({
+            new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string with Some DNT term in it.",
                 id: "resource-dnt-test.dnt-terms-from-txt",
                 description: "A DNT term is missing in target string.",
                 highlight: `Missing term: <e0>Some DNT term</e0>`,
-            })]
+            })
         );
         test.done();
     },
@@ -1422,10 +1482,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-terms-from-json",
                 sourceLocale: "en-US",
                 source: "Some source string with Some DNT term in it.",
@@ -1433,22 +1493,25 @@ export const testRules = {
                 target: "Some target string with an incorrecly translated DNT term in it.",
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(
             result,
-            [new Result({
+            new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some source string with Some DNT term in it.",
                 id: "resource-dnt-test.dnt-terms-from-json",
                 description: "A DNT term is missing in target string.",
                 highlight: `Missing term: <e0>Some DNT term</e0>`,
-            })]
+            })
         );
         test.done();
     },
@@ -1465,10 +1528,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-missing-multiple",
                 sourceLocale: "en-US",
                 source: "Some source string with Some DNT term and Another DNT term in it.",
@@ -1476,17 +1539,20 @@ export const testRules = {
                 target: "Some target string with an incorrecly translated DNT term and another incorrecly translated DNT term in it.",
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(
             result,
             [
                 new Result({
                     rule,
                     severity: "error",
-                    pathName: "x/y",
+                    pathName: "a/b/c.xliff",
                     locale: "de-DE",
                     source: "Some source string with Some DNT term and Another DNT term in it.",
                     id: "resource-dnt-test.dnt-missing-multiple",
@@ -1496,7 +1562,7 @@ export const testRules = {
                 new Result({
                     rule,
                     severity: "error",
-                    pathName: "x/y",
+                    pathName: "a/b/c.xliff",
                     locale: "de-DE",
                     source: "Some source string with Some DNT term and Another DNT term in it.",
                     id: "resource-dnt-test.dnt-missing-multiple",
@@ -1518,10 +1584,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceArray({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourceArray({
                 key: "resource-dnt-test.dnt-missing-resource-array",
                 sourceLocale: "en-US",
                 source: ["not a DNT term item", "Some DNT term item"],
@@ -1529,22 +1595,25 @@ export const testRules = {
                 target: ["translated term item", "incorrecly translated DNT term item"],
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(
             result,
-            [new Result({
+            new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "Some DNT term item",
                 id: "resource-dnt-test.dnt-missing-resource-array",
                 description: "A DNT term is missing in target string.",
                 highlight: `Missing term: <e0>Some DNT term</e0>`,
-            })]
+            })
         );
         test.done();
     },
@@ -1560,15 +1629,15 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourcePlural({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-missing-resource-plural-all-categories",
                 sourceLocale: "en-US",
                 source: {
                     "one": "This is Some DNT term singular",
-                    "many": "This is Some DNT term many"
+                    "other": "This is Some DNT term many"
                 },
                 targetLocale: "de-DE",
                 target: {
@@ -1578,15 +1647,18 @@ export const testRules = {
                 },
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(result, [
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
                 source: "This is Some DNT term singular",
                 id: "resource-dnt-test.dnt-missing-resource-plural-all-categories",
@@ -1596,9 +1668,10 @@ export const testRules = {
             new Result({
                 rule,
                 severity: "error",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "de-DE",
-                source: undefined, // no category `two` defined in source
+                // no category `two` defined in source, so use "other"
+                source: "This is Some DNT term many",
                 id: "resource-dnt-test.dnt-missing-resource-plural-all-categories",
                 description: "A DNT term is missing in target string.",
                 highlight: `Missing term: <e0>Some DNT term</e0>`,
@@ -1618,10 +1691,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourcePlural({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-missing-resource-plural-some-categories",
                 sourceLocale: "en-US",
                 source: {
@@ -1636,22 +1709,23 @@ export const testRules = {
                 },
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
-        test.deepEqual(result, [
-            new Result({
-                rule,
-                severity: "error",
-                pathName: "x/y",
-                locale: "de-DE",
-                source: "This is Some DNT term singular",
-                id: "resource-dnt-test.dnt-missing-resource-plural-some-categories",
-                description: "A DNT term is missing in target string.",
-                highlight: `Missing term: <e0>Some DNT term</e0>`,
-            })
-        ]);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
+        test.deepEqual(result, new Result({
+            rule,
+            severity: "error",
+            pathName: "a/b/c.xliff",
+            locale: "de-DE",
+            source: "This is Some DNT term singular",
+            id: "resource-dnt-test.dnt-missing-resource-plural-some-categories",
+            description: "A DNT term is missing in target string.",
+            highlight: `Missing term: <e0>Some DNT term</e0>`,
+        }));
         test.done();
     },
 
@@ -1665,10 +1739,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceString({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-ok",
                 sourceLocale: "en-US",
                 source: "Some source string with Some DNT term in it.",
@@ -1676,11 +1750,14 @@ export const testRules = {
                 target: "Some target string with Some DNT term in it.",
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
-        test.deepEqual(result, []);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!result);
         test.done();
     },
 
@@ -1694,10 +1771,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourceArray({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourceArray({
                 key: "resource-dnt-test.dnt-ok-resource-array",
                 sourceLocale: "en-US",
                 source: ["not a DNT term item", "Some DNT term item"],
@@ -1705,11 +1782,14 @@ export const testRules = {
                 target: ["translated term item", "correctly translated Some DNT term item"],
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
-        test.deepEqual(result, []);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!result);
         test.done();
     },
 
@@ -1723,10 +1803,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourcePlural({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-ok-resource-plural-all-categories",
                 sourceLocale: "en-US",
                 source: {
@@ -1741,11 +1821,14 @@ export const testRules = {
                 },
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
-        test.deepEqual(result, []);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!result);
         test.done();
     },
 
@@ -1759,10 +1842,10 @@ export const testRules = {
         });
         test.ok(rule);
 
-        const subject = {
-            locale: "de-DE",
-            file: "x/y",
-            resource: new ResourcePlural({
+        const subject = new IntermediateRepresentation({
+            filePath: "a/b/c.xliff",
+            type: "resource",
+            ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-ok-resource-plural-some-categories",
                 sourceLocale: "en-US",
                 source: {
@@ -1777,11 +1860,14 @@ export const testRules = {
                 },
                 pathName: "dnt-test.xliff",
                 state: "translated",
-            }),
-        };
+            })]
+        });
 
-        const result = rule.match(subject);
-        test.deepEqual(result, []);
+        const result = rule.match({
+            ir: subject,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!result);
         test.done();
     },
     

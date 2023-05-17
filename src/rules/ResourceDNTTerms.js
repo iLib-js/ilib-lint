@@ -17,18 +17,19 @@
  * limitations under the License.
  */
 
-import { Rule, Result } from "i18nlint-common";
+import { Result } from "i18nlint-common";
 import { Resource, ResourcePlural } from "ilib-tools-common";
 import fs from "node:fs";
 import path from "node:path";
 
+import ResourceRule from './ResourceRule.js';
+
 /** Rule to ensure that Do Not Translate terms have not been translated;
  * i.e., if a DNT term appears in source, it has to appear in target as well */
-class ResourceDNTTerms extends Rule {
+class ResourceDNTTerms extends ResourceRule {
     /** @readonly */ name = "resource-dnt-terms";
     /** @readonly */ description = "Ensure that Do Not Translate terms have not been translated.";
     /** @readonly */ link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-dnt-terms.md";
-    /** @readonly */ ruleType = "resource";
 
     /**
      * @protected
@@ -51,7 +52,7 @@ class ResourceDNTTerms extends Rule {
      */
 
     constructor(/** @type {ExplicitTerms | FileTerms | {}} */ params) {
-        super({});
+        super(params);
         let /** @type {string[]} */ terms = [];
 
         if ("terms" in params) {
@@ -82,129 +83,39 @@ class ResourceDNTTerms extends Rule {
         this._dntTerms = [...new Set(terms.filter((t) => t.length > 0))];
     }
 
-    /** @override */
-    getRuleType() {
-        return this.ruleType;
-    }
-
-    /** Check that a given resource has both source and target tags set
+    /**
+     * Check that if a given resource has a DNT term in the source, then
+     * it also exists in the target
      * @override
-     * @param {object} options
-     * @param {Resource} options.resource
-     * @param {string} options.file
-     * @param {string} options.locale
-     *
+     * @param {string} source the source string
+     * @param {string} target the target string
+     * @param {import("ilib-tools-common").Resource} resource the resource being checked 
+     * @param {string} file the file where the resource came from
+     * @returns {Array.<Result>|undefined} the results
      */
-    match({ resource, file, locale }) {
+    matchString({ source, target, resource, file }) {
         const resultProps = {
             id: resource.getKey(),
             rule: this,
             pathName: file,
-            locale,
+            locale: resource.getTargetLocale(),
             severity: "error",
             description: "A DNT term is missing in target string.",
         };
 
-        return this._matchResource(resource)?.map((partialResult) => new Result({ ...resultProps, ...partialResult })) ?? [];
-    }
-
-    _matchString(/** @type {string} */ source, /** @type {string} */ target) {
-        const partialResults = [];
+        const results = [];
 
         for (const term of this._dntTerms) {
-            if (source.includes(term) && !target.includes(term)) {
-                partialResults.push({
+            if (source && source.includes(term) && target && !target.includes(term)) {
+                results.push(new Result({
                     source,
                     highlight: `Missing term: <e0>${term}</e0>`,
-                });
+                    ...resultProps
+                }));
             }
         }
-        return partialResults;
-    }
 
-    _matchArray(/** @type {string[]} */ source, /** @type {string[]} */ target) {
-        const partialResults = [];
-
-        // in arrays, simply sequentially compare each item
-        source.forEach((sourceItem, idx) => {
-            const targetItem = target[idx] ?? "";
-            partialResults.push(...this._matchString(sourceItem, targetItem));
-        });
-
-        return partialResults;
-    }
-
-    _matchPlural(
-        /** @type {{[category: string]: string;}} */ source,
-        /** @type {{[category: string]: string;}} */ target
-    ) {
-        const partialResults = [];
-        for (const term of this._dntTerms) {
-            let matchedCategories = Object.keys(source).filter((category) => source[category].includes(term));
-            let requiredCategories;
-
-            if (matchedCategories.length === Object.keys(source).length) {
-                // ALL categories contain DNT term, so ALL target categories should contain it as well
-                requiredCategories = Object.keys(target);
-            } else {
-                // only SOME categories contain DNT term, so only the same categories in target need to contain it
-                requiredCategories = Object.keys(target).filter((category) => matchedCategories.includes(category));
-            }
-
-            for (const category of requiredCategories) {
-                if (!target[category].includes(term)) {
-                    partialResults.push({
-                        source: source[category],
-                        highlight: `Missing term: <e0>${term}</e0>`,
-                    });
-                }
-            }
-        }
-        return partialResults;
-    }
-
-    _matchResource(/** @type {Resource} */ resource) {
-        const source = resource.getSource();
-        const target = resource.getTarget();
-
-        switch (resource.getType()) {
-            case "string":
-                // in ResourceString, both source and target should be just strings
-                if ("string" !== typeof source || "string" !== typeof target) {
-                    return /* don't check when either source or target is not available */;
-                }
-                return this._matchString(source, target);
-            case "array":
-                // in ResourceArray, both source and target should be arrays of strings
-                if (
-                    !(
-                        Array.isArray(source) &&
-                        source.every((s) => "string" === typeof s) &&
-                        Array.isArray(target) &&
-                        target.every((t) => "string" === typeof t)
-                    )
-                ) {
-                    return /** don't check, unexpected types */;
-                }
-                return this._matchArray(/** @type {string[]} */ (source), /** @type {string[]} */ (target));
-            case "plural":
-                // in ResourcePlural, both source and target should be string dictionaries keyed by Unicode CLDR plural category names
-                if (
-                    !(
-                        source instanceof Object &&
-                        target instanceof Object &&
-                        [...Object.entries(source), ...Object.entries(target)].every(
-                            ([k, v]) => ResourcePlural.validPluralCategories.includes(k) && "string" === typeof v
-                        )
-                    )
-                ) {
-                    return /** don't check, unexpected types */;
-                }
-                return this._matchPlural(source, target);
-            default:
-                /** don't check an unknown resource type */
-                return;
-        }
+        return results.filter(element => element);
     }
 
     /** Parse DNT terms from a JSON `string[]` file

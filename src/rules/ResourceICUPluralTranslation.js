@@ -132,14 +132,14 @@ class ResourceICUPluralTranslation extends ResourceRule {
 
         // for each plural, try to match it up with the target plural by name and check if
         // there is a translation
-        let results = Object.keys(sourcePlurals).map(name => {
+        let results = Object.keys(sourcePlurals).flatMap(name => {
             const sourcePlural = sourcePlurals[name];
             const targetPlural = targetPlurals[name];
             if (!targetPlural) {
                 // missing target plurals are for a different rule, so don't report it here
                 return;
             }
-            return Object.keys(targetPlural.options).map(category => {
+            return Object.keys(targetPlural.options).flatMap(category => {
                 const sourceCategory = sourcePlural.options[category] ? category : "other";
                 const sourcePluralCat = sourcePlural.options[sourceCategory];
                 if (!sourcePluralCat) return; // nothing to check!
@@ -168,11 +168,11 @@ class ResourceICUPluralTranslation extends ResourceRule {
 
                 // now the plurals may have plurals nested in them, so recursively check them too
                 return result.concat(this.traverse(resource, file, sourcePluralCat.value, targetPlural.options[category].value));
-             }).flat();
-        }).flat();
+             });
+        });
 
         // now recursively handle the tags
-        results = results.concat(Object.keys(sourceTags).map(name => {
+        results = results.concat(Object.keys(sourceTags).flatMap(name => {
             const sourceTag = sourceTags[name];
             const targetTag = targetTags[name];
             if (!targetTag) {
@@ -180,7 +180,7 @@ class ResourceICUPluralTranslation extends ResourceRule {
                 return;
             }
             return this.traverse(resource, file, sourceTag.children, targetTag.children);
-        }).flat());
+        }));
         return results;
     }
 
@@ -211,7 +211,7 @@ class ResourceICUPluralTranslation extends ResourceRule {
 
         const results = this.traverse(resource, file, sourceAst, targetAst).filter(result => result);
 
-        return (results && results.length < 2) ? results[0] : results;
+        return results;
     }
 }
 

@@ -29,16 +29,18 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "warning",
@@ -46,7 +48,7 @@ export const testResourceNoTranslation = {
             id: "translation.test",
             highlight: 'Target: <e0></e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "en-US",
             source: 'This is the source string.'
         });
@@ -61,18 +63,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                targetLocale: "de-DE",
-                target: "",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            targetLocale: "de-DE",
+            target: "",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "warning",
@@ -80,7 +84,7 @@ export const testResourceNoTranslation = {
             id: "translation.test",
             highlight: 'Target: <e0></e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: 'This is the source string.'
         });
@@ -95,18 +99,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                targetLocale: "de-DE",
-                target: "This is the source string.",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            targetLocale: "de-DE",
+            target: "This is the source string.",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "warning",
@@ -114,7 +120,7 @@ export const testResourceNoTranslation = {
             id: "translation.test",
             highlight: 'Target: <e0>This is the source string.</e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: 'This is the source string.'
         });
@@ -129,18 +135,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                targetLocale: "de-DE",
-                target: "\nThis is \t the source string.   ",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            targetLocale: "de-DE",
+            target: "\nThis is \t the source string.   ",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "warning",
@@ -148,7 +156,7 @@ export const testResourceNoTranslation = {
             id: "translation.test",
             highlight: 'Target: <e0>\nThis is \t the source string.   </e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: 'This is the source string.'
         });
@@ -163,18 +171,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                targetLocale: "de-DE",
-                target: "This is the Source String.",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            targetLocale: "de-DE",
+            target: "This is the Source String.",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         const expected = new Result({
             severity: "warning",
@@ -182,7 +192,7 @@ export const testResourceNoTranslation = {
             id: "translation.test",
             highlight: 'Target: <e0>This is the Source String.</e0>',
             rule,
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             locale: "de-DE",
             source: 'This is the source string.'
         });
@@ -197,18 +207,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                targetLocale: "en-GB",
-                target: "This is the source string.",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            targetLocale: "en-GB",
+            target: "This is the source string.",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
 
         // no results because the source and target both have the same
@@ -225,18 +237,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                pathName: "a/b/c.xliff",
-                targetLocale: "de-DE",
-                target: "Dies ist die Zielzeichenfolge.",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            pathName: "a/b/c.xliff",
+            targetLocale: "de-DE",
+            target: "Dies ist die Zielzeichenfolge.",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         // text is different, so no problem here
         test.ok(!actual);
@@ -250,19 +264,21 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'This is the source string.',
-                dnt: true,
-                targetLocale: "en-GB",
-                target: "This is the source string.",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'This is the source string.',
+            dnt: true,
+            targetLocale: "en-GB",
+            target: "This is the source string.",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
 
         // no results because the resource has the Do Not
@@ -278,18 +294,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'this-is-kabab-text',
-                targetLocale: "de-DE",
-                target: "this-is-kabab-text",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'this-is-kabab-text',
+            targetLocale: "de-DE",
+            target: "this-is-kabab-text",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
 
         // no results because single-word text is automatically DNT
@@ -304,18 +322,20 @@ export const testResourceNoTranslation = {
         const rule = new ResourceNoTranslation();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "translation.test",
-                sourceLocale: "en-US",
-                source: 'test',
-                targetLocale: "de-DE",
-                target: "test",
-                pathName: "a/b/c.xliff",
-                state: "new"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "translation.test",
+            sourceLocale: "en-US",
+            source: 'test',
+            targetLocale: "de-DE",
+            target: "test",
+            pathName: "a/b/c.xliff",
+            state: "new"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
 
         // no results because single word text is automatically DNT
