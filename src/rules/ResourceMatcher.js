@@ -54,9 +54,6 @@ class ResourceMatcher extends Rule {
      *   "error", "warning", or "suggestion".
      * - regexps - an array of strings that encode regular expressions to
      *   look for
-     * - stripEntirePlural - if all plurals should be stripped before the
-     *   regular expression is checked. Some regular expressions find false
-     *   issues because plurals add or subtract categories in the target.
      *
      * @param {Object} options options as documented above
      * @constructor
@@ -67,7 +64,7 @@ class ResourceMatcher extends Rule {
         if (!options || !options.name || !options.description || !options.note || !options.regexps) {
             throw "Missing required options for the ResourceMatcher constructor";
         }
-        ["name", "description", "regexps", "note", "sourceLocale", "link", "severity", "stripEntirePlural"].forEach(prop => {
+        ["name", "description", "regexps", "note", "sourceLocale", "link", "severity"].forEach(prop => {
             this[prop] = options[prop];
         });
         this.sourceLocale = this.sourceLocale || "en-US";
@@ -94,8 +91,8 @@ class ResourceMatcher extends Rule {
         function checkString(re, src, tar) {
             re.lastIndex = 0;
             let sourceMatches = [];
-            const strippedSrc = stripPlurals(src, _this.sourceLocale, _this.stripEntirePlural);
-            const strippedTar = stripPlurals(tar, locale, _this.stripEntirePlural);
+            const strippedSrc = stripPlurals(src);
+            const strippedTar = stripPlurals(tar);
 
             let match = re.exec(strippedSrc);
             while (match) {
