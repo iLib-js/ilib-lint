@@ -71,33 +71,44 @@ class ResourceStateChecker extends Rule {
     /**
      * @override
      */
-    match(options) {
-        const { locale, resource, file } = options || {};
-        const state = resource.getState()?.toLowerCase();
+    match(options = {}) {
+        const { ir, file } = options;
+        
+        // we can only process resource representations
+        if (!ir || ir.getType() !== "resource") return;
+        
+        const resources = ir.getRepresentation();
 
-        if (state && this.states.indexOf(state) > -1) {
-            // recognized state, so return no results
-            return;
-        }
+        const results = resources.flatMap(resource => {
+            if (!resource.getTarget()) return; // no target? no check!
+            const state = resource.getState()?.toLowerCase();
+            const locale = resource.getTargetLocale();
 
-        // oh oh, bad state!
-        let value = {
-            severity: "error",
-            id: resource.getKey(),
-            rule: this,
-            pathName: file,
-            highlight: state ? `Resource found with disallowed state: <e0>${state}</e0>` : "Resource found with no state.",
-            description: (this.states.length > 1) ?
-                `Resources must have one of the following states: ${this.states.join(", ")}` :
-                `Resources must have the following state: ${this.states[0]}`,
-            locale,
-            source: resource.getSource()
-        };
-        if (typeof(resource.lineNumber) !== 'undefined') {
-            value.lineNumber = resource.lineNumber;
-            value.charNumber = resource.charNumber;
-        }
-        return new Result(value);
+            if (state && this.states.indexOf(state) > -1) {
+                // recognized state, so return no results
+                return;
+            }
+    
+            // oh oh, bad state!
+            let value = {
+                severity: "error",
+                id: resource.getKey(),
+                rule: this,
+                pathName: file,
+                highlight: state ? `Resource found with disallowed state: <e0>${state}</e0>` : "Resource found with no state.",
+                description: (this.states.length > 1) ?
+                    `Resources must have one of the following states: ${this.states.join(", ")}` :
+                    `Resources must have the following state: ${this.states[0]}`,
+                locale,
+                source: resource.getSource()
+            };
+            if (typeof(resource.lineNumber) !== 'undefined') {
+                value.lineNumber = resource.lineNumber;
+                value.charNumber = resource.charNumber;
+            }
+            return new Result(value);
+        }).filter(result => result);
+        return results?.length > 1 ? results : (results?.length === 1 ? results[0] : undefined);
     }
 }
 
