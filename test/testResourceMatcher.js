@@ -23,11 +23,15 @@ import { regexRules } from '../src/PluginManager.js';
 
 import { Result } from 'i18nlint-common';
 
+function findRuleDefinition(name) {
+    return regexRules.find(rule => rule.name === name);
+}
+
 export const testResourceMatcher = {
     testResourceMatcher: function(test) {
         test.expect(1);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         test.done();
@@ -92,7 +96,7 @@ export const testResourceMatcher = {
     testResourceURLMatch: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -117,7 +121,7 @@ export const testResourceMatcher = {
     testResourceURLMatchArray: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceArray({
@@ -146,7 +150,7 @@ export const testResourceMatcher = {
     testResourceURLMatchPlural: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourcePlural({
@@ -177,7 +181,7 @@ export const testResourceMatcher = {
     testResourceURLMatchPluralTargetDoesNotUseCategory: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourcePlural({
@@ -207,7 +211,7 @@ export const testResourceMatcher = {
     testResourceURLMatchMismatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -240,7 +244,7 @@ export const testResourceMatcher = {
     testResourceURLMatchMismatchArray: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceArray({
@@ -279,7 +283,7 @@ export const testResourceMatcher = {
     testResourceURLMatchMismatchPlural: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourcePlural({
@@ -318,7 +322,7 @@ export const testResourceMatcher = {
     testResourceURLMatchMultiple: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -343,7 +347,7 @@ export const testResourceMatcher = {
     testResourceURLMatchMultipleReverseOrder: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -368,7 +372,7 @@ export const testResourceMatcher = {
     testResourceURLMatchMultipleMissing: function(test) {
         test.expect(3);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -394,7 +398,7 @@ export const testResourceMatcher = {
     testResourceURLNonMatch1: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -419,7 +423,7 @@ export const testResourceMatcher = {
     testResourceURLNonMatch2: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[0]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -444,7 +448,7 @@ export const testResourceMatcher = {
     testResourceNamedParamsMatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules[1]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -477,7 +481,7 @@ export const testResourceMatcher = {
     testResourceNamedParamsNoMatch: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[1]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -502,7 +506,7 @@ export const testResourceMatcher = {
     testResourceNamedParamsNoMatchCapitals: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[1]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -527,7 +531,7 @@ export const testResourceMatcher = {
     testResourceNamedParamsMatch: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules[1]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -560,7 +564,7 @@ export const testResourceMatcher = {
     testResourceNamedParamsNotInPlurals: function(test) {
         test.expect(2);
 
-        const rule = new ResourceMatcher(regexRules[1]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -587,7 +591,7 @@ export const testResourceMatcher = {
     testResourceNamedParamsNotInPluralsButOutsideOfThem: function(test) {
         test.expect(9);
 
-        const rule = new ResourceMatcher(regexRules[1]);
+        const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -615,6 +619,33 @@ export const testResourceMatcher = {
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
+    },
+
+    testResourceNamedParamsInsidePlurals: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
+        test.ok(rule);
+
+        const actual = rule.match({
+            locale: "de-DE",
+            resource: new ResourceString({
+                key: "url.test",
+                sourceLocale: "en-US",
+                source: '{days, plural, one {{count} day} other {all the days}}',
+                targetLocale: "zh-Hans-CN",
+                target: "{days, plural, other {所有的日子}}",
+                pathName: "a/b/c.xliff"
+            }),
+            file: "x/y"
+        });
+
+        // should not match the parameters inside of the plural because sometimes the
+        // translation of the plural adds or subtracts plural categories creating false matches
+        test.ok(!actual);
+
+        test.done();
     }
+
 };
 
