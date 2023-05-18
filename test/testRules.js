@@ -1648,7 +1648,7 @@ export const testRules = {
         test.ok(!result);
         test.done();
     },
-    
+
     testResourceDNTTermsParseTermsFromJSONFile: function(test) {
         test.expect(1);
 

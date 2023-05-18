@@ -73,10 +73,10 @@ class ResourceStateChecker extends Rule {
      */
     match(options = {}) {
         const { ir, file } = options;
-        
+
         // we can only process resource representations
         if (!ir || ir.getType() !== "resource") return;
-        
+
         const resources = ir.getRepresentation();
 
         const results = resources.flatMap(resource => {
@@ -88,7 +88,7 @@ class ResourceStateChecker extends Rule {
                 // recognized state, so return no results
                 return;
             }
-    
+
             // oh oh, bad state!
             let value = {
                 severity: "error",

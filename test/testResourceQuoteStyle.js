@@ -803,5 +803,28 @@ export const testResourceQuoteStyle = {
 
         test.done();
     },
+
+    testResourceQuoteStyleSourceOnlyResource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "These 'strings' contents do not contain quotes in it.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    }
 };
 

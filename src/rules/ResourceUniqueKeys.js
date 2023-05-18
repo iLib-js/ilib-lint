@@ -57,7 +57,7 @@ class ResourceUniqueKeys extends Rule {
         if (!ir || ir.getType() !== "resource") return;
 
         const resources = ir.getRepresentation();
-        
+
         const results = resources.flatMap(resource => {
             const hash = resource.hashKey();
             const locale = resource.getTargetLocale();
@@ -82,7 +82,7 @@ class ResourceUniqueKeys extends Rule {
 
             resource.resfile = file;
             this.ts.add(resource);
-    
+
             // no result
             return;
         }).filter(result => result);
