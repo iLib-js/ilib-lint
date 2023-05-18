@@ -21,6 +21,8 @@ import LocaleInfo from 'ilib-localeinfo';
 import Locale from 'ilib-locale';
 import { Rule, Result } from 'i18nlint-common';
 
+import ResourceRule from './ResourceRule.js';
+
 let LICache = {};
 let regExpsCache = {};
 
@@ -35,7 +37,7 @@ const quotesAsciiAlt = new RegExp(`((^|\\W)'\\s?\\p{Letter}|[a-rt-zA-RT-Z]\\s?'(
 /**
  * @class Represent an ilib-lint rule.
  */
-class ResourceQuoteStyle extends Rule {
+class ResourceQuoteStyle extends ResourceRule {
     /**
      * Make a new rule instance.
      * @constructor
@@ -50,10 +52,6 @@ class ResourceQuoteStyle extends Rule {
             this.localeOnly = true;
         }
         this.link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-quote-style.md";
-    }
-
-    getRuleType() {
-        return "resource";
     }
 
     /**
@@ -206,47 +204,10 @@ class ResourceQuoteStyle extends Rule {
     /**
      * @override
      */
-    match(options) {
-        const { locale, resource, file } = options || {};
+    matchString({source, target, resource, file}) {
+        const locale = resource.getTargetLocale();
         const regExps = this.getRegExps(locale);
-        switch (resource.getType()) {
-            case 'string':
-                const tarString = resource.getTarget();
-                if (tarString) {
-                    return this.checkString(resource.getSource(), tarString, resource, file, locale, regExps);
-                }
-                break;
-
-            case 'array':
-                const srcArray = resource.getSource();
-                const tarArray = resource.getTarget();
-                if (tarArray) {
-                    return srcArray.map((item, i) => {
-                        if (i < tarArray.length && tarArray[i]) {
-                            return this.checkString(srcArray[i], tarArray[i], resource, file, locale, regExps);
-                        }
-                    }).filter(element => {
-                        return element;
-                    });
-                }
-                break;
-
-            case 'plural':
-                const srcPlural = resource.getSource();
-                const tarPlural = resource.getTarget();
-                if (tarPlural) {
-                    const hasQuotes = categories.find(category => {
-                        return (srcPlural[category] && srcPlural[category].contains(srcQuote));
-                    });
-
-                    if (hasQuotes) {
-                        return categories.map(category => {
-                            return this.checkString(srcPlural.other, tarPlural[category], resource, file, locale, regExps);
-                        });
-                    }
-                }
-                break;
-        }
+        return this.checkString(source, target, resource, file, locale, regExps);
     }
 }
 

@@ -722,8 +722,9 @@ limitations under the License.
 - resource-quote-style: don't emit error when quotes are missing in SV target
 - fixed a problem of false positives when there is a plural and the target
   language has less plural categories than the source language
-- Having no state attribute on the target tag of a translation unit would
+- having no state attribute on the target tag of a translation unit would
   cause an exception. Now it properly gives an error that no state was found.
+- fixed a problem where the same results were printed out multiple times
 
 ### v1.6.0
 

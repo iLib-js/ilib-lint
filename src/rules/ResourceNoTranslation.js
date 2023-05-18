@@ -20,12 +20,14 @@
 
 import Locale from 'ilib-locale';
 
-import { Rule, Result } from 'i18nlint-common';
+import { Result } from 'i18nlint-common';
+
+import ResourceRule from './ResourceRule.js';
 
 /**
  * @class Represent an ilib-lint rule.
  */
-class ResourceNoTranslation extends Rule {
+class ResourceNoTranslation extends ResourceRule {
     #name = "resource-no-translation";
     #description = "Ensure that each resource in a resource file has a proper translation";
     #link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-translation.md";
@@ -40,16 +42,10 @@ class ResourceNoTranslation extends Rule {
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
     }
 
-    getRuleType() {
-        return "resource";
-    }
-
     /**
      * @override
      */
-    match({ locale, resource, file, lineNumber }) {
-        const source = resource.getSource();
-        const target = resource.getTarget();
+    matchString({source, target, file, resource}) {
         const sourceLocale = new Locale(resource.getSourceLocale());
         const targetLocale = new Locale(resource.getTargetLocale());
         const sourceWords = source.split(/\s+/g).length; // does not work for Asian languages
@@ -74,9 +70,9 @@ class ResourceNoTranslation extends Rule {
                 rule: this,
                 pathName: file,
                 highlight: `Target: <e0>${target || ""}</e0>`,
-                description: `Target string is the same as the source string. This is probably an untranslated resource.`,
+                description: !target ? `Target string is missing a translation.` : `Target string is the same as the source string. This is probably an untranslated resource.`,
                 source,
-                locale
+                locale: targetLocale.getSpec()
             };
             if (typeof(lineNumber) !== 'undefined') {
                 value.lineNumber = lineNumber;

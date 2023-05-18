@@ -135,6 +135,7 @@ class LineRegexpChecker extends Rule {
         if (!ir || ir.getType() !== "line") return;
 
         let results = [];
+
         // representation should be an array of lines 
         const lines = ir.getRepresentation();
 

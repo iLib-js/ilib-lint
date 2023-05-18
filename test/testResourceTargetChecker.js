@@ -30,17 +30,19 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[2]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: 'Upload to Box',
-                targetLocale: "ja-JP",
-                target: "Ｂｏｘにアップロード",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: 'Upload to Box',
+            targetLocale: "ja-JP",
+            target: "Ｂｏｘにアップロード",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -50,7 +52,7 @@ export const testResourceTargetChecker = {
         test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[0].highlight, "Target: <e0>Ｂｏｘ</e0>にアップロード");
         test.equal(actual[0].source, 'Upload to Box');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -61,21 +63,23 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[2]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceArray({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: [
-                    'Upload to Box'
-                ],
-                targetLocale: "ja-JP",
-                target: [
-                    "Ｂｏｘにアップロード"
-                ],
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceArray({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: [
+                'Upload to Box'
+            ],
+            targetLocale: "ja-JP",
+            target: [
+                "Ｂｏｘにアップロード"
+            ],
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource()[0],
+            target: resource.getTarget()[0],
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -85,7 +89,7 @@ export const testResourceTargetChecker = {
         test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[0].highlight, "Target: <e0>Ｂｏｘ</e0>にアップロード");
         test.equal(actual[0].source, 'Upload to Box');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -96,22 +100,24 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[2]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourcePlural({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: {
-                    one: 'Upload it',
-                    other: 'Upload to Box'
-                },
-                targetLocale: "ja-JP",
-                target: {
-                    other: "Ｂｏｘにアップロード"
-                },
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourcePlural({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: {
+                one: 'Upload it',
+                other: 'Upload to Box'
+            },
+            targetLocale: "ja-JP",
+            target: {
+                other: "Ｂｏｘにアップロード"
+            },
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource().other,
+            target: resource.getTarget().other,
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -121,7 +127,7 @@ export const testResourceTargetChecker = {
         test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[0].highlight, "Target: <e0>Ｂｏｘ</e0>にアップロード");
         test.equal(actual[0].source, 'Upload to Box');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -132,17 +138,19 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[2]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: 'Upload to Box',
-                targetLocale: "ja-JP",
-                target: "Boxにアップロード",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: 'Upload to Box',
+            targetLocale: "ja-JP",
+            target: "Boxにアップロード",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -155,21 +163,23 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[2]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceArray({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: [
-                    'Upload to Box'
-                ],
-                targetLocale: "ja-JP",
-                target: [
-                    "Boxにアップロード"
-                ],
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceArray({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: [
+                'Upload to Box'
+            ],
+            targetLocale: "ja-JP",
+            target: [
+                "Boxにアップロード"
+            ],
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -182,22 +192,24 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[2]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceArray({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: {
-                    one: "Upload it",
-                    other: "Upload to Box"
-                },
-                targetLocale: "ja-JP",
-                target: {
-                    other: "Boxにアップロード"
-                },
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceArray({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: {
+                one: "Upload it",
+                other: "Upload to Box"
+            },
+            targetLocale: "ja-JP",
+            target: {
+                other: "Boxにアップロード"
+            },
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -210,17 +222,19 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[2]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: 'Upload to Box',
-                targetLocale: "ja-JP",
-                target: "プロＢｏｘにアップロードＢｏｘ",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: 'Upload to Box',
+            targetLocale: "ja-JP",
+            target: "プロＢｏｘにアップロードＢｏｘ",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 2);
@@ -230,14 +244,14 @@ export const testResourceTargetChecker = {
         test.equal(actual[0].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[0].highlight, "Target: プロ<e0>Ｂｏｘ</e0>にアップロードＢｏｘ");
         test.equal(actual[0].source, 'Upload to Box');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].id, "matcher.test");
         test.equal(actual[1].description, "The full-width characters 'Ｂｏｘ' are not allowed in the target string. Use ASCII letters instead.");
         test.equal(actual[1].highlight, "Target: プロＢｏｘにアップロード<e0>Ｂｏｘ</e0>");
         test.equal(actual[1].source, 'Upload to Box');
-        test.equal(actual[1].pathName, "x/y");
+        test.equal(actual[1].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -248,17 +262,19 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[3]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: 'Box12345',
-                targetLocale: "ja-JP",
-                target: "Box１２３４５",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: 'Box12345',
+            targetLocale: "ja-JP",
+            target: "Box１２３４５",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -268,7 +284,7 @@ export const testResourceTargetChecker = {
         test.equal(actual[0].description, "The full-width characters '１２３４５' are not allowed in the target string. Use ASCII digits instead.");
         test.equal(actual[0].highlight, "Target: Box<e0>１２３４５</e0>");
         test.equal(actual[0].source, 'Box12345');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -279,17 +295,19 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[3]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: 'Upload to Box',
-                targetLocale: "ja-JP",
-                target: "Boxにアップロード",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: 'Upload to Box',
+            targetLocale: "ja-JP",
+            target: "Boxにアップロード",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -302,17 +320,19 @@ export const testResourceTargetChecker = {
         const rule = new ResourceTargetChecker(regexRules[3]);
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: '12345Box12345',
-                targetLocale: "ja-JP",
-                target: "５４３２１Box１２３４５",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: '12345Box12345',
+            targetLocale: "ja-JP",
+            target: "５４３２１Box１２３４５",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 2);
@@ -322,14 +342,14 @@ export const testResourceTargetChecker = {
         test.equal(actual[0].description, "The full-width characters '５４３２１' are not allowed in the target string. Use ASCII digits instead.");
         test.equal(actual[0].highlight, "Target: <e0>５４３２１</e0>Box１２３４５");
         test.equal(actual[0].source, '12345Box12345');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].id, "matcher.test");
         test.equal(actual[1].description, "The full-width characters '１２３４５' are not allowed in the target string. Use ASCII digits instead.");
         test.equal(actual[1].highlight, "Target: ５４３２１Box<e0>１２３４５</e0>");
         test.equal(actual[1].source, '12345Box12345');
-        test.equal(actual[1].pathName, "x/y");
+        test.equal(actual[1].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -344,20 +364,21 @@ export const testResourceTargetChecker = {
         test.ok(rule);
 
         for (const symbol of illegalPunctuations) {
-            const matchSubject = {
-                locale: "ja-JP",
-                resource: new ResourceString({
-                    key: "matcher.test",
-                    sourceLocale: "en-US",
-                    source: `test${symbol} test`,
-                    targetLocale: "ja-JP",
-                    target: `テスト${symbol} テスト`,
-                    pathName: "a/b/c.xliff",
-                }),
-                file: "x/y",
-            };
+            const resource = new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: `test${symbol} test`,
+                targetLocale: "ja-JP",
+                target: `テスト${symbol} テスト`,
+                pathName: "a/b/c.xliff",
+            });
 
-            const actual = rule.match(matchSubject);
+            const actual = rule.matchString({
+                source: resource.getSource(),
+                target: resource.getTarget(),
+                resource,
+                file: "a/b/c.xliff"
+            });
             test.ok(actual);
             test.equal(actual.length, 1);
 
@@ -369,7 +390,7 @@ export const testResourceTargetChecker = {
             test.equal(actual[0].highlight, `Target: テスト<e0>${symbol}</e0> テスト`);
             test.equal(actual[0].id, "matcher.test");
             test.equal(actual[0].source, `test${symbol} test`);
-            test.equal(actual[0].pathName, "x/y");
+            test.equal(actual[0].pathName, "a/b/c.xliff");
         }
 
         test.done();
@@ -383,17 +404,19 @@ export const testResourceTargetChecker = {
         );
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: "Really? Yes! 100%",
-                targetLocale: "ja-JP",
-                target: "本当? はい! 100%",
-                pathName: "a/b/c.xliff",
-            }),
-            file: "x/y",
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Really? Yes! 100%",
+            targetLocale: "ja-JP",
+            target: "本当? はい! 100%",
+            pathName: "a/b/c.xliff",
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff",
         });
         test.ok(!actual);
 
@@ -408,19 +431,20 @@ export const testResourceTargetChecker = {
         );
         test.ok(rule);
 
-        const matchSubject = {
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: "Really? Yes! 100%",
-                targetLocale: "ja-JP",
-                target: "本当？ はい！ 100％",
-                pathName: "a/b/c.xliff",
-            }),
-            file: "x/y",
-        };
-        const actual = rule.match(matchSubject);
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Really? Yes! 100%",
+            targetLocale: "ja-JP",
+            target: "本当？ はい！ 100％",
+            pathName: "a/b/c.xliff",
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
         test.ok(actual);
         test.equal(actual.length, 3);
 
@@ -428,7 +452,7 @@ export const testResourceTargetChecker = {
             test.equal(a.severity, "error");
             test.equal(a.id, "matcher.test");
             test.equal(a.source, "Really? Yes! 100%");
-            test.equal(a.pathName, "x/y");
+            test.equal(a.pathName, "a/b/c.xliff");
         }
 
         test.equal(
@@ -460,25 +484,26 @@ export const testResourceTargetChecker = {
         );
         test.ok(rule);
 
-        const subject = {
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: "Communication",
-                targetLocale: "ja-JP",
-                target: "ｺﾐｭﾆｹｰｼｮﾝ",
-                pathName: "a/b/c.xliff",
-            }),
-            file: "x/y",
-        };
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Communication",
+            targetLocale: "ja-JP",
+            target: "ｺﾐｭﾆｹｰｼｮﾝ",
+            pathName: "a/b/c.xliff",
+        });
 
-        const result = rule.match(subject);
+        const result = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(result, [new Result({
             rule,
             severity: "warning",
             locale: "ja-JP",
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             source: "Communication",
             id: "matcher.test",
             description: "The half-width kana characters are not allowed in the target string. Use full-width characters.",
@@ -516,24 +541,25 @@ export const testResourceTargetChecker = {
         test.ok(rule);
 
         for (const symbol of illegalCharacters) {
-            const subject = {
-                locale: "ja-JP",
-                resource: new ResourceString({
-                    key: "matcher.test",
-                    sourceLocale: "en-US",
-                    source: `test${symbol}test`,
-                    targetLocale: "ja-JP",
-                    target: `テスト${symbol}テスト`,
-                    pathName: "a/b/c.xliff",
-                }),
-                file: "x/y",
-            };
+            const resource = new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: `test${symbol}test`,
+                targetLocale: "ja-JP",
+                target: `テスト${symbol}テスト`,
+                pathName: "a/b/c.xliff",
+            });
 
-            const result = rule.match(subject);
+            const result = rule.matchString({
+                source: resource.getSource(),
+                target: resource.getTarget(),
+                resource,
+                file: "a/b/c.xliff"
+            });
             test.deepEqual(result, [new Result({
                 rule,
                 severity: "warning",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ja-JP",
                 source: `test${symbol}test`,
                 id: "matcher.test",
@@ -577,24 +603,25 @@ export const testResourceTargetChecker = {
 
         for (const symbol of applicableCharacters) {
             const illegalSequence = symbol + " ";
-            const subject = {
-                locale: "ja-JP",
-                resource: new ResourceString({
-                    key: "matcher.test",
-                    sourceLocale: "en-US",
-                    source: `test${illegalSequence}test`,
-                    targetLocale: "ja-JP",
-                    target: `テスト${illegalSequence}テスト`,
-                    pathName: "a/b/c.xliff",
-                }),
-                file: "x/y",
-            };
+            const resource = new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: `test${illegalSequence}test`,
+                targetLocale: "ja-JP",
+                target: `テスト${illegalSequence}テスト`,
+                pathName: "a/b/c.xliff",
+            });
 
-            const result = rule.match(subject);
+            const result = rule.matchString({
+                source: resource.getSource(),
+                target: resource.getTarget(),
+                resource,
+                file: "a/b/c.xliff"
+            });
             test.deepEqual(result, [new Result({
                 rule,
                 severity: "warning",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ja-JP",
                 source: `test${illegalSequence}test`,
                 id: "matcher.test",
@@ -638,24 +665,25 @@ export const testResourceTargetChecker = {
 
         for (const symbol of applicableCharacters) {
             const illegalSequence = " " + symbol;
-            const subject = {
-                locale: "ja-JP",
-                resource: new ResourceString({
-                    key: "matcher.test",
-                    sourceLocale: "en-US",
-                    source: `test${illegalSequence}test`,
-                    targetLocale: "ja-JP",
-                    target: `テスト${illegalSequence}テスト`,
-                    pathName: "a/b/c.xliff",
-                }),
-                file: "x/y",
-            };
+            const resource = new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: `test${illegalSequence}test`,
+                targetLocale: "ja-JP",
+                target: `テスト${illegalSequence}テスト`,
+                pathName: "a/b/c.xliff",
+            });
 
-            const result = rule.match(subject);
+            const result = rule.matchString({
+                source: resource.getSource(),
+                target: resource.getTarget(),
+                resource,
+                file: "a/b/c.xliff"
+            });
             test.deepEqual(result, [new Result({
                 rule,
                 severity: "warning",
-                pathName: "x/y",
+                pathName: "a/b/c.xliff",
                 locale: "ja-JP",
                 source: `test${illegalSequence}test`,
                 id: "matcher.test",
@@ -675,25 +703,26 @@ export const testResourceTargetChecker = {
         );
         test.ok(rule);
 
-        const subject = {
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: "Box Embed Widget",
-                targetLocale: "ja-JP",
-                target: "Box 埋め込みウィジェット",
-                pathName: "a/b/c.xliff",
-            }),
-            file: "x/y",
-        };
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Box Embed Widget",
+            targetLocale: "ja-JP",
+            target: "Box 埋め込みウィジェット",
+            pathName: "a/b/c.xliff",
+        });
 
-        const result = rule.match(subject);
+        const result = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
         test.deepEqual(result, [new Result({
             rule,
             severity: "warning",
             locale: "ja-JP",
-            pathName: "x/y",
+            pathName: "a/b/c.xliff",
             source: "Box Embed Widget",
             id: "matcher.test",
             description: 'The space character is not allowed in the target string. Remove the space character.',
@@ -711,17 +740,19 @@ export const testResourceTargetChecker = {
         );
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ja-JP",
-            resource: new ResourceString({
-                key: "matcher.test",
-                sourceLocale: "en-US",
-                source: "Box Embed Widget",
-                targetLocale: "ja-JP",
-                target: "EXIFおよびXMPメタデータ",
-                pathName: "a/b/c.xliff",
-            }),
-            file: "x/y",
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Box Embed Widget",
+            targetLocale: "ja-JP",
+            target: "EXIFおよびXMPメタデータ",
+            pathName: "a/b/c.xliff",
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
    

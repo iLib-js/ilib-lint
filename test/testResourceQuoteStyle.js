@@ -87,16 +87,18 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains “quotes” in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
-                pathName: "a/b/c.xliff"
-            }),
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains “quotes” in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
             file: "x"
         });
         // if the source contains native quotes, the target must too
@@ -123,16 +125,18 @@ export const testResourceQuoteStyle = {
         });
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains “quotes” in it.',
-                targetLocale: "de-DE",
-                target: 'Diese Zeichenfolge enthält "Anführungszeichen".',
-                pathName: "a/b/c.xliff"
-            }),
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains “quotes” in it.',
+            targetLocale: "de-DE",
+            target: 'Diese Zeichenfolge enthält "Anführungszeichen".',
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
             file: "x"
         });
         // if the source contains native quotes, the target must too
@@ -157,16 +161,18 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
-                pathName: "a/b/c.xliff"
-            }),
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
             file: "x"
         });
         // if the source contains ASCII quotes, the target is allowed to have native quotes
@@ -181,16 +187,18 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ru-RU",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'Click on "My Documents" to see more',
-                targetLocale: "ru-RU",
-                target: "Click on «Мои документы» to see more",
-                pathName: "a/b/c.xliff"
-            }),
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'Click on "My Documents" to see more',
+            targetLocale: "ru-RU",
+            target: "Click on «Мои документы» to see more",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
             file: "x"
         });
         // if the source contains ASCII quotes, the target is allowed to have native quotes
@@ -205,16 +213,18 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "ru-RU",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: '"My Documents"',
-                targetLocale: "ru-RU",
-                target: "«Мои документы»",
-                pathName: "a/b/c.xliff"
-            }),
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: '"My Documents"',
+            targetLocale: "ru-RU",
+            target: "«Мои документы»",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
             file: "x"
         });
         // if the source contains ASCII quotes, the target is allowed to have native quotes
@@ -229,17 +239,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "de-DE",
-                target: 'Diese Zeichenfolge enthält "Anführungszeichen".',
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "de-DE",
+            target: 'Diese Zeichenfolge enthält "Anführungszeichen".',
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -252,17 +264,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         // if the source contains ascii quotes, the target should match
         const expected = new Result({
@@ -273,7 +287,7 @@ export const testResourceQuoteStyle = {
             highlight: "Target: Diese Zeichenfolge enthält <e0>'</e0>Anführungszeichen<e1>'</e1>.",
             rule,
             locale: "de-DE",
-            pathName: "x/y"
+            pathName: "a/b/c.xliff"
         });
         test.deepEqual(actual, expected);
 
@@ -286,16 +300,18 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains ‘quotes’ in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
-                pathName: "a/b/c.xliff"
-            }),
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains ‘quotes’ in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält 'Anführungszeichen'.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
             file: "a/b"
         });
         const expected = new Result({
@@ -320,17 +336,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -343,17 +361,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains quotes in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält Anführungszeichen.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains quotes in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält Anführungszeichen.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -366,17 +386,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "fr-FR",
-                target: "Le string contient de «guillemets».",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "fr-FR",
+            target: "Le string contient de «guillemets».",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -389,17 +411,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "fr-FR",
-                target: "Le string contient de « guillemets ».",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "fr-FR",
+            target: "Le string contient de « guillemets ».",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -412,17 +436,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "fr-FR",
-                target: "Le string contient de « guillemets ».",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "fr-FR",
+            target: "Le string contient de « guillemets ».",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -436,17 +462,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains quotes in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains quotes in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält „Anführungszeichen“.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -459,17 +487,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains ‘quotes’ in it.',
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält ‚Anführungszeichen‘.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains ‘quotes’ in it.',
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält ‚Anführungszeichen‘.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -482,17 +512,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: "This string doesn't contain quotes in it.",
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält nicht Anführungszeichen.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "This string doesn't contain quotes in it.",
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält nicht Anführungszeichen.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -505,17 +537,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: "This string doesn't contain quotes in it. The user's keyboard is working",
-                targetLocale: "de-DE",
-                target: "Diese Zeichenfolge enthält nicht Anführungszeichen. Der Tastenbord des Users funktioniert.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "This string doesn't contain quotes in it. The user's keyboard is working",
+            targetLocale: "de-DE",
+            target: "Diese Zeichenfolge enthält nicht Anführungszeichen. Der Tastenbord des Users funktioniert.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -528,17 +562,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "fr-FR",
-                target: "L'expression contient de «guillemets». C'est tres bizarre !",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "fr-FR",
+            target: "L'expression contient de «guillemets». C'est tres bizarre !",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -551,17 +587,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "fr-FR",
-                target: "L'expression contient de « guillemets ». C'est tres bizarre !",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "fr-FR",
+            target: "L'expression contient de « guillemets ». C'est tres bizarre !",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -574,17 +612,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string contains "quotes" in it.',
-                targetLocale: "fr-FR",
-                target: "L'expression contient de « guillemets ». C'est tres bizarre !",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "fr-FR",
+            target: "L'expression contient de « guillemets ». C'est tres bizarre !",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -597,17 +637,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string does not contain quotes in it.',
-                targetLocale: "fr-FR",
-                target: "L'expression ne contient pas de guillemets.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string does not contain quotes in it.',
+            targetLocale: "fr-FR",
+            target: "L'expression ne contient pas de guillemets.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -620,17 +662,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: 'This string does not contain quotes in it.',
-                targetLocale: "fr-FR",
-                target: "L’expression ne contient pas de guillemets.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string does not contain quotes in it.',
+            targetLocale: "fr-FR",
+            target: "L’expression ne contient pas de guillemets.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -643,17 +687,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: "This string's contents do not contain quotes in it.",
-                targetLocale: "fr-FR",
-                target: "L'expression ne contient pas de guillemets.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "This string's contents do not contain quotes in it.",
+            targetLocale: "fr-FR",
+            target: "L'expression ne contient pas de guillemets.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -666,17 +712,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: "This string’s contents do not contain quotes in it.",
-                targetLocale: "fr-FR",
-                target: "L'expression ne contient pas de guillemets.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "This string’s contents do not contain quotes in it.",
+            targetLocale: "fr-FR",
+            target: "L'expression ne contient pas de guillemets.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -689,17 +737,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: "This string’s contents do not contain quotes in it.",
-                targetLocale: "fr-FR",
-                target: "L’expression ne contient pas de guillemets.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "This string’s contents do not contain quotes in it.",
+            targetLocale: "fr-FR",
+            target: "L’expression ne contient pas de guillemets.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -712,17 +762,19 @@ export const testResourceQuoteStyle = {
         const rule = new ResourceQuoteStyle();
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "fr-FR",
-            resource: new ResourceString({
-                key: "quote.test",
-                sourceLocale: "en-US",
-                source: "These strings' contents do not contain quotes in it.",
-                targetLocale: "fr-FR",
-                target: "L'expressions ne contient pas de guillemets.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "These strings' contents do not contain quotes in it.",
+            targetLocale: "fr-FR",
+            target: "L'expressions ne contient pas de guillemets.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 

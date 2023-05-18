@@ -99,17 +99,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has an URL in it http://www.box.com',
-                targetLocale: "de-DE",
-                target: "Dies hat ein URL http://www.box.com",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has an URL in it http://www.box.com',
+            targetLocale: "de-DE",
+            target: "Dies hat ein URL http://www.box.com",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -122,21 +124,23 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceArray({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: [
-                    'This has an URL in it http://www.box.com'
-                ],
-                targetLocale: "de-DE",
-                target: [
-                    "Dies hat ein URL http://www.box.com"
-                ],
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceArray({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: [
+                'This has an URL in it http://www.box.com'
+            ],
+            targetLocale: "de-DE",
+            target: [
+                "Dies hat ein URL http://www.box.com"
+            ],
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource()[0],
+            target: resource.getTarget()[0],
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -149,23 +153,25 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceArray({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: {
-                    one: 'This has an URL in it http://www.box.com',
-                    other: "x"
-                },
-                targetLocale: "de-DE",
-                target: {
-                    one: "Dies hat ein URL http://www.box.com",
-                    other: "y"
-                },
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourcePlural({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: {
+                one: 'This has an URL in it http://www.box.com',
+                other: "x"
+            },
+            targetLocale: "de-DE",
+            target: {
+                one: "Dies hat ein URL http://www.box.com",
+                other: "y"
+            },
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource().other,
+            target: resource.getTarget().other,
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -178,22 +184,24 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceArray({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: {
-                    one: 'This has an URL in it http://www.box.com',
-                    other: "x"
-                },
-                targetLocale: "ja-JP",
-                target: {
-                    other: "y"
-                },
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourcePlural({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: {
+                one: 'This has an URL in it http://www.box.com',
+                other: "x"
+            },
+            targetLocale: "ja-JP",
+            target: {
+                other: "y"
+            },
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource().other,
+            target: resource.getTarget().other,
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -206,17 +214,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has an URL in it http://www.box.com',
-                targetLocale: "de-DE",
-                target: "Dies hat ein URL http://www.yahoo.com",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has an URL in it http://www.box.com',
+            targetLocale: "de-DE",
+            target: "Dies hat ein URL http://www.yahoo.com",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -226,7 +236,7 @@ export const testResourceMatcher = {
         test.equal(actual[0].description, "URL 'http://www.box.com' from the source string does not appear in the target string");
         test.equal(actual[0].highlight, "Target: Dies hat ein URL http://www.yahoo.com<e0></e0>");
         test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -237,23 +247,25 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceArray({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: [
-                    'This has an URL in it http://www.box.com',
-                    'This also has an URL in it http://www.google.com'
-                ],
-                targetLocale: "de-DE",
-                target: [
-                    "Dies hat ein URL http://www.yahoo.com",
-                    "Dies hat auch ein URL darin http://www.google.com"
-                ],
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceArray({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: [
+                'This has an URL in it http://www.box.com',
+                'This also has an URL in it http://www.google.com'
+            ],
+            targetLocale: "de-DE",
+            target: [
+                "Dies hat ein URL http://www.yahoo.com",
+                "Dies hat auch ein URL darin http://www.google.com"
+            ],
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource()[0],
+            target: resource.getTarget()[0],
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -263,7 +275,7 @@ export const testResourceMatcher = {
         test.equal(actual[0].description, "URL 'http://www.box.com' from the source string does not appear in the target string");
         test.equal(actual[0].highlight, "Target: Dies hat ein URL http://www.yahoo.com<e0></e0>");
         test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -274,23 +286,25 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourcePlural({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: {
-                    one: "This has an URL in it http://www.box.com",
-                    other: "This also has an URL in it http://www.google.com"
-                },
-                targetLocale: "de-DE",
-                target: {
-                    one: "Dies hat ein URL http://www.yahoo.com",
-                    other: "Dies hat auch ein URL darin http://www.google.com"
-                },
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourcePlural({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: {
+                one: "This has an URL in it http://www.box.com",
+                other: "This also has an URL in it http://www.google.com"
+            },
+            targetLocale: "de-DE",
+            target: {
+                one: "Dies hat ein URL http://www.yahoo.com",
+                other: "Dies hat auch ein URL darin http://www.google.com"
+            },
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource().one,
+            target: resource.getTarget().one,
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -300,7 +314,7 @@ export const testResourceMatcher = {
         test.equal(actual[0].description, "URL 'http://www.box.com' from the source string does not appear in the target string");
         test.equal(actual[0].highlight, "Target: Dies hat ein URL http://www.yahoo.com<e0></e0>");
         test.equal(actual[0].source, 'This has an URL in it http://www.box.com');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -311,17 +325,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
-                targetLocale: "de-DE",
-                target: "Dies hat ein URL http://www.box.com http://www.google.com/",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
+            targetLocale: "de-DE",
+            target: "Dies hat ein URL http://www.box.com http://www.google.com/",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -334,17 +350,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
-                targetLocale: "de-DE",
-                target: "Dies hat ein URL http://www.google.com/ http://www.box.com",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
+            targetLocale: "de-DE",
+            target: "Dies hat ein URL http://www.google.com/ http://www.box.com",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -357,17 +375,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
-                targetLocale: "de-DE",
-                target: "Dies hat ein URL http://www.google.com/",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has a few URLs in it http://www.box.com http://www.google.com/',
+            targetLocale: "de-DE",
+            target: "Dies hat ein URL http://www.google.com/",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -381,17 +401,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'Click on the menu choice "Open with..." to select a different program.',
-                targetLocale: "de-DE",
-                target: 'Klicken Sie auf die Menüauswahl "Öffnen mit...", um ein anderes Programm auszuwählen.',
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'Click on the menu choice "Open with..." to select a different program.',
+            targetLocale: "de-DE",
+            target: 'Klicken Sie auf die Menüauswahl "Öffnen mit...", um ein anderes Programm auszuwählen.',
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -404,17 +426,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-url-match"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'You can remove any of these to reset the association. (e.g. removing an association will allow you to use another acccount.)',
-                targetLocale: "de-DE",
-                target: 'Sie können diese entfernen, um die Zuordnung zurückzusetzen. (z.B. Wenn Sie eine Verknüpfung entfernen, können Sie ein anderes Konto verwenden.)',
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'You can remove any of these to reset the association. (e.g. removing an association will allow you to use another acccount.)',
+            targetLocale: "de-DE",
+            target: 'Sie können diese entfernen, um die Zuordnung zurückzusetzen. (z.B. Wenn Sie eine Verknüpfung entfernen, können Sie ein anderes Konto verwenden.)',
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -427,17 +451,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has an {URL} in it.',
-                targetLocale: "de-DE",
-                target: "Dies hat ein {job} drin.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has an {URL} in it.',
+            targetLocale: "de-DE",
+            target: "Dies hat ein {job} drin.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -447,7 +473,7 @@ export const testResourceMatcher = {
         test.equal(actual[0].description, "The named parameter '{URL}' from the source string does not appear in the target string");
         test.equal(actual[0].highlight, "Target: Dies hat ein {job} drin.<e0></e0>");
         test.equal(actual[0].source, 'This has an {URL} in it.');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -458,17 +484,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has an {job} in it.',
-                targetLocale: "de-DE",
-                target: "Dies hat ein {job} drin.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has an {job} in it.',
+            targetLocale: "de-DE",
+            target: "Dies hat ein {job} drin.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -481,17 +509,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has an {URL} in it.',
-                targetLocale: "de-DE",
-                target: "Dies hat ein {URL} drin.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has an {URL} in it.',
+            targetLocale: "de-DE",
+            target: "Dies hat ein {URL} drin.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(!actual);
 
@@ -504,17 +534,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'This has an {URL} in it.',
-                targetLocale: "de-DE",
-                target: "Dies hat ein {job} drin.",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'This has an {URL} in it.',
+            targetLocale: "de-DE",
+            target: "Dies hat ein {job} drin.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -524,7 +556,7 @@ export const testResourceMatcher = {
         test.equal(actual[0].description, "The named parameter '{URL}' from the source string does not appear in the target string");
         test.equal(actual[0].highlight, "Target: Dies hat ein {job} drin.<e0></e0>");
         test.equal(actual[0].source, 'This has an {URL} in it.');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -535,17 +567,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'In {number} {days, plural, one {day} other {days}}',
-                targetLocale: "de-DE",
-                target: "In {number} {days, plural, one {Tag} other {Tagen}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'In {number} {days, plural, one {day} other {days}}',
+            targetLocale: "de-DE",
+            target: "In {number} {days, plural, one {Tag} other {Tagen}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
 
         // {day} is part of the plural, not a replacement param
@@ -560,17 +594,19 @@ export const testResourceMatcher = {
         const rule = new ResourceMatcher(findRuleDefinition("resource-named-params"));
         test.ok(rule);
 
-        const actual = rule.match({
-            locale: "de-DE",
-            resource: new ResourceString({
-                key: "url.test",
-                sourceLocale: "en-US",
-                source: 'In {number} {days, plural, one {day} other {days}}',
-                targetLocale: "de-DE",
-                target: "In {num} {days, plural, one {Tag} other {Tagen}}",
-                pathName: "a/b/c.xliff"
-            }),
-            file: "x/y"
+        const resource = new ResourceString({
+            key: "url.test",
+            sourceLocale: "en-US",
+            source: 'In {number} {days, plural, one {day} other {days}}',
+            targetLocale: "de-DE",
+            target: "In {num} {days, plural, one {Tag} other {Tagen}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
         });
         test.ok(actual);
         test.equal(actual.length, 1);
@@ -580,7 +616,7 @@ export const testResourceMatcher = {
         test.equal(actual[0].description, "The named parameter '{number}' from the source string does not appear in the target string");
         test.equal(actual[0].highlight, "Target: In {num} {days, plural, one {Tag} other {Tagen}}<e0></e0>");
         test.equal(actual[0].source, 'In {number} {days, plural, one {day} other {days}}');
-        test.equal(actual[0].pathName, "x/y");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
