@@ -103,11 +103,25 @@ class RuleManager {
     }
 
     /**
+     * Recursively look up the inheritance tree to see if this rule eventually
+     * inherited from the Rule class somewhere along the way. We finish looking
+     * if we get to the top-level "Object" class and we didn't find any
+     * Rule class.
+     * @private
+     */
+    inheritsFromRule(object) {
+        const proto = Object.getPrototypeOf(object);
+        if (proto.name === "Rule") return true;
+        if (proto.name === "Object") return false;
+        return this.inheritsFromRule(proto);
+    }
+
+    /**
      * @private
      */
     addRule(rule) {
         if (rule) {
-            if (typeof(rule) === 'function' && Object.getPrototypeOf(rule).name === "Rule") {
+            if (typeof(rule) === 'function' && this.inheritsFromRule(rule)) {
                 const p = new rule({
                     sourceLocale: this.sourceLocale,
                     getLogger: log4js.getLogger.bind(log4js)

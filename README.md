@@ -723,8 +723,9 @@ limitations under the License.
 
 ### v1.6.1
 
-- Having no state attribute on the target tag of a translation unit would
+- having no state attribute on the target tag of a translation unit would
   cause an exception. Now it properly gives an error that no state was found.
+- fixed a problem where the same results were printed out multiple times
 
 ### v1.6.0
 

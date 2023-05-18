@@ -17,37 +17,32 @@
  * limitations under the License.
  */
 
-import { Rule, Result } from "i18nlint-common";
+import { Result } from "i18nlint-common";
 import Locale from "ilib-locale";
 
+import ResourceRule from './ResourceRule.js';
+
 /** Rule to check that a resource has both source and target elements */
-class ResourceCompleteness extends Rule {
+class ResourceCompleteness extends ResourceRule {
     /** @readonly */ name = "resource-completeness";
     /** @readonly */ description = "Ensure that resources are complete, i.e. have both source and target elements.";
     /** @readonly */ link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-completeness.md";
-    /** @readonly */ ruleType = "resource";
 
-    constructor() {
-        super({});
+    constructor(options) {
+        super(options);
     }
 
-    /** @override */
-    getRuleType() {
-        return this.ruleType;
-    }
-
-    /** Check that a given resource has both source and target tags set
+    /**
+     * Check that a given resource has both source and target tags set
      * @override
-     * @param {object} options
-     * @param {import("ilib-tools-common").Resource} options.resource
-     * @param {string} options.file
-     * @param {string} options.locale
-     *
+     * @param {Object} params a parameters object
+     * @param {string} params.source the source string
+     * @param {string} params.target the target string
+     * @param {import("ilib-tools-common").Resource} params.resource the resource being checked
+     * @param {string} params.file the file where the resource came from
+     * @returns {Array.<Result>|undefined} the results
      */
-    match({ resource, file, locale }) {
-        const source = resource.getSource();
-        const target = resource.getTarget();
-
+    matchString({ source, target, resource, file }) {
         // note: language specifiers for comparison - "en-US" should match "en-GB" (same language, only different region)
         const sourceLangSpec = new Locale(resource.sourceLocale).getLangSpec();
         const targetLangSpec = new Locale(resource.targetLocale).getLangSpec();
@@ -57,7 +52,7 @@ class ResourceCompleteness extends Rule {
             rule: this,
             pathName: file,
             source,
-            locale,
+            locale: resource.getTargetLocale()
         };
 
         // for each source string, a translation must be provided

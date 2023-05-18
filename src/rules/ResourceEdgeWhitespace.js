@@ -17,36 +17,24 @@
  * limitations under the License.
  */
 
-import { Rule, Result, withVisibleWhitespace } from "i18nlint-common";
+import { Result, withVisibleWhitespace } from "i18nlint-common";
+import ResourceRule from './ResourceRule.js';
 
 /** Rule to check that whitespaces on edges of target match those on edges of source */
-class ResourceEdgeWhitespace extends Rule {
+class ResourceEdgeWhitespace extends ResourceRule {
     /** @readonly */ name = "resource-edge-whitespace";
     /** @readonly */ description =
         "Ensure that if there are whitespaces on edges of source string, matching ones are there in target as well";
     /** @readonly */ link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-edge-whitespace.md";
-    /** @readonly */ ruleType = "resource";
 
     constructor() {
         super({});
     }
 
-    /** @override */
-    getRuleType() {
-        return this.ruleType;
-    }
-
     /**
      * @override
-     * @param {object} options
-     * @param {import("ilib-tools-common").Resource} options.resource
-     * @param {string} options.file
-     * @param {string} options.locale
      */
-    match({ resource, file, locale }) {
-        const source = resource.getSource();
-        const target = resource.getTarget();
-
+    matchString({ source, target, file, resource }) {
         if ("string" !== typeof source || "string" !== typeof target) {
             return /* don't check when either source or target string is not defined */;
         }
@@ -62,7 +50,7 @@ class ResourceEdgeWhitespace extends Rule {
             rule: this,
             pathName: file,
             source,
-            locale,
+            locale: resource.getTargetLocale()
         };
 
         if (whitespaces.target.leading !== whitespaces.source.leading) {

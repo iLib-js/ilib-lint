@@ -19,7 +19,9 @@
 
 import { IntlMessageFormat } from 'intl-messageformat';
 import Locale from 'ilib-locale';
-import { Rule, Result } from 'i18nlint-common';
+import { Result } from 'i18nlint-common';
+
+import ResourceRule from './ResourceRule.js';
 
 // all the plural categories from CLDR
 const allCategories = ["zero", "one", "two", "few", "many", "other"];
@@ -51,7 +53,7 @@ const categoriesForLang = {
 /**
  * @class Represent an ilib-lint rule.
  */
-class ResourceICUPlurals extends Rule {
+class ResourceICUPlurals extends ResourceRule {
     /**
      * Make a new rule instance.
      * @constructor
@@ -64,14 +66,10 @@ class ResourceICUPlurals extends Rule {
         this.link = "https://gihub.com/ilib-js/i18nlint/blob/main/docs/resource-icu-plurals.md";
     }
 
-    getRuleType() {
-        return "resource";
-    }
-
     /**
      * @private
      */
-    checkPluralCategories(ast, neededCategories, stringToCheck, key, pathName, source) {
+    checkPluralCategories(ast, neededCategories, stringToCheck, key, pathName, source, locale) {
         let value = [];
         for (let i = 0; i < ast.length; i++) {
             const opts = ast[i].options;
@@ -88,13 +86,14 @@ class ResourceICUPlurals extends Rule {
                         id: key,
                         highlight: `Target: ${stringToCheck}<e0></e0>`,
                         pathName,
-                        source
+                        source,
+                        locale
                     };
                     value.push(new Result(opts));
                 }
                 for (let category in opts) {
                     if ( opts[category] && Array.isArray(opts[category].value) ) {
-                        value = value.concat(this.checkPluralCategories(opts[category].value, neededCategories, stringToCheck, key, pathName, source));
+                        value = value.concat(this.checkPluralCategories(opts[category].value, neededCategories, stringToCheck, key, pathName, source, locale));
                     }
                 }
                 // now check the other way around. That is, if the categories that exist are not needed.
@@ -109,7 +108,8 @@ class ResourceICUPlurals extends Rule {
                         id: key,
                         highlight: `Target: ${stringToCheck}<e0></e0>`,
                         pathName,
-                        source
+                        source,
+                        locale
                     };
                     value.push(new Result(opts));
                 }
@@ -118,14 +118,14 @@ class ResourceICUPlurals extends Rule {
         return value;
     }
 
-    checkString(src, tar, file, resource, sourceLocale, targetLocale, lineNumber) {
-        const sLoc = new Locale(sourceLocale);
-        const tLoc = new Locale(targetLocale);
+    matchString({source, target, file, resource}) {
+        const sLoc = new Locale(resource.getSourceLocale());
+        const tLoc = new Locale(resource.getTargetLocale());
         let results;
         let problems = [];
         let sourceCategories = [];
         try {
-            const imf = new IntlMessageFormat(src, sourceLocale);
+            const imf = new IntlMessageFormat(source, sLoc.getSpec());
             let categories = categoriesForLang[sLoc.getLanguage()] || [ "one", "other" ];
             // look in the abstract syntax tree for the categories that were parsed out and make
             // sure the required ones are there
@@ -141,7 +141,7 @@ class ResourceICUPlurals extends Rule {
             // ignore problems in the source string because this is a resource checker
         }
         try {
-            const imf = new IntlMessageFormat(tar, targetLocale);
+            const imf = new IntlMessageFormat(target, tLoc.getSpec());
             let categories = categoriesForLang[tLoc.getLanguage()] || [ "one", "other" ];
             if (sourceCategories.length) {
                 categories = categories.concat(sourceCategories);
@@ -149,69 +149,25 @@ class ResourceICUPlurals extends Rule {
             // look in the abstract syntax tree for the categories that were parsed out and make
             // sure the required ones are there
             const ast = imf.getAst();
-            problems = problems.concat(this.checkPluralCategories(ast, categories, tar, resource.getKey(), file, resource.getSource()));
+            problems = problems.concat(this.checkPluralCategories(ast, categories, target, resource.getKey(), file, source, tLoc.getSpec()));
         } catch (e) {
             let value = {
                 severity: "error",
                 description: `Incorrect plural or select syntax in target string: ${e}`,
                 rule: this,
                 id: resource.getKey(),
-                source: src,
-                highlight: `Target: ${tar.substring(0, e.location.end.offset)}<e0>${tar.substring(e.location.end.offset)}</e0>`,
-                pathName: file
+                source,
+                highlight: `Target: ${target.substring(0, e.location.end.offset)}<e0>${target.substring(e.location.end.offset)}</e0>`,
+                pathName: file,
+                locale: tLoc.getSpec()
             };
-            if (typeof(lineNumber) !== 'undefined') {
-                value.lineNumber = lineNumber + e.location.end.line - 1;
+            if (typeof(resource.lineNumber) !== 'undefined') {
+                value.lineNumber = resource.lineNumber + e.location.end.line - 1;
             }
             problems.push(new Result(value));
         }
         return problems.length < 2 ? problems[0] : problems;
     }
-
-    /**
-     * @override
-     */
-    match(options) {
-        const { resource, file } = options;
-        const sourceLocale = this.sourceLocale;
-        let problems = [];
-
-        switch (resource.getType()) {
-            case 'string':
-                const tarString = resource.getTarget();
-                if (tarString) {
-                    return this.checkString(resource.getSource(), tarString, file, resource, sourceLocale, options.locale, options.lineNumber);
-                }
-                break;
-
-            case 'array':
-                const srcArray = resource.getSource();
-                const tarArray = resource.getTarget();
-                if (tarArray) {
-                    return srcArray.map((item, i) => {
-                        if (i < tarArray.length && tarArray[i]) {
-                            return this.checkString(srcArray[i], tarArray[i], file, resource, sourceLocale, options.locale, options.lineNumber);
-                        }
-                    }).filter(element => {
-                        return element;
-                    });
-                }
-                break;
-
-            case 'plural':
-                const srcPlural = resource.getSource();
-                const tarPlural = resource.getTarget();
-                if (tarPlural) {
-                    return categories.map(category => {
-                        return this.checkString(srcPlural.other, tarPlural[category], file, resource, sourceLocale, options.locale, options.lineNumber);
-                    });
-                }
-                break;
-        }
-    }
-
-    // no match
-    return;
 }
 
 export default ResourceICUPlurals;

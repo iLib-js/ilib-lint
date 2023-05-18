@@ -27,6 +27,10 @@ import DirItem from './DirItem.js';
 
 const logger = log4js.getLogger("i18nlint.RuleSet");
 
+/**
+ * If it's not already an array, make it an array!
+ * @private
+ */
 function makeArray(obj) {
     if (!obj) return [];
     if (Array.isArray(obj)) return obj;
@@ -129,40 +133,12 @@ class SourceFile extends DirItem {
             // find the rules that are appropriate for this intermediate representation and then apply them
             const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === ir.getType()));
             rules.forEach(rule => {
-                const representation = ir.getRepresentation();
-                switch (ir.getType()) {
-                case "line":
-                    for (let i = 0; i < representation.length; i++) {
-                        result = rule.match({
-                            ir,
-                            line: representation[i],
-                            locale: detectedLocale || this.project.getSourceLocale(),
-                            file: ir.getFilePath()
-                        });
-                        if (result) issues = issues.concat(makeArray(result));
-                    }
-                    break;
-                case "resource":
-                    representation.forEach(resource => {
-                        logger.trace(`Applying rule ${rule.getName()} to resource ${resource.reskey}`);
-                        result = rule.match({
-                            ir,
-                            locale: resource.getTargetLocale(),
-                            resource,
-                            file: this.filePath
-                        });
-                        if (result) issues = issues.concat(makeArray(result));
-                    });
-                    break;
-                default:
-                    // all other cases -- don't iterate, just call the rule
-                    // with the whole intermediate representation
-                    result = rule.match({
-                        ir,
-                        locale: detectedLocale || this.project.getSourceLocale()
-                    });
-                    if (result) issues = issues.concat(makeArray(result));
-                }
+                result = rule.match({
+                    ir,
+                    locale: detectedLocale || this.project.getSourceLocale(),
+                    file: this.filePath
+                });
+                if (result) issues = issues.concat(makeArray(result));
             });
         });
 
