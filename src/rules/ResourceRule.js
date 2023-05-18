@@ -60,10 +60,10 @@ class ResourceRule extends Rule {
      *
      * @abstract
      * @param {Object} params parameters for the string matching
-     * @param {String} [source] the source string to match against
-     * @param {String} [target] the target string to match
-     * @param {String} file the file path where the resources came from
-     * @param {Resource} resource the resource that contains the source and/or
+     * @param {String|undefined} params.source the source string to match against
+     * @param {String|undefined} params.target the target string to match
+     * @param {String} params.file the file path where the resources came from
+     * @param {Resource} params.resource the resource that contains the source and/or
      * target string
      * @returns {Result|Array.<Result>|undefined} any results
      * found in this string or undefined if no problems were
@@ -94,8 +94,8 @@ class ResourceRule extends Rule {
                     });
 
                 case 'array':
-                    const srcArray = resource.getSource();
-                    const tarArray = resource.getTarget() || [];
+                    const srcArray = resource.getSource() ?? [];
+                    const tarArray = resource.getTarget() ?? [];
                     results = srcArray.flatMap((item, i) => {
                         return this.matchString({
                             source: srcArray[i],
@@ -107,13 +107,13 @@ class ResourceRule extends Rule {
                     return results && results.length ? results : undefined;
     
                 case 'plural':
-                    const srcPlural = resource.getSource();
-                    const tarPlural = resource.getTarget();
+                    const srcPlural = resource.getSource() ?? {};
+                    const tarPlural = resource.getTarget() ?? {};
                     const categorySet = new Set(Object.keys(srcPlural).concat(Object.keys(tarPlural)));
     
                     results = Array.from(categorySet).flatMap(category => {
                         return this.matchString({
-                            source: srcPlural[category] || srcPlural.other,
+                            source: srcPlural[category] ?? srcPlural.other,
                             target: tarPlural[category],
                             file,
                             resource

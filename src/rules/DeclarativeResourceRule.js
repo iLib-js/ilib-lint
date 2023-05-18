@@ -54,6 +54,7 @@ class DeclarativeResourceRule extends ResourceRule {
      * Check a specific source/target pair for a match with the given regular expression.
      *
      * @abstract
+     * @param {Object} params a parameters object
      * @param {RegExp} params.re the regular expression to match
      * @param {String|undefined} params.source the source string to match against
      * @param {String|undefined} params.target the target string to match against

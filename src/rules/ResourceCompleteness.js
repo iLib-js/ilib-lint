@@ -35,10 +35,11 @@ class ResourceCompleteness extends ResourceRule {
     /**
      * Check that a given resource has both source and target tags set
      * @override
-     * @param {string} source the source string
-     * @param {string} target the target string
-     * @param {import("ilib-tools-common").Resource} resource the resource being checked
-     * @param {string} file the file where the resource came from
+     * @param {Object} params a parameters object
+     * @param {string} params.source the source string
+     * @param {string} params.target the target string
+     * @param {import("ilib-tools-common").Resource} params.resource the resource being checked
+     * @param {string} params.file the file where the resource came from
      * @returns {Array.<Result>|undefined} the results
      */
     matchString({ source, target, resource, file }) {
