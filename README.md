@@ -717,8 +717,21 @@ limitations under the License.
 
 ## Release Notes
 
-### v1.6.2
+### v1.7.0
 
+- added the ability to include or exclude locales from declarative rules
+    - the "locales" property gives the list of locales that the
+      the rule applies to
+    - the "skipLocales" property gives the list of locales that
+      the rule does not apply to
+    - modified a few locales to be Japanese-only:
+        - resource-no-fullwidth-punctuation-subset
+        - resource-no-space-between-double-and-single-byte-character
+        - resource-no-double-byte-space
+        - this fixes a bug where these rules erroneously applied to
+          Chinese
+    - modified a rule to be every language except Swedish:
+        - resource-quote-style
 - fixed plural checker to not produce a result if the source plural
   category is empty. Previously, if the source category and the target
   category were both empty, it would complain that the target string

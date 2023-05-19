@@ -476,6 +476,33 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
+    testResourceNoFullwidthPunctuationSubsetMultipleNotInChinese: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
+        );
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Really? Yes! 100%",
+            targetLocale: "zh-Hant-TW",
+            target: "本当？ はい！ 100％",
+            pathName: "a/b/c.xliff",
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
     testResourceNoHalfWidthKana: function(test) {
         test.expect(2);
 
@@ -566,6 +593,55 @@ export const testResourceTargetChecker = {
                 description: "Double-byte space characters should not be used in the target string. Use ASCII symbols instead.",
                 highlight: `Target: テスト<e0>${symbol}</e0>テスト`,
             })]);
+        }
+
+        test.done();
+    },
+
+    testResourceNoDoubleByteSpaceNotInChinese: function(test) {
+        const illegalCharacters = [
+            "\u1680",
+            "\u2000",
+            "\u2001",
+            "\u2002",
+            "\u2003",
+            "\u2004",
+            "\u2005",
+            "\u2006",
+            "\u2007",
+            "\u2008",
+            "\u2009",
+            "\u200A",
+            "\u2028",
+            "\u2029",
+            "\u202F",
+            "\u205F",
+            "\u3000",
+        ];
+        test.expect(1 + illegalCharacters.length);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-double-byte-space")
+        );
+        test.ok(rule);
+
+        for (const symbol of illegalCharacters) {
+            const resource = new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: `test${symbol}test`,
+                targetLocale: "zh-Hans-CN",
+                target: `テスト${symbol}テスト`,
+                pathName: "a/b/c.xliff",
+            });
+
+            const result = rule.matchString({
+                source: resource.getSource(),
+                target: resource.getTarget(),
+                resource,
+                file: "a/b/c.xliff"
+            });
+            test.ok(!result);
         }
 
         test.done();
@@ -728,6 +804,34 @@ export const testResourceTargetChecker = {
             description: 'The space character is not allowed in the target string. Remove the space character.',
             highlight: 'Target: Bo<e0>x 埋</e0>め込みウィジェット',
         })]);
+
+        test.done();
+    },
+
+    testResourceNoSpaceBetweenDoubleAndSingleByteCharacterNotInChinese: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(
+            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
+        );
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Box Embed Widget",
+            targetLocale: "zh-Hans-CN",
+            target: "Box 埋め込みウィジェット",
+            pathName: "a/b/c.xliff",
+        });
+
+        const result = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!result);
 
         test.done();
     },

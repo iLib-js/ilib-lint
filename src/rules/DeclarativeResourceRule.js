@@ -18,19 +18,49 @@
  * limitations under the License.
  */
 
+import Locale from 'ilib-locale';
+
 import ResourceRule from './ResourceRule.js';
+
+/**
+ * @private
+ */
+function getLangSpec(spec) {
+    const locale = new Locale(spec);
+    return locale.getLangSpec();
+}
 
 class DeclarativeResourceRule extends ResourceRule {
     /**
      * Construct a new regular expression-based declarative resource rule.
      *
-     * In addition to the options required by the ResourceRule class, the
-     * options must contain the following required properties:
-     *
-     * - regexps - an array of strings that encode regular expressions to
-     *   look for
-     *
      * @param {Object} options options as documented above
+     * @param {String} options.name the unique name of this rule
+     * @param {String} options.description a one-line description of what
+     *   this rule checks for. Example: "Check that URLs in the source also
+     *   appear in the target"
+     * @param {String} options.note a one-line note that will be printed on
+     *   screen when the check fails. Example: "The URL {matchString} did
+     *   not appear in the target." (Currently, matchString is the only
+     *   replacement param that is supported.)
+     * @param {String} options.regexps an array of strings that encode
+     *   regular expressions to look for
+     * @param {String} [options.sourceLocale] the source locale of this rule
+     * @param {String} [options.link] the URL to a web page that explains this
+     *   rule in more detail
+     * @param {{"error"|"warning"|"suggestion"}} [options.severity] the severity
+     *   of the Result if this rule matches
+     * @param {Array.<String>} [options.locales] the target locales to which this
+     *   rule applies. If specified, this rule will skip resources that have a
+     *   target locale that does not match either the language or the language-script
+     *   part of each of the locales. If not specified, the rule applies to all
+     *   target locales.
+     * @param {Array.<String>} [options.skipLocales] the target locales to which this
+     *   rule does not apply. If specified, this rule will skip resources that have a
+     *   target locale that matches either the language or the language-script
+     *   part of any of the given locales. If not specified, the rule applies to all
+     *   target locales. If both locales and skipLocales are specified, only the
+     *   locales will used.
      * @constructor
      */
     constructor(options) {
@@ -48,6 +78,19 @@ class DeclarativeResourceRule extends ResourceRule {
 
         // this may throw if you got to the regexp syntax wrong:
         this.re = options.regexps.map(regexp => new RegExp(regexp, "gu"));
+        if (options.locales) {
+            if (typeof(options.locales) === "string") {
+                this.locales = new Set([ getLangSpec(options.locales) ]);
+            } else if (Array.isArray(options.locales)) {
+                this.locales = new Set(options.locales.map(spec => getLangSpec(spec)));
+            }
+        } else if (options.skipLocales) {
+            if (typeof(options.skipLocales) === "string") {
+                this.skipLocales = new Set([ getLangSpec(options.skipLocales) ]);
+            } else if (Array.isArray(options.skipLocales)) {
+                this.skipLocales = new Set(options.skipLocales.map(spec => getLangSpec(spec)));
+            }
+        }
     }
 
     /**
@@ -69,6 +112,15 @@ class DeclarativeResourceRule extends ResourceRule {
      * @override
      */
     matchString({source, target, file, resource}) {
+        if (this.locales || this.skipLocales) {
+            const locale = new Locale(resource.getTargetLocale()).getLangSpec();
+            if ((this.locales && !this.locales.has(locale)) || (this.skipLocales && this.skipLocales.has(locale))) {
+                // the target locale of this resource is not in
+                // the set of languages that this rule applies to,
+                // so just skip it
+                return;
+            }
+        }
         let results = [];
         this.re.forEach(re => {
             results = results.concat(this.checkString({re, source, target, file, resource}));

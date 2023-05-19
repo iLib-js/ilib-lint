@@ -18,21 +18,22 @@
  * limitations under the License.
  */
 
+import Locale from 'ilib-locale';
+
 import { Rule } from 'i18nlint-common';
 
 class ResourceRule extends Rule {
     /**
      * Construct a new resource checker rule.
      *
-     * The options must contain the following required properties:
-     *
-     * - name - a unique name for this rule
-     * - description - a one-line description of what this rule checks for.
-     *   Example: "Check that URLs in the source also appear in the target"
-     * - note - a one-line note that will be printed on screen when the
-     *   check fails. Example: "The URL {matchString} did not appear in the
-     *   the target." (Currently, matchString is the only replacement
-     *   param that is supported.)
+     * If a subclass defines a property "locales" with the
+     * value being a Set of locale lang-specs, then this
+     * class will ensure that the rule is only applied to
+     * resources that match one of the lang-specs in the
+     * the set. If the subclass defines a property "skipLocales", with
+     * the value being a Set of locale lang-specs, then this class will
+     * ensure that the rule is only applied to resources that do not match
+     * any of the lang-specs in the set.
      *
      * @param {Object} options options as documented above
      * @constructor
@@ -84,6 +85,15 @@ class ResourceRule extends Rule {
         const resources = ir.getRepresentation();
 
         const resultArray = resources.flatMap(resource => {
+            if (this.locales || this.skipLocales) {
+                const locale = new Locale(resource.getTargetLocale()).getLangSpec();
+                if ((this.locales && !this.locales.has(locale)) || (this.skipLocales && this.skipLocales.has(locale))) {
+                    // the target locale of this resource is not in
+                    // the set of languages that this rule applies to,
+                    // so just skip it
+                    return;
+                }
+            }
             switch (resource.getType()) {
                 case 'string':
                     return this.matchString({
