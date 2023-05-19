@@ -717,6 +717,13 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.6.2
+
+- fixed plural checker to not produce a result if the source plural
+  category is empty. Previously, if the source category and the target
+  category were both empty, it would complain that the target string
+  is the same as the source string.
+
 ### v1.6.1
 
 - resource-quote-style: don't emit error when quotes are missing in SV target

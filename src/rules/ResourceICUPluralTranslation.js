@@ -148,8 +148,9 @@ class ResourceICUPluralTranslation extends ResourceRule {
                 const targetStr = this.reconstruct(targetPlural.options[category].value).replace(/\s+/g, " ").trim();
                 let result = [];
 
-                // use case- and whitespace-insensitive match
-                if (sourceStr.toLowerCase() === targetStr.toLowerCase()) {
+                // use case- and whitespace-insensitive match. Also, don't produce a result
+                // if the source string is empty
+                if (sourceStr.length && sourceStr.toLowerCase() === targetStr.toLowerCase()) {
                     let value = {
                         severity: "warning",
                         description: `Translation of the category \'${category}\' is the same as the source.`,
@@ -195,6 +196,9 @@ class ResourceICUPluralTranslation extends ResourceRule {
         // same language and script means that the translations are allowed to be the same as
         // the source
         if (sLoc.getLangSpec() === tLoc.getLangSpec()) return;
+
+        // don't need to check target if there is no source
+        if (!source || !source.length) return;
 
         let sourceAst;
         let targetAst;
