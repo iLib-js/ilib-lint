@@ -50,34 +50,43 @@ class ResourceUniqueKeys extends Rule {
     /**
      * @override
      */
-    match(options) {
-        const { locale, resource, file } = options || {};
+    match(options = {}) {
+        const { ir, file } = options;
 
-        const hash = resource.hashKey();
-        const other = this.ts.get(hash);
+        // we can only process resource representations
+        if (!ir || ir.getType() !== "resource") return;
 
-        if (other) {
-            logger.trace(`hash '${hash}' already found in the translation set!`);
-            let value = {
-                severity: "error",
-                id: resource.getKey(),
-                rule: this,
-                pathName: file,
-                highlight: `Also defined in this file: ${other.resfile}`,
-                description: `Key is not unique within locale ${locale}.`,
-                locale
-            };
-            if (typeof(options.lineNumber) !== 'undefined') {
-                value.lineNumber = options.lineNumber;
+        const resources = ir.getRepresentation();
+
+        const results = resources.flatMap(resource => {
+            const hash = resource.hashKey();
+            const locale = resource.getTargetLocale();
+            const other = this.ts.get(hash);
+
+            if (other) {
+                logger.trace(`hash '${hash}' already found in the translation set!`);
+                let value = {
+                    severity: "error",
+                    id: resource.getKey(),
+                    rule: this,
+                    pathName: file,
+                    highlight: `Key is also defined in this file: ${other.resfile}`,
+                    description: `Key is not unique within locale ${locale}.`,
+                    locale
+                };
+                if (typeof(resource.lineNumber) !== 'undefined') {
+                    resource.lineNumber = resource.lineNumber;
+                }
+                return new Result(value);
             }
-            return new Result(value);
-        }
 
-        resource.resfile = file;
-        this.ts.add(resource);
+            resource.resfile = file;
+            this.ts.add(resource);
 
-        // no result
-        return;
+            // no result
+            return;
+        }).filter(result => result);
+        return results?.length ? results : undefined;
     }
 }
 

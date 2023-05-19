@@ -77,7 +77,7 @@ class ResourceQuoteStyle extends ResourceRule {
 
         let re1, re2;
 
-        // used in results to show what the expected quote style is 
+        // used in results to show what the expected quote style is
         const quoteStyle = (asciiMatches || nativeMatches) ?
             `${regExps.target.quoteStart}text${regExps.target.quoteEnd}` :
             `${regExps.target.quoteStartAlt}text${regExps.target.quoteEndAlt}`;
@@ -205,6 +205,7 @@ class ResourceQuoteStyle extends ResourceRule {
      * @override
      */
     matchString({source, target, resource, file}) {
+        if (!source || !target) return; // cannot match in strings that don't exist!
         const locale = resource.getTargetLocale();
         const regExps = this.getRegExps(locale);
         return this.checkString(source, target, resource, file, locale, regExps);
