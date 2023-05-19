@@ -17,13 +17,14 @@
  * limitations under the License.
  */
 
-import path from 'node:path';
-import fs from 'node:fs';
-import log4js from 'log4js';
-import { getLocaleFromPath, TranslationSet } from 'ilib-tools-common';
-import { IntermediateRepresentation } from 'i18nlint-common';
+import path from "node:path";
+import log4js from "log4js";
+import { getLocaleFromPath } from "ilib-tools-common";
+import { IntermediateRepresentation, Parser, Result } from "i18nlint-common";
 
-import DirItem from './DirItem.js';
+import DirItem from "./DirItem.js";
+import Project from "./Project.js";
+import FileType from "./FileType.js";
 
 const logger = log4js.getLogger("i18nlint.RuleSet");
 
@@ -50,6 +51,8 @@ class SourceFile extends DirItem {
      * @constructor
      * @param {String} filePath path to the source file
      * @param {Object} options options for constructing this source file
+     * @param {object} [options.settings] the settings from the i18nlint config that apply to this file
+     * @param {FileType} options.filetype file type of this source file
      * @param {Project} project the project where this file is located
      */
     constructor(filePath, options, project) {
@@ -61,7 +64,8 @@ class SourceFile extends DirItem {
 
         this.filetype = options.filetype;
 
-        let parserClasses;
+        /** @type {(typeof Parser)[]} */
+        this.parserClasses = [];
         let extension = path.extname(this.filePath);
         if (extension) {
             // remove the dot
@@ -75,6 +79,7 @@ class SourceFile extends DirItem {
         // a single HTML file may be parsed by the HTML parser, the
         // Javascript parser, and the CSS parser. Each would have
         // their own representation of what's in the file.
+        /** @type {IntermediateRepresentation[]} */
         this.ir = [];
     }
 
@@ -93,19 +98,19 @@ class SourceFile extends DirItem {
     }
 
     /**
-     * Parse the current source file into a list of resources (in the case of
-     * resource files, or lines in the case of other types of files.
-     * @param {Array.<Parser>} parsers parsers for the current source file
+     * Parse the current source file into a list of Intermediate Representaitons
+     * and populate {@link SourceFile.ir}.
      * @returns {Array.<IntermediateRepresentation>} the parsed representations
      * of this file
      */
     parse() {
-        if (!this.filePath) return;
+        if (!this.filePath) return [];
         logger.trace(`===================\nParsing file ${this.filePath}`);
         for (const parser of this.parserClasses) {
             const p = new parser({
                 filePath: this.filePath,
-                settings: this.settings
+                settings: this.settings,
+                getLogger: (name) => log4js.getLogger(name)
             });
             this.ir = this.ir.concat(p.parse());
         }
@@ -117,7 +122,7 @@ class SourceFile extends DirItem {
      * This method parses the source file and applies each rule in turn
      * using the given locales.
      *
-     * @param {Array.<Locale>} locales a set of locales to apply
+     * @param {Array.<string>} locales a set of locales to apply
      * @returns {Array.<Result>} a list of natch results
      */
     findIssues(locales) {

@@ -56,7 +56,7 @@ class FormatterManager {
      * formatter from the config file, if any
      * @returns {Formatter} the formatter to use
      */
-    get(name, options) {
+    get(name, options = undefined) {
         const formatConfig = this.formatterCache[name];
         if (!formatConfig) return;
 

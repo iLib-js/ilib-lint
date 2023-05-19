@@ -38,7 +38,9 @@ class ParserManager {
      * @constructor
      */
     constructor(options) {
+        /** @type {{[extenstion: string]: (typeof Parser)[]}} */
         this.parserCache = {};
+        /** @type {{[parserName: string]: string}} */
         this.descriptions = {};
     }
 
@@ -46,7 +48,7 @@ class ParserManager {
      * Return a list of parsers for the given file name extension
      *
      * @param {String} extension the extension to get the parsers for
-     * @returns {Array.<Parser>} the array of parsers that handle
+     * @returns {Array.<typeof Parser>} the array of parsers that handle
      * the given type of file
      */
     get(extension) {
@@ -59,7 +61,7 @@ class ParserManager {
      * Add a list of parsers to this factory so that other code
      * can find them.
      *
-     * @param {Array.<Parser>} parsers the list of parsers to add
+     * @param {Array.<typeof Parser>} parsers the list of parsers to add
      */
     add(parsers) {
         if (!parsers || !Array.isArray(parsers)) return;
@@ -87,7 +89,7 @@ class ParserManager {
      * Return an object where the properties are the parser names and the
      * values are the parser descriptions.
      *
-     * @returns {Object} the parser names and descriptions
+     * @returns {{[parserName: string]: string}} the parser names and descriptions
      */
     getDescriptions() {
         return this.descriptions;

@@ -352,7 +352,7 @@ class PluginManager {
      * each named plugin is loaded. This method returns Promise
      *
      * @param {String|Array.<String>} names name or names of plugins to load
-     * @returns {Promise} a promise to load the named plugins.
+     * @returns {Promise<void>} a promise to load the named plugins.
      * @accept {Array.<Object>} an array of promise statuses. The status
      * field will either be "fulfilled" and the value field will be the
      * Plugin instance, or "rejected" and the reason field will be filled

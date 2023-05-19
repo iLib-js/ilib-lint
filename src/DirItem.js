@@ -17,7 +17,11 @@
  * limitations under the License.
  */
 
-import log4js from 'log4js';
+import log4js from "log4js";
+import Project from "./Project.js";
+import PluginManager from "./PluginManager.js";
+import NotImplementedError from "./NotImplementedError.js";
+import { IntermediateRepresentation, Result } from "i18nlint-common";
 
 const logger = log4js.getLogger("i18nlint.DirItem");
 
@@ -34,11 +38,13 @@ class DirItem {
      * Construct a new directory item
      * The options parameter can contain any of the following properties:
      *
-     * - filePath {String} path to the file
-     * - settings {Object} the settings from the i18nlint config that
+     * @param {String} filePath path to the file
+     * @param {object} options
+     * @param {object} [options.settings] the settings from the i18nlint config that
      *   apply to this file
-     * - pluginManager {PluginManager} the plugin manager for this run of
+     * @param {PluginManager} [options.pluginManager] the plugin manager for this run of
      *   the i18nlint tool
+     * @param {Project} project
      */
     constructor(filePath, options, project) {
         if (!options || !filePath) {
@@ -48,6 +54,13 @@ class DirItem {
         this.settings = options.settings;
         this.pluginMgr = options.pluginManager;
         this.project = project;
+    }
+
+    /** Optional asynchronous initializaiton method that should be called prior to using this item.
+     * @returns {Promise<void>}
+     */
+    init() {
+        return Promise.resolve();
     }
 
     /**
@@ -66,16 +79,20 @@ class DirItem {
      * representations of this file
      * @abstract
      */
-    parse() {}
+    parse() {
+        throw new NotImplementedError();
+    }
 
     /**
      * Check the directory item and return a list of issues found in it.
      *
-     * @param {Array.<Locale>} locales a set of locales to apply
+     * @param {Array.<string>} locales a set of locales to apply
      * @returns {Array.<Result>} a list of natch results
      * @abstract
      */
-    findIssues(locales) {}
-};
+    findIssues(locales) {
+        throw new NotImplementedError();
+    }
+}
 
 export default DirItem;

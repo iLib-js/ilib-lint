@@ -17,17 +17,21 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
-import path from 'node:path';
-import log4js from 'log4js';
-import mm from 'micromatch';
-import JSON5 from 'json5';
+import fs from "node:fs";
+import path from "node:path";
+import log4js from "log4js";
+import mm from "micromatch";
+import JSON5 from "json5";
 
-import { FileStats } from 'i18nlint-common';
+import { FileStats, Plugin, Result } from "i18nlint-common";
 
-import SourceFile from './SourceFile.js';
-import DirItem from './DirItem.js';
-import FileType from './FileType.js';
+import SourceFile from "./SourceFile.js";
+import DirItem from "./DirItem.js";
+import FileType from "./FileType.js";
+import ParserManager from "./ParserManager.js";
+import RuleManager from "./RuleManager.js";
+import PluginManager from "./PluginManager.js";
+import NotImplementedError from "./NotImplementedError.js";
 
 const logger = log4js.getLogger("i18nlint.Project");
 
@@ -73,6 +77,7 @@ class Project extends DirItem {
     constructor(root, options, config) {
         super(root, options, config);
 
+        /** @type {DirItem[]} */
         this.files = [];
 
         if (!options || !root || !config || !options.pluginManager) {
@@ -89,6 +94,7 @@ class Project extends DirItem {
         }
         this.sourceLocale = options?.opt?.sourceLocale;
 
+        /** @type {PluginManager} */
         this.pluginMgr = this.options.pluginManager;
         const ruleMgr = this.pluginMgr.getRuleManager();
         const fmtMgr = this.pluginMgr.getFormatterManager();
@@ -139,6 +145,13 @@ class Project extends DirItem {
             logger.error(`Could not find formatter ${options.formatter}. Aborting...`);
             process.exit(3);
         }
+
+        this.fileStats = new FileStats();
+        this.resultStats = {
+            errors: 0,
+            warnings: 0,
+            suggestions: 0
+        };
     }
 
     /**
@@ -259,7 +272,7 @@ class Project extends DirItem {
         } catch (e) {
             // if the readdirSync did not work, it's maybe a file?
             if (fs.existsSync(root)) {
-                this.add(new SourceFile(root, {}, this));
+                this.add(new SourceFile(root, {}, this)); // @TODO why no file type supplied? it seems that SourceFile expects it to be always set
             }
         }
 
@@ -284,11 +297,9 @@ class Project extends DirItem {
      * plugins and initializes them.
      *
      * @returns {Promise} a promise to initialize the project
-     * @accept {boolean} true when everything was initialized correct
-     * @reject the initialization failed
      */
     init() {
-        let promise = Promise.resolve(true);
+        let promise = Promise.resolve();
 
         if (this.config.plugins) {
             promise = promise.then(() => {
@@ -298,11 +309,9 @@ class Project extends DirItem {
 
         // initialize any projects or files that have an init method.
         this.files.forEach(file => {
-            if (typeof(file.init) === 'function') {
-                promise = promise.then(() => {
-                    return file.init();
-                });
-            }
+            promise = promise.then(() => { 
+                return file.init();
+            });
         });
 
         return promise;
@@ -326,7 +335,7 @@ class Project extends DirItem {
 
     /**
      * Return the includes list for this project.
-     * @returns {Array.<String>} the includes for this project
+     * @returns {Array.<String> | undefined} the includes for this project
      */
     getIncludes() {
         return this.includes;
@@ -409,6 +418,7 @@ class Project extends DirItem {
      * there is no such file type
      */
     getFileType(name) {
+        throw new NotImplementedError();
     }
 
     /**
@@ -475,7 +485,6 @@ class Project extends DirItem {
      * @returns {Array.<Result>} a list of results
      */
     findIssues(locales) {
-        this.fileStats = new FileStats();
         return this.files.map(file => {
             logger.trace(`Examining ${file.filePath}`);
 
@@ -530,11 +539,6 @@ class Project extends DirItem {
     run() {
         let exitValue = 0;
         const results = this.findIssues(this.options.locales);
-        this.resultStats = {
-            errors: 0,
-            warnings: 0,
-            suggestions: 0
-        };
 
         if (results) {
             results.forEach(result => {
@@ -559,7 +563,7 @@ class Project extends DirItem {
         }
 
         const fmt = new Intl.NumberFormat("en-US", {
-            maxFractionDigits: 2
+            maximumFractionDigits: 2
         });
         logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
         logger.info(`                   Total     ${`${String(this.fileStats.files)} Files`.padEnd(15, ' ')}${`${String(this.fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(this.fileStats.lines)} Lines`.padEnd(15, ' ')}`);
