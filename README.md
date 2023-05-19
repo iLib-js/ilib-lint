@@ -723,6 +723,8 @@ limitations under the License.
   category is empty. Previously, if the source category and the target
   category were both empty, it would complain that the target string
   is the same as the source string.
+- fixed parsing of select and selectordinal plurals so they don't complain
+  about a missing "one" category
 
 ### v1.6.1
 
