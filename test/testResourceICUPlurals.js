@@ -251,7 +251,7 @@ export const testResourceICUPlurals = {
         });
         const expected = new Result({
             severity: "error",
-            description: "Missing plural categories in target string: few. Expecting these: one, few, other",
+            description: "Missing categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
             source: '{count, plural, one {This is singular} other {This is plural}}',
             highlight: 'Target: {count, plural, one {Это единственное число} other {это множественное число}}<e0></e0>',
@@ -310,7 +310,7 @@ export const testResourceICUPlurals = {
         });
         const expected = new Result({
             severity: "warning",
-            description: "Extra plural categories in target string: few. Expecting only these: one, other",
+            description: "Extra categories in target string: few. Expecting only these: one, other",
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
@@ -370,7 +370,7 @@ export const testResourceICUPlurals = {
         });
         const expected = new Result({
             severity: "error",
-            description: "Missing plural categories in target string: =1. Expecting these: one, other, =1",
+            description: "Missing categories in target string: =1. Expecting these: one, other, =1",
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>',
             rule,
@@ -439,7 +439,7 @@ export const testResourceICUPlurals = {
         });
         const expected = new Result({
             severity: "error",
-            description: "Missing plural categories in target string: few. Expecting these: one, few, other",
+            description: "Missing categories in target string: few. Expecting these: one, few, other",
             id: "plural.test",
             highlight: 'Target: {count, plural,\n' +
                 '                one {\n' +
@@ -542,7 +542,7 @@ export const testResourceICUPlurals = {
         const expected = [
             new Result({
                 severity: "error",
-                description: "Missing plural categories in target string: few. Expecting these: one, few, other",
+                description: "Missing categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
                 highlight: 'Target: {count, plural,\n' +
                     '                one {\n' +
@@ -585,7 +585,7 @@ export const testResourceICUPlurals = {
             }),
             new Result({
                 severity: "error",
-                description: "Missing plural categories in target string: few. Expecting these: one, few, other",
+                description: "Missing categories in target string: few. Expecting these: one, few, other",
                 id: "plural.test",
                 highlight: 'Target: {count, plural,\n' +
                     '                one {\n' +
@@ -630,6 +630,66 @@ export const testResourceICUPlurals = {
         test.deepEqual(actual, expected);
 
         test.done();
-    }
+    },
+
+    testResourceICUPluralsSelectString: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, select, male {He said} female {She said} other {They said}}',
+            targetLocale: "de-DE",
+            target: "{count, select, male {Er sagt} female {Sie sagt} other {Ihnen sagen}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralsSelectStringMissingCategory: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, select, male {He said} female {She said} other {They said}}',
+            targetLocale: "de-DE",
+            target: "{count, select, male {Er sagt} other {Ihnen sagen}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Missing categories in target string: female. Expecting these: other, male, female",
+            id: "plural.test",
+            highlight: 'Target: {count, select, male {Er sagt} other {Ihnen sagen}}<e0></e0>',
+            rule,
+            pathName: "a/b/c.xliff",
+            locale: "de-DE",
+            source: '{count, select, male {He said} female {She said} other {They said}}'
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
 };
 
