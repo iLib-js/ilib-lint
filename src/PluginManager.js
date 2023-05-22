@@ -36,6 +36,7 @@ import ResourceCompleteness from './rules/ResourceCompleteness.js';
 import ResourceDNTTerms from './rules/ResourceDNTTerms.js';
 import ResourceNoTranslation from './rules/ResourceNoTranslation.js';
 import ResourceStateChecker from './rules/ResourceStateChecker.js';
+import FixerManager from './FixerManager.js';
 
 const logger = log4js.getLogger("i18nlint.PluginManager");
 
@@ -250,6 +251,7 @@ class PluginManager {
         this.parserMgr = new ParserManager();
         this.formatterMgr = new FormatterManager();
         this.ruleMgr = new RuleManager();
+        this.fixerMgr = new FixerManager();
         this.sourceLocale = options && options.sourceLocale;
 
         // default rules
@@ -309,6 +311,18 @@ class PluginManager {
      */
     getFormatterManager() {
         return this.formatterMgr;
+    }
+
+    /**
+     * Return the fixer manager for this plugin manager. This
+     * manages both the built-in fixers, and the fixers
+     * loaded from the plugins.
+     *
+     * @returns {FixerManager} the fixer manager for this
+     * plugin manager.
+     */
+    getFixerManager() {
+        return this.fixerMgr;
     }
 
     /**
