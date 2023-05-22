@@ -720,5 +720,30 @@ export const testResourceICUPluralTranslation = {
         test.done();
     },
 
+    testResourceICUPluralTranslationsIgnoreEmptyCategories: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPluralTranslation();
+        test.ok(rule);
+
+        const actual = rule.match({
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [new ResourceString({
+                    key: "plural.test",
+                    sourceLocale: "en-US",
+                    source: '{count, plural, one {# file} other {}} in the folder.',
+                    targetLocale: "de-DE",
+                    target: "{count, plural, one {# Datei} other {}} in dem Ordner.",
+                    pathName: "a/b/c.xliff"
+                })],
+                filePath: "a/b/c.xliff"
+            }),
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    }
 };
 
