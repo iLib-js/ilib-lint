@@ -58,7 +58,8 @@
         "debug": "LANG=en_US.UTF8 node --inspect-brk test/testSuite.js",
         "clean": "git clean -f -d src test",
         "doc": "mkdir -p docs ; jsdoc2md -c jsdoc.json --separators --source src/* -m table > docs/ilibLint.md ; npm run doc:html",
-        "doc:html": "jsdoc -c jsdoc.json"
+        "doc:html": "jsdoc -c jsdoc.json",
+        "check": "tsc -p ./jsconfig.json"
     },
     "devDependencies": {
         "@tsconfig/node14": "^1.0.3",
