@@ -82,7 +82,7 @@ class ResourceICUPlurals extends ResourceRule {
                     let opts = {
                         severity: "error",
                         rule: this,
-                        description: `Missing plural categories in target string: ${missing.join(", ")}. Expecting these: ${neededCategories.join(", ")}`,
+                        description: `Missing categories in target string: ${missing.join(", ")}. Expecting these: ${neededCategories.join(", ")}`,
                         id: key,
                         highlight: `Target: ${stringToCheck}<e0></e0>`,
                         pathName,
@@ -104,7 +104,7 @@ class ResourceICUPlurals extends ResourceRule {
                     let opts = {
                         severity: "warning",
                         rule: this,
-                        description: `Extra plural categories in target string: ${extras.join(", ")}. Expecting only these: ${neededCategories.join(", ")}`,
+                        description: `Extra categories in target string: ${extras.join(", ")}. Expecting only these: ${neededCategories.join(", ")}`,
                         id: key,
                         highlight: `Target: ${stringToCheck}<e0></e0>`,
                         pathName,
@@ -124,13 +124,15 @@ class ResourceICUPlurals extends ResourceRule {
         let results;
         let problems = [];
         let sourceCategories = [];
+        let pluralType;
+
         try {
             const imf = new IntlMessageFormat(source, sLoc.getSpec());
-            let categories = categoriesForLang[sLoc.getLanguage()] || [ "one", "other" ];
             // look in the abstract syntax tree for the categories that were parsed out and make
             // sure the required ones are there
             const ast = imf.getAst();
-            if ( ast[0] && ast[0].options ) {
+            if (ast[0] && ast[0].options) {
+                pluralType = ast[0].pluralType;
                 sourceCategories = Object.keys(ast[0].options).filter(category => {
                     // if it is not one of the standard categories, it is a special one, so search for it
                     // in the target too
@@ -142,7 +144,13 @@ class ResourceICUPlurals extends ResourceRule {
         }
         try {
             const imf = new IntlMessageFormat(target, tLoc.getSpec());
-            let categories = categoriesForLang[tLoc.getLanguage()] || [ "one", "other" ];
+            let categories;
+            if (pluralType === "cardinal") {
+                categories = categoriesForLang[tLoc.getLanguage()] || [ "one", "other" ];
+            } else {
+                // for select or selectordinal, only the "other" category is required
+                categories = [ "other" ];
+            }
             if (sourceCategories.length) {
                 categories = categories.concat(sourceCategories);
             }
