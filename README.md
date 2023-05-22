@@ -730,8 +730,6 @@ limitations under the License.
         - resource-no-double-byte-space
         - this fixes a bug where these rules erroneously applied to
           Chinese
-    - modified a rule to be every language except Swedish:
-        - resource-quote-style
 - fixed plural checker to not produce a result if the source plural
   category is empty. Previously, if the source category and the target
   category were both empty, it would complain that the target string
