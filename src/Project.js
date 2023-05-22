@@ -77,8 +77,11 @@ class Project extends DirItem {
     constructor(root, options, config) {
         super(root, options, config);
 
-        /** @type {DirItem[]} */
+        /** @type {SourceFile[]} */
         this.files = [];
+
+        /** @type {Project[]} */
+        this.projects = [];
 
         if (!options || !root || !config || !options.pluginManager) {
             throw "Insufficient params given to Project constructor";
@@ -205,15 +208,17 @@ class Project extends DirItem {
                 if (stat.isDirectory()) {
                     const configFileName = path.join(root, "ilib-lint-config.json");
                     if (root !== this.root && fs.existsSync(configFileName)) {
+                        // a project
                         const data = fs.readFileSync(configFileName, "utf-8");
                         const config = JSON5.parse(data);
                         const newProject = new Project(root, this.getOptions(), config);
                         includes = newProject.getIncludes();
                         excludes = newProject.getExcludes();
                         logger.trace(`New project ${newProject.getName()}`);
-                        this.add(newProject);
+                        this.addProject(newProject);
                         newProject.scan([root]);
                     } else {
+                        // dir but not a project
                         list = fs.readdirSync(root);
                         logger.trace(`Searching dir ${root}`);
 
@@ -258,7 +263,7 @@ class Project extends DirItem {
                         logger.trace(`${root} ... included`);
                         glob = glob || "**";
                         const filetype = this.getFileTypeForPath(root);
-                        this.add(new SourceFile(root, {
+                        this.addFile(new SourceFile(root, {
                             settings: this.getSettings(glob),
                             filetype
                         }, this));
@@ -271,12 +276,13 @@ class Project extends DirItem {
             }
         } catch (e) {
             // if the readdirSync did not work, it's maybe a file?
-            if (fs.existsSync(root)) {
-                this.add(new SourceFile(root, {}, this)); // @TODO why no file type supplied? it seems that SourceFile expects it to be always set
-            }
+            // if (fs.existsSync(root)) {
+            //     this.add(new SourceFile(root, {}, this)); // @TODO why no file type supplied? it seems that SourceFile expects it to be always set
+            // }
+
         }
 
-        return this.get();
+        return [...this.getFiles(), ...this.getProjects()];
     }
 
     /**
@@ -462,20 +468,37 @@ class Project extends DirItem {
     }
 
     /**
-     * Add a directory item to this project.
+     * Add a file item to this project.
      *
-     * @param {DirItem} item directory item to add
+     * @param {SourceFile} item file item to add
      */
-    add(item) {
+    addFile(item) {
         this.files.push(item);
     }
 
     /**
-     * Return all directory items in this project.
-     * @returns {Array.<DirItem>} the directory items in this project.
+     * Add a nested project item to this project.
+     *
+     * @param {Project} item project item to add
      */
-    get() {
+    addProject(item) {
+        this.projects.push(item);
+    }
+
+    /**
+     * Return all file items in this project.
+     * @returns {Array.<SourceFile>} the file items in this project.
+     */
+    getFiles() {
         return this.files;
+    }
+
+    /**
+     * Return all nested project items in this project.
+     * @returns {Array.<Project>} the nested project items in this project.
+     */
+    getProjects() {
+        return this.projects;
     }
 
     /**
@@ -485,8 +508,8 @@ class Project extends DirItem {
      * @returns {Array.<Result>} a list of results
      */
     findIssues(locales) {
-        return this.files.map(file => {
-            logger.trace(`Examining ${file.filePath}`);
+        return [...this.files.flatMap(file => {
+            logger.trace(`Examining file ${file.filePath}`);
 
             const irArray = file.parse();
             if (irArray) {
@@ -500,7 +523,11 @@ class Project extends DirItem {
                 });
             }
             return file.findIssues(locales);
-        }).flat();
+        }),
+        ...this.projects.flatMap(project => {
+            logger.trace(`Examining project ${project.filePath}`);
+            return project.findIssues(locales);
+        })];
     }
 
     /**

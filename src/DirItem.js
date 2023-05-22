@@ -71,28 +71,6 @@ class DirItem {
     getFilePath() {
         return this.filePath;
     }
-
-    /**
-     * Parse the current directory item.
-     *
-     * @returns {Array.<IntermediateRepresentation>} the parsed
-     * representations of this file
-     * @abstract
-     */
-    parse() {
-        throw new NotImplementedError();
-    }
-
-    /**
-     * Check the directory item and return a list of issues found in it.
-     *
-     * @param {Array.<string>} locales a set of locales to apply
-     * @returns {Array.<Result>} a list of natch results
-     * @abstract
-     */
-    findIssues(locales) {
-        throw new NotImplementedError();
-    }
 }
 
 export default DirItem;
