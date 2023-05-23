@@ -123,7 +123,9 @@ class SourceFile extends DirItem {
         return this.getParsers().flatMap(parser => {
             const irs = parser.parse();
 
-            return irs.flatMap(ir => {
+            let accumulatedResults = [];
+            let didWrite = false;
+            for (const ir of irs) {
                 // find the rules that are appropriate for this intermediate representation and then apply them
                 const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === ir.getType()));
                 
@@ -134,19 +136,29 @@ class SourceFile extends DirItem {
                     file: this.filePath
                 }) ?? []);
                 
+                accumulatedResults.push(...results);
+
                 if (! /* @TODO check if the autofixing is enabled at all */ true) {
-                    return results;
+                    continue;
+                }
+
+                if (didWrite) {
+                    // a parser can produce multiple IRs upon a single parse() call,
+                    // but after some fixes had been applied the file will have been changed
+                    // so the previously parsed representations will not match the original file anymore
+                    // so the fixes can be applied only once per each parse()
+                    continue;
                 }
                 
                 const fixable = results.filter(result => result.fix !== undefined);
                 if (!(fixable.length > 0)) {
-                    return results;
+                    continue;
                 }
 
                 const fixer = this.project.getFixerManager().get(ir.getType());
                 if (undefined === fixer) {
                     logger.trace(`Cannot get fixer for IR of type ${ir.type}`);
-                    return results;
+                    continue;
 
                 }
 
@@ -155,11 +167,13 @@ class SourceFile extends DirItem {
                 // fixer should modify the IR
                 // so tell current parser to write out the modified representation
                 parser.write(ir);
+                didWrite = true;
 
                 // fixer should also have set the `applied` flag of each applied Fix
-                // so we can just return the results
-                return results;
-            });
+                // so we can just use the results
+            }
+
+            return accumulatedResults;
         });
     }
 };

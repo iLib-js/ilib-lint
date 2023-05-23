@@ -18,10 +18,11 @@
  * limitations under the License.
  */
 
-import { Plugin } from 'i18nlint-common';
+import { Parser, Plugin } from 'i18nlint-common';
 import XliffParser from './XliffParser.js';
 import LineParser from './LineParser.js';
 import StringParser from './StringParser.js';
+import StringFixer from './StringFixer.js';
 
 /**
  * @class ilib-lint plugin that can parse XLIFF files
@@ -39,11 +40,15 @@ class BuiltinPlugin extends Plugin {
      * For a "parser" type of plugin, this returns a list of Parser classes
      * that this plugin implements.
      *
-     * @returns {Array.<Parser>} list of Parser classes implemented by this
+     * @returns {Array.<typeof Parser<any>>} list of Parser classes implemented by this
      * plugin
      */
     getParsers() {
         return [XliffParser, LineParser, StringParser];
+    }
+
+    getFixers() {
+        return [StringFixer];
     }
 };
 

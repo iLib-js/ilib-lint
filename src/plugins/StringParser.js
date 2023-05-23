@@ -57,6 +57,19 @@ class StringParser extends Parser {
     getExtensions() {
         return this.extensions;
     }
+
+    canWrite = true;
+
+    /** 
+     * @override
+     * @param {IntermediateRepresentation<string>} ir
+     */
+    write(ir) {
+        if (ir.type !== "string") {
+            throw new Error(`Cannot write representation of type ${ir.type}`);
+        }
+        fs.writeFileSync(this.path, ir.ir, "utf-8");
+    }
 };
 
 export default StringParser;
