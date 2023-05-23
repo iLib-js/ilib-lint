@@ -18,7 +18,7 @@
  */
 import log4js from 'log4js';
 
-import { Formatter } from 'i18nlint-common';
+import { Formatter, Result } from 'i18nlint-common';
 
 var logger = log4js.getLogger("ilib-lint.formatters.AnsiConsoleFormatter");
 
@@ -44,7 +44,7 @@ class AnsiConsoleFormatter extends Formatter {
      * @returns {String} the formatted result
      */
     format(result) {
-        if (!result) return;
+        if (!result) return "";
         let output = "";
         const startColor = (result.severity === "error" ? "\u001B[91m" : "\u001B[33m");
         output += `${result.pathName}${typeof(result.lineNumber) === "number" ? ('(' + result.lineNumber + ')') : ""}:
@@ -56,8 +56,10 @@ class AnsiConsoleFormatter extends Formatter {
             output += `  Source: ${result.source}\n`;
         }
         output += `  ${result.highlight}
+  Auto-fix: ${String(result.fix?.applied ?? "unavailable")}
   Rule (${result.rule.getName()}): ${result.rule.getDescription()}
 `;
+
         // output ascii terminal escape sequences
         output = output.replace(/<e\d><\/e\d>/g, "\u001B[91m \u001B[0m");
         output = output.replace(/<e\d>/g, "\u001B[91m");
