@@ -121,22 +121,26 @@ export class StringFixer extends Fixer {
             return a.idx - b.idx;
         }).map(({command}) => command);
 
+        // copy the commands so that they could be modified internally here
+        const copiedCommands = sortedCommands.map(c => ({...c}));
+
         let modified = content;
-        let offset = 0;
-        for (const command of sortedCommands) {
+        for (const command of copiedCommands) {
             switch (command.command) {
                 case "INSERT":
                     modified =
-                        modified.slice(0, command.after + offset) +
+                        modified.slice(0, command.after) +
                         command.content +
-                        modified.slice(command.after + offset);
-                    offset += command.content.length;
+                        modified.slice(command.after);
+                    // offset commands that should be applied onto the parts of string that will be further after this insertion
+                    copiedCommands.filter(c => c.after > command.after).forEach(c => c.after += command.content.length);
                     break;
                 case "DELETE":
                     modified =
-                        modified.slice(0, command.after + offset) +
-                        modified.slice(command.after + offset + command.count);
-                    offset -= command.count;
+                        modified.slice(0, command.after) +
+                        modified.slice(command.after + command.count);
+                    // offset commands that should be applied onto the parts of string that will be further after this insertion
+                    copiedCommands.filter(c => c.after > command.after).forEach(c => c.after -= command.count);
                     break;
                 default:
                     // @ts-expect-error: switch should be exhaustive, so the .command would have type `never`

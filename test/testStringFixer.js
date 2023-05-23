@@ -115,7 +115,6 @@ export const testStringFixer = {
         fixer.applyFixes(subject, [fix]);
 
         test.equal(subject.ir, "abCdef");
-        // @TODO fix
 
         test.done();
     },
