@@ -84,27 +84,27 @@ export class StringFixer extends Fixer {
      * @param {StringFix[]} fixes
      */
     applyFixes(ir, fixes) {
-        let /** @type {StringFixCommand[]} */ pickedCommands = [];
+        let /** @type {StringFixCommand[]} */ enqueuedCommands = [];
 
         for (const fix of fixes) {
             // skip fix if there is any overlap with
             // the fixes that have already been picked for processing
             if (
-                fix.commands.some((command) => {
+                fix.commands.some((command) =>
                     // insert and delete can only overlap if their starting positions are equal
-                    pickedCommands.some((pickedCommand) => pickedCommand.after === command.after);
-                })
+                    enqueuedCommands.some((enqueued) => enqueued.after === command.after)
+                )
             ) {
                 continue;
             }
 
             // otherwise, add its commands to the queue
-            pickedCommands.push(...fix.commands);
+            enqueuedCommands.push(...fix.commands);
             // and mark the fix as applied
             fix.applied = true;
         }
 
-        ir.ir = StringFixer.applyCommands(ir.ir, pickedCommands);
+        ir.ir = StringFixer.applyCommands(ir.ir, enqueuedCommands);
     }
     /**
      * @param {string} content
@@ -123,9 +123,9 @@ export class StringFixer extends Fixer {
                 return a.idx - b.idx;
             })
             .map(({ command }) => command);
-            
+
         let modified = content;
-        
+
         // copy the commands so that they could be modified internally here
         const remainingCommands = sortedCommands.map((c) => ({ ...c }));
 
@@ -136,14 +136,18 @@ export class StringFixer extends Fixer {
                     modified = modified.slice(0, command.after) + command.content + modified.slice(command.after);
                     // offset commands that should be applied onto the parts of string that will be further after this insertion
                     for (const c of remainingCommands) {
-                        if (c.after > command.after) { c.after += command.content.length; }
+                        if (c.after > command.after) {
+                            c.after += command.content.length;
+                        }
                     }
                     break;
                 case "DELETE":
                     modified = modified.slice(0, command.after) + modified.slice(command.after + command.count);
                     // offset commands that should be applied onto the parts of string that will be further after this deletion
                     for (const c of remainingCommands) {
-                        if (c.after > command.after) { c.after -= command.count; }
+                        if (c.after > command.after) {
+                            c.after -= command.count;
+                        }
                     }
                     break;
                 default:

@@ -66,7 +66,7 @@ export const testStringFixer = {
         const fixer = new StringFixer();
         test.ok(fixer);
 
-        // product of mock rule "ensure string wrapped in quotes"
+        // product of mock rule "always quote"
         const fix = new StringFix(StringFix.commands.insertAfter(0, "\""), StringFix.commands.insertAfter(6, "\""));
 
         fixer.applyFixes(subject, [fix]);
@@ -115,6 +115,54 @@ export const testStringFixer = {
         fixer.applyFixes(subject, [fix]);
 
         test.equal(subject.ir, "abCdef");
+
+        test.done();
+    },
+
+    stringFixerShouldFlagAppliedFix: function (test) {
+        test.expect(2);
+
+        const subject = new IntermediateRepresentation({
+            type: "string",
+            filePath: "test/file.txt",
+            ir: "abcdef",
+        });
+
+        const fixer = new StringFixer();
+        test.ok(fixer);
+
+        const fix = new StringFix(StringFix.commands.insertAfter(2, "!"));
+
+        fixer.applyFixes(subject, [fix]);
+
+        test.equal(fix.applied, true);
+
+        test.done();
+    },
+
+    stringFixerShouldSkipOverlappingFix: function (test) {
+        test.expect(3);
+
+        const subject = new IntermediateRepresentation({
+            type: "string",
+            filePath: "test/file.txt",
+            ir: "abcdef",
+        });
+
+        const fixer = new StringFixer();
+        test.ok(fixer);
+
+        // product of mock rule "always shout"
+        const alwaysShoutFix = new StringFix(StringFix.commands.insertAfter(6, "!"));
+        // product of mock rule "always quote"
+        const alwaysQuoteFix = new StringFix(StringFix.commands.insertAfter(0, "\""), StringFix.commands.insertAfter(6, "\""));
+
+        fixer.applyFixes(subject, [alwaysShoutFix, alwaysQuoteFix]);
+
+        // Fixer cannot apply both fixes, because it cannot tell which command should be executed first:
+        // `"abcdef"!` or `"abcdef!"`
+        test.equal(alwaysShoutFix.applied, true);
+        test.equal(alwaysQuoteFix.applied, false);
 
         test.done();
     },
