@@ -79,7 +79,8 @@ export const regexRules = [
         description: "Ensure that the target does not contain specific full-width punctuation: percent sign, question mark, or exclamation mark.",
         note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII symbols instead.",
         regexps: [ "[\\uFF01\\uFF05\\uFF1F]+" ],
-        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-punctuation-subset.md"
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-fullwidth-punctuation-subset.md",
+        locales: "ja"
     },
         {
         type: "resource-target",
@@ -89,6 +90,7 @@ export const regexRules = [
         regexps: [ "[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FAF]\\s+[\\x00-\\xFF]|[\\x00-\\xFF]\\s+[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FAF]" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-between-double-and-single-byte-character.md",
         severity: "warning",
+        locales: "ja"
     },
     {
         type: "resource-target",
@@ -97,7 +99,7 @@ export const regexRules = [
         note: "The half-width kana characters are not allowed in the target string. Use full-width characters.",
         regexps: [ "[ｧ-ﾝﾞﾟ]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-halfwidth-kana-characters.md",
-        severity: "warning",
+        severity: "warning"
     },
     {
         type: "resource-target",
@@ -108,6 +110,7 @@ export const regexRules = [
         regexps: [ "[\\u1680\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000]+" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-double-byte-space.md",
         severity: "warning",
+        locales: "ja"
     },
     {
         type: "resource-target",
@@ -116,7 +119,7 @@ export const regexRules = [
         note: "There should be no space adjacent to fullwidth punctuation characters '{matchString}'. Remove it.",
         regexps: [ "(\\s+[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]|[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]\\s+)" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-with-fullwidth-punctuation.md",
-        severity: "warning",
+        severity: "warning"
     },
 ];
 
