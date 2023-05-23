@@ -113,39 +113,44 @@ export class StringFixer extends Fixer {
      */
     static applyCommands(content, commands) {
         // sort the commands by the position in which they should be applied
-        const sortedCommands = commands.map((command, idx) => ({command, idx})).sort((a, b) => {
-            let pointComp = a.command.after - b.command.after;
-            if (pointComp !== 0) return pointComp;
-            // if the positions are equal, ensure that the order of commands is preserved
-            // (a single fix is allowed to use multiple commands in the same place, because it knows the order in which they should be executed)
-            return a.idx - b.idx;
-        }).map(({command}) => command);
-
-        // copy the commands so that they could be modified internally here
-        const copiedCommands = sortedCommands.map(c => ({...c}));
-
+        const sortedCommands = commands
+            .map((command, idx) => ({ command, idx }))
+            .sort((a, b) => {
+                let pointComp = a.command.after - b.command.after;
+                if (pointComp !== 0) return pointComp;
+                // if the positions are equal, ensure that the order of commands is preserved
+                // (a single fix is allowed to use multiple commands in the same place, because it knows the order in which they should be executed)
+                return a.idx - b.idx;
+            })
+            .map(({ command }) => command);
+            
         let modified = content;
-        for (const command of copiedCommands) {
+        
+        // copy the commands so that they could be modified internally here
+        const remainingCommands = sortedCommands.map((c) => ({ ...c }));
+
+        let command = remainingCommands.shift();
+        while (command !== undefined) {
             switch (command.command) {
                 case "INSERT":
-                    modified =
-                        modified.slice(0, command.after) +
-                        command.content +
-                        modified.slice(command.after);
+                    modified = modified.slice(0, command.after) + command.content + modified.slice(command.after);
                     // offset commands that should be applied onto the parts of string that will be further after this insertion
-                    copiedCommands.filter(c => c.after > command.after).forEach(c => c.after += command.content.length);
+                    for (const c of remainingCommands) {
+                        if (c.after > command.after) { c.after += command.content.length; }
+                    }
                     break;
                 case "DELETE":
-                    modified =
-                        modified.slice(0, command.after) +
-                        modified.slice(command.after + command.count);
-                    // offset commands that should be applied onto the parts of string that will be further after this insertion
-                    copiedCommands.filter(c => c.after > command.after).forEach(c => c.after -= command.count);
+                    modified = modified.slice(0, command.after) + modified.slice(command.after + command.count);
+                    // offset commands that should be applied onto the parts of string that will be further after this deletion
+                    for (const c of remainingCommands) {
+                        if (c.after > command.after) { c.after -= command.count; }
+                    }
                     break;
                 default:
                     // @ts-expect-error: switch should be exhaustive, so the .command would have type `never`
                     throw new Error(`Unknown StringFixCommand ${command.command}`);
             }
+            command = remainingCommands.shift();
         }
 
         return modified;
