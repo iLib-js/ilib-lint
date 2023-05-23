@@ -525,17 +525,16 @@ class Project extends DirItem {
         return [...this.files.flatMap(file => {
             logger.trace(`Examining file ${file.filePath}`);
 
-            const irArray = file.parse();
-            if (irArray) {
-                irArray.forEach(ir => {
-                    if (ir.stats) {
-                        this.fileStats.addStats(ir.stats);
-                    } else {
-                        // no stats? At least we know there was a file, so count that
-                        this.fileStats.addFiles(1);
-                    }
-                });
-            }
+            // collect stats
+            file.parse().forEach(ir => {
+                if (ir.stats) {
+                    this.fileStats.addStats(ir.stats);
+                } else {
+                    // no stats? At least we know there was a file, so count that
+                    this.fileStats.addFiles(1);
+                }
+            });
+
             return file.findIssues(locales);
         }),
         ...this.projects.flatMap(project => {

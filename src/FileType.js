@@ -20,6 +20,7 @@
 import log4js from 'log4js';
 
 import RuleSet from './RuleSet.js';
+import { Rule } from 'i18nlint-common';
 
 const logger = log4js.getLogger("i18nlint.FileType");
 

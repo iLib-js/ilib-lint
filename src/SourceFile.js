@@ -20,23 +20,13 @@
 import path from "node:path";
 import log4js from "log4js";
 import { getLocaleFromPath } from "ilib-tools-common";
-import { IntermediateRepresentation, Parser, Result } from "i18nlint-common";
+import { Fix, IntermediateRepresentation, Parser, Result } from "i18nlint-common";
 
 import DirItem from "./DirItem.js";
 import Project from "./Project.js";
 import FileType from "./FileType.js";
 
 const logger = log4js.getLogger("i18nlint.RuleSet");
-
-/**
- * If it's not already an array, make it an array!
- * @private
- */
-function makeArray(obj) {
-    if (!obj) return [];
-    if (Array.isArray(obj)) return obj;
-    return [ obj ];
-}
 
 /**
  * @class Represent a source file
@@ -46,13 +36,13 @@ class SourceFile extends DirItem {
      * Construct a source file instance
      * The options parameter can contain any of the following properties:
      *
-     * - filePath {String} path to the file
      *
      * @constructor
      * @param {String} filePath path to the source file
      * @param {Object} options options for constructing this source file
-     * @param {object} [options.settings] the settings from the i18nlint config that apply to this file
      * @param {FileType} options.filetype file type of this source file
+     * @param {String} options.filePath path to the file
+     * @param {object} [options.settings] the settings from the i18nlint config that apply to this file
      * @param {Project} project the project where this file is located
      */
     constructor(filePath, options, project) {
@@ -73,14 +63,6 @@ class SourceFile extends DirItem {
             const pm = project.getParserManager();
             this.parserClasses = pm.get(extension);
         }
-
-        // the intermediate representations are an array because some
-        // file types can be parsed by multiple parsers. For example,
-        // a single HTML file may be parsed by the HTML parser, the
-        // Javascript parser, and the CSS parser. Each would have
-        // their own representation of what's in the file.
-        /** @type {IntermediateRepresentation[]} */
-        this.ir = [];
     }
 
     /**
@@ -98,23 +80,27 @@ class SourceFile extends DirItem {
     }
 
     /**
+     * @private 
+     * @returns {Parser[]}
+    */
+    getParsers() {
+        return this.parserClasses.map(parserClass => {
+            return new parserClass({
+                filePath: this.filePath,
+                settings: this.settings,
+                getLogger: (name) => log4js.getLogger(name)
+            });
+        });
+    }
+
+    /**
      * Parse the current source file into a list of Intermediate Representaitons
-     * and populate {@link SourceFile.ir}.
      * @returns {Array.<IntermediateRepresentation>} the parsed representations
      * of this file
      */
     parse() {
         if (!this.filePath) return [];
-        logger.trace(`===================\nParsing file ${this.filePath}`);
-        for (const parser of this.parserClasses) {
-            const p = new parser({
-                filePath: this.filePath,
-                settings: this.settings,
-                getLogger: (name) => log4js.getLogger(name)
-            });
-            this.ir = this.ir.concat(p.parse());
-        }
-        return this.ir;
+        return this.getParsers().flatMap(parser => parser.parse());
     }
 
     /**
@@ -126,28 +112,55 @@ class SourceFile extends DirItem {
      * @returns {Array.<Result>} a list of natch results
      */
     findIssues(locales) {
-        let issues = [], names, result;
         const detectedLocale = this.getLocaleFromPath();
 
-        if (detectedLocale && locales.indexOf(detectedLocale) < -1) {
+        if (detectedLocale && !locales.includes(detectedLocale)) {
             // not one of the locales we need to check
-            return issues;
+            return [];
         }
 
-        this.ir.forEach(ir => {
-            // find the rules that are appropriate for this intermediate representation and then apply them
-            const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === ir.getType()));
-            rules.forEach(rule => {
-                result = rule.match({
+        if (!this.filePath) return [];
+        return this.getParsers().flatMap(parser => {
+            const irs = parser.parse();
+
+            return irs.flatMap(ir => {
+                // find the rules that are appropriate for this intermediate representation and then apply them
+                const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === ir.getType()));
+                
+                // apply rules
+                const results = rules.flatMap(rule => rule.match({
                     ir,
                     locale: detectedLocale || this.project.getSourceLocale(),
                     file: this.filePath
-                });
-                if (result) issues = issues.concat(makeArray(result));
+                }) ?? []);
+                
+                if (! /* @TODO check if the autofixing is enabled at all */ true) {
+                    return results;
+                }
+                
+                const fixable = results.filter(result => result.fix !== undefined);
+                if (!(fixable.length > 0)) {
+                    return results;
+                }
+
+                const fixer = this.project.getFixerManager().get(ir.getType());
+                if (undefined === fixer) {
+                    logger.trace(`Cannot get fixer for IR of type ${ir.type}`);
+                    return results;
+
+                }
+
+                const fixes = /** @type {Fix[]} */ (fixable.map(result => result.fix));
+                fixer.applyFixes(ir, fixes);
+                // fixer should modify the IR
+                // so tell current parser to write out the modified representation
+                parser.write(ir);
+
+                // fixer should also have set the `applied` flag of each applied Fix
+                // so we can just return the results
+                return results;
             });
         });
-
-        return issues;
     }
 };
 
