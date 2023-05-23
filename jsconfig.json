@@ -4,8 +4,9 @@
         "noEmit": true,
         "allowJs": true,
         "checkJs": true,
-        "strict": true,
         "module": "nodenext",
+        "moduleResolution": "nodenext",
+        "strict": true,
         "noImplicitAny": false
     },
     "exclude": ["node_modules"]
