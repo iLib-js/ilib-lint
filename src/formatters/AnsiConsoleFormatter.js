@@ -56,7 +56,7 @@ class AnsiConsoleFormatter extends Formatter {
             output += `  Source: ${result.source}\n`;
         }
         output += `  ${result.highlight}
-  Auto-fix: ${String(result.fix?.applied ?? "unavailable")}
+  Auto-fix: ${result.fix === undefined ? "unavailable" : result.fix.applied ? "applied" : "not applied"}
   Rule (${result.rule.getName()}): ${result.rule.getDescription()}
 `;
 

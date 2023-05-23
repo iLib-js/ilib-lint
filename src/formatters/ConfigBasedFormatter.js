@@ -77,7 +77,7 @@ export class ConfigBasedFormatter extends Formatter {
         for (let prop of resultFields) {
             output = output.replace(new RegExp(`{${prop}}`, "g"), result[prop] || "");
         }
-        output = output.replace(new RegExp("{fixStatus}", "g"), String(result.fix?.applied ?? "unavailable"));
+        output = output.replace(new RegExp("{fixStatus}", "g"), result.fix === undefined ? "unavailable" : result.fix.applied ? "applied" : "not applied");
         output = output.replace(new RegExp("{ruleName}", "g"), result.rule.getName());
         output = output.replace(new RegExp("{ruleDescription}", "g"), result.rule.getDescription());
 
