@@ -52,8 +52,7 @@ export class StringFix extends Fix {
      */
     commands = [];
 
-    /** @private */
-    constructor(/** @type {StringFixCommand[]} */ commands) {
+    constructor(/** @type {StringFixCommand[]} */ ...commands) {
         super();
         this.commands = commands;
     }
@@ -101,21 +100,26 @@ export class StringFixer extends Fixer {
 
             // otherwise, add its commands to the queue
             pickedCommands.push(...fix.commands);
-            // and mark the fix as applies
+            // and mark the fix as applied
             fix.applied = true;
         }
 
         ir.ir = StringFixer.applyCommands(ir.ir, pickedCommands);
     }
-
     /**
      * @param {string} content
      * @param {StringFixCommand[]} commands commands that should be applied one by one
      * @return {string} modified content
      */
     static applyCommands(content, commands) {
-        // sort the commands by their insertion point
-        const sortedCommands = commands.sort((a, b) => a.after - b.after);
+        // sort the commands by the position in which they should be applied
+        const sortedCommands = commands.map((command, idx) => ({command, idx})).sort((a, b) => {
+            let pointComp = a.command.after - b.command.after;
+            if (pointComp !== 0) return pointComp;
+            // if the positions are equal, ensure that the order of commands is preserved
+            // (a single fix is allowed to use multiple commands in the same place, because it knows the order in which they should be executed)
+            return a.idx - b.idx;
+        }).map(({command}) => command);
 
         let modified = content;
         let offset = 0;
