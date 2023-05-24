@@ -517,7 +517,7 @@ class Project extends DirItem {
 
     /**
      * Find all issues with the files located within this project and
-     * all subprojects, and return them together in an array.
+     * all subprojects, optionally autofix them, and return them together in an array.
      *
      * @returns {Array.<Result>} a list of results
      */

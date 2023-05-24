@@ -84,7 +84,7 @@ class FixerManager {
      *
      * @param {FixerClass[]} fixerClasses the list of fixer classes to add
      */
-    add(...fixerClasses) {
+    add(fixerClasses) {
         for (const fixerClass of fixerClasses) {
             if (!("function" === typeof fixerClass && Object.getPrototypeOf(fixerClass).name === Fixer.name)) {
                 throw new Error("not a valid fixer class");

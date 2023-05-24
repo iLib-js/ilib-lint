@@ -358,6 +358,7 @@ class PluginManager {
         this.formatterMgr.add(plugin.getFormatters());
         this.ruleMgr.add(plugin.getRules());
         this.ruleMgr.addRuleSetDefinitions(plugin.getRuleSets());
+        this.fixerMgr.add(plugin.getFixers());
     }
 
     /**
