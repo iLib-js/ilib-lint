@@ -153,7 +153,7 @@ class SourceFile extends DirItem {
                     let fixer;
                     if (
                         // ensure that autofixing is enabled
-                        true === this.project.getOptions().autoFixingEnabled &&
+                        true === this.project.getConfig().autofix &&
                         // and that any fixable results were produced
                         fixable.length > 0 &&
                         // and that the current parser is able to write

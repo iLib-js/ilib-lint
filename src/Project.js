@@ -97,6 +97,7 @@ class Project extends DirItem {
             this.name = config.name;
         }
         this.sourceLocale = options?.opt?.sourceLocale;
+        this.config.autofix = options?.opt?.fix === true || config?.autofix === true;
 
         /** @type {PluginManager} */
         this.pluginMgr = this.options.pluginManager;
