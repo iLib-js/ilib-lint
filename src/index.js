@@ -97,6 +97,11 @@ const optionConfig = {
         flag: true,
         help: "Produce lots of progress output during the run."
     },
+    fix: {
+        flag: true,
+        "default": false,
+        help: "If auto-fixes are available for some of the errors, apply them (overwriting the original file)."
+    },
     "max-errors": {
         short: "me",
         varName: "NUMBER",
@@ -187,7 +192,8 @@ const defaultConfig = {
         "**/.svn",
         "package.json",
         "package-lock.json"
-    ]
+    ],
+    "autofix": false
 };
 
 let config = {};
