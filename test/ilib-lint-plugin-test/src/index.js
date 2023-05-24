@@ -22,6 +22,7 @@ import { Plugin } from 'i18nlint-common';
 import TestParser from './TestParser.js';
 import TestRule from './TestRule.js';
 import TestFormatter from './TestFormatter.js';
+import TestFixer from './TestFixer.js';
 
 class TestPlugin extends Plugin {
     constructor(options) {
@@ -58,6 +59,10 @@ class TestPlugin extends Plugin {
     getFormatters() {
         //console.log("TestPlugin.getFormatters() called");
         return [ TestFormatter ];
+    }
+
+    getFixers() {
+        return [ TestFixer ];
     }
 
 }
