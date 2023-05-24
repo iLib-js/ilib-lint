@@ -362,7 +362,7 @@ class Project extends DirItem {
 
     /**
      * Return the options for this project.
-     * @returns {Array.<String>} the options for this project
+     * @returns {{[k: string]: any}} the options for this project
      */
     getOptions() {
         return this.options;

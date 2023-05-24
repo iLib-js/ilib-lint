@@ -80,15 +80,15 @@ class SourceFile extends DirItem {
     }
 
     /**
-     * @private 
+     * @private
      * @returns {Parser[]}
-    */
+     */
     getParsers() {
-        return this.parserClasses.map(parserClass => {
+        return this.parserClasses.map((parserClass) => {
             return new parserClass({
                 filePath: this.filePath,
                 settings: this.settings,
-                getLogger: (name) => log4js.getLogger(name)
+                getLogger: (name) => log4js.getLogger(name),
             });
         });
     }
@@ -100,7 +100,7 @@ class SourceFile extends DirItem {
      */
     parse() {
         if (!this.filePath) return [];
-        return this.getParsers().flatMap(parser => parser.parse());
+        return this.getParsers().flatMap((parser) => parser.parse());
     }
 
     /**
@@ -120,62 +120,85 @@ class SourceFile extends DirItem {
         }
 
         if (!this.filePath) return [];
-        return this.getParsers().flatMap(parser => {
-            const irs = parser.parse();
-
-            let accumulatedResults = [];
+        return this.getParsers().flatMap((parser) => {
             let didWrite = false;
-            for (const ir of irs) {
-                // find the rules that are appropriate for this intermediate representation and then apply them
-                const rules = this.filetype.getRules().filter(rule => (rule.getRuleType() === ir.getType()));
-                
-                // apply rules
-                const results = rules.flatMap(rule => rule.match({
-                    ir,
-                    locale: detectedLocale || this.project.getSourceLocale(),
-                    file: this.filePath
-                }) ?? []);
-                
-                accumulatedResults.push(...results);
 
-                if (! /* @TODO check if the autofixing is enabled at all */ true) {
-                    continue;
+            const /** @type {Result[]} */ fixedResults = [];
+            let /** @type {Result[]} */ currentParseResults = [];
+
+            do {
+                const irs = parser.parse();
+                // indicate that for current intermediate representations, parser did not write out modified representations yet
+                didWrite = false;
+                // clear the results of the current parse, because the file had been overwritten
+                // (so the results don't match the file anymore)
+                currentParseResults = [];
+
+                for (const ir of irs) {
+                    // find the rules that are appropriate for this intermediate representation and then apply them
+                    const rules = this.filetype.getRules().filter((rule) => rule.getRuleType() === ir.getType());
+
+                    // apply rules
+                    const results = rules.flatMap(
+                        (rule) =>
+                            rule.match({
+                                ir,
+                                locale: detectedLocale || this.project.getSourceLocale(),
+                                file: this.filePath,
+                            }) ?? []
+                    );
+
+                    const fixable = results.filter((result) => result.fix !== undefined);
+
+                    let fixer;
+                    if (
+                        // ensure that autofixing is enabled
+                        true === this.project.getOptions().autoFixingEnabled &&
+                        // and that any fixable results were produced
+                        fixable.length > 0 &&
+                        // and that the current parser is able to write
+                        parser.canWrite &&
+                        // and that the fixer for this type of IR is avaliable
+                        (fixer = this.project.getFixerManager().get(ir.getType()))
+                    ) {
+                        // attempt to apply fixes to the current IR
+                        const fixes = /** @type {Fix[]} */ (fixable.map((result) => result.fix));
+                        fixer.applyFixes(ir, fixes);
+
+                        // check if anything had been applied
+                        if (fixes.some((fix) => fix.applied)) {
+                            // fixer should modify the provided IR
+                            // so tell current parser to write out the modified representation
+                            parser.write(ir);
+
+                            // after writing out the fixed content, we want to reparse to see if any new issues appeared,
+                            // while preserving the results that have been fixed so far;
+                            // fixer should have set the `applied` flag of each applied Fix
+                            // so accumulate the corresponding results
+                            fixedResults.push(...results.filter((result) => result.fix?.applied));
+
+                            // indicate that the content has been modified and the re-parsing should occur
+                            didWrite = true;
+
+                            // don't process subsequent representations after modifying the file
+                            // because they don't match the new file
+                            break;
+                        }
+                    }
+
+                    // otherwise, just accumulate the results of the current parse for each IRs
+                    currentParseResults.push(...results);
                 }
 
-                if (didWrite) {
-                    // a parser can produce multiple IRs upon a single parse() call,
-                    // but after some fixes had been applied the file will have been changed
-                    // so the previously parsed representations will not match the original file anymore
-                    // so the fixes can be applied only once per each parse()
-                    continue;
-                }
-                
-                const fixable = results.filter(result => result.fix !== undefined);
-                if (!(fixable.length > 0)) {
-                    continue;
-                }
+                // if a write had occurred for a given parser, reparse
+            } while (didWrite);
 
-                const fixer = this.project.getFixerManager().get(ir.getType());
-                if (undefined === fixer) {
-                    logger.trace(`Cannot get fixer for IR of type ${ir.type}`);
-                    continue;
-
-                }
-
-                const fixes = /** @type {Fix[]} */ (fixable.map(result => result.fix));
-                fixer.applyFixes(ir, fixes);
-                // fixer should modify the IR
-                // so tell current parser to write out the modified representation
-                parser.write(ir);
-                didWrite = true;
-
-                // fixer should also have set the `applied` flag of each applied Fix
-                // so we can just use the results
-            }
-
-            return accumulatedResults;
+            // once all intermediate representations have been processed for the given parser
+            // without any writes, finally return all of the results accumulated during auto-fixing
+            // and the remaining ones that were produced
+            return [...fixedResults, ...currentParseResults];
         });
     }
-};
+}
 
 export default SourceFile;
