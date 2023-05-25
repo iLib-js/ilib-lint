@@ -20,6 +20,7 @@
 import PluginManager from '../src/PluginManager.js';
 import { Parser, Result } from 'i18nlint-common';
 import { ResourceString } from 'ilib-tools-common';
+import { TestFixerTypeId } from './ilib-lint-plugin-test/src/TestFixer.js';
 
 export const testPluginManager = {
     testPluginManagerNormal: function(test) {
@@ -324,6 +325,27 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
         test.equal(typeof(set["resource-url-match"]), 'boolean');
 
         test.done();
-    }
+    },
+
+    testPluginManagerGetLoadPluginRightFixer: function(test) {
+        test.expect(5);
+
+        const plgmgr = new PluginManager();
+        test.ok(plgmgr);
+
+        plgmgr.load([
+            "ilib-lint-plugin-test"
+        ]).then(result => {
+            test.ok(result);
+
+            const fixerManager = plgmgr.getFixerManager();
+            test.ok(fixerManager);
+            const fixer = fixerManager.get(TestFixerTypeId);
+            test.ok(fixer);
+            test.equal(fixer?.type, TestFixerTypeId);
+
+            test.done();
+        });
+    },
 };
 

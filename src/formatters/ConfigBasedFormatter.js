@@ -18,7 +18,7 @@
  */
 import log4js from 'log4js';
 
-import { Formatter } from 'i18nlint-common';
+import { Formatter, Result } from 'i18nlint-common';
 
 var logger = log4js.getLogger("ilib-lint.formatters.ConfigBasedFormatter");
 
@@ -71,12 +71,13 @@ export class ConfigBasedFormatter extends Formatter {
      * @returns {String} the formatted result
      */
     format(result) {
-        if (!result) return;
+        if (!result) return "";
         let output = this.template;
         
         for (let prop of resultFields) {
             output = output.replace(new RegExp(`{${prop}}`, "g"), result[prop] || "");
         }
+        output = output.replace(new RegExp("{fixStatus}", "g"), result.fix === undefined ? "unavailable" : result.fix.applied ? "applied" : "not applied");
         output = output.replace(new RegExp("{ruleName}", "g"), result.rule.getName());
         output = output.replace(new RegExp("{ruleDescription}", "g"), result.rule.getDescription());
 
@@ -89,6 +90,8 @@ export class ConfigBasedFormatter extends Formatter {
             link = result.rule.getLink() || "";
         }
         output = output.replace(new RegExp("{ruleLink}", "g"), link);
+
+        output = output
         return output;
     }
 }

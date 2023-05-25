@@ -88,10 +88,12 @@ class Project extends DirItem {
             this.name = config.name;
         }
         this.sourceLocale = options?.opt?.sourceLocale;
+        this.config.autofix = options?.opt?.fix === true || config?.autofix === true;
 
         this.pluginMgr = this.options.pluginManager;
         const ruleMgr = this.pluginMgr.getRuleManager();
         const fmtMgr = this.pluginMgr.getFormatterManager();
+        const fixerMgr = this.pluginMgr.getFixerManager();
         if (this.config.rules) {
             ruleMgr.add(this.config.rules);
         }
@@ -101,6 +103,9 @@ class Project extends DirItem {
         }
         if (this.config.formatters) {
             fmtMgr.add(this.config.formatters);
+        }
+        if (this.config.fixers) {
+            fixerMgr.add(this.config.fixers);
         }
 
         this.filetypes = {
@@ -390,6 +395,15 @@ class Project extends DirItem {
     getRuleManager() {
         const pluginMgr = this.options.pluginManager;
         return pluginMgr.getRuleManager();
+    }
+
+    /**
+     * Return the fixer manager for this project.
+     * @returns {FixerManager} the fixer manager for this project
+     */
+    getFixerManager() {
+        const pluginMgr = this.options.pluginManager;
+        return pluginMgr.getFixerManager();
     }
 
     /**
