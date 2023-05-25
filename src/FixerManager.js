@@ -41,7 +41,10 @@ const logger = log4js.getLogger("i18nlint.FormatterManager");
  * knows about.
  */
 class FixerManager {
-    /** @type {FixerRegistry} */
+    /**
+     * @type {FixerRegistry}
+     * @private
+     */
     registry = {};
 
     /**
@@ -115,9 +118,7 @@ class FixerManager {
 
     // for use with the unit tests
     clear() {
-        for (const id in Object.keys(this.registry)) {
-            delete this.registry[id];
-        }
+        this.registry = {};
     }
 }
 
