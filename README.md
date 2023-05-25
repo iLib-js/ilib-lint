@@ -717,6 +717,16 @@ limitations under the License.
 
 ## Release Notes
 
+### Pending release
+
+- added auto-fixing support
+    - Parser can now implement writing out a modified IntermediateRepresentation
+      back to the file from which it was parsed
+    - Rule can produce and attach a Fix to the given Result
+    - a Fixer should be able to apply provided Fixes onto the IntermediateRepresentation
+      so that a fixed content would then be written out to the file
+    - auto-fixing can be enabled either via CLI flag "fix" or in project config file "autofix"
+
 ### v1.7.0
 
 - added the ability to include or exclude locales from declarative rules
