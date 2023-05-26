@@ -40,6 +40,7 @@ const files = [
     "testSourceFile.js",
     "testSourceRegexpChecker.js",
     "testwalk.js",
+    "testStringFixer.js",
 ];
 
 export default files;
