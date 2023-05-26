@@ -62,7 +62,7 @@ class StringParser extends Parser {
 
     /** 
      * @override
-     * @param {IntermediateRepresentation<string>} ir
+     * @param {IntermediateRepresentation} ir
      */
     write(ir) {
         if (ir.type !== "string") {
