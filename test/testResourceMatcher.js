@@ -19,7 +19,7 @@
 import { ResourceString, ResourceArray, ResourcePlural } from 'ilib-tools-common';
 
 import ResourceMatcher from '../src/rules/ResourceMatcher.js';
-import { regexRules } from '../src/PluginManager.js';
+import { regexRules } from '../src/plugins/BuiltinPlugin.js';
 
 import { Result } from 'i18nlint-common';
 
