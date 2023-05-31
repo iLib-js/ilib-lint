@@ -26,7 +26,13 @@ export class StringFixCommand {
      * @param {string} insertContent string that should be inserted
      */
     constructor(position, deleteCount, insertContent) {
-        this.position = position;
+        if (!Number.isInteger(position) || position < 0) {
+            throw new Error("StringFixCommand position must be non-negative integer");
+        }
+        if (!Number.isInteger(deleteCount) || deleteCount < 0) {
+            throw new Error("StringFixCommand deleteCount must be non-negative integer");
+        }
+        this.position = (position);
         this.deleteCount = deleteCount;
         this.insertContent = insertContent;
     }
@@ -135,23 +141,40 @@ export class StringFixCommand {
         if (commands.some((one, idx) => commands.slice(idx + 1).some((other) => one.overlaps(other)))) {
             throw new Error("Cannot apply the commands because some of them overlap with each other");
         }
-        // sort the commands by the position in which they should be applied
-        let commandsQueue = commands.sort((a, b) => a.position - b.position);
-
-        let modified = content;
-
-        let command;
-        let offset = 0;
-        while ((command = commandsQueue.shift())) {
-            const position = command.position + offset;
-            modified =
-                modified.slice(0, position) +
-                command.insertContent +
-                modified.slice(position + command.deleteCount);
-            // offset commands by the amount of position shift that has just occurred (i.e. subtract deleted char count and add inserted char count)
-            offset += command.insertContent.length - command.deleteCount;
+        if (commands.some((command) => command.range[1] > content.length)) {
+            throw new Error("Cannot apply the commands because some of them exceed range of the string to modify");
         }
 
-        return modified;
+        // sort the commands by the position in which they should be applied
+        const sortedCommands = [...commands].sort((a, b) => a.position - b.position);
+
+        // extract those pieces of the original that should be preserved
+
+        // calculate complement ranges for preservation
+        // i.e. for a string of length 10 where range [4,6] should be modified,
+        // complement ranges for preservation are [0,4] and [6,10]
+        const complementRanges =
+            // get all range edges: 0, 4, 6, 10
+            [0, ...sortedCommands.flatMap((c) => c.range), content.length]
+                // bucket them into chunks of 2 items: [0,4], [6,10]
+                .reduce((chunks, element, elementIdx) => {
+                    const chunkIdx = Math.floor(elementIdx / 2);
+                    if (chunks[chunkIdx] === undefined) {
+                        chunks[chunkIdx] = [];
+                    }
+                    chunks[chunkIdx].push(element);
+                    return chunks;
+                }, /** @type {number[][]} */ ([]));
+        // use complement ranges to extract chunks for preservation
+        const preservedChunks = complementRanges.map((range) => content.slice(...range));
+
+        // create modified string by interlacing the preserved chunks of original with the replacement contents from each command
+        return preservedChunks
+            .flatMap((_, idx) => [
+                preservedChunks[idx],
+                // there is always 1 more of chunks preserved than of commands to apply
+                commands[idx]?.insertContent ?? "",
+            ])
+            .join("");
     }
 }
