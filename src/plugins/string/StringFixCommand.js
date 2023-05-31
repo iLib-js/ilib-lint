@@ -178,3 +178,5 @@ export class StringFixCommand {
             .join("");
     }
 }
+
+export default StringFixCommand;

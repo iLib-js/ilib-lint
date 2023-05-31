@@ -18,7 +18,7 @@
  */
 
 import { Fix } from "i18nlint-common";
-import { StringFixCommand } from "./StringFixCommand.js";
+import StringFixCommand from "./StringFixCommand.js";
 
 export class StringFix extends Fix {
     /**

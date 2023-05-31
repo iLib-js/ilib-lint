@@ -19,7 +19,7 @@
 
 import { Fixer, IntermediateRepresentation } from "i18nlint-common";
 import StringParser from "./StringParser.js";
-import { StringFixCommand } from "./StringFixCommand.js";
+import StringFixCommand from "./StringFixCommand.js";
 import { StringFix } from "./StringFix.js";
 
 export class StringFixer extends Fixer {
