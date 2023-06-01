@@ -34,10 +34,10 @@ export class StringFix extends Fix {
     commands = [];
 
     constructor(/** @type {StringFixCommand[]} */ ...commands) {
+        super();
         if (commands.some((one, idx) => commands.slice(idx + 1).some((other) => one.overlaps(other)))) {
             throw new Error("Cannot create a fix because some of the commands overlap with each other");
         }
-        super();
         this.commands = commands;
     }
 
