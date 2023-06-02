@@ -169,7 +169,7 @@ export class StringFixCommand {
         }
 
         // sort the commands by the position in which they should be applied
-        const sortedCommands = [...commands].sort((a, b) => a.position - b.position);
+        const sortedCommands = [...commands].sort((a, b) => a.range[0] - b.range[0] || a.range[1] - b.range[1]);
 
         // extract those pieces of the original that should be preserved
 
@@ -196,7 +196,7 @@ export class StringFixCommand {
             .flatMap((_, idx) => [
                 preservedChunks[idx],
                 // there is always 1 more of chunks preserved than of commands to apply
-                commands[idx]?.insertContent ?? "",
+                sortedCommands[idx]?.insertContent ?? "",
             ])
             .join("");
     }

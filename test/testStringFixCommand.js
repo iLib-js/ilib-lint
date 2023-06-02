@@ -265,6 +265,50 @@ const testApply = {
         test.done();
     },
 
+    stringFixCommandApplyShouldApplyMultipleUnordered: function (test) {
+        test.expect(1);
+        const input = "example";
+        // input not ordered by position
+        const commands = [
+            // replace last char with "*"
+            StringFixCommand.replaceAfter(6, 1, "*"),
+            // replace 2nd char with "?"
+            StringFixCommand.replaceAfter(1, 1, "?"),
+        ];
+        const modified = StringFixCommand.applyCommands(input, commands);
+        test.equals(modified, "e?ampl*");
+        test.done();
+    },
+
+    stringFixCommandApplyShouldApplyMultipleWithInsertion: function (test) {
+        test.expect(1);
+        const input = "example";
+        const commands = [
+            // insert "*" after 1st char
+            StringFixCommand.insertAfter(1, "*"),
+            // replace 2nd and 3rd char with "??"
+            StringFixCommand.replaceAfter(1, 2, "??"),
+        ];
+        const modified = StringFixCommand.applyCommands(input, commands);
+        test.equals(modified, "e*??mple");
+        test.done();
+    },
+
+    stringFixCommandApplyShouldApplyMultipleWithInsertionUnordered: function (test) {
+        test.expect(1);
+        const input = "example";
+        // input not ordered by position
+        const commands = [
+            // replace 2nd and 3rd char with "??"
+            StringFixCommand.replaceAfter(1, 2, "??"),
+            // insert "*" after 1st char
+            StringFixCommand.insertAfter(1, "*"),
+        ];
+        const modified = StringFixCommand.applyCommands(input, commands);
+        test.equals(modified, "e*??mple");
+        test.done();
+    },
+
     stringFixCommandApplyShouldThrowOnOverlap: function (test) {
         test.expect(1);
         const input = "example";
