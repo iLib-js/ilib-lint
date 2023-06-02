@@ -20,7 +20,7 @@
 export class StringFixCommand {
     /**
      * Contains information about a transformation that should be applied to a string.
-     * 
+     *
      * @param {number} position position in string after which the operation should be performed
      * @param {number} deleteCount count of characters that should be deleted
      * @param {string} insertContent string that should be inserted
@@ -32,7 +32,7 @@ export class StringFixCommand {
         if (!Number.isInteger(deleteCount) || deleteCount < 0) {
             throw new Error("StringFixCommand deleteCount must be non-negative integer");
         }
-        this.position = (position);
+        this.position = position;
         this.deleteCount = deleteCount;
         this.insertContent = insertContent;
     }
@@ -42,9 +42,9 @@ export class StringFixCommand {
      *
      * in other words: after how many characters relative to original string
      * should the old characters be removed, and the new ones inserted
-     * 
+     *
      * `example`
-     * 
+     *
      * | position | previous letter | in string |
      * | --- | --- | --- |
      * | 0 | _none_ | `^example` |
@@ -74,6 +74,8 @@ export class StringFixCommand {
 
     /**
      * Range of the original string which this command intends to modify
+     *
+     * @see {@link StringFixCommand.overlaps}
      */
     get range() {
         return [this.position, this.position + this.deleteCount];
@@ -81,12 +83,29 @@ export class StringFixCommand {
 
     /**
      * Determines if the ranges of two fix commands have any overlap
+     * i.e. if they attempt to modify the same characters of a given string
+     *
+     * @note
+     * Comparison is performed as if the ranges were left-closed, right-open intervals
+     * (replacement of 1st and 2nd char has range `[0,2)`,
+     * replacement of the 3rd and 4th char has range `[2, 4)` and they don't overlap)
+     *
+     * **with the exception of** 0-length replacements, i.e. pure insertion commands
+     * which (even though mathematically `[1,1)` would be empty interval):
+     * - overlap with different commands from the left side (i.e. insertion at 1 overlaps removal `[0,2)`,
+     * but not removal `[0,1)`)
+     * - overlap with each other when their position is the same (this is because the outcome
+     * of multiple insertions in the same place would depend on the order of execution)
+     *
      * @param {StringFixCommand} other
      */
     overlaps(other) {
         const thisRange = this.range;
         const otherRange = other.range;
-        return thisRange[0] <= otherRange[1] && otherRange[0] <= thisRange[1];
+        return (
+            (thisRange[0] < otherRange[1] && otherRange[0] < thisRange[1]) ||
+            (thisRange[0] === otherRange[0] && this.deleteCount === 0 && other.deleteCount === 0)
+        );
     }
 
     /**
@@ -133,6 +152,10 @@ export class StringFixCommand {
 
     /**
      * Apply multiple StringFixCommands to a supplied string
+     * 
+     * @throws when some of the provided commands overlap (as defined in {@link StringFixCommand.overlaps})
+     * @throws when some of the provided commands intend to modify range outside of input string bounds
+     * 
      * @param {string} content string to apply commands to
      * @param {StringFixCommand[]} commands commands that should be applied to the content string
      * @return {string} modified content
