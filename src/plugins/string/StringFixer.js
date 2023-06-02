@@ -53,61 +53,6 @@ export class StringFixer extends Fixer {
             enqueued.flatMap((fix) => fix.commands)
         );
     }
-
-    /** 
-     * Creates a string fix which can consist of multiple {@link StringFixer.commands|commands}
-     */
-    createFix(/** @type {StringFixCommand[]} */ ...commands) {
-        return new StringFix(...commands);
-    }
-
-    /** @readonly */
-    commands = {
-        /**
-         * Insert a given string `content` after a character at `position` in a string
-         *
-         * Example:
-         * `"example"` & `insertAfter(1, "EEE")` => `"eEEExample"`
-         *
-         * @param {number} position position in string after which the operation should be performed
-         * @param {string} newContent string that should be inserted
-         * @returns {StringFixCommand}
-         * @readonly
-         */
-        insertAfter: (position, newContent) => {
-            return StringFixCommand.insertAfter(position, newContent);
-        },
-        /**
-         * Delete a `count` characters after a character at `position` in a string
-         *
-         * Example:
-         * `"example"` & `deleteAfter(2, 2)` => `"exple"`
-         *
-         * @param {number} position position in string after which the operation should be performed
-         * @param {number} count count of characters that should be deleted
-         * @returns {StringFixCommand}
-         * @readonly
-         */
-        deleteAfter: (position, count) => {
-            return StringFixCommand.deleteAfter(position, count);
-        },
-        /**
-         * Delete a `count` characters after a character at `position` in a string,
-         * and then insert string `content` in there
-         *
-         * Example:
-         * `"example"` & `replaceAfter(3, 2, "EXAMPLE")` => `"exaEXAMPLEle"`
-         *
-         * @param {number} position position in string after which the operation should be performed
-         * @param {number} count count of characters that should be deleted
-         * @param {string} newContent string that should be inserted
-         * @returns {StringFixCommand}
-         * @readonly
-         */
-        replaceAfter: (position, count, newContent) => {
-            return StringFixCommand.replaceAfter(position, count, newContent);
-        },
-    }
 }
 
 export default StringFixer;
