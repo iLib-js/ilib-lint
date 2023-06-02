@@ -51,3 +51,5 @@ export class StringFix extends Fix {
         );
     }
 }
+
+export default StringFix;
