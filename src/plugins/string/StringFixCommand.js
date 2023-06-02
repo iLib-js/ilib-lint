@@ -20,7 +20,7 @@
 export class StringFixCommand {
     /**
      * Contains information about a transformation that should be applied to a string.
-     *
+     * 
      * @param {number} position position in string after which the operation should be performed
      * @param {number} deleteCount count of characters that should be deleted
      * @param {string} insertContent string that should be inserted
@@ -32,7 +32,7 @@ export class StringFixCommand {
         if (!Number.isInteger(deleteCount) || deleteCount < 0) {
             throw new Error("StringFixCommand deleteCount must be non-negative integer");
         }
-        this.position = position;
+        this.position = (position);
         this.deleteCount = deleteCount;
         this.insertContent = insertContent;
     }
@@ -42,9 +42,9 @@ export class StringFixCommand {
      *
      * in other words: after how many characters relative to original string
      * should the old characters be removed, and the new ones inserted
-     *
+     * 
      * `example`
-     *
+     * 
      * | position | previous letter | in string |
      * | --- | --- | --- |
      * | 0 | _none_ | `^example` |
@@ -86,7 +86,7 @@ export class StringFixCommand {
     overlaps(other) {
         const thisRange = this.range;
         const otherRange = other.range;
-        return thisRange[0] < otherRange[1] && otherRange[0] < thisRange[1];
+        return thisRange[0] <= otherRange[1] && otherRange[0] <= thisRange[1];
     }
 
     /**
@@ -146,17 +146,7 @@ export class StringFixCommand {
         }
 
         // sort the commands by the position in which they should be applied
-        const sortedCommands = commands
-            .map((command, sequenceIdx) => ({ command, sequenceIdx }))
-            .sort((a, b) => {
-                const dPosition = a.command.position - b.command.position;
-                if (dPosition !== 0) {
-                    return dPosition;
-                } else {
-                    // ensure stable sort
-                    return a.sequenceIdx - b.sequenceIdx;
-                }
-            }).map(item => item.command);
+        const sortedCommands = [...commands].sort((a, b) => a.position - b.position);
 
         // extract those pieces of the original that should be preserved
 
