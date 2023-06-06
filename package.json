@@ -80,6 +80,7 @@
         "ilib-locale": "^1.2.2",
         "ilib-localeinfo": "^1.0.5",
         "ilib-tools-common": "^1.7.0",
+        "intl-messageformat": "<10.4",
         "json5": "^2.2.3",
         "log4js": "^6.9.1",
         "micromatch": "^4.0.5",
