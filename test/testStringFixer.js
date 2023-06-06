@@ -168,7 +168,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldSkipOverlappingFix: function (test) {
+    stringFixerShouldNotMarkOverlappingFixAsApplied: function (test) {
         test.expect(2);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -208,6 +208,41 @@ export const testStringFixer = {
         // for the subsequent iterations
         // or it could keep running (so that the final report would still contain a note about the issue)
         // but become banned from producing autofixes
+
+        test.done();
+    },
+
+    stringFixerShouldNotApplyAnyCommandsOfASkippedFix: function (test) {
+        test.expect(4);
+        const subject = new IntermediateRepresentation({
+            type: "string",
+            filePath: "test/file.txt",
+            ir: "abcdef",
+        });
+        const fixer = new StringFixer();
+
+        // overlap
+
+        // produced by rule "always ask"
+        const alwaysAskFix = new StringFix(StringFixCommand.insertAfter(6, "?"));
+        // produced by rule "always shout in Spanish"
+        const alwaysShoutFix = new StringFix(StringFixCommand.insertAfter(0, "¡"), StringFixCommand.insertAfter(6, "!"));
+        // produced by rule "uppercase B and D"
+        const uppercaseSelectedFix = new StringFix(StringFixCommand.replaceAfter(1, 1, "B"), StringFixCommand.replaceAfter(3, 1, "D"));
+
+        fixer.applyFixes(subject, [alwaysAskFix, alwaysShoutFix, uppercaseSelectedFix]);
+
+        // Fixer cannot apply all fixes, because
+        // there is partial command overlap between "always ask in Spanish" and "always shout";
+        // since always shout came later, always ask should be applied fully, while always shout 
+        // should be skipped and none of its commands should be executed;
+        // uppercase b and d should be applied because it has no overlap with other fixes
+        
+        test.equal(alwaysAskFix.applied, true);
+        test.equal(alwaysShoutFix.applied, false);
+        test.equal(uppercaseSelectedFix.applied, true);
+
+        test.equal(subject.ir, "aBcDef?");
 
         test.done();
     },
