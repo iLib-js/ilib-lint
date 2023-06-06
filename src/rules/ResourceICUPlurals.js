@@ -118,6 +118,102 @@ class ResourceICUPlurals extends ResourceRule {
         return value;
     }
 
+    matchCategories(sourceSelect, targetSelect, locale) {
+        let problems = [];
+
+        let categories;
+        if (sourceSelect.node.pluralType === "cardinal") {
+            categories = categoriesForLang[locale.getLanguage()] || [ "one", "other" ];
+        } else {
+            // for select or selectordinal, only the "other" category is required
+            categories = [ "other" ];
+        }
+        if (sourceSelect.categories.length) {
+            categories = categories.concat(sourceSelect.categories);
+        }
+
+        const missing = categories.filter(category => {
+            if (!targetSelect.node.options[category]) {
+                return category;
+            } else if (sourceSelect.node.options[category]) {
+                problems = problems.concat(this.checkNodes(
+                    sourceSelect.node.options[category].children,
+                    targetSelect.node.options[category].children,
+                    locale
+                ));
+            }
+        });
+        if (missing.length) {
+            let opts = {
+                severity: "error",
+                rule: this,
+                description: `Missing categories in target string: ${missing.join(", ")}. Expecting these: ${neededCategories.join(", ")}`,
+                id: key,
+                highlight: `Target: ${stringToCheck}<e0></e0>`,
+                pathName,
+                source,
+                locale
+            };
+            problems.push(new Result(opts));
+        }
+
+        return problems;
+    }
+    
+    findSelects(ast) {
+        let selects = {};
+
+        ast.forEach(node => {
+            // selectordinal || plural/select
+            if (node.type === 5 || node.type === 6) {
+                // make sure the name is unique
+                let name = node.value;
+                let index = 0;
+                while (selects[name]) {
+                    name = node.value + index++;
+                }
+                selects[name] = {
+                    node,
+                    categories: Object.keys(node.options).filter(category => {
+                        // if it is not one of the standard categories, it is a special one, so search for it
+                        return allCategories.indexOf(category) < 0;
+                    })
+                };
+                
+            }
+        });
+
+        return selects;
+    }
+    
+    checkNodes(sourceAst, targetAst, locale) {
+        const sourceSelects = this.findSelects(sourceAst);
+        const targetSelects = this.findSelects(targetAst);
+        let problems = [];
+        
+        Object.keys(targetSelects).forEach(select => {
+            const targetSelect = targetSelects[select];
+            if (sourceSelects[select]) {
+                problems = problems.concat(this.matchCategories(sourceSelects[select], targetSelect, locale));
+            } else {
+                const targetSnippet = target;
+                let opts = {
+                    severity: "error",
+                    rule: this,
+                    description: `Select or plural with pivot variable ${targetSelects[select].node.value} does not exist in the source string. Possible translated variable name.`,
+                    id: key,
+                    highlight: `Target: <e0>{</e0>`,
+                    pathName,
+                    source,
+                    locale
+                };
+                value.push(new Result(opts));
+            }
+        });
+        
+        return problems;
+    }
+
     matchString({source, target, file, resource}) {
         const sLoc = new Locale(resource.getSourceLocale());
         const tLoc = new Locale(resource.getTargetLocale());
@@ -125,25 +221,22 @@ class ResourceICUPlurals extends ResourceRule {
         let problems = [];
         let sourceCategories = [];
         let pluralType;
+        let sourceSelects, targetSelects;
 
         try {
             const imf = new IntlMessageFormat(source, sLoc.getSpec());
             // look in the abstract syntax tree for the categories that were parsed out and make
             // sure the required ones are there
-            const ast = imf.getAst();
-            if (ast[0] && ast[0].options) {
-                pluralType = ast[0].pluralType;
-                sourceCategories = Object.keys(ast[0].options).filter(category => {
-                    // if it is not one of the standard categories, it is a special one, so search for it
-                    // in the target too
-                    return allCategories.indexOf(category) < 0;
-                });
-            }
+            sourceSelects = this.findSelects(imf.getAst());
         } catch (e) {
-            // ignore problems in the source string because this is a resource checker
+            // if there are problems in the source string, do not check the target string because we
+            // do not have anything good to match against
+            return undefined;
         }
         try {
             const imf = new IntlMessageFormat(target, tLoc.getSpec());
+            targetSelects = this.findSelects(imf.getAst());
+
             let categories;
             if (pluralType === "cardinal") {
                 categories = categoriesForLang[tLoc.getLanguage()] || [ "one", "other" ];
