@@ -726,7 +726,6 @@ limitations under the License.
     - a Fixer should be able to apply provided Fixes onto the IntermediateRepresentation
       so that a fixed content would then be written out to the file
     - auto-fixing can be enabled either via CLI flag "fix" or in project config file "autofix"
-- implemented a mechanism for fixing strings
 
 ### v1.7.0
 
