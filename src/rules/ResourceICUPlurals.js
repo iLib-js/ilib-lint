@@ -171,7 +171,7 @@ class ResourceICUPlurals extends ResourceRule {
             return sourceSelect.categories.indexOf(category) < 0;
         });
         if (extra.length) {
-            const highlight = resource.getTarget().replaceAll(new RegExp(`(${extra.join("|")})\\s*\\{`, "g"), "<e0>$1</e0> {");
+            const highlight = resource.getTarget().replace(new RegExp(`(${extra.join("|")})\\s*\\{`, "g"), "<e0>$1</e0> {");
             let opts = {
                 severity: "warning",
                 rule: this,
@@ -220,7 +220,7 @@ class ResourceICUPlurals extends ResourceRule {
             if (sourceSelects[select]) {
                 problems = problems.concat(this.matchCategories(sourceSelects[select], targetSelect, locale, resource));
             } else {
-                const targetSnippet = resource.getTarget().replaceAll(new RegExp(`(\\{\\s*${select})`, "g"), "<e0>$1</e0>");
+                const targetSnippet = resource.getTarget().replace(new RegExp(`(\\{\\s*${select})`, "g"), "<e0>$1</e0>");
                 let opts = {
                     severity: "error",
                     rule: this,
