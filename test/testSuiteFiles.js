@@ -1,6 +1,6 @@
 /*
  * testSuiteFiles.js - list the test files in this directory
- * 
+ *
  * Copyright © 2022-2023, JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,6 +39,9 @@ const files = [
     "testRuleUtils.js",
     "testSourceFile.js",
     "testSourceRegexpChecker.js",
+    "testStringFix.js",
+    "testStringFixCommand.js",
+    "testStringFixer.js",
     "testwalk.js",
 ];
 

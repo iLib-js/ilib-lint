@@ -21,7 +21,7 @@
 import { Plugin } from 'i18nlint-common';
 import XliffParser from './XliffParser.js';
 import LineParser from './LineParser.js';
-import StringParser from './StringParser.js';
+import StringParser from './string/StringParser.js';
 import AnsiConsoleFormatter from '../formatters/AnsiConsoleFormatter.js';
 import ResourceICUPlurals from '../rules/ResourceICUPlurals.js';
 import ResourceICUPluralTranslation from '../rules/ResourceICUPluralTranslation.js';
@@ -196,6 +196,10 @@ class BuiltinPlugin extends Plugin {
      */
     getFormatters() {
         return [AnsiConsoleFormatter];
+    }
+
+    getFixers() {
+        return [];
     }
 };
 
