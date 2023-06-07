@@ -220,18 +220,18 @@ class ResourceICUPlurals extends ResourceRule {
             if (sourceSelects[select]) {
                 problems = problems.concat(this.matchCategories(sourceSelects[select], targetSelect, locale, resource));
             } else {
-                const targetSnippet = resource.getTarget();
+                const targetSnippet = resource.getTarget().replaceAll(new RegExp(`(\\{\\s*${select})`, "g"), "<e0>$1</e0>");
                 let opts = {
                     severity: "error",
                     rule: this,
                     description: `Select or plural with pivot variable ${targetSelects[select].node.value} does not exist in the source string. Possible translated variable name.`,
                     id: resource.getKey(),
-                    highlight: `Target: <e0>${targetSelect}</e0>`,
+                    highlight: `Target: ${targetSnippet}`,
                     pathName: resource.getPath(),
                     source: resource.getSource(),
                     locale: resource.getTargetLocale()
                 };
-                value.push(new Result(opts));
+                problems.push(new Result(opts));
             }
         });
 

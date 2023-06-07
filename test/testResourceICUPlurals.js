@@ -899,5 +899,40 @@ export const testResourceICUPlurals = {
 
         test.done();
     },
+
+    testResourceICUPluralsTranslatedPivotVariable: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            targetLocale: "ru-RU",
+            target: "Это {считать, plural, one {единственное число} few {множественное число} other {множественное число}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Select or plural with pivot variable считать does not exist in the source string. Possible translated variable name.",
+            id: "plural.test",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            highlight: 'Target: Это <e0>{считать</e0>, plural, one {единственное число} few {множественное число} other {множественное число}}',
+            rule,
+            locale: "ru-RU",
+            pathName: "a/b/c.xliff"
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    }
 };
 
