@@ -264,6 +264,32 @@ export const testResourceICUPlurals = {
         test.done();
     },
 
+    testResourceICUPluralsMatchMissingCategoriesInTargetAlsoMissingInSource: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, =1 {This is singular} other {This is plural}}', // missing the "one" category
+            targetLocale: "ru-RU",
+            target: "{count, plural, =1 {Это единственное число} few {это множественное число} other {это множественное число}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        // ignore the target problem when there is a source problem
+        test.ok(!actual);
+
+        test.done();
+    },
+
     testResourceICUPluralsMatchMissingCategoriesInSource: function(test) {
         test.expect(2);
 
@@ -312,7 +338,7 @@ export const testResourceICUPlurals = {
             severity: "warning",
             description: "Extra categories in target string: few. Expecting only these: one, other",
             id: "plural.test",
-            highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>',
+            highlight: 'Target: {count, plural, one {Dies ist einzigartig} <e0>few</e0> {This is few} other {Dies ist mehrerartig}}',
             rule,
             pathName: "a/b/c.xliff",
             locale: "de-DE",
@@ -369,7 +395,7 @@ export const testResourceICUPlurals = {
             file: "a/b/c.xliff"
         });
         const expected = new Result({
-            severity: "error",
+            severity: "warning",
             description: "Missing categories in target string: =1. Expecting these: one, other, =1",
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>',
@@ -678,7 +704,7 @@ export const testResourceICUPlurals = {
             file: "a/b/c.xliff"
         });
         const expected = new Result({
-            severity: "error",
+            severity: "warning",
             description: "Missing categories in target string: female. Expecting these: other, male, female",
             id: "plural.test",
             highlight: 'Target: {count, select, male {Er sagt} other {Ihnen sagen}}<e0></e0>',
@@ -691,5 +717,222 @@ export const testResourceICUPlurals = {
 
         test.done();
     },
+
+    testResourceICUPluralsEmbeddedPluralNoError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'The file is located in {count, plural, one {# collection} other {# collections}} visible to user {name}.' ,
+            targetLocale: "de-DE",
+            target: "Die Datei befindet sich in {count, plural, one {# Sammlung} other {# Sammlungen}} die für Benutzer {name} sichtbar ist.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralsEmbeddedPluralMissingClosingBrace: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'The file is located in {count, plural, one {# collection} other {# collections}} visible to user {name}.' ,
+            targetLocale: "de-DE",
+            target: "Die Datei befindet sich in {count, plural, one {# Sammlung} other {# Sammlungen} die für Benutzer {name} sichtbar ist.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Incorrect plural or select syntax in target string: SyntaxError: EXPECT_PLURAL_ARGUMENT_SELECTOR_FRAGMENT",
+            id: "plural.test",
+            highlight: 'Target: Die Datei befindet sich in {count, plural, one {# Sammlung} other {# Sammlungen} die <e0>für Benutzer {name} sichtbar ist.</e0>',
+            rule,
+            pathName: "a/b/c.xliff",
+            locale: "de-DE",
+            source: 'The file is located in {count, plural, one {# collection} other {# collections}} visible to user {name}.'
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceICUPluralsEmbeddedPluralIgnoreSourceProblems: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'The file is located in {count, plural, one {# collection} other {# collections} visible to user {name}.' ,
+            targetLocale: "de-DE",
+            target: "Die Datei befindet sich in {count, plural, one {# Sammlung} other {# Sammlungen} die für Benutzer {name} sichtbar ist.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        // no results because there was a syntax error in the source -- we don't even check the target in that case
+        test.ok(!actual);
+
+        test.done();
+    },
+
+
+    testResourceICUPluralsEmbeddedMatchTranslatedCategoriesNoError: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            targetLocale: "de-DE",
+            target: "Dies ist {count, plural, one {einzigartig} other {mehrerartig}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralsEmbeddedMatchTranslatedCategoriesMissingCategories: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            targetLocale: "de-DE",
+            target: "Dies ist {count, plural, eins {einzigartig} andere {mehrerartig}}", // category names should not be translated!
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Incorrect plural or select syntax in target string: SyntaxError: MISSING_OTHER_CLAUSE",
+            id: "plural.test",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            highlight: 'Target: Dies ist {count, plural, eins {einzigartig} andere {mehrerartig}<e0>}</e0>',
+            rule,
+            locale: "de-DE",
+            pathName: "a/b/c.xliff"
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceICUPluralsEmbeddedMatchMissingCategoriesInTarget: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            targetLocale: "ru-RU",
+            target: "Это {count, plural, one {единственное число} other {множественное число}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Missing categories in target string: few. Expecting these: one, few, other",
+            id: "plural.test",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            highlight: 'Target: Это {count, plural, one {единственное число} other {множественное число}}<e0></e0>',
+            rule,
+            locale: "ru-RU",
+            pathName: "a/b/c.xliff"
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    },
+
+    testResourceICUPluralsTranslatedPivotVariable: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            targetLocale: "ru-RU",
+            target: "Это {считать, plural, one {единственное число} few {множественное число} other {множественное число}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: "Select or plural with pivot variable считать does not exist in the source string. Possible translated variable name.",
+            id: "plural.test",
+            source: 'This is {count, plural, one {singular} other {plural}}',
+            highlight: 'Target: Это <e0>{считать</e0>, plural, one {единственное число} few {множественное число} other {множественное число}}',
+            rule,
+            locale: "ru-RU",
+            pathName: "a/b/c.xliff"
+        });
+        test.deepEqual(actual, expected);
+
+        test.done();
+    }
 };
 
