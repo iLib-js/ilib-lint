@@ -338,7 +338,7 @@ export const testResourceICUPlurals = {
             severity: "warning",
             description: "Extra categories in target string: few. Expecting only these: one, other",
             id: "plural.test",
-            highlight: 'Target: {count, plural, one {Dies ist einzigartig} few {This is few} other {Dies ist mehrerartig}}<e0></e0>',
+            highlight: 'Target: {count, plural, one {Dies ist einzigartig} <e0>few</e0> {This is few} other {Dies ist mehrerartig}}',
             rule,
             pathName: "a/b/c.xliff",
             locale: "de-DE",
@@ -395,7 +395,7 @@ export const testResourceICUPlurals = {
             file: "a/b/c.xliff"
         });
         const expected = new Result({
-            severity: "error",
+            severity: "warning",
             description: "Missing categories in target string: =1. Expecting these: one, other, =1",
             id: "plural.test",
             highlight: 'Target: {count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}<e0></e0>',
@@ -704,7 +704,7 @@ export const testResourceICUPlurals = {
             file: "a/b/c.xliff"
         });
         const expected = new Result({
-            severity: "error",
+            severity: "warning",
             description: "Missing categories in target string: female. Expecting these: other, male, female",
             id: "plural.test",
             highlight: 'Target: {count, select, male {Er sagt} other {Ihnen sagen}}<e0></e0>',
