@@ -717,7 +717,7 @@ limitations under the License.
 
 ## Release Notes
 
-### Pending release
+### v1.8.0
 
 - added auto-fixing support
     - Parser can now implement writing out a modified IntermediateRepresentation
@@ -727,6 +727,9 @@ limitations under the License.
       so that a fixed content would then be written out to the file
     - auto-fixing can be enabled either via CLI flag "fix" or in project config file "autofix"
 - implemented a mechanism for fixing strings
+- improved ICU plural checker to be able to parse plurals properly when the plurals
+  are embedded in the middle of a string. Previously, it only checked the plurals
+  when they were they only thing in the string.
 
 ### v1.7.0
 
