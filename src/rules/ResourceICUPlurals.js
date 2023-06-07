@@ -70,9 +70,13 @@ class ResourceICUPlurals extends ResourceRule {
         let problems = [];
         const srcLocale = new Locale(resource.getSourceLocale());
 
-        // first check the required plural categories
+        // categories that are required according to the language rules
         let requiredSourceCategories, requiredTargetCategories;
+
+        // categories that actually exist in the select which are required by the language rules
         let actualRequiredSourceCategories = [], actualRequiredTargetCategories = [];
+
+        // categories that actually exist in the select which are not required by the language rules
         let actualNonrequiredSourceCategories = [], actualNonrequiredTargetCategories = [];
 
         if (sourceSelect.node.pluralType === "cardinal") {
@@ -84,22 +88,15 @@ class ResourceICUPlurals extends ResourceRule {
             requiredTargetCategories = [ "other" ];
         }
 
-        for (let category in sourceSelect.node.options) {
-            if (requiredSourceCategories.indexOf(category) > -1) {
-                actualRequiredSourceCategories.push(category);
-            } else {
-                actualNonrequiredSourceCategories.push(category);
-            }
-        }
+        const allSourceCategories = Object.keys(sourceSelect.node.options);
+        actualRequiredSourceCategories = allSourceCategories.filter(category => requiredSourceCategories.includes(category));
+        actualNonrequiredSourceCategories = allSourceCategories.filter(category => !requiredSourceCategories.includes(category));
 
-        for (let category in targetSelect.node.options) {
-            if (requiredTargetCategories.indexOf(category) > -1) {
-                actualRequiredTargetCategories.push(category);
-            } else {
-                actualNonrequiredTargetCategories.push(category);
-            }
-        }
+        const allTargetCategories = Object.keys(targetSelect.node.options);
+        actualRequiredTargetCategories = allTargetCategories.filter(category => requiredTargetCategories.includes(category));
+        actualNonrequiredTargetCategories = allTargetCategories.filter(category => !requiredTargetCategories.includes(category));
 
+        // first check the required plural categories
         let missing = requiredTargetCategories.filter(category => {
             if (!targetSelect.node.options[category]) {
                 // if the required category doesn't exist in the target, check if it is required
@@ -110,8 +107,8 @@ class ResourceICUPlurals extends ResourceRule {
                 // in the target. If it is not required in the source, then produce a result because
                 // it is required in the target language and it doesn't matter about the source
                 // language.
-                if (requiredSourceCategories.indexOf(category) < 0 || sourceSelect.node.options[category]) {
-                    return category;
+                if (!requiredSourceCategories.includes(category) || sourceSelect.node.options[category]) {
+                    return true;
                 }
             } else if (sourceSelect.node.options[category]) {
                 // if both the target and source category exists, we can check the
@@ -132,6 +129,7 @@ class ResourceICUPlurals extends ResourceRule {
                     resource
                 ));
             }
+            return false;
         });
         if (missing.length) {
             let opts = {
@@ -150,7 +148,7 @@ class ResourceICUPlurals extends ResourceRule {
         // now deal with the missing non-required categories
         missing = actualNonrequiredSourceCategories.filter(category => {
             // if it is in the source, but it is not required, it should also be in the target
-            return targetSelect.categories.indexOf(category) < 0;
+            return !allTargetCategories.includes(category);
         });
         if (missing.length) {
             let opts = {
@@ -168,7 +166,7 @@ class ResourceICUPlurals extends ResourceRule {
 
         // now deal with non-required categories that are in the target but not the source
         const extra = actualNonrequiredTargetCategories.filter(category => {
-            return sourceSelect.categories.indexOf(category) < 0;
+            return !allSourceCategories.includes(category);
         });
         if (extra.length) {
             const highlight = resource.getTarget().replace(new RegExp(`(${extra.join("|")})\\s*\\{`, "g"), "<e0>$1</e0> {");
