@@ -187,7 +187,7 @@ class ResourceICUPlurals extends ResourceRule {
 
         return problems;
     }
-    
+
     findSelects(ast) {
         let selects = {};
 
@@ -209,12 +209,12 @@ class ResourceICUPlurals extends ResourceRule {
 
         return selects;
     }
-    
+
     checkNodes(sourceAst, targetAst, locale, resource) {
         const sourceSelects = this.findSelects(sourceAst);
         const targetSelects = this.findSelects(targetAst);
         let problems = [];
-        
+
         Object.keys(targetSelects).forEach(select => {
             const targetSelect = targetSelects[select];
             if (sourceSelects[select]) {
@@ -234,7 +234,7 @@ class ResourceICUPlurals extends ResourceRule {
                 value.push(new Result(opts));
             }
         });
-        
+
         return problems;
     }
 
