@@ -149,7 +149,7 @@ class SourceFile extends DirItem {
                             }) ?? []
                     );
 
-                    const fixable = results.filter((result) => result.fix !== undefined);
+                    const fixable = results.filter((result) => result?.fix !== undefined);
 
                     let fixer;
                     if (
