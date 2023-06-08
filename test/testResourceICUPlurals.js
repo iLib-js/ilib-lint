@@ -48,6 +48,56 @@ export const testResourceICUPlurals = {
         test.done();
     },
 
+    testResourceICUPluralsMatchAddCategory: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "ru-RU",
+            target: "{count, plural, one {Это единственное число} few {это множественное число} other {это множественное число}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralsMatchDeleteCategory: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {This is singular} other {This is plural}}',
+            targetLocale: "ja-JP",
+            target: "{count, plural, other {これは単数形です}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
     testResourceICUPluralsMatchNestedNoError: function(test) {
         test.expect(2);
 
@@ -276,6 +326,32 @@ export const testResourceICUPlurals = {
             source: '{count, plural, =1 {This is singular} other {This is plural}}', // missing the "one" category
             targetLocale: "nl-NL",
             target: "{count, plural, =1 {Dit is enkelfoudig.} other {Dit is meervoudig.}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        // ignore the target problem when there is a source problem
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralsMatchMissingCategoriesInTargetAlsoMissingInSourceDeleteCategory: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, =1 {This is singular} other {This is plural}}', // missing the "one" category
+            targetLocale: "ja-JP",
+            target: "{count, plural, =1 {これは単数形です} other {これは単数形です}}",
             pathName: "a/b/c.xliff"
         });
         const actual = rule.matchString({
