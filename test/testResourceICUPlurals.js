@@ -274,6 +274,32 @@ export const testResourceICUPlurals = {
             key: "plural.test",
             sourceLocale: "en-US",
             source: '{count, plural, =1 {This is singular} other {This is plural}}', // missing the "one" category
+            targetLocale: "nl-NL",
+            target: "{count, plural, =1 {Dit is enkelfoudig.} other {Dit is meervoudig.}}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        // ignore the target problem when there is a source problem
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceICUPluralsMatchMissingCategoriesInTargetAlsoMissingInSourceWithAddCategory: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceICUPlurals();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, =1 {This is singular} other {This is plural}}', // missing the "one" category
             targetLocale: "ru-RU",
             target: "{count, plural, =1 {Это единственное число} few {это множественное число} other {это множественное число}}",
             pathName: "a/b/c.xliff"
