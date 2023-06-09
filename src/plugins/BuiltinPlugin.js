@@ -115,6 +115,15 @@ export const regexRules = [
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-with-fullwidth-punctuation.md",
         severity: "warning"
     },
+    {
+        "name": "source-no-lazy-plurals",
+        "type": "resource-source",
+        "description": "Ensure that source strings do not contain '(s)' which doesn't translate very well",
+        "note": "Strings with '{matchString}' should use a formatjs style plural",
+        "severity": "error",
+        "regexps": [ "\\w\\(s\\)\\W" ],
+        "link": "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-lazy-plurals.md"
+    }
 ];
 
 // built-in ruleset that contains all the built-in rules
