@@ -294,6 +294,31 @@ export const testResourceQuoteStyle = {
         test.done();
     },
 
+    testResourceQuoteStyleMatchAsciiQuotesDutch: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceQuoteStyle();
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "nl-NL",
+            target: "Deze string bevat ‘aanhalingstekens’.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
     testResourceQuoteStyleMatchAlternate: function(test) {
         test.expect(2);
 
