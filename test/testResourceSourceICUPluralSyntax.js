@@ -1,5 +1,5 @@
 /*
- * ResourceSourceICUPluralSyntax.js
+ * testResourceSourceICUPluralSyntax.js
  *
  * Copyright © 2023 JEDLSoft
  *
