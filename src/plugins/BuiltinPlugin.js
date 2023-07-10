@@ -32,6 +32,8 @@ import ResourceCompleteness from '../rules/ResourceCompleteness.js';
 import ResourceDNTTerms from '../rules/ResourceDNTTerms.js';
 import ResourceNoTranslation from '../rules/ResourceNoTranslation.js';
 import ResourceStateChecker from '../rules/ResourceStateChecker.js';
+import ResourceSourceICUPluralSyntax from '../rules/ResourceSourceICUPluralSyntax.js';
+import ResourceSourceICUPluralCategories from '../rules/ResourceSourceICUPluralCategories.js';
 
 // built-in declarative rules
 export const regexRules = [
@@ -140,7 +142,12 @@ export const builtInRulesets = {
         "resource-no-halfwidth-kana-characters": true,
         "resource-no-double-byte-space": true,
         "resource-no-space-with-fullwidth-punctuation": true,
-    }
+    },
+
+    source: {
+        "resource-source-icu-plural-syntax": true,
+        "resource-source-icu-plural-categories": true,
+    },
 };
 
 /**
@@ -180,6 +187,8 @@ class BuiltinPlugin extends Plugin {
             ResourceDNTTerms,
             ResourceNoTranslation,
             ResourceStateChecker,
+            ResourceSourceICUPluralSyntax,
+            ResourceSourceICUPluralCategories,
             ...regexRules
         ];
     }

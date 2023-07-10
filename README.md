@@ -717,6 +717,11 @@ limitations under the License.
 
 ## Release Notes
 
+### Pending release
+
+- added rule to check source ICU plural syntax
+- added rule to check required categories in source ICU plural
+
 ### v1.8.0
 
 - added auto-fixing support

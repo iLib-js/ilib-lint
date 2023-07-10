@@ -30,6 +30,8 @@ const files = [
     "testResourceMatcher.js",
     "testResourceNoTranslation.js",
     "testResourceQuoteStyle.js",
+    "testResourceSourceICUPluralSyntax.js",
+    "testResourceSourceICUPluralCategories.js",
     "testResourceStateChecker.js",
     "testResourceTargetChecker.js",
     "testResourceUniqueKeys.js",

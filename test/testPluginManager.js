@@ -307,7 +307,7 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
     },
 
     testPluginManagerGetBuiltInRuleSets: function(test) {
-        test.expect(8);
+        test.expect(10);
 
         const plgmgr = new PluginManager();
         test.ok(plgmgr);
@@ -315,14 +315,18 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
         test.ok(rm);
         const size = rm.sizeRuleSetDefinitions();
 
-        test.equal(rm.sizeRuleSetDefinitions(), 1);
+        test.equal(rm.sizeRuleSetDefinitions(), 2);
 
-        const set = rm.getRuleSetDefinition("generic");
-        test.ok(set);
-        test.ok(set["resource-icu-plurals"]);
-        test.ok(set["resource-url-match"]);
-        test.equal(typeof(set["resource-icu-plurals"]), 'boolean');
-        test.equal(typeof(set["resource-url-match"]), 'boolean');
+        const genericRuleset = rm.getRuleSetDefinition("generic");
+        test.ok(genericRuleset);
+        test.ok(genericRuleset["resource-icu-plurals"]);
+        test.ok(genericRuleset["resource-url-match"]);
+        test.equal(typeof(genericRuleset["resource-icu-plurals"]), 'boolean');
+        test.equal(typeof(genericRuleset["resource-url-match"]), 'boolean');
+
+        const sourceRuleset = rm.getRuleSetDefinition("source");
+        test.ok(sourceRuleset);
+        test.equal(typeof(sourceRuleset["resource-source-icu-plural-syntax"]), 'boolean');
 
         test.done();
     },
