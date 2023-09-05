@@ -61,6 +61,9 @@ class DeclarativeResourceRule extends ResourceRule {
      *   part of any of the given locales. If not specified, the rule applies to all
      *   target locales. If both locales and skipLocales are specified, only the
      *   locales will used.
+     * @param {Boolean} [options.useStripped] if true, the string will stripped of all
+     *   plurals before attempting a match. If false, the original source string with
+     *   possible plurals in it will be used for the match. Default is "true".
      * @constructor
      */
     constructor(options) {
@@ -70,11 +73,12 @@ class DeclarativeResourceRule extends ResourceRule {
             throw "Missing required options for the DeclarativeResourceRule constructor";
         }
 
-        ["name", "description", "note", "sourceLocale", "link", "severity"].forEach(prop => {
+        ["name", "description", "note", "sourceLocale", "link", "severity", "useStripped"].forEach(prop => {
             this[prop] = options[prop];
         });
         this.sourceLocale = this.sourceLocale || "en-US";
         this.severity = this.severity || "error";
+        this.useStripped = typeof(this.useStripped) !== "boolean" ? true : this.useStripped;
 
         // this may throw if you got to the regexp syntax wrong:
         this.re = options.regexps.map(regexp => new RegExp(regexp, "gu"));

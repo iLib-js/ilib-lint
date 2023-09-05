@@ -117,6 +117,26 @@ export const regexRules = [
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-with-fullwidth-punctuation.md",
         severity: "warning"
     },
+    {
+        type: "resource-source",
+        name: "source-no-escaped-curly-braces",
+        description: "Ensure that there are no replacement variables surrounded by single quotes which escape them in the source strings.",
+        note: "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.",
+        regexps: [ "[^']'\\{.*?\\}'" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-escaped-curly-braces.md",
+        severity: "error",
+        useStripped: false
+    },
+    {
+        type: "resource-target",
+        name: "resource-no-escaped-curly-braces",
+        description: "Ensure that there are no replacement variables surrounded by single quotes which escape them in the target strings.",
+        note: "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.",
+        regexps: [ "[^']'\\{.*?\\}'" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-escaped-curly-braces.md",
+        severity: "error",
+        useStripped: false
+    }
 ];
 
 // built-in ruleset that contains all the built-in rules

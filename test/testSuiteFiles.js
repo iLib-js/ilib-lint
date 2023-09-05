@@ -28,6 +28,7 @@ const files = [
     "testResourceICUPlurals.js",
     "testResourceICUPluralTranslation.js",
     "testResourceMatcher.js",
+    "testResourceNoEscapedCurlyBraces.js",
     "testResourceNoTranslation.js",
     "testResourceQuoteStyle.js",
     "testResourceSourceICUPluralSyntax.js",

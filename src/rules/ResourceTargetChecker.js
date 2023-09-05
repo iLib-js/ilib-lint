@@ -54,7 +54,7 @@ class ResourceTargetChecker extends DeclarativeResourceRule {
     checkString({re, source, target, file, resource}) {
         re.lastIndex = 0;
         let matches = [];
-        const strippedTar = stripPlurals(target);
+        const strippedTar = this.useStripped ? stripPlurals(target) : target;
 
         // check the target only, but we need the source in order
         // to construct a Result if necessary
