@@ -22,6 +22,19 @@ import Locale from 'ilib-locale';
 
 import ResourceRule from './ResourceRule.js';
 
+// figure out which regex flags are supported on this version of node
+let regexFlags = "g";
+
+try {
+    new RegExp(".", "u");
+    regexFlags += "u";
+} catch (e) {}
+
+try {
+    new RegExp(".", "d");
+    regexFlags += "d";
+} catch (e) {}
+
 /**
  * @private
  */
@@ -81,7 +94,7 @@ class DeclarativeResourceRule extends ResourceRule {
         this.useStripped = typeof(this.useStripped) !== "boolean" ? true : this.useStripped;
 
         // this may throw if you got to the regexp syntax wrong:
-        this.re = options.regexps.map(regexp => new RegExp(regexp, "gu"));
+        this.re = options.regexps.map(regexp => new RegExp(regexp, regexFlags));
         if (options.locales) {
             if (typeof(options.locales) === "string") {
                 this.locales = new Set([ getLangSpec(options.locales) ]);

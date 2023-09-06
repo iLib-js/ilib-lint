@@ -53,7 +53,7 @@ export const testResourceNoEscapedCurlyBraces = {
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
         test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
-        test.equal(actual[0].highlight, "Source: The name is<e0> '{name}'</e0>.");
+        test.equal(actual[0].highlight, "Source: The name is <e0>'{name}'</e0>.");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
@@ -83,14 +83,74 @@ export const testResourceNoEscapedCurlyBraces = {
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
         test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
-        test.equal(actual[0].highlight, "Source: The name is<e0> '{name}'</e0> and the id is '{id}'.");
+        test.equal(actual[0].highlight, "Source: The name is <e0>'{name}'</e0> and the id is '{id}'.");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].id, "matcher.test");
         test.equal(actual[1].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
-        test.equal(actual[1].highlight, "Source: The name is '{name}' and the id is<e0> '{id}'</e0>.");
+        test.equal(actual[1].highlight, "Source: The name is '{name}' and the id is <e0>'{id}'</e0>.");
         test.equal(actual[1].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
+    testResourceNoEscapedSourceCurliesStart: function(test) {
+        test.expect(8);
+
+        const rule = new ResourceSourceChecker(findRuleDefinition("source-no-escaped-curly-braces"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "'{blank}' is the word, it's got groove, it's got meaning.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
+        test.equal(actual[0].highlight, "Source: <e0>'{blank}'</e0> is the word, it's got groove, it's got meaning.");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
+    testResourceNoEscapedSourceCurliesEnd: function(test) {
+        test.expect(8);
+
+        const rule = new ResourceSourceChecker(findRuleDefinition("source-no-escaped-curly-braces"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Say the word I'm thinking of. Have you heard? The word is '{blank}'",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
+        test.equal(actual[0].highlight, "Source: Say the word I'm thinking of. Have you heard? The word is <e0>'{blank}'</e0>");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
     },
@@ -236,7 +296,7 @@ export const testResourceNoEscapedCurlyBraces = {
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
         test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
-        test.equal(actual[0].highlight, "Target: 名前<e0>は'{name}'</e0>です。");
+        test.equal(actual[0].highlight, "Target: 名前は<e0>'{name}'</e0>です。");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.done();
@@ -268,13 +328,13 @@ export const testResourceNoEscapedCurlyBraces = {
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
         test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
-        test.equal(actual[0].highlight, "Target: 名前<e0>は'{name}'</e0>、ID は'{id}'です。");
+        test.equal(actual[0].highlight, "Target: 名前は<e0>'{name}'</e0>、ID は'{id}'です。");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].id, "matcher.test");
         test.equal(actual[1].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
-        test.equal(actual[1].highlight, "Target: 名前は'{name}'、ID <e0>は'{id}'</e0>です。");
+        test.equal(actual[1].highlight, "Target: 名前は'{name}'、ID は<e0>'{id}'</e0>です。");
         test.equal(actual[1].pathName, "a/b/c.xliff");
 
         test.done();
@@ -430,4 +490,67 @@ export const testResourceNoEscapedCurlyBraces = {
         test.done();
     },
 
+    testResourceTargetNoEscapedSourceCurliesStart: function(test) {
+        test.expect(8);
+
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-escaped-curly-braces"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "'{blank}' is the word, it's got groove, it's got meaning.",
+            target: "'{blank}' ist das Wort",
+            targetLocale: "de-DE",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
+        test.equal(actual[0].highlight, "Target: <e0>'{blank}'</e0> ist das Wort");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
+    testResourceTargetNoEscapedSourceCurliesEnd: function(test) {
+        test.expect(8);
+
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-escaped-curly-braces"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Say the word I'm thinking of. Have you heard? The word is '{blank}'",
+            target: "Das Wort ist '{blank}'",
+            targetLocale: "de-DE",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
+        test.equal(actual[0].highlight, "Target: Das Wort ist <e0>'{blank}'</e0>");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.done();
+    }
 };

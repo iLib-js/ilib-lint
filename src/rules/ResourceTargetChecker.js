@@ -55,20 +55,39 @@ class ResourceTargetChecker extends DeclarativeResourceRule {
         re.lastIndex = 0;
         let matches = [];
         const strippedTar = this.useStripped ? stripPlurals(target) : target;
+        let text, startIndex, endIndex;
 
         // check the target only, but we need the source in order
         // to construct a Result if necessary
         re.lastIndex = 0;
         let match = re.exec(strippedTar);
         while (match) {
+            if (match?.groups?.match) {
+                text = match.groups.match;
+                if (match.indices) {
+                    // node > 18
+                    startIndex = match.indices.groups.match[0];
+                    endIndex = match.indices.groups.match[1];
+                } else {
+                    // node 12-17
+                    let offset = match[0].indexOf(text);
+                    startIndex = match.index + offset;
+                    endIndex = match.index + offset + text.length;
+                }
+            } else {
+                // node < 12
+                text = match[0];
+                startIndex = match.index;
+                endIndex = match.index+match[0].length;
+            }
             let value = {
                 severity: this.severity,
                 id: resource.getKey(),
                 source,
                 rule: this,
                 pathName: file,
-                highlight: `Target: ${target.substring(0, match.index)}<e0>${match[0]}</e0>${target.substring(match.index+match[0].length)}`,
-                description: this.note.replace(/\{matchString\}/g, match[0]),
+                highlight: `Target: ${target.substring(0, startIndex)}<e0>${text}</e0>${target.substring(endIndex)}`,
+                description: this.note.replace(/\{matchString\}/g, text),
                 locale: resource.getTargetLocale()
             };
             if (typeof(resource.lineNumber) !== 'undefined') {
