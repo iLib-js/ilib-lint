@@ -52,7 +52,7 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use Unicode quotes ‘like this’ (U+2018 and U+2019) or double quotes instead.");
         test.equal(actual[0].highlight, "Source: The name is <e0>'{name}'</e0>.");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
@@ -82,13 +82,13 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use Unicode quotes ‘like this’ (U+2018 and U+2019) or double quotes instead.");
         test.equal(actual[0].highlight, "Source: The name is <e0>'{name}'</e0> and the id is '{id}'.");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].id, "matcher.test");
-        test.equal(actual[1].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
+        test.equal(actual[1].description, "There should be no escaped replacement parameters. Use Unicode quotes ‘like this’ (U+2018 and U+2019) or double quotes instead.");
         test.equal(actual[1].highlight, "Source: The name is '{name}' and the id is <e0>'{id}'</e0>.");
         test.equal(actual[1].pathName, "a/b/c.xliff");
 
@@ -118,7 +118,7 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use Unicode quotes ‘like this’ (U+2018 and U+2019) or double quotes instead.");
         test.equal(actual[0].highlight, "Source: <e0>'{blank}'</e0> is the word, it's got groove, it's got meaning.");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
@@ -148,7 +148,7 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use double-quotes or doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use Unicode quotes ‘like this’ (U+2018 and U+2019) or double quotes instead.");
         test.equal(actual[0].highlight, "Source: Say the word I'm thinking of. Have you heard? The word is <e0>'{blank}'</e0>");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
@@ -295,7 +295,7 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use quotes that are native for the target language or use tripled single-quotes instead.");
         test.equal(actual[0].highlight, "Target: 名前は<e0>'{name}'</e0>です。");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
@@ -327,13 +327,13 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use quotes that are native for the target language or use tripled single-quotes instead.");
         test.equal(actual[0].highlight, "Target: 名前は<e0>'{name}'</e0>、ID は'{id}'です。");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
         test.equal(actual[1].severity, "error");
         test.equal(actual[1].id, "matcher.test");
-        test.equal(actual[1].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
+        test.equal(actual[1].description, "There should be no escaped replacement parameters in the translation. Use quotes that are native for the target language or use tripled single-quotes instead.");
         test.equal(actual[1].highlight, "Target: 名前は'{name}'、ID は<e0>'{id}'</e0>です。");
         test.equal(actual[1].pathName, "a/b/c.xliff");
 
@@ -515,7 +515,7 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use quotes that are native for the target language or use tripled single-quotes instead.");
         test.equal(actual[0].highlight, "Target: <e0>'{blank}'</e0> ist das Wort");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
@@ -547,7 +547,7 @@ export const testResourceNoEscapedCurlyBraces = {
 
         test.equal(actual[0].severity, "error");
         test.equal(actual[0].id, "matcher.test");
-        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use doubled single-quotes instead.");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use quotes that are native for the target language or use tripled single-quotes instead.");
         test.equal(actual[0].highlight, "Target: Das Wort ist <e0>'{blank}'</e0>");
         test.equal(actual[0].pathName, "a/b/c.xliff");
 
