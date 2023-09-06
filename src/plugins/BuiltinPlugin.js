@@ -155,6 +155,7 @@ export const builtInRulesets = {
         // declarative rules from above
         "resource-url-match": true,
         "resource-named-params": true,
+        "resource-no-escaped-curly-braces": true,
         "resource-no-fullwidth-latin": true,
         "resource-no-fullwidth-digits": true,
         "resource-no-fullwidth-punctuation-subset": true,
@@ -167,6 +168,7 @@ export const builtInRulesets = {
     source: {
         "resource-source-icu-plural-syntax": true,
         "resource-source-icu-plural-categories": true,
+        "source-no-escaped-curly-braces": true
     },
 };
 
