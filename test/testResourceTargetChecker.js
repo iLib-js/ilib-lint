@@ -23,6 +23,10 @@ import { regexRules } from '../src/plugins/BuiltinPlugin.js';
 
 import { Result } from 'i18nlint-common';
 
+function findRuleDefinition(name) {
+    return regexRules.find(rule => rule.name === name);
+}
+
 export const testResourceTargetChecker = {
     testResourceNoFullwidthLatin: function(test) {
         test.expect(9);
@@ -358,9 +362,7 @@ export const testResourceTargetChecker = {
         const illegalPunctuations = ["？", "！", "％"];
         test.expect(1 + illegalPunctuations.length * 8);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-fullwidth-punctuation-subset"));
         test.ok(rule);
 
         for (const symbol of illegalPunctuations) {
@@ -399,9 +401,7 @@ export const testResourceTargetChecker = {
     testResourceNoFullwidthPunctuationSubsetSuccess: function(test) {
         test.expect(2);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-fullwidth-punctuation-subset"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -426,9 +426,7 @@ export const testResourceTargetChecker = {
     testResourceNoFullwidthPunctuationSubsetMultiple: function(test) {
         test.expect(21);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-fullwidth-punctuation-subset"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -479,9 +477,7 @@ export const testResourceTargetChecker = {
     testResourceNoFullwidthPunctuationSubsetMultipleNotInChinese: function(test) {
         test.expect(2);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-fullwidth-punctuation-subset")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-fullwidth-punctuation-subset"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -506,9 +502,7 @@ export const testResourceTargetChecker = {
     testResourceNoHalfWidthKana: function(test) {
         test.expect(2);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-halfwidth-kana-characters")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-halfwidth-kana-characters"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -562,9 +556,7 @@ export const testResourceTargetChecker = {
         ];
         test.expect(1 + illegalCharacters.length);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-double-byte-space")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-double-byte-space"));
         test.ok(rule);
 
         for (const symbol of illegalCharacters) {
@@ -620,9 +612,7 @@ export const testResourceTargetChecker = {
         ];
         test.expect(1 + illegalCharacters.length);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-double-byte-space")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-double-byte-space"));
         test.ok(rule);
 
         for (const symbol of illegalCharacters) {
@@ -651,7 +641,7 @@ export const testResourceTargetChecker = {
         const applicableCharacters = [
             "、",
             "。",
-            "〈", 
+            "〈",
             "〉",
             "《",
             "》",
@@ -672,9 +662,7 @@ export const testResourceTargetChecker = {
         ];
         test.expect(1 + applicableCharacters.length);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-space-with-fullwidth-punctuation")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-space-with-fullwidth-punctuation"));
         test.ok(rule);
 
         for (const symbol of applicableCharacters) {
@@ -709,6 +697,58 @@ export const testResourceTargetChecker = {
         test.done();
     },
 
+    testResourceNoSpaceWithFullwidthPunctSpaceAfterChinese: function(test) {
+        const applicableCharacters = [
+            "、",
+            "。",
+            "〈",
+            "〉",
+            "《",
+            "》",
+            "「",
+            "」",
+            "『",
+            "』",
+            "【",
+            "】",
+            "〔",
+            "〕",
+            "〖",
+            "〗",
+            "〘",
+            "〙",
+            "〚",
+            "〛",
+        ];
+        test.expect(1 + applicableCharacters.length);
+
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-space-with-fullwidth-punctuation"));
+        test.ok(rule);
+
+        // rule should only apply to Japanese, not Chinese
+        for (const symbol of applicableCharacters) {
+            const illegalSequence = symbol + " ";
+            const resource = new ResourceString({
+                key: "matcher.test",
+                sourceLocale: "en-US",
+                source: `test${illegalSequence}test`,
+                targetLocale: "zh-Hans-CN",
+                target: `测试${illegalSequence}测试`,
+                pathName: "a/b/c.xliff",
+            });
+
+            const result = rule.matchString({
+                source: resource.getSource(),
+                target: resource.getTarget(),
+                resource,
+                file: "a/b/c.xliff"
+            });
+            test.ok(!result);
+        }
+
+        test.done();
+    },
+
     testResourceNoSpaceWithFullwidthPunctSpaceBefore: function(test) {
         const applicableCharacters = [
             "、",
@@ -734,9 +774,7 @@ export const testResourceTargetChecker = {
         ];
         test.expect(1 + applicableCharacters.length);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-space-with-fullwidth-punctuation")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-space-with-fullwidth-punctuation"));
         test.ok(rule);
 
         for (const symbol of applicableCharacters) {
@@ -774,9 +812,7 @@ export const testResourceTargetChecker = {
     testResourceNoSpaceBetweenDoubleAndSingleByteCharacter: function(test) {
         test.expect(2);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-space-between-double-and-single-byte-character"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -811,9 +847,7 @@ export const testResourceTargetChecker = {
     testResourceNoSpaceBetweenDoubleAndSingleByteCharacterNotInChinese: function(test) {
         test.expect(2);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-space-between-double-and-single-byte-character"));
         test.ok(rule);
 
         const resource = new ResourceString({
@@ -839,9 +873,7 @@ export const testResourceTargetChecker = {
     testResourceNoSpaceBetweenDoubleAndSingleByteCharacterSuccess: function(test) {
         test.expect(2);
 
-        const rule = new ResourceTargetChecker(
-            regexRules.find((r) => r.name === "resource-no-space-between-double-and-single-byte-character")
-        );
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-space-between-double-and-single-byte-character"));
         test.ok(rule);
 
         const resource = new ResourceString({
