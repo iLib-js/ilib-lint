@@ -178,8 +178,8 @@ export const testResourceNoEscapedCurlyBraces = {
         test.done();
     },
 
-    testResourceSkipDoubleSingleQuotedCurlies: function(test) {
-        test.expect(2);
+    testResourceDoubleSingleQuotedCurlies: function(test) {
+        test.expect(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-escaped-curly-braces"));
         test.ok(rule);
@@ -188,6 +188,36 @@ export const testResourceNoEscapedCurlyBraces = {
             key: "matcher.test",
             sourceLocale: "en-US",
             source: "The name is ''{name}''.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters. Use Unicode quotes ‘like this’ (U+2018 and U+2019) or double quotes instead.");
+        test.equal(actual[0].highlight, "Source: The name is <e0>''{name}''</e0>.");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
+    testResourceSkipTripledSingleQuotedCurlies: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceSourceChecker(findRuleDefinition("source-no-escaped-curly-braces"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "The name is '''{name}'''.",
             pathName: "a/b/c.xliff"
         });
         const actual = rule.matchString({
@@ -365,8 +395,8 @@ export const testResourceNoEscapedCurlyBraces = {
         test.done();
     },
 
-    testResourceTargetSkipDoubleSingleQuotedCurlies: function(test) {
-        test.expect(2);
+    testResourceTargetDoubleSingleQuotedCurlies: function(test) {
+        test.expect(8);
 
         const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-escaped-curly-braces"));
         test.ok(rule);
@@ -376,6 +406,38 @@ export const testResourceNoEscapedCurlyBraces = {
             sourceLocale: "en-US",
             source: "The name is ''{name}''.",
             target: "名前は''{name}''です。",
+            targetLocale: "ja-JP",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "There should be no escaped replacement parameters in the translation. Use quotes that are native for the target language or use tripled single-quotes instead.");
+        test.equal(actual[0].highlight, "Target: 名前は<e0>''{name}''</e0>です。");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
+    testResourceTargetSkipTripledSingleQuotedCurlies: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-escaped-curly-braces"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "The name is '''{name}'''.",
+            target: "名前は'''{name}'''です。",
             targetLocale: "ja-JP",
             pathName: "a/b/c.xliff"
         });

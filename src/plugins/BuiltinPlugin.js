@@ -122,7 +122,7 @@ export const regexRules = [
         name: "source-no-escaped-curly-braces",
         description: "Ensure that there are no replacement variables surrounded by single quotes which escape them in the source strings.",
         note: "There should be no escaped replacement parameters. Use Unicode quotes ‘like this’ (U+2018 and U+2019) or double quotes instead.",
-        regexps: [ "(?:^|[^'])(?<match>'\\{.*?\\}')" ],
+        regexps: [ "(?:^|[^'])(?<match>''?\\{.*?\\}''?)" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-escaped-curly-braces.md",
         severity: "error",
         useStripped: false
@@ -132,7 +132,7 @@ export const regexRules = [
         name: "resource-no-escaped-curly-braces",
         description: "Ensure that there are no replacement variables surrounded by single quotes which escape them in the target strings.",
         note: "There should be no escaped replacement parameters in the translation. Use quotes that are native for the target language or use tripled single-quotes instead.",
-        regexps: [ "(?:^|[^'])(?<match>'\\{.*?\\}')" ],
+        regexps: [ "(?:^|[^'])(?<match>''?\\{.*?\\}''?)" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-escaped-curly-braces.md",
         severity: "error",
         useStripped: false
