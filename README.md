@@ -717,7 +717,7 @@ limitations under the License.
 
 ## Release Notes
 
-### Pending release
+### v1.9.0
 
 - added rule to check source ICU plural syntax
 - added rule to check required categories in source ICU plural
