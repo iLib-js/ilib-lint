@@ -491,7 +491,7 @@ class Project extends DirItem {
     findIssues(locales) {
         this.fileStats = new FileStats();
         return this.files.map(file => {
-            logger.trace(`Examining ${file.filePath}`);
+            logger.debug(`Examining ${file.filePath}`);
 
             const irArray = file.parse();
             if (irArray) {

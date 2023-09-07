@@ -721,6 +721,12 @@ limitations under the License.
 
 - added rule to check source ICU plural syntax
 - added rule to check required categories in source ICU plural
+- added rule to check that source and target string do not contain
+  escaped replacement parameters '{likeThis}'. In later versions of react-intl,
+  single-quoted replacement params are left alone when rendered.
+- fix a bug where the ICU Plural checker would throw an exeception if
+  it encountered a resource that was supposed to be translated, but for some
+  reason, did not have a target string
 
 ### v1.8.0
 

@@ -237,6 +237,8 @@ class ResourceICUPlurals extends ResourceRule {
     }
 
     matchString({source, target, file, resource}) {
+        if (!target) return; // can't check "nothing" !
+
         const sLoc = new Locale(resource.getSourceLocale());
         const tLoc = new Locale(resource.getTargetLocale());
         let sourceAst;
@@ -265,7 +267,7 @@ class ResourceICUPlurals extends ResourceRule {
                 rule: this,
                 id: resource.getKey(),
                 source,
-                highlight: `Target: ${target.substring(0, e.location.end.offset)}<e0>${target.substring(e.location.end.offset)}</e0>`,
+                highlight: `Target: ${target.substring(0, e?.location?.end?.offset)}<e0>${target.substring(e?.location?.end?.offset)}</e0>`,
                 pathName: file,
                 locale: tLoc.getSpec()
             };
