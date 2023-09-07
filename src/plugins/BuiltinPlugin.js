@@ -115,7 +115,8 @@ export const regexRules = [
         note: "There should be no space adjacent to fullwidth punctuation characters '{matchString}'. Remove it.",
         regexps: [ "(\\s+[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]|[\\u3001\\u3002\\u3008-\\u3011\\u3014-\\u301B]\\s+)" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-with-fullwidth-punctuation.md",
-        severity: "warning"
+        severity: "warning",
+        locales: "ja"
     },
     {
         type: "resource-source",

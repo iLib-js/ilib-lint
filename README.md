@@ -719,6 +719,8 @@ limitations under the License.
 
 ### Pending release
 
+- make sure the rule resource-no-space-with-fullwidth-punctuation only applies to
+  Japanese and specifically not Chinese
 - added rule to check source ICU plural syntax
 - added rule to check required categories in source ICU plural
 - added rule to check that source and target string do not contain
