@@ -717,7 +717,7 @@ limitations under the License.
 
 ## Release Notes
 
-### Pending release
+### v1.9.0
 
 - make sure the rule resource-no-space-with-fullwidth-punctuation only applies to
   Japanese and specifically not Chinese
