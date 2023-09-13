@@ -137,6 +137,15 @@ export const regexRules = [
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-escaped-curly-braces.md",
         severity: "error",
         useStripped: false
+    },
+    {
+        type: "resource-source",
+        name: "source-no-dashes-in-replacement-params",
+        description: "Ensure that source strings do not contain dashes in the replacement parameters.",
+        note: "Dashes are not allowed in replacement parameters. Use a different character such as underscore.",
+        regexps: [ "(?:^|[^'])(?<match>\\{[^}]*?-[^}]*\\})" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-dashes-in-replacement-params.md",
+        severity: "error"
     }
 ];
 
@@ -169,7 +178,8 @@ export const builtInRulesets = {
     source: {
         "resource-source-icu-plural-syntax": true,
         "resource-source-icu-plural-categories": true,
-        "source-no-escaped-curly-braces": true
+        "source-no-escaped-curly-braces": true,
+        "source-no-dashes-in-replacement-params": true
     },
 };
 
