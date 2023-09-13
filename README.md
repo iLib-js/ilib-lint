@@ -717,6 +717,11 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.10.0
+
+- added rule source-no-dashes-in-replacement-params to check that replacement
+  parameter do not contain dashes, which is not allowed in ICU syntax.
+
 ### v1.9.0
 
 - make sure the rule resource-no-space-with-fullwidth-punctuation only applies to
