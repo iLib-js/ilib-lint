@@ -30,6 +30,7 @@ import log4js from 'log4js';
 import PluginManager from './PluginManager.js';
 import Project from './Project.js';
 import { wrap, indent } from './rules/utils.js';
+import Lint from './lint.js';
 import defaultConfig from './config/default.js';
 import { FileConfigurationProvider, FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 
@@ -126,21 +127,15 @@ const optionConfig = {
         varName: "NUMBER",
         help: "Give the minimum acceptable I18N score allowed in this run. Valid values are 0-100. Default: no minimum",
         type: validateInt.bind(null, "min-score")
+    },
+    "root": {
+        short: "r",
+        varName: "ILIB_LINT_ROOT",
+        help: "Specify the root directory where the search for files should start. Default: current dir",
     }
 };
 
 const options = OptionsParser.parse(optionConfig);
-
-/*
-if (options.args.length < 1) {
-    logger.info("Error: missing path parameter");
-    OptionsParser.help(optionConfig, {
-        banner: 'Usage: iilib-lint [-h] [options] path [path ...]',
-        output: logger.info
-    });
-    process.exit(1);
-}
-*/
 
 if (options.opt.quiet) {
     const rootlogger = log4js.getLogger();
@@ -183,71 +178,11 @@ if ("config" in options.opt && "string" == typeof options.opt.config) {
     config = defaultConfig;
 }
 
-logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
 
-// loads and manage the plugins
+const lint = new Lint(options.opt, config);
 
-const pluginMgr = new PluginManager({
-    rulesData: config.rules,
-    sourceLocale: options.opt.sourceLocale
-});
-
-const rootProject = new Project(".", {
-    ...options,
-    pluginManager: pluginMgr
-}, config);
-
-// this will load all the plugins, so we can print out the list of
-// them below if needed
-try {
-    await rootProject.init();
-    if (options.opt.list) {
-        const ruleMgr = pluginMgr.getRuleManager();
-        const ruleDescriptions = ruleMgr.getDescriptions();
-        const ruleSetDefinitions = ruleMgr.getRuleSetDefinitions();
-        const parserMgr = pluginMgr.getParserManager();
-        const parserDescriptions = parserMgr.getDescriptions();
-        const formatterMgr = pluginMgr.getFormatterManager();
-        const formatterDescriptions = formatterMgr.getDescriptions();
-
-        let name;
-
-        let output = [
-            "These items are available to use in your configuration",
-            "",
-            "Parsers:"
-        ];
-        for (name in parserDescriptions) {
-            output = output.concat(indent(wrap(`${name} - ${parserDescriptions[name]}`, 76, "  "), 2));
-        }
-        output.push("");
-
-        output.push("Rules:");
-        for (name in ruleDescriptions) {
-            output = output.concat(indent(wrap(`${name} - ${ruleDescriptions[name]}`, 76, "  "), 2));
-        }
-        output.push("");
-
-        output.push("Rulesets:");
-        for (name in ruleSetDefinitions) {
-            output = output.concat(indent(wrap(`${name} - ${ruleSetDefinitions[name].join(", ")}`, 76, "  "), 2));
-        }
-        output.push("");
-
-        output.push("Formatters:");
-        for (name in formatterDescriptions) {
-            output = output.concat(indent(wrap(`${name} - ${formatterDescriptions[name]}`, 76, "  "), 2));
-        }
-
-        console.log(output.join('\n'));
-        process.exit(0);
-    }
-
-    // main loop
-    await rootProject.scan(paths);
-    const exitValue = rootProject.run();
-
+lint.run().then(exitValue => {
     process.exit(exitValue);
-} catch (e) {
+}).catch(e => {
     logger.error(e);
-}
+});
