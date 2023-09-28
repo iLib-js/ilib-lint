@@ -30,6 +30,7 @@ const files = [
     "testResourceMatcher.js",
     "testResourceNoDashesInReplacement.js",
     "testResourceNoEscapedCurlyBraces.js",
+    "testResourceNoLazyPlurals.js",
     "testResourceNoTranslation.js",
     "testResourceQuoteStyle.js",
     "testResourceSourceICUPluralSyntax.js",

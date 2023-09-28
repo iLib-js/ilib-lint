@@ -146,6 +146,15 @@ export const regexRules = [
         regexps: [ "(?:^|[^'])(?<match>\\{[^}]*?-[^}]*\\})" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-dashes-in-replacement-params.md",
         severity: "error"
+    },
+    {
+        type: "resource-source",
+        name: "source-no-lazy-plurals",
+        description: "Ensure that source strings do not contain the (s) construct to indicate a possible plural. That is not translatable to many languages.",
+        note: "The (s) construct is not allowed in source strings. Use real plural syntax instead.",
+        regexps: [ "(?<match>\\w+\\(s\\))(?:\\s|\\p{P}|$)" ],  // \p{P} means punctuation
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-lazy-plurals.md",
+        severity: "warning"
     }
 ];
 
@@ -179,7 +188,8 @@ export const builtInRulesets = {
         "resource-source-icu-plural-syntax": true,
         "resource-source-icu-plural-categories": true,
         "source-no-escaped-curly-braces": true,
-        "source-no-dashes-in-replacement-params": true
+        "source-no-dashes-in-replacement-params": true,
+        "source-no-lazy-plurals": true
     },
 };
 
