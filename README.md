@@ -721,6 +721,9 @@ limitations under the License.
 
 - added rule source-no-dashes-in-replacement-params to check that replacement
   parameter do not contain dashes, which is not allowed in ICU syntax.
+- added rule source-no-manual-percentage-formatting to check that source
+  string do not contain manually formatted percentages. Tell the engineer to
+  use a locale-sensitive number formatter instead.
 
 ### v1.9.0
 

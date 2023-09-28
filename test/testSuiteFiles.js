@@ -31,6 +31,7 @@ const files = [
     "testResourceNoDashesInReplacement.js",
     "testResourceNoEscapedCurlyBraces.js",
     "testResourceNoLazyPlurals.js",
+    "testResourceNoManualPercentFormatting.js",
     "testResourceNoTranslation.js",
     "testResourceQuoteStyle.js",
     "testResourceSourceICUPluralSyntax.js",

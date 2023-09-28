@@ -155,6 +155,15 @@ export const regexRules = [
         regexps: [ "(?<match>\\w+\\(s\\))(?:\\s|\\p{P}|$)" ],  // \p{P} means punctuation
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-lazy-plurals.md",
         severity: "warning"
+    },
+    {
+        type: "resource-source",
+        name: "source-no-manual-percentage-formatting",
+        description: "Ensure that source strings do not contain percentage formatting. Percentages should be formatted using a locale-sensitive number formatter instead.",
+        note: "Do not format percentages in English strings. Use a locale-sensitive number formatter and substitute the result of that into this string.",
+        regexps: [ "(?<match>\\{[\\w_.$0-9]+\\}\\s*%)(\\s|$)" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-manual-percentage-formatting.md",
+        severity: "warning"
     }
 ];
 
@@ -189,7 +198,8 @@ export const builtInRulesets = {
         "resource-source-icu-plural-categories": true,
         "source-no-escaped-curly-braces": true,
         "source-no-dashes-in-replacement-params": true,
-        "source-no-lazy-plurals": true
+        "source-no-lazy-plurals": true,
+        "source-no-manual-percentage-formatting": true
     },
 };
 
