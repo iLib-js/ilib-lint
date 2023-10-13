@@ -23,7 +23,7 @@ import StringFix from "../src/plugins/string/StringFix.js";
 import StringFixCommand from "../src/plugins/string/StringFixCommand.js";
 
 export const testStringFixer = {
-    stringFixerShouldReplace: function (test) {
+    testStringFixerShouldReplace: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -37,7 +37,7 @@ export const testStringFixer = {
         test.done();
     },
     
-    stringFixerShouldInsert: function (test) {
+    testStringFixerShouldInsert: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -51,7 +51,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldDelete: function (test) {
+    testStringFixerShouldDelete: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -65,7 +65,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldReplaceMultiple: function (test) {
+    testStringFixerShouldReplaceMultiple: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -80,7 +80,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldInsertMultiple: function (test) {
+    testStringFixerShouldInsertMultiple: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -95,7 +95,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldDeleteMultiple: function (test) {
+    testStringFixerShouldDeleteMultiple: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -110,7 +110,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldFixMultipleFixes: function (test) {
+    testStringFixerShouldFixMultipleFixes: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -129,7 +129,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldFixMultipleFixesMultipleCommands: function (test) {
+    testStringFixerShouldFixMultipleFixesMultipleCommands: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -148,7 +148,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldFlagAppliedFixes: function (test) {
+    testStringFixerShouldFlagAppliedFixes: function(test) {
         test.expect(1);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -168,7 +168,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldNotMarkOverlappingFixAsApplied: function (test) {
+    testStringFixerShouldNotMarkOverlappingFixAsApplied: function(test) {
         test.expect(2);
         const subject = new IntermediateRepresentation({
             type: "string",
@@ -212,7 +212,7 @@ export const testStringFixer = {
         test.done();
     },
 
-    stringFixerShouldNotApplyAnyCommandsOfASkippedFix: function (test) {
+    testStringFixerShouldNotApplyAnyCommandsOfASkippedFix: function(test) {
         test.expect(4);
         const subject = new IntermediateRepresentation({
             type: "string",

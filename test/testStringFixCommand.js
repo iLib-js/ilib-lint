@@ -20,41 +20,41 @@
 import StringFixCommand from "../src/plugins/string/StringFixCommand.js";
 
 const testCreation = {
-    stringFixCommandShouldConstruct: function (test) {
+    testStringFixCommandShouldConstruct: function(test) {
         test.expect(1);
         test.ok(new StringFixCommand(0, 1, "test"));
         test.done();
     },
 
-    stringFixCommandCtorShouldThrowPositionNegative: function (test) {
+    testStringFixCommandCtorShouldThrowPositionNegative: function(test) {
         test.expect(1);
         // can't insert before string start
         test.throws(() => new StringFixCommand(-1, 0, ""));
         test.done();
     },
 
-    stringFixCommandCtorShouldThrowPositionNonInteger: function (test) {
+    testStringFixCommandCtorShouldThrowPositionNonInteger: function(test) {
         test.expect(1);
         // can't insert in the middle of a character
         test.throws(() => new StringFixCommand(0.5, 0, ""));
         test.done();
     },
 
-    stringFixCommandCtorShouldThrowDeleteCountNegative: function (test) {
+    testStringFixCommandCtorShouldThrowDeleteCountNegative: function(test) {
         test.expect(1);
         // can't delete backwards
         test.throws(() => new StringFixCommand(0, -1, ""));
         test.done();
     },
 
-    stringFixCommandCtorShouldThrowDeleteCountNonInteger: function (test) {
+    testStringFixCommandCtorShouldThrowDeleteCountNonInteger: function(test) {
         test.expect(1);
         // can't delete half a character
         test.throws(() => new StringFixCommand(0, 0.5, ""));
         test.done();
     },
 
-    stringFixCommandFactoryMethodShouldCreateReplacementCommand: function (test) {
+    testStringFixCommandFactoryMethodShouldCreateReplacementCommand: function(test) {
         test.expect(1);
         const expected = new StringFixCommand(0, 1, "test");
         const actual = StringFixCommand.replaceAfter(0, 1, "test");
@@ -62,7 +62,7 @@ const testCreation = {
         test.done();
     },
 
-    stringFixCommandFactoryMethodShouldCreateInsertionCommand: function (test) {
+    testStringFixCommandFactoryMethodShouldCreateInsertionCommand: function(test) {
         test.expect(1);
         const expected = new StringFixCommand(0, 0, "test");
         const actual = StringFixCommand.insertAfter(0, "test");
@@ -70,7 +70,7 @@ const testCreation = {
         test.done();
     },
 
-    stringFixCommandFactoryMethodShouldCreateDeletionCommand: function (test) {
+    testStringFixCommandFactoryMethodShouldCreateDeletionCommand: function(test) {
         test.expect(1);
         const expected = new StringFixCommand(0, 1, "");
         const actual = StringFixCommand.deleteAfter(0, 1);
@@ -80,7 +80,7 @@ const testCreation = {
 };
 
 const testOverlap = {
-    stringFixCommandShouldDetectOverlapInOverlappingReplacements: function (test) {
+    testStringFixCommandShouldDetectOverlapInOverlappingReplacements: function(test) {
         test.expect(2);
         // command that modifies range [0,2] overlaps
         // another that modifies range [1,3]
@@ -91,7 +91,7 @@ const testOverlap = {
         test.done();
     },
 
-    stringFixCommandShouldNotDetectOverlapInDistinctReplacements: function (test) {
+    testStringFixCommandShouldNotDetectOverlapInDistinctReplacements: function(test) {
         test.expect(2);
         // command that modifies range [0,2] does not overlap
         // another that modifies range [3,4]
@@ -103,7 +103,7 @@ const testOverlap = {
         test.done();
     },
 
-    stringFixCommandShouldNotDetectOverlapInAdjacentReplacements: function (test) {
+    testStringFixCommandShouldNotDetectOverlapInAdjacentReplacements: function(test) {
         test.expect(2);
         // command that modifies range [0,2] does not overlap
         // another that modifies range [2,3]
@@ -115,7 +115,7 @@ const testOverlap = {
         test.done();
     },
 
-    stringFixCommandShouldDetectOverlapInSamePositionInsertions: function (test) {
+    testStringFixCommandShouldDetectOverlapInSamePositionInsertions: function(test) {
         test.expect(2);
         // insertion starting from 0 does overlap another insertion starting from 0
         // because the outcome would depend on the order of execution
@@ -129,7 +129,7 @@ const testOverlap = {
         test.done();
     },
 
-    stringFixCommandShouldNotDetectOverlapInSamePositionInsertionAndDeletion: function (test) {
+    testStringFixCommandShouldNotDetectOverlapInSamePositionInsertionAndDeletion: function(test) {
         test.expect(2);
         // insertion of a char before first char of original string does not overlap
         // the removal of the first char of the original string
@@ -144,7 +144,7 @@ const testOverlap = {
         test.done();
     },
 
-    stringFixCommandShouldDetectOverlapInInsertionWithinReplacement: function (test) {
+    testStringFixCommandShouldDetectOverlapInInsertionWithinReplacement: function(test) {
         test.expect(2);
         // insertion after 1st char overlaps a replacement (or deletion) of first 2 chars
         const one = StringFixCommand.insertAfter(1, "*");
@@ -154,7 +154,7 @@ const testOverlap = {
         test.done();
     },
 
-    stringFixCommandShouldNotDetectOverlapInAdjacentDeletionThenInsertion: function (test) {
+    testStringFixCommandShouldNotDetectOverlapInAdjacentDeletionThenInsertion: function(test) {
         test.expect(2);
         // deletion of a first char of the original string does not overlap
         // the insertion of the first char of the original string
@@ -169,7 +169,7 @@ const testOverlap = {
         test.done();
     },
 
-    stringFixCommandShouldDetectOverlapInSamePlaceDeletions: function (test) {
+    testStringFixCommandShouldDetectOverlapInSamePlaceDeletions: function(test) {
         test.expect(2);
         // deletion starting from 0 overlaps another deletion starting from 0
         const one = StringFixCommand.deleteAfter(0, 1);
@@ -181,7 +181,7 @@ const testOverlap = {
 };
 
 const testApply = {
-    stringFixCommandApplyShouldInsert: function (test) {
+    testStringFixCommandApplyShouldInsert: function(test) {
         test.expect(1);
         const input = "example";
         // insert "*" after 1st char
@@ -191,7 +191,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldDelete: function (test) {
+    testStringFixCommandApplyShouldDelete: function(test) {
         test.expect(1);
         const input = "example";
         // delete 2nd char
@@ -201,7 +201,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldReplace: function (test) {
+    testStringFixCommandApplyShouldReplace: function(test) {
         test.expect(1);
         const input = "example";
         // replace 2nd char to "X"
@@ -211,7 +211,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldInsertLonger: function (test) {
+    testStringFixCommandApplyShouldInsertLonger: function(test) {
         test.expect(1);
         const input = "example";
         // insert "**" after 1st char
@@ -221,7 +221,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldDeleteLonger: function (test) {
+    testStringFixCommandApplyShouldDeleteLonger: function(test) {
         test.expect(1);
         const input = "example";
         // delete 3rd and 4th char
@@ -231,7 +231,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldReplaceShorterToLonger: function (test) {
+    testStringFixCommandApplyShouldReplaceShorterToLonger: function(test) {
         test.expect(1);
         const input = "example";
         // replace 3rd and 4th char with a shorter sequence "*"
@@ -241,7 +241,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldReplaceLongerToShorter: function (test) {
+    testStringFixCommandApplyShouldReplaceLongerToShorter: function(test) {
         test.expect(1);
         const input = "example";
         // replace 2nd char with longer sequence "**"
@@ -251,7 +251,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldApplyMultiple: function (test) {
+    testStringFixCommandApplyShouldApplyMultiple: function(test) {
         test.expect(1);
         const input = "example";
         const commands = [
@@ -265,7 +265,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldApplyMultipleUnordered: function (test) {
+    testStringFixCommandApplyShouldApplyMultipleUnordered: function(test) {
         test.expect(1);
         const input = "example";
         // input not ordered by position
@@ -280,7 +280,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldApplyMultipleWithInsertion: function (test) {
+    testStringFixCommandApplyShouldApplyMultipleWithInsertion: function(test) {
         test.expect(1);
         const input = "example";
         const commands = [
@@ -294,7 +294,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldApplyMultipleWithInsertionUnordered: function (test) {
+    testStringFixCommandApplyShouldApplyMultipleWithInsertionUnordered: function(test) {
         test.expect(1);
         const input = "example";
         // input not ordered by position
@@ -309,7 +309,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldThrowOnOverlap: function (test) {
+    testStringFixCommandApplyShouldThrowOnOverlap: function(test) {
         test.expect(1);
         const input = "example";
         // overlapping commands
@@ -323,7 +323,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldThrowOnReplacementOutOfBounds: function (test) {
+    testStringFixCommandApplyShouldThrowOnReplacementOutOfBounds: function(test) {
         test.expect(1);
         const input = "example";
         // out of bounds
@@ -334,7 +334,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldThrowOnInsertionOutOfBounds: function (test) {
+    testStringFixCommandApplyShouldThrowOnInsertionOutOfBounds: function(test) {
         test.expect(1);
         const input = "example";
         // out of bounds
@@ -345,7 +345,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldThrowOnDeletionOutOfBounds: function (test) {
+    testStringFixCommandApplyShouldThrowOnDeletionOutOfBounds: function(test) {
         test.expect(1);
         const input = "example";
         // out of bounds
@@ -356,7 +356,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldThrowOnReplacementOutOfBoundsByOne: function (test) {
+    testStringFixCommandApplyShouldThrowOnReplacementOutOfBoundsByOne: function(test) {
         test.expect(1);
         const input = "example";
         // out of bounds by 1
@@ -367,7 +367,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldPrepend: function (test) {
+    testStringFixCommandApplyShouldPrepend: function(test) {
         test.expect(1);
         const input = "example";
         // insert "***" before 1st char
@@ -377,7 +377,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldAppend: function (test) {
+    testStringFixCommandApplyShouldAppend: function(test) {
         test.expect(1);
         const input = "example";
         // insert "***" after last char
@@ -387,7 +387,7 @@ const testApply = {
         test.done();
     },
 
-    stringFixCommandApplyShouldThrowOnDeletionOutOfBoundsByOne: function (test) {
+    testStringFixCommandApplyShouldThrowOnDeletionOutOfBoundsByOne: function(test) {
         test.expect(1);
         const input = "example";
         // out of bounds by 1

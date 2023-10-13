@@ -21,7 +21,7 @@ import { Result } from "i18nlint-common";
 import ResourceSourceICUPluralCategories from "../src/rules/ResourceSourceICUPluralCategories.js";
 
 const testFlat = {
-    testMatchNoError: function (test) {
+    testMatchNoError: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -43,7 +43,7 @@ const testFlat = {
         test.done();
     },
 
-    testMissingCategoryOne: function (test) {
+    testMissingCategoryOne: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -77,7 +77,7 @@ const testFlat = {
         test.done();
     },
 
-    testMissingCategoryOther: function (test) {
+    testMissingCategoryOther: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -102,7 +102,7 @@ const testFlat = {
         test.done();
     },
 
-    testExtraCategoryTwo: function (test) {
+    testExtraCategoryTwo: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -136,7 +136,7 @@ const testFlat = {
         test.done();
     },
 
-    testInvalidOneCategory: function (test) {
+    testInvalidOneCategory: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -182,7 +182,7 @@ const testFlat = {
 };
 
 const testNested = {
-    testMatchNestedNoError: function (test) {
+    testMatchNestedNoError: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -204,7 +204,7 @@ const testNested = {
         test.done();
     },
 
-    testMatchNestedMissingSingleOne: function (test) {
+    testMatchNestedMissingSingleOne: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -239,7 +239,7 @@ const testNested = {
         test.done();
     },
 
-    testMatchNestedMissingMultipleOne: function (test) {
+    testMatchNestedMissingMultipleOne: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -283,7 +283,7 @@ const testNested = {
         test.done();
     },
 
-    testMatchNestedMissingSingleOther: function (test) {
+    testMatchNestedMissingSingleOther: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -308,7 +308,7 @@ const testNested = {
         test.done();
     },
 
-    testMatchNestedMissingMultipleOther: function (test) {
+    testMatchNestedMissingMultipleOther: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -333,7 +333,7 @@ const testNested = {
         test.done();
     },
 
-    testMatchNestedMultiLineNoError: function (test) {
+    testMatchNestedMultiLineNoError: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();
@@ -368,7 +368,7 @@ const testNested = {
         test.done();
     },
 
-    testMatchNestedExtra: function (test) {
+    testMatchNestedExtra: function(test) {
         test.expect(2);
 
         const rule = new ResourceSourceICUPluralCategories();

@@ -21,7 +21,7 @@ import StringFixCommand from "../src/plugins/string/StringFixCommand.js";
 import StringFix from "../src/plugins/string/StringFix.js";
 
 export const testStringFix = {
-    stringFixCtorShouldThrowOverlappingCommands: function (test) {
+    testStringFixCtorShouldThrowOverlappingCommands: function(test) {
         test.expect(1);
         // overlapping commands in a single fix
         test.throws(
@@ -36,7 +36,7 @@ export const testStringFix = {
         test.done();
     },
 
-    stringFixShouldDetectOverlap: function (test) {
+    testStringFixShouldDetectOverlap: function(test) {
         test.expect(2);
         // fixes overlap because some commands between them overlap
         const one = new StringFix(
@@ -52,7 +52,7 @@ export const testStringFix = {
         test.done();
     },
 
-    stringFixShouldDetectOverlapOfAnyCommands: function (test) {
+    testStringFixShouldDetectOverlapOfAnyCommands: function(test) {
         test.expect(2);
         // fixes overlap because some commands between them overlap
         // even if not all commands do
