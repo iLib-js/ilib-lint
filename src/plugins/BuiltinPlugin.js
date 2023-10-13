@@ -170,7 +170,7 @@ export const regexRules = [
         name: "source-no-noun-replacement-params",
         description: "Ensure that source strings do not contain replacement parameters that are nouns or adjectives.",
         note: "Do not substitute nouns into UI strings. Use separate strings for each noun instead.",
-        regexps: [ "(?<match>(a|an|the)\\s+\\{.*?\\})" ],
+        regexps: [ "\\b(?<match>([Aa][Nn]?|[Tt][Hh][Ee])\\s+\\{.*?\\})" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-noun-replacement-params.md",
         severity: "error",
         useStripped: false

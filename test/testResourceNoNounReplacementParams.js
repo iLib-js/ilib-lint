@@ -346,4 +346,131 @@ export const testResourceNoNounReplacementParams = {
 
         test.done();
     },
+
+    testResourceNounParamTheCapitalsString: function(test) {
+        test.expect(18);
+
+        const rule = new ResourceSourceChecker(findRuleDefinition("source-no-noun-replacement-params"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Delete The {fileType} And A {fileType} and An {fileType}.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 3);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "Do not substitute nouns into UI strings. Use separate strings for each noun instead.");
+        test.equal(actual[0].highlight, "Source: Delete <e0>The {fileType}</e0> And A {fileType} and An {fileType}.");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.equal(actual[1].severity, "error");
+        test.equal(actual[1].id, "matcher.test");
+        test.equal(actual[1].description, "Do not substitute nouns into UI strings. Use separate strings for each noun instead.");
+        test.equal(actual[1].highlight, "Source: Delete The {fileType} And <e0>A {fileType}</e0> and An {fileType}.");
+        test.equal(actual[1].pathName, "a/b/c.xliff");
+
+        test.equal(actual[2].severity, "error");
+        test.equal(actual[2].id, "matcher.test");
+        test.equal(actual[2].description, "Do not substitute nouns into UI strings. Use separate strings for each noun instead.");
+        test.equal(actual[2].highlight, "Source: Delete The {fileType} And A {fileType} and <e0>An {fileType}</e0>.");
+        test.equal(actual[2].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
+    testResourceNounParamNotWholeWordString: function(test) {
+        test.expect(2);
+
+        const rule = new ResourceSourceChecker(findRuleDefinition("source-no-noun-replacement-params"));
+        test.ok(rule);
+
+        // should not match "a" and "the" when it is not a separate word
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Paula {verb} loathe {cucumber}.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(!actual);
+
+        test.done();
+    },
+
+    testResourceNounParamTheStartOfString: function(test) {
+        test.expect(8);
+
+        const rule = new ResourceSourceChecker(findRuleDefinition("source-no-noun-replacement-params"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "The {fileType} to delete.",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "Do not substitute nouns into UI strings. Use separate strings for each noun instead.");
+        test.equal(actual[0].highlight, "Source: <e0>The {fileType}</e0> to delete.");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
+    testResourceNounParamTheEndOfString: function(test) {
+        test.expect(8);
+
+        const rule = new ResourceSourceChecker(findRuleDefinition("source-no-noun-replacement-params"));
+        test.ok(rule);
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Delete the {fileType}",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        test.ok(actual);
+        test.equal(actual.length, 1);
+
+        test.equal(actual[0].severity, "error");
+        test.equal(actual[0].id, "matcher.test");
+        test.equal(actual[0].description, "Do not substitute nouns into UI strings. Use separate strings for each noun instead.");
+        test.equal(actual[0].highlight, "Source: Delete <e0>the {fileType}</e0>");
+        test.equal(actual[0].pathName, "a/b/c.xliff");
+
+        test.done();
+    },
+
 };
