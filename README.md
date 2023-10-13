@@ -717,6 +717,13 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.11.0
+
+- added source-no-noun-replacement-params rule to check if a noun is being
+  substituted into a replacement parameter in the source English text. Nouns
+  and the articles "a", "an", and "the" are not translatable to all languages
+  because of gender and plurality agreement rules.
+
 ### v1.10.0
 
 - added rule source-no-dashes-in-replacement-params to check that replacement
