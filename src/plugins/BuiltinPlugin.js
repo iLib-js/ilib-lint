@@ -164,6 +164,16 @@ export const regexRules = [
         regexps: [ "(?<match>\\{[\\w_.$0-9]+\\}\\s*%)(\\s|$)" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-manual-percentage-formatting.md",
         severity: "warning"
+    },
+    {
+        type: "resource-source",
+        name: "source-no-noun-replacement-params",
+        description: "Ensure that source strings do not contain replacement parameters that are nouns or adjectives.",
+        note: "Do not substitute nouns into UI strings. Use separate strings for each noun instead.",
+        regexps: [ "(?<match>(a|an|the)\\s+\\{.*?\\})" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-noun-replacement-params.md",
+        severity: "error",
+        useStripped: false
     }
 ];
 
@@ -199,7 +209,8 @@ export const builtInRulesets = {
         "source-no-escaped-curly-braces": true,
         "source-no-dashes-in-replacement-params": true,
         "source-no-lazy-plurals": true,
-        "source-no-manual-percentage-formatting": true
+        "source-no-manual-percentage-formatting": true,
+        "source-no-noun-replacement-params": true
     },
 };
 
