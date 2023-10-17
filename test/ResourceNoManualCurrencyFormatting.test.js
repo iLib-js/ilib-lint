@@ -189,7 +189,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceNounParamThePlural", () => {
+    test("ResourceManualCurrencyFormattingPlural", () => {
         expect.assertions(13);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -231,7 +231,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[1].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceNounParamTheArray", () => {
+    test("ResourceManualCurrencyFormattingArray", () => {
         expect.assertions(13);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
