@@ -161,7 +161,7 @@ describe("testResourceNoManualPercentageFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualPercentFormattingStartOfString", () => {
+    test("ResourceManualPercentFormattingEndOfString", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
