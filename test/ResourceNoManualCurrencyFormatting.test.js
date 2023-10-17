@@ -1,5 +1,5 @@
 /*
- * ResourceNoManualPercentFormatting.test.js - test the built-in regular-expression-based rules
+ * ResourceNoManualCurrencyFormatting.test.js - test the built-in regular-expression-based rules
  *
  * Copyright © 2023 JEDLSoft
  *
@@ -27,8 +27,8 @@ function findRuleDefinition(name) {
     return regexRules.find(rule => rule.name === name);
 }
 
-describe("testResourceNoManualPercentageFormatting", () => {
-    test("ResourceManualPercentFormatting", () => {
+describe("testResourceNoManualCurrencyFormatting", () => {
+    test("ResourceManualCurrencyFormatting", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -56,7 +56,7 @@ describe("testResourceNoManualPercentageFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceNoManualPercentFormatting", () => {
+    test("ResourceNoManualCurrencyFormatting", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -77,7 +77,7 @@ describe("testResourceNoManualPercentageFormatting", () => {
         expect(!actual).toBeTruthy();
     });
 
-    test("ResourceManualPercentFormattingWithWhitespace", () => {
+    test("ResourceManualCurrencyFormattingWithWhitespace", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -105,7 +105,7 @@ describe("testResourceNoManualPercentageFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualPercentFormattingCrazyParamName", () => {
+    test("ResourceManualCurrencyFormattingCrazyParamName", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -133,7 +133,7 @@ describe("testResourceNoManualPercentageFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualPercentFormattingStartOfString", () => {
+    test("ResourceManualCurrencyFormattingStartOfString", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -161,7 +161,7 @@ describe("testResourceNoManualPercentageFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualPercentFormattingEndOfString", () => {
+    test("ResourceManualCurrencyFormattingEndOfString", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
