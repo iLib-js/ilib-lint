@@ -79,7 +79,7 @@ describe("testResourceNoManualDateageFormatting", () => {
 
     test("ResourceManualDateFormattingTestPlural", () => {
         expect.assertions(8);
-debugger;
+
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-date-formatting"));
         expect(rule).toBeTruthy();
 
