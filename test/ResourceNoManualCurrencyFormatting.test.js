@@ -27,8 +27,8 @@ function findRuleDefinition(name) {
     return regexRules.find(rule => rule.name === name);
 }
 
-describe("testResourceNoManualCurrencyFormatting", () => {
-    test("ResourceManualCurrencyFormatting", () => {
+describe("make sure that Resources have No Manual Currency Formatting Allowed", () => {
+    test("Resource Has Manual Currency Formatting", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -56,7 +56,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceNoManualCurrencyFormatting", () => {
+    test("Resource Has No Manual Currency Formatting", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -77,7 +77,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(!actual).toBeTruthy();
     });
 
-    test("ResourceManualCurrencyFormattingWithWhitespace", () => {
+    test("Resource Has Manual Currency Formatting With Whitespace", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -105,7 +105,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualCurrencyFormattingCrazyParamName", () => {
+    test("Resource Has Manual Currency Formatting and a Crazy Param Name", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -133,7 +133,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualCurrencyFormattingStartOfString", () => {
+    test("Resource Has Manual Currency Formatting at the Start Of the String", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -161,7 +161,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualCurrencyFormattingEndOfString", () => {
+    test("Resource Has Manual Currency Formatting at the End Of the String", () => {
         expect.assertions(8);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -189,7 +189,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[0].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualCurrencyFormattingPlural", () => {
+    test("Plural Resource Has Manual Currency Formatting", () => {
         expect.assertions(13);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));
@@ -231,7 +231,7 @@ describe("testResourceNoManualCurrencyFormatting", () => {
         expect(actual[1].pathName).toBe("a/b/c.xliff");
     });
 
-    test("ResourceManualCurrencyFormattingArray", () => {
+    test("Array Resource Has Manual Currency Formatting", () => {
         expect.assertions(13);
 
         const rule = new ResourceSourceChecker(findRuleDefinition("source-no-manual-currency-formatting"));

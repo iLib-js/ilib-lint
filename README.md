@@ -725,7 +725,7 @@ limitations under the License.
   because of gender and plurality agreement rules.
 - converted all unit tests from  nodeunit to jest
 - updated dependencies
-- added source-no-manual-currency-formatting ri;e to check that source strings
+- added source-no-manual-currency-formatting rule to check that source strings
   do not contain manually formatted currencies. Tell the engineer to use a
   locale-sensitive number formatter instead.
 
