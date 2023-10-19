@@ -15,52 +15,52 @@ There are two possible scenarios for the value of the replacement parameter, and
 fix for them is different in each scenario.
 
 1. If the replacement parameter has a value from a fixed list of known possibilities,
-then create a separate string for each of those possibilities.
+   then create a separate string for each of those possibilities.
 
-For example, let's say that "fileType" in the first example above has the possible values
-of "file" and "folder". In this case, create two separate strings and select the
-applicable entire string in your code:
+   For example, let's say that "fileType" in the first example above has the possible values
+   of "file" and "folder". In this case, create two separate strings and select the
+   applicable entire string in your code:
 
-```plaintext
-Delete the file.
-Delete the folder.
-```
+   ```plaintext
+   Delete the file.
+   Delete the folder.
+   ```
 
-Code in React:
+   Code in React:
 
-```javascript
-    import messages from './messages.js';
-
-    const messageMap = {
-        "file": messages.delete.file,
-        "folder": messages.delete.folder
-    };
-    const deleteObjString = messageMap[objectToDelete.type];
-
-    [...]
-        <MyDialog type="delete">
-            <FormattedMessage {...deleteObjString} />
-        </MyDialog>
-```
-
-As an engineer, you may think that sharing the string is more efficient, as both strings
-are exactly the same except for the one word, but you are not really saving a lot of
-memory or disk footprint, and instead you are creating an untranslatable string.
+    ```javascript
+        import messages from './messages.js';
+    
+        const messageMap = {
+            "file": messages.delete.file,
+            "folder": messages.delete.folder
+        };
+        const deleteObjString = messageMap[objectToDelete.type];
+    
+        [...]
+            <MyDialog type="delete">
+                <FormattedMessage {...deleteObjString} />
+            </MyDialog>
+    ```
+    
+    As an engineer, you may think that sharing the string is more efficient, as both strings
+    are exactly the same except for the one word, but you are not really saving a lot of
+    memory or disk footprint, and instead you are creating an untranslatable string.
 
 2. If the replacement parameter has an unknown value that is possibly user-entered or
-from a 3rd party library or service, the way you avoid this problem is to make the string
-ungrammatical. That is, you still substitute the value into the string, but you make
-sure that the text being substituted is not grammatically related to the rest of the
-string.
-
-Here is the first example again, but expressed in a non-grammatical way.
-
-```plaintext
-Delete an object with this type: {fileType}
-```
-
-Now when you substitute in any word for "fileType", the rest of the string does not need
-to agree with the plurality or gender of the value of "fileType".
+    from a 3rd party library or service, the way you avoid this problem is to make the string
+    ungrammatical. That is, you still substitute the value into the string, but you make
+    sure that the text being substituted is not grammatically related to the rest of the
+    string.
+    
+    Here is the first example again, but expressed in a non-grammatical way.
+    
+    ```plaintext
+    Delete an object with this type: {fileType}
+    ```
+    
+    Now when you substitute in any word for "fileType", the rest of the string does not need
+    to agree with the plurality or gender of the value of "fileType".
 
 ## Why does this rule exist?
 
