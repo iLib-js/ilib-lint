@@ -723,6 +723,8 @@ limitations under the License.
   substituted into a replacement parameter in the source English text. Nouns
   and the articles "a", "an", and "the" are not translatable to all languages
   because of gender and plurality agreement rules.
+- converted all unit tests from  nodeunit to jest
+- updated dependencies
 
 ### v1.10.0
 
