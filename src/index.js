@@ -30,6 +30,9 @@ import log4js from 'log4js';
 import PluginManager from './PluginManager.js';
 import Project from './Project.js';
 import { wrap, indent } from './rules/utils.js';
+import defaultConfig from './config/default.js';
+
+/** @ignore @typedef {import('./config/Configuration.js').Configuration} Configuration */
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
@@ -167,36 +170,7 @@ options.opt.locales = options.opt.locales.map(spec => {
     return loc.getSpec();
 });
 
-// used if no explicit config is found or given
-const defaultConfig = {
-    "name": "ilib-lint",
-    // top 27 locales on the internet by volume
-    "locales": [
-        "en-AU", "en-CA", "en-GB", "en-IN", "en-NG", "en-PH",
-        "en-PK", "en-US", "en-ZA", "de-DE", "fr-CA", "fr-FR",
-        "es-AR", "es-ES", "es-MX", "id-ID", "it-IT", "ja-JP",
-        "ko-KR", "pt-BR", "ru-RU", "tr-TR", "vi-VN",
-        "zh-Hans-CN", "zh-Hant-HK", "zh-Hant-TW", "zh-Hans-SG"
-    ],
-    "fileTypes": {
-        "xliff": {
-            "ruleset": "resource-check-all"
-        }
-    },
-    "paths": {
-        "**/*.xliff": "xliff"
-    },
-    "excludes": [
-        "**/.git",
-        "**/node_modules",
-        "**/.svn",
-        "package.json",
-        "package-lock.json"
-    ],
-    "autofix": false
-};
-
-let config = {};
+let /** @type {Configuration} */ config = defaultConfig;
 if (options.opt.config && !fs.existsSync(options.opt.config)) {
     logger.warn(`Config file ${options.opt.config} does not exist. Aborting...`);
     process.exit(2);
@@ -205,8 +179,6 @@ let configPath = options.opt.config || "./ilib-lint-config.json";
 if (configPath && fs.existsSync(configPath)) {
     const data = fs.readFileSync(configPath, "utf-8");
     config = json5.parse(data);
-} else {
-    config = defaultConfig;
 }
 
 logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
