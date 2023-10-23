@@ -319,7 +319,7 @@ describe("testProject", () => {
         });
     });
 
-    test("ProjectWalk", () => {
+    test("ProjectWalk", async () => {
         expect.assertions(6);
 
         const project = new Project("x", {pluginManager}, genericConfig);
@@ -328,18 +328,17 @@ describe("testProject", () => {
         const pluginMgr = project.getPluginManager();
         expect(pluginMgr).toBeTruthy();
 
-        return project.init().then((result) => {
-            // verify that the init indeed loaded the test plugin
-            expect(result).toBeTruthy();
+        const result = await project.init();
+        // verify that the init indeed loaded the test plugin
+        expect(result).toBeTruthy();
 
-            const files = project.walk("./test/testfiles/js");
-            expect(files).toBeTruthy();
-            expect(files.length).toBe(1);
-            expect(files[0].getFilePath()).toBe("test/testfiles/js/Path.js");
-        });
+        const files = await project.walk("./test/testfiles/js");
+        expect(files).toBeTruthy();
+        expect(files.length).toBe(1);
+        expect(files[0].getFilePath()).toBe("test/testfiles/js/Path.js");
     });
 
-    test("ProjectFindIssues", () => {
+    test("ProjectFindIssues", async () => {
         expect.assertions(20);
 
         const project = new Project("x", {pluginManager}, genericConfig);
@@ -348,33 +347,32 @@ describe("testProject", () => {
         const pluginMgr = project.getPluginManager();
         expect(pluginMgr).toBeTruthy();
 
-        return project.init().then((result) => {
-            // verify that the init indeed loaded the test plugin
-            expect(result).toBeTruthy();
+        const result = await project.init();
+        // verify that the init indeed loaded the test plugin
+        expect(result).toBeTruthy();
 
-            project.walk("./test/testfiles/js");
-            const results = project.findIssues(genericConfig.locales);
-            expect(results).toBeTruthy();
-            expect(results.length).toBe(3);
+        await project.walk("./test/testfiles/js");
+        const results = project.findIssues(genericConfig.locales);
+        expect(results).toBeTruthy();
+        expect(results.length).toBe(3);
 
-            expect(results[0].severity).toBe("warning");
-            expect(results[0].description).toBe("Do not call the normalize function, as it is deprecated.");
-            expect(results[0].highlight).toBe('    pathname = Path<e0>.normalize(</e0>pathname);');
-            expect(results[0].pathName).toBe("test/testfiles/js/Path.js");
-            expect(results[0].lineNumber).toBe(51);
+        expect(results[0].severity).toBe("warning");
+        expect(results[0].description).toBe("Do not call the normalize function, as it is deprecated.");
+        expect(results[0].highlight).toBe('    pathname = Path<e0>.normalize(</e0>pathname);');
+        expect(results[0].pathName).toBe("test/testfiles/js/Path.js");
+        expect(results[0].lineNumber).toBe(51);
 
-            expect(results[1].severity).toBe("warning");
-            expect(results[1].description).toBe("Do not call the normalize function, as it is deprecated.");
-            expect(results[1].highlight).toBe('    return (pathname === ".") ? ".." : Path<e0>.normalize(</e0>pathname + "/..");');
-            expect(results[1].pathName).toBe("test/testfiles/js/Path.js");
-            expect(results[1].lineNumber).toBe(52);
+        expect(results[1].severity).toBe("warning");
+        expect(results[1].description).toBe("Do not call the normalize function, as it is deprecated.");
+        expect(results[1].highlight).toBe('    return (pathname === ".") ? ".." : Path<e0>.normalize(</e0>pathname + "/..");');
+        expect(results[1].pathName).toBe("test/testfiles/js/Path.js");
+        expect(results[1].lineNumber).toBe(52);
 
-            expect(results[2].severity).toBe("warning");
-            expect(results[2].description).toBe("Do not call the normalize function, as it is deprecated.");
-            expect(results[2].highlight).toBe('    return Path<e0>.normalize(</e0>arr.join("/"));');
-            expect(results[2].pathName).toBe("test/testfiles/js/Path.js");
-            expect(results[2].lineNumber).toBe(92);
-        });
+        expect(results[2].severity).toBe("warning");
+        expect(results[2].description).toBe("Do not call the normalize function, as it is deprecated.");
+        expect(results[2].highlight).toBe('    return Path<e0>.normalize(</e0>arr.join("/"));');
+        expect(results[2].pathName).toBe("test/testfiles/js/Path.js");
+        expect(results[2].lineNumber).toBe(92);
     });
 
 });

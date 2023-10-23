@@ -61,13 +61,13 @@ const project = new Project(".", {
 }, config);
 
 describe("testWalk", () => {
-    test("WalkDir", () => {
+    test("WalkDir", async () => {
         expect.assertions(2);
         const project = new Project("test/ilib-mock", {
             pluginManager: new PluginManager()
         }, config);
 
-        const files = project.walk("test/ilib-mock").sort(cmp);
+        const files = (await project.walk("test/ilib-mock")).sort(cmp);
         expect(files.length).toBe(11);
         const expected = [
             "test/ilib-mock/assemble.mjs",
@@ -85,69 +85,69 @@ describe("testWalk", () => {
         expect(files.map(file => file.getFilePath())).toEqual(expected);
     });
 
-    test("WalkFile", () => {
+    test("WalkFile", async () => {
         expect.assertions(2);
 
         const project = new Project("test/ilib-mock", {
             pluginManager: new PluginManager()
         }, config);
 
-        const files = project.walk("test/ilib-mock/index.js");
+        const files = await project.walk("test/ilib-mock/index.js");
         expect(files.length).toBe(1);
         expect(files[0].getFilePath()).toStrictEqual("test/ilib-mock/index.js");
     });
 
-    test("WalkNonExistentDir", () => {
+    test("WalkNonExistentDir", async () => {
         expect.assertions(1);
 
         const project = new Project("test/ilib-mock/asdf", {
             pluginManager: new PluginManager()
         }, config);
-        const files = project.walk("test/ilib-mock/asdf").sort(cmp);
+        const files = (await project.walk("test/ilib-mock/asdf")).sort(cmp);
         expect(files.length).toBe(0);
     });
 
-    test("WalkFileNonJSFile", () => {
+    test("WalkFileNonJSFile", async () => {
         expect.assertions(1);
 
         const project = new Project("test/ilib-mock/locale", {
             pluginManager: new PluginManager()
         }, config);
-        const files = project.walk("test/ilib-mock/locale/mockdata.json").sort(cmp);
+        const files = (await project.walk("test/ilib-mock/locale/mockdata.json")).sort(cmp);
         expect(files.length).toBe(1);
     });
 
-    test("WalkBadParamsUndefined", () => {
+    test("WalkBadParamsUndefined", async () => {
         expect.assertions(1);
 
         const project = new Project("test/ilib-mock/locale", {
             pluginManager: new PluginManager()
         }, config);
-        const files = project.walk(undefined).sort(cmp);
+        const files = (await project.walk(undefined)).sort(cmp);
         expect(files.length).toBe(0);
     });
 
-    test("WalkBadParamsBoolean", () => {
+    test("WalkBadParamsBoolean", async () => {
         expect.assertions(1);
 
         const project = new Project("test/ilib-mock/locale", {
             pluginManager: new PluginManager()
         }, config);
-        const files = project.walk(true).sort();
+        const files = (await project.walk(true)).sort();
         expect(files.length).toBe(0);
     });
 
-    test("WalkBadParamsNumber", () => {
+    test("WalkBadParamsNumber", async () => {
         expect.assertions(1);
 
         const project = new Project("test/ilib-mock/locale", {
             pluginManager: new PluginManager()
         }, config);
-        const files = project.walk(3).sort();
+        const files = (await project.walk(3)).sort();
         expect(files.length).toBe(0);
     });
 
-    test("WalkDirWithJsonExtension", () => {
+    test("WalkDirWithJsonExtension", async () => {
         expect.assertions(2);
 
         const config = {
@@ -159,7 +159,7 @@ describe("testWalk", () => {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = proj.walk("test/ilib-mock/locale").sort(cmp);
+        const files = (await proj.walk("test/ilib-mock/locale")).sort(cmp);
         expect(files.length).toBe(7);
         const expected = [
             "test/ilib-mock/locale/de/DE/mockdata.json",
@@ -173,7 +173,7 @@ describe("testWalk", () => {
         expect(files.map(file => file.getFilePath())).toStrictEqual(expected);
     });
 
-    test("WalkDirWithExcludes", () => {
+    test("WalkDirWithExcludes", async () => {
         expect.assertions(2);
         project.clear();
 
@@ -187,7 +187,7 @@ describe("testWalk", () => {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = proj.walk("test/ilib-mock").sort(cmp);
+        const files = (await proj.walk("test/ilib-mock")).sort(cmp);
         expect(files.length).toBe(3);
         const expected = [
             "test/ilib-mock/assemble.mjs",
@@ -197,7 +197,7 @@ describe("testWalk", () => {
         expect(files.map(file => file.getFilePath())).toEqual(expected);
     });
 
-    test("WalkDirWithExcludeDirectory", () => {
+    test("WalkDirWithExcludeDirectory", async () => {
         expect.assertions(2);
         project.clear();
 
@@ -211,7 +211,7 @@ describe("testWalk", () => {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = proj.walk("test/ilib-mock").sort(cmp);
+        const files = (await proj.walk("test/ilib-mock")).sort(cmp);
         expect(files.length).toBe(4);
         const expected = [
             "test/ilib-mock/assemble.mjs",
@@ -222,7 +222,7 @@ describe("testWalk", () => {
         expect(files.map(file => file.getFilePath())).toEqual(expected);
     });
 
-    test("WalkDirWithMultipleExcludes", () => {
+    test("WalkDirWithMultipleExcludes", async () => {
         expect.assertions(2);
         project.clear();
 
@@ -236,7 +236,7 @@ describe("testWalk", () => {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = proj.walk("test/ilib-mock").sort(cmp);
+        const files = (await proj.walk("test/ilib-mock")).sort(cmp);
         expect(files.length).toBe(2);
         const expected = [
             "test/ilib-mock/ilib-mock-1.0.0.tgz",
@@ -245,7 +245,7 @@ describe("testWalk", () => {
         expect(files.map(file => file.getFilePath())).toEqual(expected);
     });
 
-    test("WalkDirWithExcludesAndIncludes", () => {
+    test("WalkDirWithExcludesAndIncludes", async () => {
         expect.assertions(2);
         project.clear();
 
@@ -262,7 +262,7 @@ describe("testWalk", () => {
         const proj = new Project(".", {
             pluginManager: new PluginManager()
         }, config);
-        const files = proj.walk("test/ilib-mock").sort(cmp);
+        const files = (await proj.walk("test/ilib-mock")).sort(cmp);
         expect(files.length).toBe(4);
         const expected = [
             "test/ilib-mock/assemble.mjs",

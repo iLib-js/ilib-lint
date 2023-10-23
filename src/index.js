@@ -31,8 +31,7 @@ import PluginManager from './PluginManager.js';
 import Project from './Project.js';
 import { wrap, indent } from './rules/utils.js';
 import defaultConfig from './config/default.js';
-
-/** @ignore @typedef {import('./config/Configuration.js').Configuration} Configuration */
+import { FileConfigurationProvider, FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
@@ -170,15 +169,18 @@ options.opt.locales = options.opt.locales.map(spec => {
     return loc.getSpec();
 });
 
-let /** @type {Configuration} */ config = defaultConfig;
-if (options.opt.config && !fs.existsSync(options.opt.config)) {
-    logger.warn(`Config file ${options.opt.config} does not exist. Aborting...`);
-    process.exit(2);
-}
-let configPath = options.opt.config || "./ilib-lint-config.json";
-if (configPath && fs.existsSync(configPath)) {
-    const data = fs.readFileSync(configPath, "utf-8");
-    config = json5.parse(data);
+// Load configuration
+let config;
+const cwdConfigProvider = new FolderConfigurationProvider(".");
+if ("config" in options.opt && "string" == typeof options.opt.config) {
+    // load configuration from a path specified in CLI
+    config = await new FileConfigurationProvider(options.opt.config).loadConfiguration();
+} else if (await cwdConfigProvider.hasConfigurationFile()) {
+    // otherwise look for configuration in CWD
+    config = await cwdConfigProvider.loadConfiguration();
+} else {
+    // else use default bundled config
+    config = defaultConfig;
 }
 
 logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
@@ -197,7 +199,8 @@ const rootProject = new Project(".", {
 
 // this will load all the plugins, so we can print out the list of
 // them below if needed
-rootProject.init().then(() => {
+try {
+    await rootProject.init();
     if (options.opt.list) {
         const ruleMgr = pluginMgr.getRuleManager();
         const ruleDescriptions = ruleMgr.getDescriptions();
@@ -241,10 +244,10 @@ rootProject.init().then(() => {
     }
 
     // main loop
-    rootProject.scan(paths);
+    await rootProject.scan(paths);
     const exitValue = rootProject.run();
 
     process.exit(exitValue);
-}).catch(e => {
+} catch (e) {
     logger.error(e);
-});
+}
