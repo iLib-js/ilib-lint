@@ -174,6 +174,15 @@ export const regexRules = [
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-noun-replacement-params.md",
         severity: "error",
         useStripped: false
+    },
+    {
+        type: "resource-source",
+        name: "source-no-manual-currency-formatting",
+        description: "Ensure that source strings do not contain currency formatting. Currencies should be formatted using a locale-sensitive number formatter instead.",
+        note: "Do not format currencies in English strings. Use a locale-sensitive number formatter and substitute the result of that into this string.",
+        regexps: [ "(?<match>\\$\\s*\\{[\\w_.$0-9]+\\})" ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-manual-currency-formatting.md",
+        severity: "error"
     }
 ];
 
@@ -210,7 +219,8 @@ export const builtInRulesets = {
         "source-no-dashes-in-replacement-params": true,
         "source-no-lazy-plurals": true,
         "source-no-manual-percentage-formatting": true,
-        "source-no-noun-replacement-params": true
+        "source-no-noun-replacement-params": true,
+        "source-no-manual-currency-formatting": true
     },
 };
 
