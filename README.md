@@ -195,9 +195,12 @@ The `ilib-lint-config.json` file can have any of the following properties:
       Note that you can use `{matchString}` to show the user the string
       that the regular expression matched in the source but not in the target.
     * regexps (Array.<String>) - an array of regular expressions to match
-      in the source and target strings. If any one of those expressions
-      matches in the source, but not the target, the rule will create
-      a Result that will be formatted for the user.
+      against the source and/or target strings, depending on the "type"
+      property. The expressions are treated as a short-circuit "or". That
+      is, if any one of the expressions matches, the rule will create a
+      single Result and the other regular expressions will not be tested. If you
+      want to match multiple regular expressions, you should make multiple
+      separate declarative rules.
 * formatters (Array of Object) - a set of declarative formatters. Each array element is
   an object that contains the following properties:
     * name - a unique name for this formatter

@@ -183,6 +183,47 @@ export const regexRules = [
         regexps: [ "(?<match>\\$\\s*\\{[\\w_.$0-9]+\\})" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-manual-currency-formatting.md",
         severity: "error"
+    },
+    {
+        type: "resource-source",
+        name: "source-no-manual-date-formatting",
+        description: "Ensure that source strings do not contain manually formatted dates or times. Dates and times should be formatted using a locale-sensitive date formatter instead.",
+        note: "Do not format dates or times in English strings. Use a locale-sensitive date formatter and substitute the result of that into this string.",
+        regexps: [
+            "\\{years?\\}[/\\-\\. ]\\{months?\\}[/\\-\\. ]\\{days?\\}",
+            "\\{[Yy][Yy]([Yy][Yy])?\\}[/\\-\\. ]\\{[Mm]{2,4}\\}[/\\-\\. ]\\{[Dd][Dd]?\\}",
+            
+            "\\{months?\\}[/\\-\\. ]\\{days?\\}[/\\-\\. ]\\{years?\\}",
+            "\\{months?\\} \\{days?\\}, \\{years?\\}",
+            "\\{[Mm]{2,4}\\}[/\\-\\.]\\{[Dd][Dd]?\\}[/\\-\\.]\\{[Yy][Yy]([Yy][Yy])?\\}",
+            "\\{[Mm]{2,4}\\} \\{[Dd][Dd]?\\}, \\{[Yy][Yy]([Yy][Yy])?\\}",
+
+            "\\{days?\\}[/\\-\\. ]\\{months?\\}[/\\-\\. ]\\{years?\\}",
+            "\\{days?\\} \\{months?\\}, \\{years?\\}",
+            "\\{[Dd][Dd]?\\}[/\\-\\.]\\{[Mm]{2,4}\\}[/\\-\\.]\\{[Yy][Yy]([Yy][Yy])?\\}",
+            "\\{[Dd][Dd]?\\} \\{[Mm]{2,4}\\}, \\{[Yy][Yy]([Yy][Yy])?\\}",
+
+            "\\{years?\\}[/\\-\\. ]\\{months?\\}",
+            "\\{[Yy][Yy]([Yy][Yy])?\\}[/\\-\\. ]\\{[Mm]{2,4}\\}",
+
+            "\\{months?\\}[/\\-\\. ]\\{years?\\}",
+            "\\{months?\\}, \\{years?\\}",
+            "\\{[Mm]{2,4}\\}[/\\-\\. ]\\{[Yy][Yy]([Yy][Yy])?\\}",
+            "\\{[Mm]{2,4}\\}, \\{[Yy][Yy]([Yy][Yy])?\\}",
+
+            "\\{months?\\}[/\\-\\. ]\\{days?\\}",
+            "\\{[Mm]{2,4}\\}[/\\-\\. ]\\{[Dd][Dd]?\\}",
+
+            "\\{days?\\}[/\\-\\. ]\\{months?\\}",
+            "\\{[Dd][Dd]?\\}[/\\-\\. ]\\{[Mm]{2,4}\\}",
+
+            "\\{hours?\\}:\\{min(utes?)?\\}:\\{sec(onds?)?\\}",
+            "\\{hours?\\}:\\{min(utes?)?\\}",
+            "\\{[Hh][Hh]?\\}:\\{[Mm][Mm]?\\}:\\{[Ss][Ss]?\\}",
+            "\\{[Hh][Hh]?\\}:\\{[Mm][Mm]?\\}"
+        ],
+        link: "https://github.com/ilib-js/i18nlint/blob/main/docs/source-no-manual-date-formatting.md",
+        severity: "error"
     }
 ];
 

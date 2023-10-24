@@ -57,7 +57,11 @@ class DeclarativeResourceRule extends ResourceRule {
      *   not appear in the target." (Currently, matchString is the only
      *   replacement param that is supported.)
      * @param {String} options.regexps an array of strings that encode
-     *   regular expressions to look for
+     *   regular expressions to look for. Only one of these regexps needs to
+     *   match in order to trigger a result from this rule. The first one that
+     *   matches will be taken, so the order of regular expressions is
+     *   important. In general, you should order your regular expressions from
+     *   most specific to least specific.
      * @param {String} [options.sourceLocale] the source locale of this rule
      * @param {String} [options.link] the URL to a web page that explains this
      *   rule in more detail
@@ -139,9 +143,11 @@ class DeclarativeResourceRule extends ResourceRule {
             }
         }
         let results = [];
-        this.re.forEach(re => {
+        // only need 1 regexp to match in order to trigger this rule
+        for (const re of this.re) {
             results = results.concat(this.checkString({re, source, target, file, resource}));
-        });
+            if (results.length > 0) break;
+        }
         results = results.filter(result => result);
         return results && results.length ? results : undefined;
     }
