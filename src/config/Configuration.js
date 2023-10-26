@@ -108,20 +108,20 @@ export const DeclarativeRuleTypes = {
      */
     "resource-matcher": /** @type {const} */ ("resource-matcher"),
     /**
-     * Check resources in a resource file. If the regular expressions match in the
-     * source string of a resource, a result will be generated
+     * Check resources in a resource file. If the regular expressions match in
+     * the source string of a resource, a result will be generated
      */
     "resource-source": /** @type {const} */ ("resource-source"),
     /**
-     * Check resources in a resource file. If the regular expressions match in the
-     * target string of a resource, a result will be generated
+     * Check resources in a resource file. If the regular expressions match in
+     * the target string of a resource, a result will be generated
      */
     "resource-target": /** @type {const} */ ("resource-target"),
     /**
      * Check the text in a source file, such as a java file or a python file.
      * Regular expressions that match in the source file will generate results
      */
-    sourcefile: /** @type {const} */ ("sourcefile"),
+    sourcefile: /** @type {const} */ ("sourcefile")
 };
 
 export default {};

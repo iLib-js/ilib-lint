@@ -19,7 +19,7 @@
 
 import {
     FileConfigurationProvider,
-    FolderConfigurationProvider,
+    FolderConfigurationProvider
 } from "../src/config/ConfigurationProvider.js";
 
 import fs from "node:fs/promises";
@@ -245,6 +245,6 @@ describe("Configuration Provider", () => {
 
             // should load CJS config here
             expect(result.name).toBe("configuration-provider-test-cjs-config");
-        })
+        });
     });
 });
