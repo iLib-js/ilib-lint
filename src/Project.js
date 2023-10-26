@@ -21,13 +21,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
-import JSON5 from 'json5';
 
 import { FileStats } from 'i18nlint-common';
 
 import SourceFile from './SourceFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
+import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 
 const logger = log4js.getLogger("i18nlint.Project");
 
@@ -176,11 +176,11 @@ class Project extends DirItem {
      * </ul>
      *
      * @param {String} root Directory to walk
-     * @returns {Array.<DirItem>} an array of file names in the directory, filtered
+     * @returns {Promise<DirItem[]>} an array of file names in the directory, filtered
      * by the the excludes and includes list
      * @private
      */
-    walk(root) {
+    async walk(root) {
         let list;
 
         if (typeof(root) !== "string") {
@@ -195,24 +195,24 @@ class Project extends DirItem {
             stat = fs.statSync(root, {throwIfNoEntry: false});
             if (stat) {
                 if (stat.isDirectory()) {
-                    const configFileName = path.join(root, "ilib-lint-config.json");
-                    if (root !== this.root && fs.existsSync(configFileName)) {
-                        const data = fs.readFileSync(configFileName, "utf-8");
-                        const config = JSON5.parse(data);
+                    const currentFolderConfigurationProvider = new FolderConfigurationProvider(root);
+                    if (root !== this.root && await currentFolderConfigurationProvider.hasConfigurationFile()) {
+                        const config = await currentFolderConfigurationProvider.loadConfiguration();
                         const newProject = new Project(root, this.getOptions(), config);
                         includes = newProject.getIncludes();
                         excludes = newProject.getExcludes();
                         logger.trace(`New project ${newProject.getName()}`);
                         this.add(newProject);
-                        newProject.scan([root]);
+                        await newProject.scan([root]);
                     } else {
                         list = fs.readdirSync(root);
                         logger.trace(`Searching dir ${root}`);
 
                         if (list && list.length !== 0) {
-                            list.sort().forEach((file) => {
+                            list.sort();
+                            for (const file of list) {
                                 if (file === "." || file === "..") {
-                                    return;
+                                    continue;
                                 }
 
                                 pathName = path.join(root, file);
@@ -224,9 +224,9 @@ class Project extends DirItem {
                                 }
 
                                 if (included) {
-                                    this.walk(pathName);
+                                    await this.walk(pathName);
                                 }
-                            });
+                            }
                         }
                     }
                 } else if (stat.isFile()) {
@@ -278,10 +278,10 @@ class Project extends DirItem {
      *
      * @param {Array.<String>} paths an array of paths to scan
      */
-    scan(paths) {
-        paths.forEach(pathName => {
-            this.walk(pathName);
-        });
+    async scan(paths) {
+        for (const pathName of paths) {
+            await this.walk(pathName);
+        };
     }
 
     /**
