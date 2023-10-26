@@ -38,13 +38,15 @@ export class FileConfigurationProvider {
 
     /** @protected */
     async loadJsConfiguration() {
-        return await import(this.filePath);
+        return (await import(this.filePath)).default;
     }
 
     async loadConfiguration() {
         let /** @type {unknown} */ configuration;
         switch(path.extname(this.filePath).toLowerCase()) {
             case ".js":
+            case ".cjs":
+            case ".mjs":
                 configuration = await this.loadJsConfiguration();
                 break;
             case ".json":
