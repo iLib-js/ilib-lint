@@ -17,11 +17,14 @@
  * limitations under the License.
  */
 
-import { FileConfigurationProvider } from "../src/config/ConfigurationProvider.js";
+import {
+    FileConfigurationProvider,
+    FolderConfigurationProvider,
+} from "../src/config/ConfigurationProvider.js";
 
-import fs from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 const jsonConfig = `{
     "name": "configuration-provider-test-json-config",
@@ -60,90 +63,188 @@ const esmPackage = `{
     "type": "module"
 }`;
 
-describe('File Configuration Provider', () => {
+describe("Configuration Provider", () => {
     let tempDir;
-    beforeEach(async () => { tempDir = await fs.mkdtemp(os.tmpdir()); })
-    afterEach(async () => { await fs.rm(tempDir, {recursive: true}); })
+    beforeEach(async () => {
+        tempDir = await fs.mkdtemp(os.tmpdir());
+    });
+    afterEach(async () => {
+        await fs.rm(tempDir, { recursive: true });
+    });
+    describe("File Configuration Provider", () => {
+        test("load config from JSON file", async () => {
+            // should successfully import the JSON config file
 
-    test('load config from JSON file', async () => {
-        // should successfully import the JSON config file
+            // setup - write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.json`);
+            await fs.writeFile(configPath, jsonConfig);
 
-        // setup - write config to file
-        const configPath = path.join(tempDir, `ilib-lint-config.json`);
-        await fs.writeFile(configPath, jsonConfig);
+            // test
+            const provider = new FileConfigurationProvider(configPath);
+            const result = await provider.loadConfiguration();
 
-        // test
-        const provider = new FileConfigurationProvider(configPath);
-        const result = await provider.loadConfiguration();
-        
-        expect(result.name).toBe("configuration-provider-test-json-config");
+            expect(result.name).toBe("configuration-provider-test-json-config");
+        });
+
+        test("load config from CJS file", async () => {
+            // should successfully import the JS config file from a CommonJS package
+
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.js`);
+            await fs.writeFile(configPath, cjsConfig);
+
+            // test
+            const provider = new FileConfigurationProvider(configPath);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-cjs-config");
+        });
+
+        test("load config from ESM file", async () => {
+            // should successfully import the JS config file from an ESM package
+
+            // first set package mode to ESM
+            const packagePath = path.join(tempDir, `package.json`);
+            await fs.writeFile(packagePath, esmPackage);
+
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.js`);
+            await fs.writeFile(configPath, esmConfig);
+
+            // test
+            const provider = new FileConfigurationProvider(configPath);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-esm-config");
+        });
+
+        test("load config from CJS file in ESM package", async () => {
+            // should successfully import the JS config file in a CommonJS format existing in an ESM package
+            // (provided that it has appropriate extension)
+
+            // first set package mode to ESM
+            const packagePath = path.join(tempDir, `package.json`);
+            await fs.writeFile(packagePath, esmPackage);
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.cjs`);
+            await fs.writeFile(configPath, cjsConfig);
+
+            // test
+            const provider = new FileConfigurationProvider(configPath);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-cjs-config");
+        });
+
+        test("load config from MJS file in CJS package", async () => {
+            // should successfully import the JS config file in an ESM format existing in a CJS package
+            // (provided that it has appropriate extension)
+
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.mjs`);
+            await fs.writeFile(configPath, esmConfig);
+
+            // test
+            const provider = new FileConfigurationProvider(configPath);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-esm-config");
+        });
     });
 
-    test('load config from CJS file', async () => {
-        // should successfully import the JS config file from a CommonJS package
+    describe("Folder Configuration Provider", () => {
+        test("load config from JSON file", async () => {
+            // should successfully import the JSON config file placed in a project root
 
-        // write config to file
-        const configPath = path.join(tempDir, `ilib-lint-config.js`);
-        await fs.writeFile(configPath, cjsConfig);
+            // setup - write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.json`);
+            await fs.writeFile(configPath, jsonConfig);
 
-        // test
-        const provider = new FileConfigurationProvider(configPath);
-        const result = await provider.loadConfiguration();
-        
-        expect(result.name).toBe("configuration-provider-test-cjs-config");
-    });
+            // test
+            const provider = new FolderConfigurationProvider(tempDir);
+            const result = await provider.loadConfiguration();
 
-    test('load config from ESM file', async () => {
-        // should successfully import the JS config file from an ESM package
+            expect(result.name).toBe("configuration-provider-test-json-config");
+        });
 
-        // first set package mode to ESM
-        const esmPackage = `{
-            "type": "module"
-        }`;
-        const packagePath = path.join(tempDir, `package.json`);
-        await fs.writeFile(packagePath, esmPackage);
+        test("load config from CJS file", async () => {
+            // should successfully import the JS config file from a CommonJS package
 
-        // write config to file
-        const configPath = path.join(tempDir, `ilib-lint-config.js`);
-        await fs.writeFile(configPath, esmConfig);
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.js`);
+            await fs.writeFile(configPath, cjsConfig);
 
-        // test
-        const provider = new FileConfigurationProvider(configPath);
-        const result = await provider.loadConfiguration();
-        
-        expect(result.name).toBe("configuration-provider-test-esm-config");
-    });
+            // test
+            const provider = new FolderConfigurationProvider(tempDir);
+            const result = await provider.loadConfiguration();
 
-    test('load config from CJS file in ESM package', async () => {
-        // should successfully import the JS config file in a CommonJS format existing in an ESM package
-        // (provided that it has appropriate extension)
+            expect(result.name).toBe("configuration-provider-test-cjs-config");
+        });
 
-        // first set package mode to ESM
-        const packagePath = path.join(tempDir, `package.json`);
-        await fs.writeFile(packagePath, esmPackage);
-        // write config to file
-        const configPath = path.join(tempDir, `ilib-lint-config.cjs`);
-        await fs.writeFile(configPath, cjsConfig);
+        test("load config from ESM file", async () => {
+            // should successfully import the JS config file from an ESM package
 
-        // test
-        const provider = new FileConfigurationProvider(configPath);
-        const result = await provider.loadConfiguration();
-        
-        expect(result.name).toBe("configuration-provider-test-cjs-config");
-    });
+            // first set package mode to ESM
+            const packagePath = path.join(tempDir, `package.json`);
+            await fs.writeFile(packagePath, esmPackage);
 
-    test('load config from MJS file in CJS package', async () => {
-        // should successfully import the JS config file in an ESM format existing in a CJS package
-        // (provided that it has appropriate extension)
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.js`);
+            await fs.writeFile(configPath, esmConfig);
 
-        // write config to file
-        const configPath = path.join(tempDir, `ilib-lint-config.mjs`);
-        await fs.writeFile(configPath, esmConfig);
+            // test
+            const provider = new FolderConfigurationProvider(tempDir);
+            const result = await provider.loadConfiguration();
 
-        // test
-        const provider = new FileConfigurationProvider(configPath);
-        const result = await provider.loadConfiguration();
-        
-        expect(result.name).toBe("configuration-provider-test-esm-config");
+            expect(result.name).toBe("configuration-provider-test-esm-config");
+        });
+
+        test("load config from CJS file in ESM package", async () => {
+            // should successfully import the JS config file in a CommonJS format existing in an ESM package
+            // (provided that it has appropriate extension)
+
+            // first set package mode to ESM
+            const packagePath = path.join(tempDir, `package.json`);
+            await fs.writeFile(packagePath, esmPackage);
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.cjs`);
+            await fs.writeFile(configPath, cjsConfig);
+
+            // test
+            const provider = new FolderConfigurationProvider(tempDir);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-cjs-config");
+        });
+
+        test("load config from MJS file in CJS package", async () => {
+            // should successfully import the JS config file in an ESM format existing in a CJS package
+            // (provided that it has appropriate extension)
+
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.mjs`);
+            await fs.writeFile(configPath, esmConfig);
+
+            // test
+            const provider = new FolderConfigurationProvider(tempDir);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-esm-config");
+        });
+
+        test("prioritize JS config when there is both JS and JSON config available", async () => {
+            // should import the JS config file when there are both JS and JSON configs in given folder
+
+            // write JS config
+            const configPath = path.join(tempDir, `ilib-lint-config.js`);
+            await fs.writeFile(configPath, cjsConfig);
+
+            // test
+            const provider = new FolderConfigurationProvider(tempDir);
+            const result = await provider.loadConfiguration();
+
+            // should load CJS config here
+            expect(result.name).toBe("configuration-provider-test-cjs-config");
+        })
     });
 });

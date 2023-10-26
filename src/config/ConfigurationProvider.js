@@ -81,6 +81,8 @@ export class FolderConfigurationProvider {
      */
     configurationFileNamesByPriority = [
         "ilib-lint-config.js",
+        "ilib-lint-config.mjs",
+        "ilib-lint-config.cjs",
         "ilib-lint-config.json"
     ]
 
