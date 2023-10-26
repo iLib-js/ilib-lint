@@ -66,7 +66,7 @@ const esmPackage = `{
 describe("Configuration Provider", () => {
     let tempDir;
     beforeEach(async () => {
-        tempDir = await fs.mkdtemp(os.tmpdir());
+        tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "i18nlint-test-"));
     });
     afterEach(async () => {
         await fs.rm(tempDir, { recursive: true });
