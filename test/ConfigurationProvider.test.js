@@ -236,14 +236,15 @@ describe("Configuration Provider", () => {
             // should import the JS config file when there are both JS and JSON configs in given folder
 
             // write JS config
-            const configPath = path.join(tempDir, `ilib-lint-config.js`);
-            await fs.writeFile(configPath, cjsConfig);
+            await fs.writeFile(path.join(tempDir, `ilib-lint-config.js`), cjsConfig);
+            // write JSON config
+            await fs.writeFile(path.join(tempDir, `ilib-lint-config.json`), jsonConfig);
 
             // test
             const provider = new FolderConfigurationProvider(tempDir);
             const result = await provider.loadConfiguration();
 
-            // should load CJS config here
+            // should load JS config here
             expect(result.name).toBe("configuration-provider-test-cjs-config");
         });
     });
