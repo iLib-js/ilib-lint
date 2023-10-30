@@ -20,9 +20,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import Locale from 'ilib-locale';
-import { JSUtils, Utils, Path } from 'ilib-common';
-import json5 from 'json5';
+import { Path } from 'ilib-common';
 import log4js from 'log4js';
 
 import PluginManager from './PluginManager.js';
@@ -32,45 +30,17 @@ import { wrap, indent } from './rules/utils.js';
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
 log4js.configure(path.join(__dirname, '..', 'log4js.json'));
 
-// used if no explicit config is found or given
-const defaultConfig = {
-    "name": "ilib-lint",
-    // top 27 locales on the internet by volume
-    "locales": [
-        "en-AU", "en-CA", "en-GB", "en-IN", "en-NG", "en-PH",
-        "en-PK", "en-US", "en-ZA", "de-DE", "fr-CA", "fr-FR",
-        "es-AR", "es-ES", "es-MX", "id-ID", "it-IT", "ja-JP",
-        "ko-KR", "pt-BR", "ru-RU", "tr-TR", "vi-VN",
-        "zh-Hans-CN", "zh-Hant-HK", "zh-Hant-TW", "zh-Hans-SG"
-    ],
-    "fileTypes": {
-        "xliff": {
-            "ruleset": "resource-check-all"
-        }
-    },
-    "paths": {
-        "**/*.xliff": "xliff"
-    },
-    "excludes": [
-        "**/.git",
-        "**/node_modules",
-        "**/.svn",
-        "package.json",
-        "package-lock.json"
-    ],
-    "autofix": false
-};
-
 /**
  * @class A linter that probes for internationalization problems.
  */
 class Lint {
     /**
-     * Construct a new linter instance. An instance of this can be
-     * created by other programs and run within that other program.
-     * The command-line wrapper for "ilib-lint" simply collects and
-     * parses its command-line arguments, creates an instance of
-     * this class, and then runs it.
+     * Construct a new linter instance. This class offers a programmatic interface to
+     * run the whole linter. The command-line wrapper for "ilib-lint" simply collects and
+     * parses its command-line arguments, creates an instance of this class, and then
+     * runs it. Other programs can instantiate this class directly with options and
+     * configuration to run the linter without spawning a new instance of node to do
+     * it.
      *
      * @param options {Object} options controlling how this instance
      * of the linter will run
@@ -119,45 +89,55 @@ class Lint {
      * to a file type or an anonymous file type definition
      */
     constructor(options, config) {
+        this.logger = log4js.getLogger();
         if (options.quiet) {
-            this.logger = log4js.getLogger();
             this.logger.level = "error";
         } else if (options.verbose) {
-            this.logger = log4js.getLogger();
             this.logger.level = "debug";
         }
 
         this.options = options;
-        this.config = defaultConfig;
+        this.config = config;
+
+        if (!this.options.locales) {
+            // default so we have something at least
+            this.options = {
+                ...this.options,
+                locales: ["en-US"]
+            };
+        }
     }
 
     /**
      * Run the linter with the options and config that this instance was created with.
      *
+     * @param {String} root path to the root of the project
+     * @param {Array.<String>} paths an array of paths to search for files or projects to lint
      * @returns {Promise} a promise to run the linter
      * @accept {Number} the exit code for the run
      * @reject {Error} an error occurred while running the linter
      */
-    async run() {
+    async run(root, paths) {
         this.logger.info("ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.");
 
         this.logger.debug(`Scanning input paths: ${JSON.stringify(paths)}`);
-        
+
         // loads and manage the plugins
-        
+
         const pluginMgr = new PluginManager({
             rulesData: this.config.rules,
             sourceLocale: this.options.sourceLocale
         });
-        
-        const rootProject = new Project(".", {
+
+        const rootProject = new Project(root, {
             ...this.options,
             pluginManager: pluginMgr
         }, this.config);
-        
+
         // this will load all the plugins, so we can print out the list of
         // them below if needed
-        return rootProject.init().then(() => {
+        try {
+            await rootProject.init();
             if (this.options.list) {
                 const ruleMgr = pluginMgr.getRuleManager();
                 const ruleDescriptions = ruleMgr.getDescriptions();
@@ -166,9 +146,9 @@ class Lint {
                 const parserDescriptions = parserMgr.getDescriptions();
                 const formatterMgr = pluginMgr.getFormatterManager();
                 const formatterDescriptions = formatterMgr.getDescriptions();
-        
+
                 let name;
-        
+
                 let output = [
                     "These items are available to use in your configuration",
                     "",
@@ -178,34 +158,38 @@ class Lint {
                     output = output.concat(indent(wrap(`${name} - ${parserDescriptions[name]}`, 76, "  "), 2));
                 }
                 output.push("");
-        
+
                 output.push("Rules:");
                 for (name in ruleDescriptions) {
                     output = output.concat(indent(wrap(`${name} - ${ruleDescriptions[name]}`, 76, "  "), 2));
                 }
                 output.push("");
-        
+
                 output.push("Rulesets:");
                 for (name in ruleSetDefinitions) {
                     output = output.concat(indent(wrap(`${name} - ${ruleSetDefinitions[name].join(", ")}`, 76, "  "), 2));
                 }
                 output.push("");
-        
+
                 output.push("Formatters:");
                 for (name in formatterDescriptions) {
                     output = output.concat(indent(wrap(`${name} - ${formatterDescriptions[name]}`, 76, "  "), 2));
                 }
-        
+
                 console.log(output.join('\n'));
                 process.exit(0);
             }
-        
+
             // main loop
-            rootProject.scan(paths);
+            const fullPaths = paths.map(relativePath => path.join(root || ".", relativePath));
+            await rootProject.scan(fullPaths);
             const exitValue = rootProject.run();
-        
+
             return exitValue;
-        });
+        } catch (e) {
+            this.logger.error(e);
+            return 2;
+        }
     }
 }
 

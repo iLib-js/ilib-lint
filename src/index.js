@@ -30,7 +30,7 @@ import log4js from 'log4js';
 import PluginManager from './PluginManager.js';
 import Project from './Project.js';
 import { wrap, indent } from './rules/utils.js';
-import Lint from './lint.js';
+import Lint from './Lint.js';
 import defaultConfig from './config/default.js';
 import { FileConfigurationProvider, FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 
@@ -148,6 +148,9 @@ if (options.opt.quiet) {
 logger.info("ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.");
 
 let paths = options.args;
+if (!paths || !Array.isArray(paths) {
+    paths = ["."];
+}
 if (paths.length === 0) {
     paths.push(".");
 }
@@ -164,9 +167,11 @@ options.opt.locales = options.opt.locales.map(spec => {
     return loc.getSpec();
 });
 
+const root = options.opt.root || ".";
+
 // Load configuration
 let config;
-const cwdConfigProvider = new FolderConfigurationProvider(".");
+const cwdConfigProvider = new FolderConfigurationProvider(root);
 if ("config" in options.opt && "string" == typeof options.opt.config) {
     // load configuration from a path specified in CLI
     config = await new FileConfigurationProvider(options.opt.config).loadConfiguration();
@@ -178,10 +183,9 @@ if ("config" in options.opt && "string" == typeof options.opt.config) {
     config = defaultConfig;
 }
 
-
 const lint = new Lint(options.opt, config);
 
-lint.run().then(exitValue => {
+lint.run(root, paths).then(exitValue => {
     process.exit(exitValue);
 }).catch(e => {
     logger.error(e);

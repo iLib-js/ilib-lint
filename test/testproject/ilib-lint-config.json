@@ -1,7 +1,16 @@
 {
     "name": "testproject",
     "plugins": [
-        "i18nlint-plugin-test"
+        "ilib-lint-plugin-test"
+    ],
+    "formatters": [
+        {
+            "name": "null",
+            "description": "A no-output formatter",
+            "template": "",
+            "highlightStart": "",
+            "highlightEnd": ""
+        }
     ],
     "locales": [
         "en-US",

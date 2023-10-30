@@ -590,14 +590,14 @@ class Project extends DirItem {
         const score = this.getScore();
         logger.info(`I18N Score (0-100) ${fmt.format(score)}`);
 
-        if (this.options.opt["max-errors"]) {
-            exitValue = this.resultStats.errors > this.options.opt["max-errors"] ? 2 : 0;
-        } else if (this.options.opt["max-warnings"]) {
-            exitValue = this.resultStats.warnings > this.options.opt["max-warnings"] ? 1 : 0;
-        } else if (this.options.opt["max-suggestions"]) {
-            exitValue = this.resultStats.suggestions > this.options.opt["max-suggestions"] ? 1 : 0;
-        } else if (this.options.opt["min-score"]) {
-            exitValue = score < this.options.opt["min-score"] ? 2 : 0;
+        if (this.options["max-errors"]) {
+            exitValue = this.resultStats.errors > this.options["max-errors"] ? 2 : 0;
+        } else if (this.options["max-warnings"]) {
+            exitValue = this.resultStats.warnings > this.options["max-warnings"] ? 1 : 0;
+        } else if (this.options["max-suggestions"]) {
+            exitValue = this.resultStats.suggestions > this.options["max-suggestions"] ? 1 : 0;
+        } else if (this.options["min-score"]) {
+            exitValue = score < this.options["min-score"] ? 2 : 0;
         } else {
             exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
         }

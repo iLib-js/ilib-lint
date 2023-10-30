@@ -66,6 +66,13 @@ const genericConfig = {
             "template": "{pathName}\n{highlight}\n",
             "highlightStart": ">>",
             "highlightEnd": "<<"
+        },
+        {
+            "name": "null",
+            "description": "A no-output formatter",
+            "template": "",
+            "highlightStart": "",
+            "highlightEnd": ""
         }
     ],
     // named rule sets to be used with the file types
@@ -124,23 +131,39 @@ const genericConfig = {
 };
 
 describe("testLint", () => {
-    test("LintConstructorEmpty", () => {
+    test("Lint empty constructor", () => {
         expect.assertions(1);
 
         const options = {
         };
 
-        const project = new Lint(options, genericConfig);
-        expect(project).toBeTruthy();
+        const lint = new Lint(options, genericConfig);
+        expect(lint).toBeTruthy();
     });
 
-    test("LintConstructorWithConfig", () => {
+    test("Lint constructor with a generic configuration", () => {
         expect.assertions(1);
 
         const options = {
         };
 
-        const project = new Lint(options, genericConfig);
-        expect(project).toBeTruthy();
+        const lint = new Lint(options, genericConfig);
+        expect(lint).toBeTruthy();
     });
+
+    test("running on a test project", async () => {
+        expect.assertions(1);
+
+        debugger;
+        const root = "./test/testproject";
+        const options = {
+            root,
+            formatter: "null"
+        };
+
+        const lint = new Lint(options, genericConfig);
+        expect(lint).toBeTruthy();
+
+        return lint.run(root, ["."]);
+    }, 20000);
 });
