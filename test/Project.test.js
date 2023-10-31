@@ -130,7 +130,7 @@ describe("testProject", () => {
     test("ProjectConstructorEmpty", () => {
         expect.assertions(1);
 
-        const project = new Project("x", {pluginManager}, {});
+        const project = new Project("x", {pluginManager, opt: {}}, {});
         expect(project).toBeTruthy();
     });
 
@@ -138,7 +138,7 @@ describe("testProject", () => {
         expect.assertions(1);
 
         expect(() => {
-            const project = new Project(undefined, {pluginManager}, {});
+            const project = new Project(undefined, {pluginManager, opt: {}}, {});
         }).toThrow();
     });
 
@@ -154,14 +154,14 @@ describe("testProject", () => {
         expect.assertions(1);
 
         expect(() => {
-            const project = new Project("x", {pluginManager});
+            const project = new Project("x", {pluginManager, opt: {}});
         }).toThrow();
     });
 
     test("ProjectGetRoot", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, {});
+        const project = new Project("x", {pluginManager, opt: {}}, {});
         expect(project).toBeTruthy();
 
         expect(project.getRoot()).toBe("x");
@@ -170,7 +170,7 @@ describe("testProject", () => {
     test("ProjectGetPluginManager", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, {});
+        const project = new Project("x", {pluginManager, opt: {}}, {});
         expect(project).toBeTruthy();
 
         expect(project.getPluginManager()).toBe(pluginManager);
@@ -179,7 +179,7 @@ describe("testProject", () => {
     test("ProjectGetRuleManager", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, {});
+        const project = new Project("x", {pluginManager, opt: {}}, {});
         expect(project).toBeTruthy();
 
         expect(project.getRuleManager()).toBe(pluginManager.getRuleManager());
@@ -188,7 +188,7 @@ describe("testProject", () => {
     test("ProjectGetParserManager", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, {});
+        const project = new Project("x", {pluginManager, opt: {}}, {});
         expect(project).toBeTruthy();
 
         expect(project.getParserManager()).toBe(pluginManager.getParserManager());
@@ -197,7 +197,7 @@ describe("testProject", () => {
     test("ProjectGetExcludes", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         expect(project.getExcludes()).toBe(genericConfig.excludes);
@@ -245,7 +245,7 @@ describe("testProject", () => {
     test("ProjectGetFileTypeForPath1", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const ft = project.getFileTypeForPath("src/foo/ja/asdf.json");
@@ -255,7 +255,7 @@ describe("testProject", () => {
     test("ProjectGetFileTypeForPath2", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const ft = project.getFileTypeForPath("src/foo/asdf.js");
@@ -265,7 +265,7 @@ describe("testProject", () => {
     test("ProjectGetFileTypeForPathUnknown", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const ft = project.getFileTypeForPath("notsrc/foo/ja/asdf.json");
@@ -275,7 +275,7 @@ describe("testProject", () => {
     test("ProjectGetFileTypeForPathNormalizePath", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const ft = project.getFileTypeForPath("./src/foo/ja/asdf.json");
@@ -285,7 +285,7 @@ describe("testProject", () => {
     test("ProjectGetFileTypeForPathAnonymousFileType", () => {
         expect.assertions(2);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const ft = project.getFileTypeForPath("i18n/it-IT.xliff");
@@ -297,7 +297,7 @@ describe("testProject", () => {
     test("ProjectInit", () => {
         expect.assertions(5);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const pluginMgr = project.getPluginManager();
@@ -322,7 +322,7 @@ describe("testProject", () => {
     test("ProjectWalk", async () => {
         expect.assertions(6);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const pluginMgr = project.getPluginManager();
@@ -341,7 +341,7 @@ describe("testProject", () => {
     test("ProjectFindIssues", async () => {
         expect.assertions(20);
 
-        const project = new Project("x", {pluginManager}, genericConfig);
+        const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
         const pluginMgr = project.getPluginManager();
@@ -375,5 +375,62 @@ describe("testProject", () => {
         expect(results[2].lineNumber).toBe(92);
     });
 
+    test("Recursively get all source files in a whole project", async () => {
+        expect.assertions(5);
+
+        const project = new Project("test/testproject", {pluginManager, opt: {}}, genericConfig);
+        expect(project).toBeTruthy();
+
+        const pluginMgr = project.getPluginManager();
+        expect(pluginMgr).toBeTruthy();
+
+        await project.init();
+        // verify that the init indeed loaded the test plugin
+        const parserMgr = pluginMgr.getParserManager();
+        const prsr = parserMgr.get("parser-xyz");
+        expect(prsr).toBeTruthy();
+
+        await project.scan(["./test/testproject"]);
+        const files = project.get();
+
+        expect(files).toBeTruthy();
+        expect(files.map(file => file.getFilePath()).sort()).toStrictEqual([
+            "test/testproject/x/empty.xyz",
+            "test/testproject/x/test.xyz",
+            "test/testproject/x/test_ru_RU.xyz"
+        ]);
+    });
+
+    test("Verify that the project continues if the parser throws up", async () => {
+        expect.assertions(7);
+
+        const project = new Project("test/testproject", {pluginManager, opt: {}}, genericConfig);
+        expect(project).toBeTruthy();
+
+        const pluginMgr = project.getPluginManager();
+        expect(pluginMgr).toBeTruthy();
+
+        await project.init();
+        // verify that the init indeed loaded the test plugin
+        const parserMgr = pluginMgr.getParserManager();
+        const prsr = parserMgr.get("parser-xyz");
+        expect(prsr).toBeTruthy();
+
+        // verify that the parser throws when there is empty data
+        expect(() => {
+            prsr.parseData();
+        }).toThrow();
+
+        await project.scan(["./test/testproject"]);
+
+        // make sure the scan picked up the empty file which causes the parser to barf
+        const files = project.get();
+        expect(files).toBeTruthy();
+        expect(files.filter(file => file.getFilePath() === "test/testproject/x/empty.xyz")).toBeTruthy();
+
+        // should now throw
+        const issues = project.findIssues(["en-US"]);
+        expect(issues).toBeTruthy();
+    });
 });
 

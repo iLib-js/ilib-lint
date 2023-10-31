@@ -476,10 +476,16 @@ class Project extends DirItem {
 
     /**
      * Return all directory items in this project.
-     * @returns {Array.<DirItem>} the directory items in this project.
+     * @returns {Array.<SourceFile>} the directory items in this project.
      */
     get() {
-        return this.files;
+        return this.files.flatMap(dirItem => {
+            if (dirItem instanceof SourceFile) {
+                return dirItem;
+            } else if (dirItem instanceof DirItem) {
+                return dirItem.get();
+            }
+        });
     }
 
     /**
@@ -493,18 +499,23 @@ class Project extends DirItem {
         return this.files.map(file => {
             logger.debug(`Examining ${file.filePath}`);
 
-            const irArray = file.parse();
-            if (irArray) {
-                irArray.forEach(ir => {
-                    if (ir.stats) {
-                        this.fileStats.addStats(ir.stats);
-                    } else {
-                        // no stats? At least we know there was a file, so count that
-                        this.fileStats.addFiles(1);
-                    }
-                });
+            try {
+                const irArray = file.parse();
+                if (irArray) {
+                    irArray.forEach(ir => {
+                        if (ir.stats) {
+                            this.fileStats.addStats(ir.stats);
+                        } else {
+                            // no stats? At least we know there was a file, so count that
+                            this.fileStats.addFiles(1);
+                        }
+                    });
+                }
+                return file.findIssues(locales);
+            } catch (e) {
+                logger.error(`Error while finding issues in the file ${file.filePath}`);
+                logger.error(e);
             }
-            return file.findIssues(locales);
         }).flat();
     }
 

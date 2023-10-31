@@ -39,6 +39,9 @@ class TestParser extends Parser {
     }
 
     parseData(data) {
+        if (!data) {
+            throw "ilib-lint-plugin-test: attempt to parse empty data";
+        }
         const json = json5.parse(data);
         this.ts = new TranslationSet();
 
