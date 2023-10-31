@@ -39,7 +39,7 @@ export class FileConfigurationProvider {
 
     /** @protected */
     async loadJsConfiguration() {
-        return (await import(this.filePath)).default;
+        return (await import(path.resolve(this.filePath))).default;
     }
 
     async loadConfiguration() {
