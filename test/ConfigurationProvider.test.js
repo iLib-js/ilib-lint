@@ -100,6 +100,23 @@ describe("Configuration Provider", () => {
             expect(result.name).toBe("configuration-provider-test-cjs-config");
         });
 
+        test("load config from CJS file using relative path", async () => {
+            // should successfully import the JS config file from a CommonJS package
+
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.js`);
+            await fs.writeFile(configPath, cjsConfig);
+
+            // get config path relative to CWD
+            const relativeConfigPath = path.relative(process.cwd(), configPath);
+
+            // test
+            const provider = new FileConfigurationProvider(relativeConfigPath);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-cjs-config");
+        });
+
         test("load config from ESM file", async () => {
             // should successfully import the JS config file from an ESM package
 
@@ -113,6 +130,27 @@ describe("Configuration Provider", () => {
 
             // test
             const provider = new FileConfigurationProvider(configPath);
+            const result = await provider.loadConfiguration();
+
+            expect(result.name).toBe("configuration-provider-test-esm-config");
+        });
+
+        test("load config from ESM file using relative path", async () => {
+            // should successfully import the JS config file from an ESM package
+
+            // first set package mode to ESM
+            const packagePath = path.join(tempDir, `package.json`);
+            await fs.writeFile(packagePath, esmPackage);
+
+            // write config to file
+            const configPath = path.join(tempDir, `ilib-lint-config.js`);
+            await fs.writeFile(configPath, esmConfig);
+
+            // get config path relative to CWD
+            const relativeConfigPath = path.relative(process.cwd(), configPath);
+
+            // test
+            const provider = new FileConfigurationProvider(relativeConfigPath);
             const result = await provider.loadConfiguration();
 
             expect(result.name).toBe("configuration-provider-test-esm-config");
