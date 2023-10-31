@@ -428,7 +428,7 @@ describe("testProject", () => {
         expect(files).toBeTruthy();
         expect(files.filter(file => file.getFilePath() === "test/testproject/x/empty.xyz")).toBeTruthy();
 
-        // should now throw
+        // should not throw
         const issues = project.findIssues(["en-US"]);
         expect(issues).toBeTruthy();
     });
