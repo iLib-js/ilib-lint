@@ -1,8 +1,8 @@
 {
     "name": "tester",
     "plugins": [
-        "javascript",
-        "react-intl"
+        //"javascript",
+        //"react-intl"
     ],
     "locales": [
         "en-US",
@@ -30,6 +30,9 @@
             "ruleset": [
                 "javascript-rules"
             ]
+        },
+        "xliff": {
+            "ruleset": [ "source" ]
         }
     },
     "paths": {
@@ -42,14 +45,7 @@
             "rules": {
             }
         },
-        "**/*.xliff": {
-            "rules": {
-                "resource-icu-plurals": true,
-                "resource-quote-style": true,
-                "resource-url-match": true,
-                "resource-named-params": "localeOnly"
-            }
-        },
+        "**/*.xliff": "xliff",
         "test/testfiles/**/*.js": "javascript"
     }
 }

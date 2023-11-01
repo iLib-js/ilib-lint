@@ -33,6 +33,7 @@ import ResourceDNTTerms from '../rules/ResourceDNTTerms.js';
 import ResourceNoTranslation from '../rules/ResourceNoTranslation.js';
 import ResourceStateChecker from '../rules/ResourceStateChecker.js';
 import ResourceSourceICUPluralSyntax from '../rules/ResourceSourceICUPluralSyntax.js';
+import ResourceSourceICUPluralParams from '../rules/ResourceSourceICUPluralParams.js';
 import ResourceSourceICUPluralCategories from '../rules/ResourceSourceICUPluralCategories.js';
 
 // built-in declarative rules
@@ -255,6 +256,7 @@ export const builtInRulesets = {
 
     source: {
         "resource-source-icu-plural-syntax": true,
+        "resource-source-icu-plural-params": true,
         "resource-source-icu-plural-categories": true,
         "source-no-escaped-curly-braces": true,
         "source-no-dashes-in-replacement-params": true,
@@ -303,6 +305,7 @@ class BuiltinPlugin extends Plugin {
             ResourceNoTranslation,
             ResourceStateChecker,
             ResourceSourceICUPluralSyntax,
+            ResourceSourceICUPluralParams,
             ResourceSourceICUPluralCategories,
             ...regexRules
         ];
