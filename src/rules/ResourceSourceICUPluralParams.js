@@ -51,7 +51,7 @@ export class ResourceSourceICUPluralParams extends ResourceRule {
         let params = {};
         for (let i = 0; i < children.length; i++) {
             // type 1 is a replacement param
-            const type = children[i].type; 
+            const type = children[i].type;
             if (type === 1) {
                 params[children[i].value] = true;
             }
@@ -72,7 +72,7 @@ export class ResourceSourceICUPluralParams extends ResourceRule {
         // if the other category does not contain the name of the variable we are
         // switching on then just skip the rest of this check
         if (!otherParams[element.value] && !otherParams["#"]) return;
-        
+
         if (element.options.one) {
             const oneParams = this.findReplacementParams(element.options.one.value);
             if (!oneParams[element.value] && !oneParams["#"]) {

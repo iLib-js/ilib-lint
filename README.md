@@ -532,6 +532,9 @@ limitations under the License.
   parameter must also appear in the "one" category string. The idea is
   to support languages where there are multiple numbers that are considered
   singular.
+- resolved a bug with the `--config path` command-line parameter where
+  the linter could not load the config file if the path was given as relative
+  to the current directory instead of an absolute path.
 
 ### v1.11.0
 
