@@ -28,7 +28,7 @@ But, in many other languages, there are multiple numbers that are considered sin
 Example in Russian:
 
 | category | numbers that belong to this category   |
-|==========|========================================|
+| -------- | ---------------------------------------|
 | one      | 1, 21, 31, 41, ..., 101, 121, 131, ... |
 | few      | 2 - 4, 22 - 24, 32 - 34, ...           |
 | many     | 0, 5 - 20, 24 - 30, 34 - 40, ...       |
