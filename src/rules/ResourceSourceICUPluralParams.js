@@ -34,11 +34,11 @@ const logger = log4js.getLogger("i18nlint.ResourceSourceICUPluralParams");
  */
 export class ResourceSourceICUPluralParams extends ResourceRule {
     /** @override */
-    name = "resource-source-icu-plural-params";
+    name = "source-icu-plural-params";
     /** @override */
     description = "Verify that the 'one' category of an ICU plural contains the same replacement parameters as the 'other' category.";
     /** @override */
-    link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-icu-plural-params.md";
+    link = "https://github.com/ilib-js/i18nlint/blob/main/docs/source-icu-plural-params.md";
 
     /**
      * @param {any} [opts]
@@ -47,33 +47,38 @@ export class ResourceSourceICUPluralParams extends ResourceRule {
         super(opts);
     }
 
-    checkForReplacementParam(children) {
+    findReplacementParams(children) {
+        let params = {};
         for (let i = 0; i < children.length; i++) {
             // type 1 is a replacement param
             const type = children[i].type; 
             if (type === 1) {
-                return children[i].value;
+                params[children[i].value] = true;
             }
             if (type === 7) {
-                return "#";
+                params["#"] = true;
             }
         }
-        return undefined;
+        return params;
     }
 
     /**
      * @private
      */
     checkCategories(/** @type {PluralElement} */ element) {
-        if (!element.options.other) return [];
-        const otherParam = this.checkForReplacementParam(element.options.other.value);
+        if (element.pluralType !== "cardinal" || !element?.options?.other) return;
+        const otherParams = this.findReplacementParams(element.options.other.value);
 
-        if (otherParam && element.options.one) {
-            const oneParam = this.checkForReplacementParam(element.options.one.value);
-            if (oneParam !== otherParam) {
+        // if the other category does not contain the name of the variable we are
+        // switching on then just skip the rest of this check
+        if (!otherParams[element.value] && !otherParams["#"]) return;
+        
+        if (element.options.one) {
+            const oneParams = this.findReplacementParams(element.options.one.value);
+            if (!oneParams[element.value] && !oneParams["#"]) {
                 return {
                     severity: "error",
-                    description: `Missing replacement param "${otherParam}" in the "one" category`,
+                    description: `Missing replacement param "${element.value}" in the "one" category`,
                     location: element.location,
                 };
             }
@@ -98,9 +103,9 @@ export class ResourceSourceICUPluralParams extends ResourceRule {
 
             // recursively search for all ICU plurals in the string
             const selects = this.recursiveFindSelects(ast);
-    
+
             // run checks on all found plurals
-            return selects.flatMap((select) => {
+            const resultArray = selects.flatMap((select) => {
                 const partialResult = this.checkCategories(select);
                 // wrap results into Result instances
                 if (partialResult) {
@@ -115,7 +120,8 @@ export class ResourceSourceICUPluralParams extends ResourceRule {
                     });
                 }
                 return undefined;
-            });
+            }).filter(result => result);
+            return resultArray?.length > 1 ? resultArray : (resultArray?.length === 1 ? resultArray[0] : undefined);
         } catch (e) {
             // this rule does not report on syntax errors in the source. Other rules do that,
             // so we can ignore this exception

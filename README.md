@@ -525,6 +525,14 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.12.0
+
+- added source-icu-plural-params rule to check if a replacement parameter
+  is used in the "other" category. If so, then the same replacement
+  parameter must also appear in the "one" category string. The idea is
+  to support languages where there are multiple numbers that are considered
+  singular.
+
 ### v1.11.0
 
 - added source-no-noun-replacement-params rule to check if a noun is being

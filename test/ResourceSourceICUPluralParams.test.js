@@ -21,7 +21,94 @@ import { Result } from 'i18nlint-common';
 import ResourceSourceICUPluralParams from '../src/rules/ResourceSourceICUPluralParams.js';
 
 describe("that parameters in the other category also exist in the one category", () => {
-    test("no error when there are no params in the other category", () => {
+    test("when the one category is missing the replacement param", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {There is one singular.} other {There are {count} plurals.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: 'Missing replacement param "count" in the "one" category',
+            id: "plural.test",
+            source: '{count, plural, one {There is one singular.} other {There are {count} plurals.}}',
+            highlight: '<e0>{count, plural, one {There is one singular.} other {There are {count} plurals.}}</e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("when the one category is missing the hash replacement param", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {There is one singular.} other {There are # plurals.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: 'Missing replacement param "count" in the "one" category',
+            id: "plural.test",
+            source: '{count, plural, one {There is one singular.} other {There are # plurals.}}',
+            highlight: '<e0>{count, plural, one {There is one singular.} other {There are # plurals.}}</e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("when the one category has a different replacement param", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {There is {n} singular.} other {There are {count} plurals.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        const expected = new Result({
+            severity: "error",
+            description: 'Missing replacement param "count" in the "one" category',
+            id: "plural.test",
+            source: '{count, plural, one {There is {n} singular.} other {There are {count} plurals.}}',
+            highlight: '<e0>{count, plural, one {There is {n} singular.} other {There are {count} plurals.}}</e0>',
+            rule,
+            pathName: "a/b/c.xliff"
+        });
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("when there are no params in the other category", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -41,7 +128,7 @@ describe("that parameters in the other category also exist in the one category",
         expect(result).toBeFalsy();
     });
 
-    test("no error when there are no params in the other category with nested plurals", () => {
+    test("when there are no params in the other category with nested plurals", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -61,7 +148,7 @@ describe("that parameters in the other category also exist in the one category",
         expect(result).toBeFalsy();
     });
 
-    test("no error when the replacement params match", () => {
+    test("when the replacement params match", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -81,7 +168,67 @@ describe("that parameters in the other category also exist in the one category",
         expect(result).toBeFalsy();
     });
 
-    test("no error when multiple replacement params match", () => {
+    test("when the replacement params are hash sign and match", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {There is # item available.} other {There are # items available.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(result).toBeFalsy();
+    });
+
+    test("when the replacement params are mixed between hash sign and variable name", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {There is # item available.} other {There are {count} items available.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(result).toBeFalsy();
+    });
+
+    test("when the replacement params in other do not include the switch variable", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, one {There is {x} item available.} other {There are {n} items available.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(result).toBeFalsy();
+    });
+
+    test("when multiple replacement params match", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -101,7 +248,7 @@ describe("that parameters in the other category also exist in the one category",
         expect(result).toBeFalsy();
     });
 
-    test("no error when multiple replacement params match", () => {
+    test("when multiple replacement params match reversed", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -121,7 +268,7 @@ describe("that parameters in the other category also exist in the one category",
         expect(result).toBeFalsy();
     });
 
-/*
+    test("when multiple replacement params match in nested plurals", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -154,7 +301,7 @@ describe("that parameters in the other category also exist in the one category",
         expect(result).toBeFalsy();
     });
 
-    test("MissingCategoryOther", () => {
+    test("if there is a missing other category", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -171,19 +318,50 @@ describe("that parameters in the other category also exist in the one category",
             resource,
             file: "a/b/c.xliff"
         });
-        const expected = new Result({
-            severity: "error",
-            description: "Incorrect ICU plural syntax in source string: SyntaxError: MISSING_OTHER_CLAUSE",
-            id: "plural.test",
-            source: '{count, plural, one {This is singular}}',
-            highlight: '{count, plural, one {This is singular}<e0></e0>}',
-            rule,
-            pathName: "a/b/c.xliff"
-        });
-        expect(result).toStrictEqual(expected);
+        expect(result).toBeFalsy();
     });
 
-    test("SelectString", () => {
+    test("if there is a missing one category", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, other {There are # files.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(result).toBeFalsy();
+    });
+
+    test("if there is a =1 category instead", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralParams();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: '{count, plural, =1 {There is one file.} other {There are # files.}}',
+            pathName: "a/b/c.xliff"
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(result).toBeFalsy();
+    });
+
+    test("if the select is not a plural string", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();
@@ -202,9 +380,8 @@ describe("that parameters in the other category also exist in the one category",
         });
         expect(result).toBeFalsy();
     });
-*/
 
-    test("Plural embedded in a string that has no error", () => {
+    test("Plural embedded in the middle of a string that has no error", () => {
         expect.assertions(2);
 
         const rule = new ResourceSourceICUPluralParams();

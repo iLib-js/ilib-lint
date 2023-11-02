@@ -256,14 +256,14 @@ export const builtInRulesets = {
 
     source: {
         "resource-source-icu-plural-syntax": true,
-        "resource-source-icu-plural-params": true,
         "resource-source-icu-plural-categories": true,
         "source-no-escaped-curly-braces": true,
         "source-no-dashes-in-replacement-params": true,
         "source-no-lazy-plurals": true,
         "source-no-manual-percentage-formatting": true,
         "source-no-noun-replacement-params": true,
-        "source-no-manual-currency-formatting": true
+        "source-no-manual-currency-formatting": true,
+        "source-icu-plural-params": true
     },
 };
 
