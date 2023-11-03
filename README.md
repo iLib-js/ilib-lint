@@ -525,6 +525,11 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.13.0
+
+- make sure the results are sorted by file path and also line number within
+  that file path
+
 ### v1.12.0
 
 - added source-icu-plural-params rule to check if a replacement parameter

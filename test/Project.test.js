@@ -17,6 +17,7 @@
  * limitations under the License.
  */
 import { ResourceString } from 'ilib-tools-common';
+import { Result } from 'i18nlint-common'
 
 import Project from '../src/Project.js';
 import PluginManager from '../src/PluginManager.js';
@@ -431,6 +432,215 @@ describe("testProject", () => {
         // should not throw
         const issues = project.findIssues(["en-US"]);
         expect(issues).toBeTruthy();
+    });
+
+    test("sort by file path", async () => {
+        expect.assertions(2);
+
+        const project = new Project("test/testproject", {pluginManager, opt: {}}, genericConfig);
+        expect(project).toBeTruthy();
+
+        const results = [
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "b/b/c.js",
+                lineNumber: 12,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "d/b/c.js",
+                lineNumber: 10,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 2,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "c/b/c.js",
+                lineNumber: 5,
+                rule: {}
+            }),
+        ];
+        const expected = [
+            results[2],
+            results[0],
+            results[3],
+            results[1]
+        ];
+        debugger;
+        // the slice causes the JS engine to make a shallow copy of the
+        // array so that we can test against the original results properly
+        const actual = project.sortResults(results.slice());
+        expect(actual).toStrictEqual(expected);
+    });
+
+    test("sort by line number within a file path", async () => {
+        expect.assertions(2);
+
+        const project = new Project("test/testproject", {pluginManager, opt: {}}, genericConfig);
+        expect(project).toBeTruthy();
+
+        const results = [
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 12,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 10,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 2,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 5,
+                rule: {}
+            }),
+        ];
+        const expected = [
+            results[2],
+            results[3],
+            results[1],
+            results[0]
+        ];
+        // the slice causes the JS engine to make a shallow copy of the
+        // array so that we can test against the original results properly
+        const actual = project.sortResults(results.slice());
+        expect(actual).toStrictEqual(expected);
+    });
+
+    test("sort by file path and line number", async () => {
+        expect.assertions(2);
+
+        const project = new Project("test/testproject", {pluginManager, opt: {}}, genericConfig);
+        expect(project).toBeTruthy();
+
+        const results = [
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "x/b/c.js",
+                lineNumber: 12,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "x/b/c.js",
+                lineNumber: 1,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "x/b/c.js",
+                lineNumber: 10,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 2,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 18,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 5,
+                rule: {}
+            }),
+        ];
+        const expected = [
+            results[3],
+            results[5],
+            results[4],
+            results[1],
+            results[2],
+            results[0]
+        ];
+        // the slice causes the JS engine to make a shallow copy of the
+        // array so that we can test against the original results properly
+        const actual = project.sortResults(results.slice());
+        expect(actual).toStrictEqual(expected);
+    });
+
+    test("results with no line number", async () => {
+        expect.assertions(2);
+
+        const project = new Project("test/testproject", {pluginManager, opt: {}}, genericConfig);
+        expect(project).toBeTruthy();
+
+        const results = [
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 12,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 2,
+                rule: {}
+            }),
+            new Result({
+                severity: "error",
+                description: "some sort of error",
+                pathName: "a/b/c.js",
+                lineNumber: 5,
+                rule: {}
+            }),
+        ];
+        // the one with no line number goes first
+        const expected = [
+            results[1],
+            results[2],
+            results[3],
+            results[0]
+        ];
+        // the slice causes the JS engine to make a shallow copy of the
+        // array so that we can test against the original results properly
+        const actual = project.sortResults(results.slice());
+        expect(actual).toStrictEqual(expected);
     });
 });
 
