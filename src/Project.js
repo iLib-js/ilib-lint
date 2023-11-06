@@ -28,6 +28,7 @@ import SourceFile from './SourceFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
+import ResultCompatator from './ResultComparator.js';
 
 const logger = log4js.getLogger("i18nlint.Project");
 
@@ -548,37 +549,6 @@ class Project extends DirItem {
     }
 
     /**
-     * Sort the results:
-     *
-     * 1. alphabetically by source file path
-     * 2. numerically by line number within the source file
-     *
-     * The results array will be sorted in place.
-     *
-     * @param {Array.<Result>} results the results array to sort
-     */
-    sortResults(results) {
-        return results.sort((left, right) => {
-            if (left.pathName < right.pathName) {
-                return -1;
-            } else if (left.pathName > right.pathName) {
-                return 1;
-            } else if (typeof(left.lineNumber) === 'undefined' && typeof(right.lineNumber) === 'undefined') {
-                return 0;
-            } else if (typeof(left.lineNumber) === 'undefined') {
-                return -1;
-            } else if (typeof(right.lineNumber) === 'undefined') {
-                return 1;
-            } else if (left.lineNumber < right.lineNumber) {
-                return -1;
-            } else if (left.lineNumber > right.lineNumber) {
-                return 1;
-            }
-            return 0;
-        });
-    }
-
-    /**
      * Find all issues in this project and all subprojects and print
      * them with the chosen formatter. This is the main loop.
      * @returns {Number} the exit value
@@ -595,7 +565,7 @@ class Project extends DirItem {
         // make sure the results are organized by the order the lines appear in the
         // source file in order to make it easier for the engineer to fix all the
         // problems in the source file sequentially.
-        this.sortResults(results);
+        results.sort(ResultComparator);
 
         if (results) {
             results.forEach(result => {
