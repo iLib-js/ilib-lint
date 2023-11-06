@@ -33,6 +33,7 @@ import ResourceDNTTerms from '../rules/ResourceDNTTerms.js';
 import ResourceNoTranslation from '../rules/ResourceNoTranslation.js';
 import ResourceStateChecker from '../rules/ResourceStateChecker.js';
 import ResourceSourceICUPluralSyntax from '../rules/ResourceSourceICUPluralSyntax.js';
+import ResourceSourceICUPluralParams from '../rules/ResourceSourceICUPluralParams.js';
 import ResourceSourceICUPluralCategories from '../rules/ResourceSourceICUPluralCategories.js';
 
 // built-in declarative rules
@@ -192,7 +193,7 @@ export const regexRules = [
         regexps: [
             "\\{years?\\}[/\\-\\. ]\\{months?\\}[/\\-\\. ]\\{days?\\}",
             "\\{[Yy][Yy]([Yy][Yy])?\\}[/\\-\\. ]\\{[Mm]{2,4}\\}[/\\-\\. ]\\{[Dd][Dd]?\\}",
-            
+
             "\\{months?\\}[/\\-\\. ]\\{days?\\}[/\\-\\. ]\\{years?\\}",
             "\\{months?\\} \\{days?\\}, \\{years?\\}",
             "\\{[Mm]{2,4}\\}[/\\-\\.]\\{[Dd][Dd]?\\}[/\\-\\.]\\{[Yy][Yy]([Yy][Yy])?\\}",
@@ -261,7 +262,8 @@ export const builtInRulesets = {
         "source-no-lazy-plurals": true,
         "source-no-manual-percentage-formatting": true,
         "source-no-noun-replacement-params": true,
-        "source-no-manual-currency-formatting": true
+        "source-no-manual-currency-formatting": true,
+        "source-icu-plural-params": true
     },
 };
 
@@ -303,6 +305,7 @@ class BuiltinPlugin extends Plugin {
             ResourceNoTranslation,
             ResourceStateChecker,
             ResourceSourceICUPluralSyntax,
+            ResourceSourceICUPluralParams,
             ResourceSourceICUPluralCategories,
             ...regexRules
         ];
