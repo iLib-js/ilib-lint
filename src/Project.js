@@ -28,6 +28,7 @@ import SourceFile from './SourceFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
+import ResultCompatator from './ResultComparator.js';
 
 const logger = log4js.getLogger("i18nlint.Project");
 
@@ -554,12 +555,17 @@ class Project extends DirItem {
      */
     run() {
         let exitValue = 0;
-        const results = this.findIssues(this.options.locales);
+        const results = this.findIssues(this.options.opt.locales);
         this.resultStats = {
             errors: 0,
             warnings: 0,
             suggestions: 0
         };
+
+        // make sure the results are organized by the order the lines appear in the
+        // source file in order to make it easier for the engineer to fix all the
+        // problems in the source file sequentially.
+        results.sort(ResultComparator);
 
         if (results) {
             results.forEach(result => {
