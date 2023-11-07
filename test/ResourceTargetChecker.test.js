@@ -809,7 +809,7 @@ describe("testResourceTargetChecker", () => {
             sourceLocale: "en-US",
             source: "Box Embed Widget",
             targetLocale: "ja-JP",
-            target: "[EXIF] および [XMP] メタデータ",
+            target: "[EXIF] および (XMP) メタデータ",
             pathName: "a/b/c.xliff",
         });
 

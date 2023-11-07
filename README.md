@@ -529,6 +529,9 @@ limitations under the License.
 
 - make sure the results are sorted by file path and also line number within
   that file path
+- updated the rule that checks for spaces between double- and single-byte
+  characters. The rule now allows for spaces between double-byte characters
+  and single-byte punctuation.
 
 ### v1.12.0
 
