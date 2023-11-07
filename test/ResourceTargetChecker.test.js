@@ -793,9 +793,33 @@ describe("testResourceTargetChecker", () => {
             pathName: "a/b/c.xliff",
             source: "Box Embed Widget",
             id: "matcher.test",
-            description: 'The space character is not allowed in the target string. Remove the space character.',
+            description: 'The space character is not allowed in the target string between a double- and single-byte character. Remove the space character.',
             highlight: 'Target: Bo<e0>x 埋</e0>め込みウィジェット',
         })]);
+    });
+
+    test("No Space Between Double And Single Byte Character, but not counting punctuation", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceTargetChecker(findRuleDefinition("resource-no-space-between-double-and-single-byte-character"));
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "matcher.test",
+            sourceLocale: "en-US",
+            source: "Box Embed Widget",
+            targetLocale: "ja-JP",
+            target: "[EXIF] および [XMP] メタデータ",
+            pathName: "a/b/c.xliff",
+        });
+
+        const result = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(result).toBeFalsy();
     });
 
     test("ResourceNoSpaceBetweenDoubleAndSingleByteCharacterNotInChinese", () => {
