@@ -83,8 +83,8 @@ export const regexRules = [
         type: "resource-target",
         name: "resource-no-space-between-double-and-single-byte-character",
         description: "Ensure that the target does not contain a space character between a double-byte and single-byte character.",
-        note: "The space character is not allowed in the target string. Remove the space character.",
-        regexps: [ "[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FAF]\\s+[\\x00-\\xFF]|[\\x00-\\xFF]\\s+[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FAF]" ],
+        note: "The space character is not allowed in the target string between a double- and single-byte character. Remove the space character.",
+        regexps: [ "[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FAF]\\s+[\\x00-\\x20\\x30-\\x39\\x41-\\x5A\\x61-\\x7A\\x8A\\x8C\\x8E\\x9A\\x9C\\x9E\\x9F\\xC0-\\xD6\\xD8-\\xF6\\xF8-\\xFF]|[\\x00-\\x20\\x30-\\x39\\x41-\\x5A\\x61-\\x7A\\x8A\\x8C\\x8E\\x9A\\x9C\\x9E\\x9F\\xC0-\\xD6\\xD8-\\xF6\\xF8-\\xFF]\\s+[\\u3040-\\u309F\\u30A0-\\u30FF\\u4E00-\\u9FAF]" ],
         link: "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-no-space-between-double-and-single-byte-character.md",
         severity: "warning",
         locales: "ja"
