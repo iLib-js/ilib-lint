@@ -525,6 +525,10 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.13.1
+
+- fixed a bug with the sorting of results
+
 ### v1.13.0
 
 - make sure the results are sorted by file path and also line number within

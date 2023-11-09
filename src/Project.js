@@ -28,7 +28,7 @@ import SourceFile from './SourceFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
-import ResultCompatator from './ResultComparator.js';
+import ResultComparator from './ResultComparator.js';
 
 const logger = log4js.getLogger("i18nlint.Project");
 
