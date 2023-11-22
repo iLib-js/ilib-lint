@@ -93,7 +93,7 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
         // flag any replacement parameter whose label
         // does not appear in the description of the resource
         const missing = replacementParameters.filter((param) =>
-            resourceComment.includes(param.value)
+            !resourceComment.includes(param.value)
         );
 
         return missing.map(
