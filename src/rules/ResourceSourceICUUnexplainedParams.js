@@ -127,11 +127,12 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
                     this.traverseIcuAst(
                         Object.values(element.options).flatMap(
                             (option) => option.value
-                        )
+                        ),
+                        callback
                     );
                     break;
                 case 8: // tag
-                    this.traverseIcuAst(element.children);
+                    this.traverseIcuAst(element.children, callback);
                     break;
             }
         }
