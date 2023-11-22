@@ -41,7 +41,7 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
     name = "source-unexplained-params";
     /** @override */
     description =
-        "Check if replacement parameters used in resource source string are mentioned in resource description.";
+        "Check if replacement parameters used in the source string are explained in the comments for translators.";
     /** @override */
     link =
         "https://github.com/ilib-js/i18nlint/blob/main/docs/source-icu-unexplained-params.md";
@@ -104,7 +104,7 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
                     pathName: resource.getPath(),
                     source: source,
                     severity: "warning",
-                    description: `Replacement parameter "${param.value}" is not mentioned in the string description.`,
+                    description: `Replacement parameter "${param.value}" is not mentioned in the string's comment for translators.`,
                     highlight: this.highlightLocation(source, param.location)
                 })
         );
