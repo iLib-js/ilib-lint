@@ -38,7 +38,7 @@ const logger = log4js.getLogger("i18nlint.ResourceSourceICUUnexplainedParams");
  */
 export class ResourceSourceICUUnexplainedParams extends ResourceRule {
     /** @override */
-    name = "source-unexplained-params";
+    name = "source-icu-unexplained-params";
     /** @override */
     description =
         "Check if replacement parameters used in the source string are explained in the comments for translators.";
