@@ -16,8 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ResourceString } from "ilib-tools-common";
-import { Result } from "i18nlint-common";
+import { ResourceArray, ResourcePlural, ResourceString } from "ilib-tools-common";
+import { IntermediateRepresentation, Result } from "i18nlint-common";
 import ResourceSourceICUUnexplainedParams from "../src/rules/ResourceSourceICUUnexplainedParams.js";
 
 describe("ResourceSourceICUUnexplainedParams", () => {
@@ -285,5 +285,95 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         });
 
         expect(result).toEqual(undefined);
+    });
+
+    test("replacement parameter not mentioned in comments for a resourceArray", () => {
+        const resource = new ResourceArray({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: [
+                "Examine this usage by {ruleUser}.",
+                "Examine those usages by {ruleUser}."
+            ],
+            pathName: "a/b/c.xliff",
+            comment: "Notice about other usage examples."
+        });
+
+        const result = rule.match({
+            file: "a/b/c.xliff",
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [resource],
+                filePath: "a/b/c.xliff"
+            })
+        });
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "Examine this usage by {ruleUser}.",
+                highlight: "Examine this usage by <e0>{ruleUser}</e0>.",
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "Examine those usages by {ruleUser}.",
+                highlight: "Examine those usages by <e0>{ruleUser}</e0>.",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("replacement parameter not mentioned in comments for a resourcePlural", () => {
+        const resource = new ResourcePlural({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: {
+                one: "Examine this usage by {ruleUser}.",
+                other: "Examine those usages by {ruleUser}."
+            },
+            pathName: "a/b/c.xliff",
+            comment: "Notice about other usage examples."
+        });
+
+        const result = rule.match({
+            file: "a/b/c.xliff",
+            ir: new IntermediateRepresentation({
+                type: "resource",
+                ir: [resource],
+                filePath: "a/b/c.xliff"
+            })
+        });
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "Examine this usage by {ruleUser}.",
+                highlight: "Examine this usage by <e0>{ruleUser}</e0>.",
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "Examine those usages by {ruleUser}.",
+                highlight: "Examine those usages by <e0>{ruleUser}</e0>.",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
     });
 });
