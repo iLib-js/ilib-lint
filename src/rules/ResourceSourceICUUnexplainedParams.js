@@ -93,7 +93,11 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
         // flag any replacement parameter whose label
         // does not appear in the description of the resource
         const missing = replacementParameters.filter(
-            (param) => !resourceComment.includes(param.value)
+            (param) =>
+                !new RegExp(
+                    `\\b${this.escapeRegExp(param.value)}\\b`,
+                    "i"
+                ).test(resourceComment)
         );
 
         return missing.map(
@@ -154,6 +158,14 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
             )}</e0>` +
             `${source.substring(location.end.offset)}`
         );
+    }
+
+    /**
+     * @private
+     * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#escaping
+     */
+    escapeRegExp(/** @type {string} */ string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     }
 }
 
