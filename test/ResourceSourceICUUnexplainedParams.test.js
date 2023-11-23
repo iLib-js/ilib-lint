@@ -71,6 +71,90 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         expect(result).toEqual([]);
     });
 
+    test("replacement parameter mentioned in comment for translators with different case", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "Examine other usage by {ruleUser}.",
+            pathName: "a/b/c.xliff",
+            comment: `Notice about other usage examples. RuleUser is an email address of the user that violated the rule.`
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        expect(result).toEqual([]);
+    });
+
+    test("replacement parameter mentioned in comment for translators wrapped in brackets", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "Examine other usage by {ruleUser}.",
+            pathName: "a/b/c.xliff",
+            comment: `Notice about other usage examples. {ruleUser} is an email address of the user that violated the rule.`
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        expect(result).toEqual([]);
+    });
+
+    test("replacement parameter mentioned in comment for translators denoted by colon", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "Examine other usage by {ruleUser}.",
+            pathName: "a/b/c.xliff",
+            comment: `Notice about other usage examples. ruleUser: an email address of the user that violated the rule;`
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        expect(result).toEqual([]);
+    });
+
+    test("replacement parameter not mentioned in comment for translators but is a part of some other word", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "Examine other usage by {user}.",
+            pathName: "a/b/c.xliff",
+            comment: "Notice about other usage examples containing a username."
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "user" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "Examine other usage by {user}.",
+                highlight: "Examine other usage by <e0>{user}</e0>.",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
+    });
+
     test("multiple replacement parameters not mentioned in comment for translators", () => {
         const resource = new ResourceString({
             key: "icu.test",
