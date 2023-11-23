@@ -1,4 +1,4 @@
-# source-icu-unexplaiend-params
+# source-icu-unexplained-params
 
 This rule checks if replacement parameters mentioned in the source string are mentioned in the comment for translators as well.
 
@@ -9,9 +9,9 @@ Example:
 ```js
 export default defineMessages({
     newFeatureNotice: {
-        defaultMessage: '{readMoreLink} about our cool new features.',
-        description: 'Notice about new features.',
-        id: 'app.popups.newFeatureNotice',
+        defaultMessage: 'Examine other usage by {ruleUser}.',
+        description: 'Notice about other usage examples.',
+        id: 'app.popups.otherUsages',
     },
 }
 ```
@@ -21,9 +21,9 @@ Given the string description above, it's hard to tell for certain what the param
 ```js
 export default defineMessages({
     newFeatureNotice: {
-        defaultMessage: '{readMoreLink} about our cool new features.',
-        description: 'Notice about new features. readMoreLink is a hyperlink with text "Read more".',
-        id: 'app.popups.newFeatureNotice',
+        defaultMessage: 'Examine other usage by {ruleUser}.',
+        description: 'Notice about other usage examples. ruleUser is an email address of the user that violated the rule.',
+        id: 'app.popups.otherUsages',
     },
 }
 ```
