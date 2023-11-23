@@ -212,7 +212,160 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         expect(result).toStrictEqual([]);
     });
 
-    test("replacement parameter nested deeper within the message not mentioned in comment for translators", () => {
+    test("replacement parameter of a tag not mentioned in comment for translators", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "Examine other usage by <ruleUser>the following user</ruleUser>.",
+            pathName: "a/b/c.xliff",
+            comment: "Notice about other usage examples."
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "Examine other usage by <ruleUser>the following user</ruleUser>.",
+                highlight: "Examine other usage by <e0><ruleUser>the following user</ruleUser></e0>.",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("replacement parameter of a select message not mentioned in comment for translators", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "{exampleType, select, CORRECT {Examine this example.} INCORRECT {Examine this violation.} other {Examine this usage.}}",
+            pathName: "a/b/c.xliff",
+            comment: "Notice about examples of various types."
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "exampleType" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "{exampleType, select, CORRECT {Examine this example.} INCORRECT {Examine this violation.} other {Examine this usage.}}",
+                highlight:
+                "<e0>{exampleType, select, CORRECT {Examine this example.} INCORRECT {Examine this violation.} other {Examine this usage.}}</e0>",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("replacement parameter nested within a select message not mentioned in comment for translators", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by {ruleUser}.}}",
+            pathName: "a/b/c.xliff",
+            comment: "Notice about examples of various types."
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "exampleType" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by {ruleUser}.}}",
+                highlight:
+                "<e0>{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by {ruleUser}.}}</e0>",
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by {ruleUser}.}}",
+                highlight:
+                "{exampleType, select, CORRECT {Examine this example by <e0>{ruleUser}</e0>.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by {ruleUser}.}}",
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by {ruleUser}.}}",
+                highlight:
+                "{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by <e0>{ruleUser}</e0>.} other {Examine this usage by {ruleUser}.}}",
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by {ruleUser}.}}",
+                highlight:
+                "{exampleType, select, CORRECT {Examine this example by {ruleUser}.} INCORRECT {Examine this violation by {ruleUser}.} other {Examine this usage by <e0>{ruleUser}</e0>.}}",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("replacement parameter of a plural message not mentioned in comment for translators", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "{count, plural, one {Examine this usage.} other {Examine those usages.}}",
+            pathName: "a/b/c.xliff",
+            comment: "Notice about other usage examples."
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "count" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "{count, plural, one {Examine this usage.} other {Examine those usages.}}",
+                highlight:
+                "<e0>{count, plural, one {Examine this usage.} other {Examine those usages.}}</e0>",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("replacement parameter used within the plural not mentioned in comment for translators", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
@@ -228,6 +381,16 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         });
 
         const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "count" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "{count, plural, one {Examine this usage by {ruleUser}.} other {Examine those usages by {ruleUser}.}}",
+                highlight:
+                "<e0>{count, plural, one {Examine this usage by {ruleUser}.} other {Examine those usages by {ruleUser}.}}</e0>",
+                rule,
+                pathName: "a/b/c.xliff"
+            }),
             new Result({
                 severity: "warning",
                 description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,

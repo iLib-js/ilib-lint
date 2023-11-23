@@ -27,6 +27,9 @@ import log4js from "log4js";
 // type imports
 /** @ignore @typedef {import("@formatjs/icu-messageformat-parser").MessageFormatElement} MessageFormatElement */
 /** @ignore @typedef {import("@formatjs/icu-messageformat-parser").ArgumentElement} ArgumentElement */
+/** @ignore @typedef {import("@formatjs/icu-messageformat-parser").SelectElement} SelectElement */
+/** @ignore @typedef {import("@formatjs/icu-messageformat-parser").PluralElement} PluralElement */
+/** @ignore @typedef {import("@formatjs/icu-messageformat-parser").TagElement} TagElement */
 /** @ignore @typedef {import("./ResourceSourceICUPluralCategories.js").Location} Location */
 
 const logger = log4js.getLogger("i18nlint.ResourceSourceICUUnexplainedParams");
@@ -83,10 +86,14 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
         }
 
         // find all replacement parameters
-        const /** @type {ArgumentElement[]} */ replacementParameters = [];
+        const /** @type {(ArgumentElement|SelectElement|PluralElement|TagElement)[]} */ replacementParameters = [];
         this.traverseIcuAst(ast, (element) => {
-            if (element.type === 1 /* argument */) {
-                replacementParameters.push(element);
+            switch (element.type) {
+                case 1: // argument
+                case 5: // select
+                case 6: // plural
+                case 8: // tag
+                    replacementParameters.push(element);
             }
         });
 
