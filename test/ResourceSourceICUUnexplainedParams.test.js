@@ -27,9 +27,9 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
-            source: "{featuresLink} about the new features.",
+            source: "Examine other usage by {ruleUser}.",
             pathName: "a/b/c.xliff",
-            comment: "Prompt about new features."
+            comment: "Notice about other usage examples."
         });
 
         const result = rule.matchString({
@@ -41,10 +41,10 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const expected = [
             new Result({
                 severity: "warning",
-                description: `Replacement parameter "featuresLink" is not mentioned in the string's comment for translators.`,
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
                 id: "icu.test",
-                source: "{featuresLink} about the new features.",
-                highlight: "<e0>{featuresLink}</e0> about the new features.",
+                source: "Examine other usage by {ruleUser}.",
+                highlight: "Examine other usage by <e0>{ruleUser}</e0>.",
                 rule,
                 pathName: "a/b/c.xliff"
             })
@@ -57,9 +57,9 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
-            source: "{featuresLink} about the new features.",
+            source: "Examine other usage by {ruleUser}.",
             pathName: "a/b/c.xliff",
-            comment: `Prompt about new features. featuresLink is a hyperlink with text "Read".`
+            comment: `Notice about other usage examples. ruleUser is an email address of the user that violated the rule.`
         });
 
         const result = rule.matchString({
@@ -75,9 +75,9 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
-            source: "{featuresLink} about the {type} features.",
+            source: "Examine other {usageKind} by {ruleUser}.",
             pathName: "a/b/c.xliff",
-            comment: "Prompt about features."
+            comment: `Notice about other usage examples.`
         });
 
         const result = rule.matchString({
@@ -89,19 +89,19 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const expected = [
             new Result({
                 severity: "warning",
-                description: `Replacement parameter "featuresLink" is not mentioned in the string's comment for translators.`,
+                description: `Replacement parameter "usageKind" is not mentioned in the string's comment for translators.`,
                 id: "icu.test",
-                source: "{featuresLink} about the {type} features.",
-                highlight: "<e0>{featuresLink}</e0> about the {type} features.",
+                source: "Examine other {usageKind} by {ruleUser}.",
+                highlight: "Examine other <e0>{usageKind}</e0> by {ruleUser}.",
                 rule,
                 pathName: "a/b/c.xliff"
             }),
             new Result({
                 severity: "warning",
-                description: `Replacement parameter "type" is not mentioned in the string's comment for translators.`,
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
                 id: "icu.test",
-                source: "{featuresLink} about the {type} features.",
-                highlight: "{featuresLink} about the <e0>{type}</e0> features.",
+                source: "Examine other {usageKind} by {ruleUser}.",
+                highlight: "Examine other {usageKind} by <e0>{ruleUser}</e0>.",
                 rule,
                 pathName: "a/b/c.xliff"
             })
@@ -114,9 +114,9 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
-            source: "{featuresLink} about the {type} features.",
+            source: "Examine other {usageKind} by {ruleUser}.",
             pathName: "a/b/c.xliff",
-            comment: `Prompt about features. featuresLink is a hyperlink with text "Read". type denotes a kind of feature, e.g. new or beta`
+            comment: `Notice about other usage examples. usageKind can be a usage or a violation. ruleUser is an email address of the user.`
         });
 
         const result = rule.matchString({
@@ -132,9 +132,9 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
-            source: "{count, plural, one {{featuresLink} about our new feature.} other {{featuresLink} about all our new features.}}",
+            source: "{count, plural, one {Examine this usage by {ruleUser}.} other {Examine those usages by {ruleUser}.}}",
             pathName: "a/b/c.xliff",
-            comment: "Prompt about one or more new features."
+            comment: "Notice about other usage examples."
         });
 
         const result = rule.matchString({
@@ -146,21 +146,21 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const expected = [
             new Result({
                 severity: "warning",
-                description: `Replacement parameter "featuresLink" is not mentioned in the string's comment for translators.`,
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
                 id: "icu.test",
-                source: "{count, plural, one {{featuresLink} about our new feature.} other {{featuresLink} about all our new features.}}",
+                source: "{count, plural, one {Examine this usage by {ruleUser}.} other {Examine those usages by {ruleUser}.}}",
                 highlight:
-                    "{count, plural, one {<e0>{featuresLink}</e0> about our new feature.} other {{featuresLink} about all our new features.}}",
+                "{count, plural, one {Examine this usage by <e0>{ruleUser}</e0>.} other {Examine those usages by {ruleUser}.}}",
                 rule,
                 pathName: "a/b/c.xliff"
             }),
             new Result({
                 severity: "warning",
-                description: `Replacement parameter "featuresLink" is not mentioned in the string's comment for translators.`,
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
                 id: "icu.test",
-                source: "{count, plural, one {{featuresLink} about our new feature.} other {{featuresLink} about all our new features.}}",
+                source: "{count, plural, one {Examine this usage by {ruleUser}.} other {Examine those usages by {ruleUser}.}}",
                 highlight:
-                    "{count, plural, one {{featuresLink} about our new feature.} other {<e0>{featuresLink}</e0> about all our new features.}}",
+                "{count, plural, one {Examine this usage by {ruleUser}.} other {Examine those usages by <e0>{ruleUser}</e0>.}}",
                 rule,
                 pathName: "a/b/c.xliff"
             })
@@ -173,7 +173,7 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
-            source: "{featuresLink} about the new features.",
+            source: "Examine other usage by {ruleUser}.",
             pathName: "a/b/c.xliff"
         });
 
