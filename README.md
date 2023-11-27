@@ -418,7 +418,7 @@ The constructor of this class should define the following properties:
 - `this.name` - a unique name for this formatter
 - `this.description` - a description of this type of formatter to display to users
 - `this.link` - (optional) a link to a web page that gives a more complete explanation
-  the rule and how to resolve the problem it found
+  of the rule and how to resolve the problem it found
 
 The formatter should also override and implement the
 [format()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Formatter.js) method,
