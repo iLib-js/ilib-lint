@@ -178,7 +178,7 @@ class Project extends DirItem {
      *
      * @param {String} root Directory to walk
      * @returns {Promise<DirItem[]>} an array of file names in the directory, filtered
-     * by the the excludes and includes list
+     * by the excludes and includes list
      * @private
      */
     async walk(root) {

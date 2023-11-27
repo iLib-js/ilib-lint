@@ -113,14 +113,14 @@ class ResourceQuoteStyle extends ResourceRule {
         };
         if (matches1 || matches2) {
             value.highlight = `Target: ${tar.replace(re1, "$1<e0>$2</e0>$3").replace(re2, "$1<e1>$2</e1>$3")}`;
-            value.description = `Quote style for the the locale ${locale} should be ${quoteStyle}`;
+            value.description = `Quote style for the locale ${locale} should be ${quoteStyle}`;
         } else {
             if (new Locale(locale).getLanguage() === "sv") {
                 // According to the MS Style guidelines, quotes are usually not required in Swedish when the source English text contains quotes
                 return;
             }
             value.highlight = `Target: ${tar}<e0></e0>`;
-            value.description = `Quotes are missing in the target. Quote style for the the locale ${locale} should be ${regExps.target.quoteStart}text${regExps.target.quoteEnd}`;
+            value.description = `Quotes are missing in the target. Quote style for the locale ${locale} should be ${regExps.target.quoteStart}text${regExps.target.quoteEnd}`;
         }
         if (typeof(resource.lineNumber) !== 'undefined') {
             value.lineNumber = resource.lineNumber;
