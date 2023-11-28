@@ -69,8 +69,7 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
             resource.getSourceLocale() ?? this.sourceLocale
         ).getSpec();
 
-        const resourceComment = resource.getComment();
-        if (!resourceComment) return; // no description provided, nothing to search
+        const resourceComment = resource.getComment() ?? "";
 
         // attempt to parse the source string as IntlMessage and output any encountered errors
         let ast;

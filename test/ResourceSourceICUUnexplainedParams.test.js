@@ -490,7 +490,19 @@ describe("ResourceSourceICUUnexplainedParams", () => {
             file: "a/b/c.xliff"
         });
 
-        expect(result).toEqual(undefined);
+        const expected = [
+            new Result({
+                severity: "warning",
+                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
+                id: "icu.test",
+                source: "Examine other usage by {ruleUser}.",
+                highlight: "Examine other usage by <e0>{ruleUser}</e0>.",
+                rule,
+                pathName: "a/b/c.xliff"
+            })
+        ];
+
+        expect(result).toStrictEqual(expected);
     });
 
     test("no source string available in the resource", () => {
