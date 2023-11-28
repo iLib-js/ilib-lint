@@ -94,7 +94,7 @@ describe("testResourceQuoteStyle", () => {
         // if the source contains native quotes, the target must too
         const expected = new Result({
             severity: "warning",
-            description: "Quote style for the the locale de-DE should be „text“",
+            description: "Quote style for the locale de-DE should be „text“",
             id: "quote.test",
             source: 'This string contains “quotes” in it.',
             highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e1>\'</e1>.',
@@ -130,7 +130,7 @@ describe("testResourceQuoteStyle", () => {
         // if the source contains native quotes, the target must too
         const expected = new Result({
             severity: "error",
-            description: "Quote style for the the locale de-DE should be „text“",
+            description: "Quote style for the locale de-DE should be „text“",
             id: "quote.test",
             source: 'This string contains “quotes” in it.',
             highlight: 'Target: Diese Zeichenfolge enthält <e0>"</e0>Anführungszeichen<e1>"</e1>.',
@@ -259,7 +259,7 @@ describe("testResourceQuoteStyle", () => {
         // if the source contains ascii quotes, the target should match
         const expected = new Result({
             severity: "warning",
-            description: "Quote style for the the locale de-DE should be „text“",
+            description: "Quote style for the locale de-DE should be „text“",
             id: "quote.test",
             source: 'This string contains "quotes" in it.',
             highlight: "Target: Diese Zeichenfolge enthält <e0>'</e0>Anführungszeichen<e1>'</e1>.",
@@ -315,7 +315,7 @@ describe("testResourceQuoteStyle", () => {
         });
         const expected = new Result({
             severity: "warning",
-            description: "Quote style for the the locale de-DE should be ‚text‘",
+            description: "Quote style for the locale de-DE should be ‚text‘",
             id: "quote.test",
             source: "This string contains ‘quotes’ in it.",
             highlight: 'Target: Diese Zeichenfolge enthält <e0>\'</e0>Anführungszeichen<e1>\'</e1>.',

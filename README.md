@@ -60,7 +60,7 @@ WARN: i18n/ru_RU.properties(45): translation should use the appropriate
 quote style
   myproject.dialog1.body.text = Нажмите кнопку "Справка", чтобы получить
 дополнительную информацию.
-  Rule (locale-quote-style): quote style for the the locale "ru-RU" should
+  Rule (locale-quote-style): quote style for the locale "ru-RU" should
 be «text»
 $
 ```
@@ -129,7 +129,7 @@ ilib-lint accepts the following command-line parameters:
   exceeded.
 
 If multiple limits are exceeded (maximum number of errors, warnings, or suggestions,
-or minimum I18N score), the exit code will be the the most severe amongst them
+or minimum I18N score), the exit code will be the most severe amongst them
 all. (Usually "2".)
 
 ## Exit Status
@@ -418,7 +418,7 @@ The constructor of this class should define the following properties:
 - `this.name` - a unique name for this formatter
 - `this.description` - a description of this type of formatter to display to users
 - `this.link` - (optional) a link to a web page that gives a more complete explanation
-  the the rule and how to resolve the problem it found
+  of the rule and how to resolve the problem it found
 
 The formatter should also override and implement the
 [format()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Formatter.js) method,
