@@ -85,52 +85,84 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
             return;
         }
 
-        // find all replacement parameters
-        const /** @type {(ArgumentElement|SelectElement|PluralElement)[]} */ replacementParameters = [];
-        this.traverseIcuAst(ast, (element) => {
+        // find parameters we wish to check for
+        const /** @type {{ name: String; location: Location | undefined }[]} */ parameters =
+                [];
+        this.traverseIcuAst(ast, ({ element, parent }) => {
             switch (element.type) {
                 case 1: // argument
-                case 5: // select
-                case 6: // plural
-                    replacementParameters.push(element);
+                    parameters.push({
+                        name: element.value,
+                        location: element.location
+                    });
+                    break;
+                case 7: // pound
+                    // find closest ancestor plural element to take parameter key from it
+                    let origin;
+                    let ancestor = parent;
+                    while (!origin && ancestor) {
+                        if (ancestor?.element?.type === 6 /* plural */) {
+                            origin = ancestor.element;
+                        }
+                        ancestor = ancestor.parent;
+                    }
+                    if (!origin) {
+                        throw new Error(
+                            `Failed to find ancestor plural for a given pound element`
+                        );
+                    }
+                    parameters.push({
+                        name: origin.value,
+                        location: element.location
+                    });
+                    break;
             }
         });
 
         // flag any replacement parameter whose label
         // does not appear in the description of the resource
-        const missing = replacementParameters.filter(
-            (param) =>
-                !new RegExp(
-                    `\\b${this.escapeRegExp(param.value)}\\b`,
-                    "i"
-                ).test(resourceComment)
+        const missing = parameters.filter(
+            ({ name }) =>
+                !new RegExp(`\\b${this.escapeRegExp(name)}\\b`, "i").test(
+                    resourceComment
+                )
         );
 
         return missing.map(
-            (param) =>
+            ({ name, location }) =>
                 new Result({
                     rule: this,
                     id: resource.getKey(),
                     pathName: resource.getPath(),
                     source: source,
                     severity: "warning",
-                    description: `Replacement parameter "${param.value}" is not mentioned in the string's comment for translators.`,
-                    highlight: this.highlightLocation(source, param.location)
+                    description: `Replacement parameter "${name}" is not mentioned in the string's comment for translators.`,
+                    highlight: this.highlightLocation(source, location)
                 })
         );
     }
 
     /**
-     * Recursively traverse ICU Message
+     * @typedef {{
+     *     element: MessageFormatElement;
+     *     parent: undefined | ICUAstNode;
+     * }} ICUAstNode
+     */
+
+    /**
+     * Apply callback to every element of ICU Message including nested elements
+     * (i.e. within select, plural, tag) keeping track of parent element
      *
      * @private
      */
     traverseIcuAst(
-        /** @type {MessageFormatElement[]} */ elements,
-        /** @type {(element: MessageFormatElement) => void} */ callback
+        /** @type {MessageFormatElement[]} */ message,
+        /** @type {(node: ICUAstNode) => void} */ callback,
+        /** @type {ICUAstNode | undefined} */ parent
     ) {
-        for (const element of elements) {
-            callback(element);
+        for (const element of message) {
+            const node = { element, parent };
+            callback(node);
             switch (element.type) {
                 case 5: // select
                 case 6: // plural
@@ -138,11 +170,12 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
                         Object.values(element.options).flatMap(
                             (option) => option.value
                         ),
-                        callback
+                        callback,
+                        node
                     );
                     break;
                 case 8: // tag
-                    this.traverseIcuAst(element.children, callback);
+                    this.traverseIcuAst(element.children, callback, node);
                     break;
             }
         }
