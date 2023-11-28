@@ -86,13 +86,12 @@ export class ResourceSourceICUUnexplainedParams extends ResourceRule {
         }
 
         // find all replacement parameters
-        const /** @type {(ArgumentElement|SelectElement|PluralElement|TagElement)[]} */ replacementParameters = [];
+        const /** @type {(ArgumentElement|SelectElement|PluralElement)[]} */ replacementParameters = [];
         this.traverseIcuAst(ast, (element) => {
             switch (element.type) {
                 case 1: // argument
                 case 5: // select
                 case 6: // plural
-                case 8: // tag
                     replacementParameters.push(element);
             }
         });

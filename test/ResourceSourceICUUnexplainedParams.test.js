@@ -212,7 +212,7 @@ describe("ResourceSourceICUUnexplainedParams", () => {
         expect(result).toStrictEqual([]);
     });
 
-    test("replacement parameter of a tag not mentioned in comment for translators", () => {
+    test("name of a tag not mentioned in comment for translators", () => {
         const resource = new ResourceString({
             key: "icu.test",
             sourceLocale: "en-US",
@@ -227,19 +227,43 @@ describe("ResourceSourceICUUnexplainedParams", () => {
             file: "a/b/c.xliff"
         });
 
-        const expected = [
-            new Result({
-                severity: "warning",
-                description: `Replacement parameter "ruleUser" is not mentioned in the string's comment for translators.`,
-                id: "icu.test",
-                source: "Examine other usage by <ruleUser>the following user</ruleUser>.",
-                highlight: "Examine other usage by <e0><ruleUser>the following user</ruleUser></e0>.",
-                rule,
-                pathName: "a/b/c.xliff"
-            })
-        ];
+        expect(result).toStrictEqual([]);
+    });
 
-        expect(result).toStrictEqual(expected);
+    test("name of an empty tag not mentioned in comment for translators", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "Examine other usage by <ruleUser></ruleUser>.",
+            pathName: "a/b/c.xliff",
+            comment: "Notice about other usage examples."
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        expect(result).toStrictEqual([]);
+    });
+
+    test("name of a self-closing tag not mentioned in comment for translators", () => {
+        const resource = new ResourceString({
+            key: "icu.test",
+            sourceLocale: "en-US",
+            source: "Examine other usage by <ruleUser/>.",
+            pathName: "a/b/c.xliff",
+            comment: "Notice about other usage examples."
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        expect(result).toStrictEqual([]);
     });
 
     test("replacement parameter of a select message not mentioned in comment for translators", () => {
