@@ -35,6 +35,7 @@ import ResourceStateChecker from '../rules/ResourceStateChecker.js';
 import ResourceSourceICUPluralSyntax from '../rules/ResourceSourceICUPluralSyntax.js';
 import ResourceSourceICUPluralParams from '../rules/ResourceSourceICUPluralParams.js';
 import ResourceSourceICUPluralCategories from '../rules/ResourceSourceICUPluralCategories.js';
+import ResourceSourceICUUnexplainedParams from '../rules/ResourceSourceICUUnexplainedParams.js';
 
 // built-in declarative rules
 export const regexRules = [
@@ -263,7 +264,8 @@ export const builtInRulesets = {
         "source-no-manual-percentage-formatting": true,
         "source-no-noun-replacement-params": true,
         "source-no-manual-currency-formatting": true,
-        "source-icu-plural-params": true
+        "source-icu-plural-params": true,
+        "source-icu-unexplained-params": true
     },
 };
 
@@ -307,6 +309,7 @@ class BuiltinPlugin extends Plugin {
             ResourceSourceICUPluralSyntax,
             ResourceSourceICUPluralParams,
             ResourceSourceICUPluralCategories,
+            ResourceSourceICUUnexplainedParams,
             ...regexRules
         ];
     }
