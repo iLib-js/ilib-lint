@@ -22,6 +22,8 @@ import { Result } from 'ilib-lint-common';
 
 import ResourceRule from './ResourceRule.js';
 
+/** @ignore @typedef {import("ilib-tools-common").Resource} Resource */
+
 /** 
  * @typedef BaseRegExpCollection
  * @type {object}
@@ -53,7 +55,7 @@ import ResourceRule from './ResourceRule.js';
  * @prop {TargetRegExpCollection} target
  */
 
-let /** @type {{[locale: string]: LocaleInfo}} */LICache = {};
+let /** @type {{[locale: string]: LocaleInfo}} */ LICache = {};
 let /** @type {{[locale: string]: RegExpCollectionForLocale}} */ regExpsCache = {};
 
 // superset of all the non-ASCII start and end chars used in CLDR
@@ -65,23 +67,52 @@ const quotesAscii = new RegExp(`((^|\\W)"\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\
 const quotesAsciiAlt = new RegExp(`((^|\\W)'\\s?[\\p{Letter}\\{]|[a-rt-zA-RT-Z\\}]\\s?'(\\W|$))`, "gu");
 
 /**
+ * @typedef ModeLocaleOnly
+ * @type {"localeOnly"}
+ * Allow only localized quotes in the target string. This also sets default result severity to "error".
+ */
+
+/**
+ * @typedef Severity
+ * @type {("error"|"warning"|"suggestion")}
+ * Result severity.
+ */
+
+/**
+ * @typedef Modes
+ * @type {ModeLocaleOnly}
+ * One-param rule configuration.
+ */
+
+/** 
+ * @typedef Configuration
+ * @type {Modes}
+ * Parameters that can be set through rule configuration file.
+ */
+
+/**
  * @class Represent an ilib-lint rule.
  */
 class ResourceQuoteStyle extends ResourceRule {
     /**
      * Make a new rule instance.
-     * @constructor
+     * 
+     * @param {object} [options] 
+     * @param {string} [options.sourceLocale]
+     * @param {Configuration} [options.param]
      */
     constructor(options) {
-        super(options);
+        super(options ?? {});
         this.name = "resource-quote-style";
         this.description = "Ensure that the proper quote characters are used in translated resources";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
-        if (options && options.param === "localeOnly") {
+        this.link = "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-quote-style.md";
+        
+        if (options?.param === "localeOnly") {
             // only localized quotes are allowed in the target string
             this.localeOnly = true;
         }
-        this.link = "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-quote-style.md";
+        
         if (!this.skipLocales) {
             this.skipLocales = new Set();
         }
@@ -94,6 +125,12 @@ class ResourceQuoteStyle extends ResourceRule {
 
     /**
      * @private
+     * @param {string} src
+     * @param {string} tar
+     * @param {Resource} resource
+     * @param {string} file
+     * @param {string} locale
+     * @param {RegExpCollectionForLocale} regExps
      */
     checkString(src, tar, resource, file, locale, regExps) {
         quotesAscii.lastIndex = 0;
@@ -142,27 +179,30 @@ class ResourceQuoteStyle extends ResourceRule {
         const matches2 = re2 ? re2.exec(tar) : undefined;
 
         let value = {
-            severity: this.localeOnly ? "error" : "warning",
+            /** @type {Severity} */ severity: this.localeOnly ? "error" :"warning",
             id: resource.getKey(),
             source: src,
             rule: this,
             locale,
             pathName: file
         };
+        let highlight, description, lineNumber;
         if (matches1 || matches2) {
-            value.highlight = tar;
-            if (re1) { value.highlight = value.highlight.replace(re1, "$1<e0>$2</e0>$3"); }
-            if (re2) { value.highlight = value.highlight.replace(re2, "$1<e1>$2</e1>$3"); }
-            value.highlight = `Target: ${value.highlight}`;
-            value.description = `Quote style for the locale ${locale} should be ${quoteStyle}`;
+            highlight = tar;
+            if (re1) { highlight = highlight.replace(re1, "$1<e0>$2</e0>$3"); }
+            if (re2) { highlight = highlight.replace(re2, "$1<e1>$2</e1>$3"); }
+            highlight = `Target: ${highlight}`;
+            description = `Quote style for the locale ${locale} should be ${quoteStyle}`;
         } else {
-            value.highlight = `Target: ${tar}<e0></e0>`;
-            value.description = `Quotes are missing in the target. Quote style for the locale ${locale} should be ${regExps.target.quoteStart}text${regExps.target.quoteEnd}`;
+            highlight = `Target: ${tar}<e0></e0>`;
+            description = `Quotes are missing in the target. Quote style for the locale ${locale} should be ${regExps.target.quoteStart}text${regExps.target.quoteEnd}`;
         }
-        if (typeof(resource.lineNumber) !== 'undefined') {
-            value.lineNumber = resource.lineNumber;
-        }
-        return new Result(value);
+        // @ts-ignore: Property 'lineNumber' does not exist on type 'Resource'
+        // there is no lineNumber property on a Resource type
+        // (preserved for compatibility)
+        if (typeof(resource.lineNumber) !== 'undefined') {lineNumber = /** @type {number} */ (resource.lineNumber); }
+
+        return new Result({...value, highlight, description, lineNumber});
     }
 
     /**
@@ -178,12 +218,16 @@ class ResourceQuoteStyle extends ResourceRule {
         let li = LICache[locale];
     
         if (!li) {
+            // @ts-ignore: An argument for 'options' was not provided
+            // LocaleInfo constructor type annotation does not reflect that options are in fact optional
             li = new LocaleInfo(locale);
             LICache[locale] = li;
         }
     
         let sourceLI = LICache[this.sourceLocale];
         if (!sourceLI) {
+            // @ts-ignore: An argument for 'options' was not provided
+            // LocaleInfo constructor type annotation does not reflect that options are in fact optional
             sourceLI = new LocaleInfo(this.sourceLocale);
             LICache[this.sourceLocale] = sourceLI;
         }
@@ -260,6 +304,11 @@ class ResourceQuoteStyle extends ResourceRule {
 
     /**
      * @override
+     * @param {Object} params 
+     * @param {string | undefined} params.source 
+     * @param {string | undefined} params.target 
+     * @param {Resource} params.resource 
+     * @param {string} params.file 
      */
     matchString({source, target, resource, file}) {
         if (!source || !target) return; // cannot match in strings that don't exist!
