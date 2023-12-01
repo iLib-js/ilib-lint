@@ -25,7 +25,7 @@ import { Rule } from 'i18nlint-common';
 class ResourceRule extends Rule {
     /**
      * Construct a new resource checker rule.
-     *
+*
      * If a subclass defines a property "locales" with the
      * value being a Set of locale lang-specs, then this
      * class will ensure that the rule is only applied to
@@ -40,6 +40,19 @@ class ResourceRule extends Rule {
      */
     constructor(options) {
         super(options);
+
+        /**
+         * @protected @type {Set<string>|undefined} Ensure that the rule is only applied to
+         * resources that match one of the lang-specs in the
+         * the set.
+         */
+        this.locales;
+
+        /**
+         * @protected @type {Set<string>|undefined} Ensure that the rule is only applied to resources that do not match
+         * any of the lang-specs in the set.
+         */
+        this.skipLocales;
     }
 
     /**
