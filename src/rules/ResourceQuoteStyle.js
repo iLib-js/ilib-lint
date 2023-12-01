@@ -264,6 +264,7 @@ class ResourceQuoteStyle extends ResourceRule {
     matchString({source, target, resource, file}) {
         if (!source || !target) return; // cannot match in strings that don't exist!
         const locale = resource.getTargetLocale();
+        if (!locale) return; // nothing to do if there is no target locale specified
         const regExps = this.getRegExps(locale);
         return this.checkString(source, target, resource, file, locale, regExps);
     }
