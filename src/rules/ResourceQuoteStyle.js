@@ -22,8 +22,39 @@ import { Result } from 'ilib-lint-common';
 
 import ResourceRule from './ResourceRule.js';
 
-let LICache = {};
-let regExpsCache = {};
+/** 
+ * @typedef BaseRegExpCollection
+ * @type {object}
+ * @prop {string} quoteStart
+ * @prop {string} quoteStartAlt
+ * @prop {string} quoteEnd
+ * @prop {string} quoteEndAlt
+ * @prop {RegExp} quotesNative
+ * @prop {RegExp} quotesNativeAlt
+ * 
+ * @typedef {BaseRegExpCollection} SourceRegExpCollection
+ */
+
+/**
+ * @typedef ExtendedRegExpCollection
+ * @type {object}
+ * @prop {RegExp} quotesAll
+ * @prop {RegExp} quotesAllAlt
+ * @prop {string} nonQuoteChars
+ * @prop {string} nonQuoteCharsAlt
+ * 
+ * @typedef {BaseRegExpCollection & ExtendedRegExpCollection} TargetRegExpCollection
+ */
+
+/**
+ * @typedef RegExpCollectionForLocale
+ * @type {object}
+ * @prop {SourceRegExpCollection} source
+ * @prop {TargetRegExpCollection} target
+ */
+
+let /** @type {{[locale: string]: LocaleInfo}} */LICache = {};
+let /** @type {{[locale: string]: RegExpCollectionForLocale}} */ regExpsCache = {};
 
 // superset of all the non-ASCII start and end chars used in CLDR
 const quoteChars = "«»‘“”„「」’‚‹›『』";
@@ -134,71 +165,91 @@ class ResourceQuoteStyle extends ResourceRule {
     /**
      * Calculate all the regular expressions we need.
      * @private
+     * @param {string} locale
+     * @returns {RegExpCollectionForLocale}
      */
     getRegExps(locale) {
         if (regExpsCache[locale]) return regExpsCache[locale];
-
-        // store quote chars and regexps in here and then cache it
-        // so we only do it once for each locale
-        let regExps = {
-            source: {},
-            target: {}
-        };
-
+    
         // locale info object will tell us the quote chars for the locale
         let li = LICache[locale];
-
+    
         if (!li) {
             li = new LocaleInfo(locale);
             LICache[locale] = li;
         }
-
+    
         let sourceLI = LICache[this.sourceLocale];
         if (!sourceLI) {
             sourceLI = new LocaleInfo(this.sourceLocale);
             LICache[this.sourceLocale] = sourceLI;
         }
-
+    
         // what are all the quote chars that this locale uses?
-        regExps.source.quoteStart = sourceLI.getDelimiterQuotationStart();
-        regExps.source.quoteStartAlt = sourceLI.info.delimiter.alternateQuotationStart;
-
-        regExps.source.quoteEnd = sourceLI.getDelimiterQuotationEnd();
-        regExps.source.quoteEndAlt = sourceLI.info.delimiter.alternateQuotationEnd;
-
-        regExps.target.quoteStart = li.getDelimiterQuotationStart();
-        regExps.target.quoteStartAlt = li.info.delimiter.alternateQuotationStart;
-
-        regExps.target.quoteEnd = li.getDelimiterQuotationEnd();
-        regExps.target.quoteEndAlt = li.info.delimiter.alternateQuotationEnd;
-
+        const sourceQuoteStart = sourceLI.getDelimiterQuotationStart();
+        const sourceQuoteStartAlt = /** @type {string} */ (sourceLI.info.delimiter.alternateQuotationStart);
+    
+        const sourceQuoteEnd = sourceLI.getDelimiterQuotationEnd();
+        const sourceQuoteEndAlt = /** @type {string} */ (sourceLI.info.delimiter.alternateQuotationEnd);
+    
+        const targetQuoteStart = li.getDelimiterQuotationStart();
+        const targetQuoteStartAlt = /** @type {string} */ (li.info.delimiter.alternateQuotationStart);
+    
+        const targetQuoteEnd = li.getDelimiterQuotationEnd();
+        const targetQuoteEndAlt = /** @type {string} */ (li.info.delimiter.alternateQuotationEnd);
+    
         // now calculate regular expressions for the source string that use those quotes
         // if the source uses ASCII quotes, then the target could have ASCII or native quotes
-        regExps.source.quotesNative = new RegExp(`((^|\\W)${regExps.source.quoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.source.quoteEnd}(\\W|$))`, "gu");
-        regExps.source.quotesNativeAlt = new RegExp(`((^|\\W)${regExps.source.quoteStartAlt}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.source.quoteEndAlt}(\\W|$))`, "gu");
-
+        const sourceQuotesNative = new RegExp(`((^|\\W)${sourceQuoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${sourceQuoteEnd}(\\W|$))`, "gu");
+        const sourceQuotesNativeAlt = new RegExp(`((^|\\W)${sourceQuoteStartAlt}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${sourceQuoteEndAlt}(\\W|$))`, "gu");
+    
         // now calculate the regular expressions for the target string that use quotes
         // if the source contains native quotes, then the target should also have native quotes
-        regExps.target.quotesNative = new RegExp(`((^|\\W)${regExps.target.quoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.target.quoteEnd}(\\W|$))`, "gu");
-        regExps.target.quotesNativeAlt = new RegExp(`((^|\\W)${regExps.target.quoteStartAlt}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.target.quoteEndAlt}(\\W|$))`, "gu");
-        regExps.target.quotesAll = this.localeOnly ?
-            regExps.target.quotesNative :
-            new RegExp(`((^|\\W)[${regExps.target.quoteStart}${regExps.target.quoteStartAlt}"]\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?[${regExps.target.quoteEnd}${regExps.target.quoteEndAlt}"](\\W|$))`, "gu");
-        regExps.target.quotesAllAlt = this.localeOnly ?
-            regExps.target.quotesNativeAlt :
-            new RegExp(`((^|\\W)[${regExps.target.quoteStartAlt}']\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?[${regExps.target.quoteEndAlt}'](\\W|$))`, "gu");
-
+        const targetQuotesNative = new RegExp(`((^|\\W)${targetQuoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${targetQuoteEnd}(\\W|$))`, "gu");
+        const targetQuotesNativeAlt = new RegExp(`((^|\\W)${targetQuoteStartAlt}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${targetQuoteEndAlt}(\\W|$))`, "gu");
+        const targetQuotesAll = this.localeOnly ?
+            targetQuotesNative :
+            new RegExp(`((^|\\W)[${targetQuoteStart}${targetQuoteStartAlt}"]\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?[${targetQuoteEnd}${targetQuoteEndAlt}"](\\W|$))`, "gu");
+        const targetQuotesAllAlt = this.localeOnly ?
+            targetQuotesNativeAlt :
+            new RegExp(`((^|\\W)[${targetQuoteStartAlt}']\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?[${targetQuoteEndAlt}'](\\W|$))`, "gu");
+    
         // the non quote chars are used to highlight errors in the target string
-        regExps.target.nonQuoteChars = quoteChars.
-                replace(regExps.source.quoteStart, "").
-                replace(regExps.target.quoteStart, "").
-                replace(regExps.source.quoteEnd, "").
-                replace(regExps.target.quoteEnd, "");
-        regExps.target.nonQuoteCharsAlt = quoteChars.
-                replace(regExps.source.quoteStartAlt, "").
-                replace(regExps.target.quoteStartAlt, "").
-                replace(regExps.source.quoteEndAlt, "").
-                replace(regExps.target.quoteEndAlt, "");
+        const targetNonQuoteChars = quoteChars.
+                replace(sourceQuoteStart, "").
+                replace(targetQuoteStart, "").
+                replace(sourceQuoteEnd, "").
+                replace(targetQuoteEnd, "");
+        const targetNonQuoteCharsAlt = quoteChars.
+                replace(sourceQuoteStartAlt, "").
+                replace(targetQuoteStartAlt, "").
+                replace(sourceQuoteEndAlt, "").
+                replace(targetQuoteEndAlt, "");
+
+        // store quote chars and regexps in here and then cache it
+        // so we only do it once for each locale
+        let /** @type {RegExpCollectionForLocale} */ regExps = {
+            source: {
+                quoteStart: sourceQuoteStart,
+                quoteStartAlt: sourceQuoteStartAlt,
+                quoteEnd: sourceQuoteEnd,
+                quoteEndAlt: sourceQuoteEndAlt,
+                quotesNative: sourceQuotesNative,
+                quotesNativeAlt: sourceQuotesNativeAlt,
+            },
+            target: {
+                quoteStart: targetQuoteStart,
+                quoteStartAlt: targetQuoteStartAlt,
+                quoteEnd: targetQuoteEnd,
+                quoteEndAlt: targetQuoteEndAlt,
+                quotesNative: targetQuotesNative,
+                quotesNativeAlt: targetQuotesNativeAlt,
+                quotesAll: targetQuotesAll,
+                quotesAllAlt: targetQuotesAllAlt,
+                nonQuoteChars: targetNonQuoteChars,
+                nonQuoteCharsAlt: targetNonQuoteCharsAlt,
+            }
+        };
 
         regExpsCache[locale] = regExps;
         return regExps;
