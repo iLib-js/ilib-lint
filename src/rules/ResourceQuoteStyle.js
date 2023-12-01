@@ -150,7 +150,10 @@ class ResourceQuoteStyle extends ResourceRule {
             pathName: file
         };
         if (matches1 || matches2) {
-            value.highlight = `Target: ${tar.replace(re1, "$1<e0>$2</e0>$3").replace(re2, "$1<e1>$2</e1>$3")}`;
+            value.highlight = tar;
+            if (re1) { value.highlight = value.highlight.replace(re1, "$1<e0>$2</e0>$3"); }
+            if (re2) { value.highlight = value.highlight.replace(re2, "$1<e1>$2</e1>$3"); }
+            value.highlight = `Target: ${value.highlight}`;
             value.description = `Quote style for the locale ${locale} should be ${quoteStyle}`;
         } else {
             value.highlight = `Target: ${tar}<e0></e0>`;
