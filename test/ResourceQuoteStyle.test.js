@@ -442,6 +442,52 @@ describe("testResourceQuoteStyle", () => {
         expect(!actual).toBeTruthy();
     });
 
+    test("ResourceQuoteStyleItalianGuillemets", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "it-IT",
+            target: 'Questa stringa contiene «virgolette».',
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(!actual).toBeTruthy();
+    });
+
+    test("ResourceQuoteStyleItalianNoGuillemets", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "it-IT",
+            target: 'Questa stringa contiene "virgolette".',
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        expect(!actual).toBeTruthy();
+    });
+
 
     test("ResourceQuoteStyleMatchQuotesInTargetOnly", () => {
         expect.assertions(2);
