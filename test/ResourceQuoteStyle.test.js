@@ -21,7 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceQuoteStyle from "../src/rules/ResourceQuoteStyle.js";
 
-import { Result } from 'i18nlint-common';
+import { IntermediateRepresentation, Result } from 'i18nlint-common';
 
 describe("testResourceQuoteStyle", () => {
     test("ResourceQuoteStyle", () => {
@@ -488,6 +488,34 @@ describe("testResourceQuoteStyle", () => {
         expect(!actual).toBeTruthy();
     });
 
+    test("ResourceQuoteStyleItalianSkipped", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'This string contains "quotes" in it.',
+            targetLocale: "it-IT",
+            target: "Questa stringa non contiene virgolette.",
+            pathName: "a/b/c.xliff"
+        });
+
+        const ir = new IntermediateRepresentation({
+            type: "resource",
+            ir: [resource],
+            filePath: "a/b/c.xliff"
+        });
+
+        const actual = rule.match({
+            ir,
+            file: "a/b/c.xliff"
+        });
+
+        expect(!actual).toBeTruthy();
+    });
 
     test("ResourceQuoteStyleMatchQuotesInTargetOnly", () => {
         expect.assertions(2);

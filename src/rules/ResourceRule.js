@@ -42,15 +42,24 @@ class ResourceRule extends Rule {
         super(options);
 
         /**
-         * @protected @type {Set<string>|undefined} Ensure that the rule is only applied to
-         * resources that match one of the lang-specs in the
-         * the set.
+         * Ensure that the rule is only applied to resources that match one of
+         * the lang-specs in the the set.
+         * 
+         * These should be language specifiers (e.g. "it", not "it-IT").
+         *
+         * @type {Set<string> | undefined}
+         * @protected
          */
         this.locales;
 
         /**
-         * @protected @type {Set<string>|undefined} Ensure that the rule is only applied to resources that do not match
+         * Ensure that the rule is only applied to resources that do not match
          * any of the lang-specs in the set.
+         * 
+         * These should be language specifiers (e.g. "it", not "it-IT").
+         *
+         * @type {Set<string> | undefined}
+         * @protected
          */
         this.skipLocales;
     }

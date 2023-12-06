@@ -57,8 +57,8 @@ class ResourceQuoteStyle extends ResourceRule {
         }
         
         [
-            "sv-SE", // According to the MS Style guidelines, quotes are usually not required in Swedish when the source English text contains quotes
-            "it-IT", // Based on feedback from linguists quotes in Italian are not required to be the guillemets, even though CLDR says so
+            "sv", // According to the MS Style guidelines, quotes are usually not required in Swedish when the source English text contains quotes
+            "it", // Based on feedback from linguists quotes in Italian are not required to be the guillemets, even though CLDR says so
         ].forEach(locale => this.skipLocales.add(locale));   
     }
 
