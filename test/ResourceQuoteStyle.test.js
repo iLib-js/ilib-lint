@@ -373,6 +373,28 @@ describe("testResourceQuoteStyle", () => {
         expect(!actual).toBeTruthy();
     });
 
+    test("ResourceQuoteStyleQuotesAdjacentReplacementParamBracket", () => {
+        const rule = new ResourceQuoteStyle();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: `Showing {maxAmount} entries, "{sourceName}" has more.`,
+            targetLocale: "fr-FR",
+            target: `Affichant {maxAmount} entrées, « {sourceName} » en contient davantage.`,
+            pathName: "a/b/c.xliff"
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            target: /** @type {string} */ (resource.getTarget()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        
+        expect(result).toBeFalsy();
+    });
+
     test("ResourceQuoteStyleFrenchGuillemets", () => {
         expect.assertions(2);
 
