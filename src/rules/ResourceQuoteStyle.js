@@ -51,20 +51,13 @@ import ResourceRule from './ResourceRule.js';
 /**
  * @typedef RegExpCollectionForLocale
  * @type {object}
+ * @prop {RegExp} quotesAscii
+ * @prop {RegExp} quotesAsciiAlt
  * @prop {SourceRegExpCollection} source
  * @prop {TargetRegExpCollection} target
  */
 
 let /** @type {{[locale: string]: LocaleInfo}} */ LICache = {};
-let /** @type {{[locale: string]: RegExpCollectionForLocale}} */ regExpsCache = {};
-
-// superset of all the non-ASCII start and end chars used in CLDR
-const quoteChars = "«»‘“”„「」’‚‹›『』";
-
-// shared between all locales since there is nothing locale-specific in here
-const quotesAscii = new RegExp(`((^|\\W)"\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?"(\\W|$))`, "gu");
-// leave out the "s" before the final quote to take care of plural possessives (eg. my colleagues' files.)
-const quotesAsciiAlt = new RegExp(`((^|\\W)'\\s?[\\p{Letter}\\{]|[a-rt-zA-RT-Z\\}]\\s?'(\\W|$))`, "gu");
 
 /**
  * @typedef ModeLocaleOnly
@@ -130,79 +123,74 @@ class ResourceQuoteStyle extends ResourceRule {
      * @param {Resource} resource
      * @param {string} file
      * @param {string} locale
-     * @param {RegExpCollectionForLocale} regExps
      */
-    checkString(src, tar, resource, file, locale, regExps) {
-        quotesAscii.lastIndex = 0;
-        quotesAsciiAlt.lastIndex = 0;
-        regExps.source.quotesNative.lastIndex = 0;
-        regExps.source.quotesNativeAlt.lastIndex = 0;
-        regExps.target.quotesAll.lastIndex = 0;
-        regExps.target.quotesAllAlt.lastIndex = 0;
-        regExps.target.quotesNative.lastIndex = 0;
-        regExps.target.quotesNativeAlt.lastIndex = 0;
+    checkString(src, tar, resource, file, locale) {
+        const regExps = this.getRegExps(locale);
 
-        const asciiMatches = src.match(quotesAscii);
-        const asciiMatchesAlt = src.match(quotesAsciiAlt);
-        const nativeMatches = src.match(regExps.source.quotesNative);
-        const nativeMatchesAlt = src.match(regExps.source.quotesNativeAlt);
-
-        // see if we need to check the target
-        if (!asciiMatches && !asciiMatchesAlt && !nativeMatches && !nativeMatchesAlt) return;
-
-        let re1, re2;
+        const sourceStyle = {
+            ascii: regExps.quotesAscii.test(src),
+            asciiAlt: regExps.quotesAsciiAlt.test(src),
+            native: regExps.source.quotesNative.test(src),
+            nativeAlt: regExps.source.quotesNativeAlt.test(src)
+        }
 
         // used in results to show what the expected quote style is
-        const quoteStyle = (asciiMatches || nativeMatches) ?
+        const targetQuoteStyleExample = (sourceStyle.ascii || sourceStyle.native) ?
             `${regExps.target.quoteStart}text${regExps.target.quoteEnd}` :
             `${regExps.target.quoteStartAlt}text${regExps.target.quoteEndAlt}`;
-
-        // match the appropriate regexp. The re1 and re2 are for the highlight field
-        if (asciiMatches) {
-            if (tar.match(regExps.target.quotesAll)) return;
-            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'])([\\p{Letter}\\{])`, "gu");
-            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteChars}'])(\\W|$)`, "gu");
-        } else if (asciiMatchesAlt) {
-            if (tar.match(regExps.target.quotesAllAlt)) return;
-            re1 = new RegExp(`(^|\\W)[${regExps.target.nonQuoteCharsAlt}"]([\\p{Letter}\\{])`, "gu");
-            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteCharsAlt}"])(\\W|$)`, "gu");
-        } else if (nativeMatches) {
-            if (tar.match(regExps.target.quotesNative)) return;
-            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'"])([\\p{Letter}\\{])`, "gu");
-            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteChars}'"])(\\W|$)`, "gu");
-        } else if (nativeMatchesAlt) {
-            if (tar.match(regExps.target.quotesNativeAlt)) return;
-            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteCharsAlt}'"])([\\p{Letter}\\{])`, "gu");
-            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteCharsAlt}'"])(\\W|$)`, "gu");
+        
+        // verify that corresponding quote style is present in target 
+        // otherwise, construct regexps to pinpoint violation positions
+        // (for highlighting purposes)
+        let startQuote, endQuote;
+        if (sourceStyle.ascii) {
+            if (regExps.target.quotesAll.test(tar)) return;
+            startQuote = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'])([\\p{Letter}\\{])`, "gu");
+            endQuote = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteChars}'])(\\W|$)`, "gu");
+        } else if (sourceStyle.asciiAlt) {
+            if (regExps.target.quotesAllAlt.test(tar)) return;
+            startQuote = new RegExp(`(^|\\W)[${regExps.target.nonQuoteCharsAlt}"]([\\p{Letter}\\{])`, "gu");
+            endQuote = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteCharsAlt}"])(\\W|$)`, "gu");
+        } else if (sourceStyle.native) {
+            if (regExps.target.quotesNative.test(tar)) return;
+            startQuote = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'"])([\\p{Letter}\\{])`, "gu");
+            endQuote = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteChars}'"])(\\W|$)`, "gu");
+        } else if (sourceStyle.nativeAlt) {
+            if (regExps.target.quotesNativeAlt.test(tar)) return;
+            startQuote = new RegExp(`(^|\\W)([${regExps.target.nonQuoteCharsAlt}'"])([\\p{Letter}\\{])`, "gu");
+            endQuote = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteCharsAlt}'"])(\\W|$)`, "gu");
+        } else {
+            // no quotes detected in source string
+            return;
         }
-        const matches1 = re1 ? re1.exec(tar) : undefined;
-        const matches2 = re2 ? re2.exec(tar) : undefined;
 
-        let value = {
-            /** @type {Severity} */ severity: this.localeOnly ? "error" :"warning",
-            id: resource.getKey(),
-            source: src,
-            rule: this,
-            locale,
-            pathName: file
-        };
         let highlight, description, lineNumber;
-        if (matches1 || matches2) {
+        if (startQuote.test(tar) || endQuote.test(tar)) {
             highlight = tar;
-            if (re1) { highlight = highlight.replace(re1, "$1<e0>$2</e0>$3"); }
-            if (re2) { highlight = highlight.replace(re2, "$1<e1>$2</e1>$3"); }
+            if (startQuote) { highlight = highlight.replace(startQuote, "$1<e0>$2</e0>$3"); }
+            if (endQuote) { highlight = highlight.replace(endQuote, "$1<e1>$2</e1>$3"); }
             highlight = `Target: ${highlight}`;
-            description = `Quote style for the locale ${locale} should be ${quoteStyle}`;
+            description = `Quote style for the locale ${locale} should be ${targetQuoteStyleExample}`;
         } else {
             highlight = `Target: ${tar}<e0></e0>`;
-            description = `Quotes are missing in the target. Quote style for the locale ${locale} should be ${regExps.target.quoteStart}text${regExps.target.quoteEnd}`;
+            description = `Quotes are missing in the target. Quote style for the locale ${locale} should be ${targetQuoteStyleExample}`;
         }
         // @ts-ignore: Property 'lineNumber' does not exist on type 'Resource'
         // there is no lineNumber property on a Resource type
         // (preserved for compatibility)
         if (typeof(resource.lineNumber) !== 'undefined') {lineNumber = /** @type {number} */ (resource.lineNumber); }
 
-        return new Result({...value, highlight, description, lineNumber});
+        return new Result({
+            /** @type {Severity} */ severity: this.localeOnly ? "error" : "warning",
+            id: resource.getKey(),
+            source: src,
+            rule: this,
+            locale,
+            pathName: file,
+            highlight,
+            description,
+            lineNumber,
+        });
     }
 
     /**
@@ -212,11 +200,16 @@ class ResourceQuoteStyle extends ResourceRule {
      * @returns {RegExpCollectionForLocale}
      */
     getRegExps(locale) {
-        if (regExpsCache[locale]) return regExpsCache[locale];
+        // superset of all the non-ASCII start and end chars used in CLDR
+        const quoteChars = "«»‘“”„「」’‚‹›『』";
+        
+        // shared between all locales since there is nothing locale-specific in here
+        const quotesAscii = new RegExp(`((^|\\W)"\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?"(\\W|$))`, "gu");
+        // leave out the "s" before the final quote to take care of plural possessives (eg. my colleagues' files.)
+        const quotesAsciiAlt = new RegExp(`((^|\\W)'\\s?[\\p{Letter}\\{]|[a-rt-zA-RT-Z\\}]\\s?'(\\W|$))`, "gu");
     
         // locale info object will tell us the quote chars for the locale
         let li = LICache[locale];
-    
         if (!li) {
             // @ts-ignore: An argument for 'options' was not provided
             // LocaleInfo constructor type annotation does not reflect that options are in fact optional
@@ -273,9 +266,9 @@ class ResourceQuoteStyle extends ResourceRule {
                 replace(sourceQuoteEndAlt, "").
                 replace(targetQuoteEndAlt, "");
 
-        // store quote chars and regexps in here and then cache it
-        // so we only do it once for each locale
-        let /** @type {RegExpCollectionForLocale} */ regExps = {
+        return {
+            quotesAscii,
+            quotesAsciiAlt,
             source: {
                 quoteStart: sourceQuoteStart,
                 quoteStartAlt: sourceQuoteStartAlt,
@@ -297,9 +290,6 @@ class ResourceQuoteStyle extends ResourceRule {
                 nonQuoteCharsAlt: targetNonQuoteCharsAlt,
             }
         };
-
-        regExpsCache[locale] = regExps;
-        return regExps;
     }
 
     /**
@@ -314,8 +304,7 @@ class ResourceQuoteStyle extends ResourceRule {
         if (!source || !target) return; // cannot match in strings that don't exist!
         const locale = resource.getTargetLocale();
         if (!locale) return; // nothing to do if there is no target locale specified
-        const regExps = this.getRegExps(locale);
-        return this.checkString(source, target, resource, file, locale, regExps);
+        return this.checkString(source, target, resource, file, locale);
     }
 }
 
