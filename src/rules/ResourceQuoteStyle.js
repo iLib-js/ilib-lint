@@ -52,6 +52,14 @@ class ResourceQuoteStyle extends ResourceRule {
             this.localeOnly = true;
         }
         this.link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-quote-style.md";
+        if (!this.skipLocales) {
+            this.skipLocales = new Set();
+        }
+        
+        [
+            "sv", // According to the MS Style guidelines, quotes are usually not required in Swedish when the source English text contains quotes
+            "it", // Based on feedback from linguists quotes in Italian are not required to be the guillemets, even though CLDR says so
+        ].forEach(locale => this.skipLocales.add(locale));   
     }
 
     /**
@@ -115,10 +123,6 @@ class ResourceQuoteStyle extends ResourceRule {
             value.highlight = `Target: ${tar.replace(re1, "$1<e0>$2</e0>$3").replace(re2, "$1<e1>$2</e1>$3")}`;
             value.description = `Quote style for the locale ${locale} should be ${quoteStyle}`;
         } else {
-            if (new Locale(locale).getLanguage() === "sv") {
-                // According to the MS Style guidelines, quotes are usually not required in Swedish when the source English text contains quotes
-                return;
-            }
             value.highlight = `Target: ${tar}<e0></e0>`;
             value.description = `Quotes are missing in the target. Quote style for the locale ${locale} should be ${regExps.target.quoteStart}text${regExps.target.quoteEnd}`;
         }
