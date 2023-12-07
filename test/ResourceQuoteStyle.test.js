@@ -391,7 +391,86 @@ describe("testResourceQuoteStyle", () => {
             resource,
             file: "a/b/c.xliff"
         });
-        
+
+        expect(result).toBeFalsy();
+    });
+
+    test("ResourceQuoteStyleQuotesAdjacentReplacementParamBracket no quotes in translation", () => {
+        const rule = new ResourceQuoteStyle();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: `Showing {maxAmount} entries, "{sourceName}" has more.`,
+            targetLocale: "fr-FR",
+            target: `Affichant {maxAmount} entrées, {sourceName} en contient davantage.`,
+            pathName: "a/b/c.xliff"
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            target: /** @type {string} */ (resource.getTarget()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        expect(result).toBeTruthy();
+
+        const expected = new Result({
+            severity: "warning",
+            description: "Quotes are missing in the target. Quote style for the locale fr-FR should be «text»",
+            id: "quote.test",
+            source: 'Showing {maxAmount} entries, "{sourceName}" has more.',
+            highlight: 'Target: Affichant {maxAmount} entrées, {sourceName} en contient davantage.<e0></e0>',
+            rule,
+            locale: "fr-FR",
+            pathName: "a/b/c.xliff"
+        });
+
+        expect(result).toStrictEqual(expected);
+    });
+
+    test("ResourceQuoteStyleQuotesAdjacentReplacementParamBracket with single quotes in source", () => {
+        const rule = new ResourceQuoteStyle();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: `Showing {maxAmount} entries, '{sourceName}' has more.`,
+            targetLocale: "fr-FR",
+            target: `Affichant {maxAmount} entrées, « {sourceName} » en contient davantage.`,
+            pathName: "a/b/c.xliff"
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            target: /** @type {string} */ (resource.getTarget()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
+        expect(result).toBeFalsy();
+    });
+
+    test("ResourceQuoteStyleQuotesAdjacentReplacementParamBracket with single quotes in translation", () => {
+        const rule = new ResourceQuoteStyle();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: `Showing {maxAmount} entries, '{sourceName}' has more.`,
+            targetLocale: "fr-FR",
+            target: `Affichant {maxAmount} entrées, '{sourceName}' en contient davantage.`,
+            pathName: "a/b/c.xliff"
+        });
+
+        const result = rule.matchString({
+            source: /** @type {string} */ (resource.getSource()),
+            target: /** @type {string} */ (resource.getTarget()),
+            resource,
+            file: "a/b/c.xliff"
+        });
+
         expect(result).toBeFalsy();
     });
 
