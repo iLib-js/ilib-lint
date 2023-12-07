@@ -525,6 +525,13 @@ limitations under the License.
 
 ## Release Notes
 
+### v1.14.0
+
+- added a new rule to check whether or not replacement parameters in the
+  source string are explained in the translator's comments.
+- fixed a bug where the quote style checker was not checking quotes properly
+  when the quotes surrounded a replacement parameter like "{this}"
+
 ### v1.13.1
 
 - fixed a bug with the sorting of results

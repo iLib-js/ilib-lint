@@ -30,9 +30,9 @@ let regExpsCache = {};
 const quoteChars = "«»‘“”„「」’‚‹›『』";
 
 // shared between all locales since there is nothing locale-specific in here
-const quotesAscii = new RegExp(`((^|\\W)"\\s?\\p{Letter}|\\p{Letter}\\s?"(\\W|$))`, "gu");
+const quotesAscii = new RegExp(`((^|\\W)"\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?"(\\W|$))`, "gu");
 // leave out the "s" before the final quote to take care of plural possessives (eg. my colleagues' files.)
-const quotesAsciiAlt = new RegExp(`((^|\\W)'\\s?\\p{Letter}|[a-rt-zA-RT-Z]\\s?'(\\W|$))`, "gu");
+const quotesAsciiAlt = new RegExp(`((^|\\W)'\\s?[\\p{Letter}\\{]|[a-rt-zA-RT-Z\\}]\\s?'(\\W|$))`, "gu");
 
 /**
  * @class Represent an ilib-lint rule.
@@ -93,20 +93,20 @@ class ResourceQuoteStyle extends ResourceRule {
         // match the appropriate regexp. The re1 and re2 are for the highlight field
         if (asciiMatches) {
             if (tar.match(regExps.target.quotesAll)) return;
-            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'])(\\p{Letter})`, "gu");
-            re2 = new RegExp(`(\\p{Letter})([${regExps.target.nonQuoteChars}'])(\\W|$)`, "gu");
+            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'])([\\p{Letter}\\{])`, "gu");
+            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteChars}'])(\\W|$)`, "gu");
         } else if (asciiMatchesAlt) {
             if (tar.match(regExps.target.quotesAllAlt)) return;
-            re1 = new RegExp(`(^|\\W)[${regExps.target.nonQuoteCharsAlt}"](\\p{Letter})`, "gu");
-            re2 = new RegExp(`(\\p{Letter})([${regExps.target.nonQuoteCharsAlt}"])(\\W|$)`, "gu");
+            re1 = new RegExp(`(^|\\W)[${regExps.target.nonQuoteCharsAlt}"]([\\p{Letter}\\{])`, "gu");
+            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteCharsAlt}"])(\\W|$)`, "gu");
         } else if (nativeMatches) {
             if (tar.match(regExps.target.quotesNative)) return;
-            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'"])(\\p{Letter})`, "gu");
-            re2 = new RegExp(`(\\p{Letter})([${regExps.target.nonQuoteChars}'"])(\\W|$)`, "gu");
+            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteChars}'"])([\\p{Letter}\\{])`, "gu");
+            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteChars}'"])(\\W|$)`, "gu");
         } else if (nativeMatchesAlt) {
             if (tar.match(regExps.target.quotesNativeAlt)) return;
-            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteCharsAlt}'"])(\\p{Letter})`, "gu");
-            re2 = new RegExp(`(\\p{Letter})([${regExps.target.nonQuoteCharsAlt}'"])(\\W|$)`, "gu");
+            re1 = new RegExp(`(^|\\W)([${regExps.target.nonQuoteCharsAlt}'"])([\\p{Letter}\\{])`, "gu");
+            re2 = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteCharsAlt}'"])(\\W|$)`, "gu");
         }
         const matches1 = re1 ? re1.exec(tar) : undefined;
         const matches2 = re2 ? re2.exec(tar) : undefined;
@@ -175,19 +175,19 @@ class ResourceQuoteStyle extends ResourceRule {
 
         // now calculate regular expressions for the source string that use those quotes
         // if the source uses ASCII quotes, then the target could have ASCII or native quotes
-        regExps.source.quotesNative = new RegExp(`((^|\\W)${regExps.source.quoteStart}\\s?\\p{Letter}|\\p{Letter}\\s?${regExps.source.quoteEnd}(\\W|$))`, "gu");
-        regExps.source.quotesNativeAlt = new RegExp(`((^|\\W)${regExps.source.quoteStartAlt}\\s?\\p{Letter}|\\p{Letter}\\s?${regExps.source.quoteEndAlt}(\\W|$))`, "gu");
+        regExps.source.quotesNative = new RegExp(`((^|\\W)${regExps.source.quoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.source.quoteEnd}(\\W|$))`, "gu");
+        regExps.source.quotesNativeAlt = new RegExp(`((^|\\W)${regExps.source.quoteStartAlt}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.source.quoteEndAlt}(\\W|$))`, "gu");
 
         // now calculate the regular expressions for the target string that use quotes
         // if the source contains native quotes, then the target should also have native quotes
-        regExps.target.quotesNative = new RegExp(`((^|\\W)${regExps.target.quoteStart}\\s?\\p{Letter}|\\p{Letter}\\s?${regExps.target.quoteEnd}(\\W|$))`, "gu");
-        regExps.target.quotesNativeAlt = new RegExp(`((^|\\W)${regExps.target.quoteStartAlt}\\s?\\p{Letter}|\\p{Letter}\\s?${regExps.target.quoteEndAlt}(\\W|$))`, "gu");
+        regExps.target.quotesNative = new RegExp(`((^|\\W)${regExps.target.quoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.target.quoteEnd}(\\W|$))`, "gu");
+        regExps.target.quotesNativeAlt = new RegExp(`((^|\\W)${regExps.target.quoteStartAlt}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${regExps.target.quoteEndAlt}(\\W|$))`, "gu");
         regExps.target.quotesAll = this.localeOnly ?
             regExps.target.quotesNative :
-            new RegExp(`((^|\\W)[${regExps.target.quoteStart}${regExps.target.quoteStartAlt}"]\\s?\\p{Letter}|\\p{Letter}\\s?[${regExps.target.quoteEnd}${regExps.target.quoteEndAlt}"](\\W|$))`, "gu");
+            new RegExp(`((^|\\W)[${regExps.target.quoteStart}${regExps.target.quoteStartAlt}"]\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?[${regExps.target.quoteEnd}${regExps.target.quoteEndAlt}"](\\W|$))`, "gu");
         regExps.target.quotesAllAlt = this.localeOnly ?
             regExps.target.quotesNativeAlt :
-            new RegExp(`((^|\\W)[${regExps.target.quoteStartAlt}']\\s?\\p{Letter}|\\p{Letter}\\s?[${regExps.target.quoteEndAlt}'](\\W|$))`, "gu");
+            new RegExp(`((^|\\W)[${regExps.target.quoteStartAlt}']\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?[${regExps.target.quoteEndAlt}'](\\W|$))`, "gu");
 
         // the non quote chars are used to highlight errors in the target string
         regExps.target.nonQuoteChars = quoteChars.
