@@ -362,7 +362,7 @@ class Project extends DirItem {
      * @returns {String} the source locale for this project.
      */
     getSourceLocale() {
-        return this.sourceLocale;
+        return this.sourceLocale || "en-US";
     }
 
     /**

@@ -126,6 +126,12 @@ const genericConfig = {
     }
 };
 
+const genericConfig2 = {
+    // the name is reaquired and should be unique amongst all your projects
+    "name": "tester2",
+    "sourceLocale": "en-KR",
+};
+
 describe("testProject", () => {
     test("ProjectConstructorEmpty", () => {
         expect.assertions(1);
@@ -240,6 +246,30 @@ describe("testProject", () => {
         expect(project).toBeTruthy();
 
         expect(project.getLocales()).toBe(genericConfig.locales);
+    });
+
+    test("ProjectGetSourceLocaleFallbackToConfig", () => {
+        expect.assertions(2);
+
+        const options = {
+            pluginManager
+        };
+        const project = new Project("x", options, genericConfig);
+        expect(project).toBeTruthy();
+
+        expect(project.getSourceLocale()).toBe("en-US");
+    });
+
+    test("ProjectGetSourceLocaleFallbackToConfig2", () => {
+        expect.assertions(2);
+
+        const options = {
+            pluginManager
+        };
+        const project = new Project("x", options, genericConfig2);
+        expect(project).toBeTruthy();
+
+        expect(project.getSourceLocale()).toBe("en-KR");
     });
 
     test("ProjectGetFileTypeForPath1", () => {
