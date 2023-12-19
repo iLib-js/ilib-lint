@@ -88,7 +88,8 @@ class Project extends DirItem {
             this.excludes = config.excludes;
             this.name = config.name;
         }
-        this.sourceLocale = options?.opt?.sourceLocale;
+
+        this.sourceLocale = (config?.sourceLocale) || (options?.opt?.sourceLocale);
         this.config.autofix = options?.opt?.fix === true || config?.autofix === true;
 
         this.pluginMgr = this.options.pluginManager;
