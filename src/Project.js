@@ -616,6 +616,8 @@ class Project extends DirItem {
             exitValue = this.resultStats.suggestions > this.options.opt["max-suggestions"] ? 1 : 0;
         } else if (this.options.opt["min-score"]) {
             exitValue = score < this.options.opt["min-score"] ? 2 : 0;
+        } else if (this.options.errorsOnly) {
+            exitValue = this.resultStats.errors > 0 ? 2 : 0;
         } else {
             exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
         }
