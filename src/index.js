@@ -93,7 +93,7 @@ const optionConfig = {
         flag: true,
         short: "i",
         "default": false,
-        help: "Show which files and ruels are checed while the tool is running."
+        help: "Show which files and rules are checked while the tool is running."
     },
     quiet: {
         short: "q",

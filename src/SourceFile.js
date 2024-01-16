@@ -153,7 +153,6 @@ class SourceFile extends DirItem {
                                 file: this.filePath,
                             }) ?? []
                     );
-                            
                     const fixable = results.filter((result) => result?.fix !== undefined);
 
                     let fixer;
