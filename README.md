@@ -58,7 +58,7 @@ is sufficient:
 ```
 $ cd myproject
 $ ilib-lint
-ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.
+ilib-lint - Copyright (c) 2022-2024 JEDLsoft, All rights reserved.
 WARN: i18n/ru_RU.properties(45): translation should use the appropriate
 quote style
   myproject.dialog1.body.text = Нажмите кнопку "Справка", чтобы получить
@@ -375,7 +375,7 @@ a single Result, an array of Result, or undefined.
 
 If you would like to see an example rule plugin, see the definition of
 the built-in ICU plural matcher rule:
-[resource-icu-plurals](https://github.com/ilib-js/i18nlint/blob/main/src/rules/ResourceICUPlurals.js)
+[resource-icu-plurals](https://github.com/ilib-js/ilib-lint/blob/main/src/rules/ResourceICUPlurals.js)
 which checks resources to make sure that plurals in source and target strings
 have the correct syntax for ICU and formatjs.
 
@@ -429,7 +429,7 @@ which takes a Result instance as a parameter and returns a formatted string.
 
 If you would like to look at an example formatter plugin, see the definition of
 the built-in default formatter
-[ansi-console-formatter](https://github.com/ilib-js/i18nlint/blob/main/src/formatters/AnsiConsoleFormatter.js)
+[ansi-console-formatter](https://github.com/ilib-js/ilib-lint/blob/main/src/formatters/AnsiConsoleFormatter.js)
 which formats a Result for colorful output on an ANSI console.
 
 ## Example Plugin

@@ -1,5 +1,5 @@
 /*
- * Project.js - Represents a particular i18nlint project
+ * Project.js - Represents a particular ilin-lint project
  *
  * Copyright © 2022-2024 JEDLSoft
  *
@@ -30,7 +30,7 @@ import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 import ResultComparator from './ResultComparator.js';
 
-const logger = log4js.getLogger("i18nlint.Project");
+const logger = log4js.getLogger("ilib-lint.Project");
 
 const rulesetDefinitions = {
     "resource-check-all": {
@@ -54,7 +54,7 @@ const unknownFileTypeDefinition = {
 };
 
 /**
- * @class Represent an i18nlint project.
+ * @class Represent an ilin-lint project.
  *
  * A project is defined as a root directory and a configuration that
  * goes with it that tells the linter how to process files it finds

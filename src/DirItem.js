@@ -19,7 +19,7 @@
 
 import log4js from 'log4js';
 
-const logger = log4js.getLogger("i18nlint.DirItem");
+const logger = log4js.getLogger("ilib-lint.DirItem");
 
 /**
  * @class Represent a directory item.
@@ -35,10 +35,10 @@ class DirItem {
      * The options parameter can contain any of the following properties:
      *
      * - filePath {String} path to the file
-     * - settings {Object} the settings from the i18nlint config that
+     * - settings {Object} the settings from the ilib-lint config that
      *   apply to this file
      * - pluginManager {PluginManager} the plugin manager for this run of
-     *   the i18nlint tool
+     *   the ilib-lint tool
      */
     constructor(filePath, options, project) {
         if (!options || !filePath) {

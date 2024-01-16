@@ -21,7 +21,7 @@ import log4js from "log4js";
 
 import { Fixer } from "i18nlint-common";
 
-const logger = log4js.getLogger("i18nlint.FormatterManager");
+const logger = log4js.getLogger("ilib-lint.FormatterManager");
 
 /** @typedef {Class} FixerClass Constructor of {@link Fixer} or its subclass */
 /**

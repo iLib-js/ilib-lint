@@ -29,7 +29,7 @@ import ResourceICUPlurals from './rules/ResourceICUPlurals.js';
 import ResourceQuoteStyle from './rules/ResourceQuoteStyle.js';
 import ResourceUniqueKeys from './rules/ResourceUniqueKeys.js';
 
-const logger = log4js.getLogger("i18nlint.RuleManager");
+const logger = log4js.getLogger("ilib-lint.RuleManager");
 
 /**
  * Map the types in the declarative rules to a Rule subclass that handles

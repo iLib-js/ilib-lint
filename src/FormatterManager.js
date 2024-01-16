@@ -24,7 +24,7 @@ import { Formatter } from 'i18nlint-common';
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
 import { ConfigBasedFormatter, requiredFields } from './formatters/ConfigBasedFormatter.js';
 
-const logger = log4js.getLogger("i18nlint.FormatterManager");
+const logger = log4js.getLogger("ilib-lint.FormatterManager");
 
 /**
  * @class Manages a collection of formatters that this instance of ilib-lint

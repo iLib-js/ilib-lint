@@ -1,5 +1,5 @@
 /*
- * FileType.js - Represents a type of file in an i18nlint project
+ * FileType.js - Represents a type of file in an ilib-lint project
  *
  * Copyright © 2023 JEDLSoft
  *
@@ -21,10 +21,10 @@ import log4js from 'log4js';
 
 import RuleSet from './RuleSet.js';
 
-const logger = log4js.getLogger("i18nlint.FileType");
+const logger = log4js.getLogger("ilib-lint.FileType");
 
 /**
- * @class Represent a type of file in an i18nlint project.
+ * @class Represent a type of file in an ilib-lint project.
  *
  * Each file is classified into a particular file type. If
  * none of the file type definitions match, then the file will
