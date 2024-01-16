@@ -15,8 +15,8 @@
         "lint",
         "locale"
     ],
-    "homepage": "https://github.com/iLib-js/i18nlint",
-    "bugs": "https://github.com/iLib-js/i18nlint/issues",
+    "homepage": "https://github.com/iLib-js/ilib-lint",
+    "bugs": "https://github.com/iLib-js/ilib-lint/issues",
     "email": "marketing@translationcircle.com",
     "license": "Apache-2.0",
     "author": {
@@ -43,7 +43,7 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/iLib-js/i18nlint.git"
+        "url": "https://github.com/iLib-js/ilib-lint.git"
     },
     "engines": {
         "node": ">=14.0.0"

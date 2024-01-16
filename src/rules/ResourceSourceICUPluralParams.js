@@ -24,7 +24,7 @@ import Locale from "ilib-locale";
 import { IntlMessageFormat } from "intl-messageformat";
 import log4js from 'log4js';
 
-const logger = log4js.getLogger("i18nlint.ResourceSourceICUPluralParams");
+const logger = log4js.getLogger("ilib-lint.ResourceSourceICUPluralParams");
 
 /**
  * Verifies that the "one" category of an ICU plural in a Resource's source
@@ -38,7 +38,7 @@ export class ResourceSourceICUPluralParams extends ResourceRule {
     /** @override */
     description = "Verify that the 'one' category of an ICU plural contains the same replacement parameters as the 'other' category.";
     /** @override */
-    link = "https://github.com/ilib-js/i18nlint/blob/main/docs/source-icu-plural-params.md";
+    link = "https://github.com/ilib-js/ilib-lint/blob/main/docs/source-icu-plural-params.md";
 
     /**
      * @param {any} [opts]

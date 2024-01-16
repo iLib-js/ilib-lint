@@ -1,5 +1,5 @@
 /*
- * TestFormatter.js - test an i18nlint Formatter plugin
+ * TestFormatter.js - test an ilib-lint Formatter plugin
  *
  * Copyright © 2022 JEDLSoft
  *

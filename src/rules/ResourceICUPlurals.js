@@ -63,7 +63,7 @@ class ResourceICUPlurals extends ResourceRule {
         this.name = "resource-icu-plurals";
         this.description = "Ensure that plurals in translated resources have the correct syntax";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
-        this.link = "https://gihub.com/ilib-js/i18nlint/blob/main/docs/resource-icu-plurals.md";
+        this.link = "https://gihub.com/ilib-js/ilib-lint/blob/main/docs/resource-icu-plurals.md";
     }
 
     matchCategories(sourceSelect, targetSelect, locale, resource) {

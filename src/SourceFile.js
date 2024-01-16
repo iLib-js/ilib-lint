@@ -25,7 +25,7 @@ import DirItem from "./DirItem.js";
 import Project from "./Project.js";
 import FileType from "./FileType.js";
 
-const logger = log4js.getLogger("i18nlint.RuleSet");
+const logger = log4js.getLogger("ilib-lint.RuleSet");
 
 /**
  * @class Represent a source file
@@ -41,7 +41,7 @@ class SourceFile extends DirItem {
      * @param {Object} options options for constructing this source file
      * @param {FileType} options.filetype file type of this source file
      * @param {String} options.filePath path to the file
-     * @param {object} [options.settings] additional settings from the i18nlint config that apply to this file
+     * @param {object} [options.settings] additional settings from the ilib-lint config that apply to this file
      * @param {Project} project the project where this file is located
      */
     constructor(filePath, options, project) {
