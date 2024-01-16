@@ -28,7 +28,7 @@ import RuleSet from './RuleSet.js';
 import BuiltinPlugin from './plugins/BuiltinPlugin.js';
 import FixerManager from './FixerManager.js';
 
-const logger = log4js.getLogger("i18nlint.PluginManager");
+const logger = log4js.getLogger("ilib-lint.PluginManager");
 
 /**
  * @private
@@ -70,14 +70,14 @@ function attemptLoadPath(name) {
 /*
  * Attempt to load the plugin in various places:
  *
- * - from the node_modules where i18nlint was loaded
+ * - from the node_modules where ilib-lint was loaded
  * - from the current directory's node_modules
  * - from the plugins directory one directory up
  *
  * Each time it attempts to load it, it will try two ways:
  *
  * - As-is. Maybe it is a fully specified package name?
- * - With the "i18nlint-" prefix. Try again except with
+ * - With the "ilib-lint-" prefix. Try again except with
  * the prefix. This allows the users to configure plugins
  * in the config file more tersely, similar to the way
  * babel plugins can be named with only the unique part.

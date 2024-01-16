@@ -18,7 +18,7 @@
  */
 import log4js from 'log4js';
 
-const logger = log4js.getLogger("i18nlint.RuleSet");
+const logger = log4js.getLogger("ilib-lint.RuleSet");
 
 /**
  * @class Represent a set of ilib-lint rules. The rule manager keeps

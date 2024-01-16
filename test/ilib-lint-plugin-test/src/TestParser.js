@@ -1,5 +1,5 @@
 /*
- * TestParser.js - test an i18nlint Parser plugin
+ * TestParser.js - test an ilib-lint Parser plugin
  *
  * Copyright © 2022 JEDLSoft
  *

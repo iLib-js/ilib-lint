@@ -22,7 +22,7 @@ export class ConfigurationProvider {
 
 /** @implements {ConfigurationProvider} */
 export class FileConfigurationProvider {
-    static logger = log4js.getLogger("i18nlint.FileConfigurationProvider");
+    static logger = log4js.getLogger("ilib-lint.FileConfigurationProvider");
 
     /** @private @readonly */ filePath;
 
@@ -65,7 +65,7 @@ export class FileConfigurationProvider {
 
 /** @implements {ConfigurationProvider} */
 export class FolderConfigurationProvider {
-    static logger = log4js.getLogger("i18nlint.FolderConfigurationProvider");
+    static logger = log4js.getLogger("ilib-lint.FolderConfigurationProvider");
 
     /** @param {string} folderPath Folder in which to look for a configuration */
     constructor(folderPath) {

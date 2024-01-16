@@ -51,7 +51,7 @@ class ResourceQuoteStyle extends ResourceRule {
             // only localized quotes are allowed in the target string
             this.localeOnly = true;
         }
-        this.link = "https://github.com/ilib-js/i18nlint/blob/main/docs/resource-quote-style.md";
+        this.link = "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-quote-style.md";
         if (!this.skipLocales) {
             this.skipLocales = new Set();
         }

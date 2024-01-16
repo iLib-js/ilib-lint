@@ -1,5 +1,5 @@
 /*
- * TestRule.js - test an i18nlint Rule plugin
+ * TestRule.js - test an ilib-lint Rule plugin
  *
  * Copyright © 2022 JEDLSoft
  *
@@ -21,7 +21,7 @@ import Locale from 'ilib-locale';
 import { Rule, Result } from 'i18nlint-common';
 
 /**
- * @class Represent an i18nlint rule.
+ * @class Represent an ilib-lint rule.
  */
 class TestRule extends Rule {
     constructor(options) {

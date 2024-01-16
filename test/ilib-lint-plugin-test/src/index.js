@@ -1,5 +1,5 @@
 /*
- * index.js - main program of i18nlint plugin test
+ * index.js - main program of ilib-lint plugin test
  *
  * Copyright © 2022 JEDLSoft
  *
