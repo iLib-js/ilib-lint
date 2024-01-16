@@ -1,7 +1,7 @@
 /*
  * SourceFile.js - Represent a source file
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -138,7 +138,12 @@ class SourceFile extends DirItem {
                 for (const ir of irs) {
                     // find the rules that are appropriate for this intermediate representation and then apply them
                     const rules = this.filetype.getRules().filter((rule) => rule.getRuleType() === ir.getType());
-
+                    if (!(this.project.options.opt.quiet) && this.project.options.opt.progressInfo) {
+                        rules.forEach(function(ru){
+                            logger.info("Checking rule  : " + ru.name);
+                        })
+                        logger.info('');
+                    }
                     // apply rules
                     const results = rules.flatMap(
                         (rule) =>
@@ -148,7 +153,7 @@ class SourceFile extends DirItem {
                                 file: this.filePath,
                             }) ?? []
                     );
-
+                            
                     const fixable = results.filter((result) => result?.fix !== undefined);
 
                     let fixer;
