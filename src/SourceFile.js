@@ -25,8 +25,8 @@ import DirItem from "./DirItem.js";
 import Project from "./Project.js";
 import FileType from "./FileType.js";
 
-const logger = log4js.getLogger("ilib-lint.RuleSet");
-
+const logger = log4js.getLogger("ilib-lint.SourceFile");
+logger.level = "debug";
 /**
  * @class Represent a source file
  */
@@ -50,9 +50,11 @@ class SourceFile extends DirItem {
             throw "Incorrect options given to SourceFile constructor";
         }
         this.filePath = filePath;
-
         this.filetype = options.filetype;
 
+        if (this.project.options.opt.verbose) {
+            logger.level = "debug";
+        }
         /** @typedef {Class} ParserClass Constructor of {@link Parser} or its subclass */
         /** @type {ParserClass[]} */
         this.parserClasses = [];
@@ -138,12 +140,12 @@ class SourceFile extends DirItem {
                 for (const ir of irs) {
                     // find the rules that are appropriate for this intermediate representation and then apply them
                     const rules = this.filetype.getRules().filter((rule) => rule.getRuleType() === ir.getType());
-                    if (!(this.project.options.opt.quiet) && this.project.options.opt.progressInfo) {
-                        rules.forEach(function(ru){
-                            logger.info("Checking rule  : " + ru.name);
-                        })
-                        logger.info('');
-                    }
+                    
+                    rules.forEach(function(ru){
+                    logger.debug('Checking rule  : ' + ru.name);
+                    })
+                    logger.debug('');
+                    
                     // apply rules
                     const results = rules.flatMap(
                         (rule) =>

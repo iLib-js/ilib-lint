@@ -499,7 +499,7 @@ class Project extends DirItem {
     findIssues(locales) {
         this.fileStats = new FileStats();
         return this.files.map(file => {
-            logger.debug(`Examining ${file.filePath}`);
+            //logger.debug(`Examining ${file.filePath}`);
             if (!this.options.opt.quiet && this.options.opt.progressInfo) {
                 logger.info("Examing path   : " + file.filePath);
             }
