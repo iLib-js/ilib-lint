@@ -169,5 +169,29 @@ describe("testRuleSet", () => {
         rule = ruleset.getRule("resource-icu-plurals");
         expect(rule).toBe(rule2);
     });
+
+    test("RuleSet remove a rule", () => {
+        expect.assertions(6);
+
+        const rule1 = new ResourceQuoteStyle();
+        const rule2 = new ResourceICUPlurals();
+
+        const ruleset = new RuleSet([rule1, rule2]);
+        expect(ruleset).toBeTruthy();
+        expect(ruleset.getSize()).toBe(2);
+
+        let rule = ruleset.getRule("resource-quote-style");
+        expect(rule).toBe(rule1);
+        rule = ruleset.getRule("resource-icu-plurals");
+        expect(rule).toBe(rule2);
+
+        ruleset.removeRule("resource-icu-plurals");
+
+        rule = ruleset.getRule("resource-quote-style");
+        expect(rule).toBe(rule1);
+        rule = ruleset.getRule("resource-icu-plurals");
+        expect(rule).toBeUndefined();
+    });
+
 });
 

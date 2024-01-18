@@ -65,6 +65,16 @@ class RuleSet {
     }
 
     /**
+     * Remove a rule from the set. This might happen if a user explicitly sets
+     * a rule to "false" in the set in order to turn off a rule that was turned
+     * on by a different set.
+     * @param {String} name unique name of the rule to remove
+     */
+    removeRule(name) {
+        this.rules[name] = undefined;
+    }
+
+    /**
      * Return the rule instance with the given name.
      *
      * @param {String} name unique name of the rule
