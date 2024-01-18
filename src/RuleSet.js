@@ -71,6 +71,7 @@ class RuleSet {
      * @param {String} name unique name of the rule to remove
      */
     removeRule(name) {
+        if (typeof(name) !== 'string' || !this.rules[name]) return;
         this.rules[name] = undefined;
     }
 
