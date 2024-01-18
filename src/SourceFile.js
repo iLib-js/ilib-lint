@@ -26,7 +26,7 @@ import Project from "./Project.js";
 import FileType from "./FileType.js";
 
 const logger = log4js.getLogger("ilib-lint.SourceFile");
-logger.level = "debug";
+
 /**
  * @class Represent a source file
  */
