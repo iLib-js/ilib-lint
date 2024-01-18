@@ -52,7 +52,7 @@ class SourceFile extends DirItem {
         this.filePath = filePath;
         this.filetype = options.filetype;
 
-        if (this.project.options.opt.verbose) {
+        if (this.project.options.opt && this.project.options.opt.verbose) {
             logger.level = "debug";
         }
         /** @typedef {Class} ParserClass Constructor of {@link Parser} or its subclass */
