@@ -196,7 +196,6 @@ describe("testRuleSet", () => {
     test("RuleSet remove a rule with no name", () => {
         expect.assertions(5);
 
-        debugger;
         const rule1 = new ResourceQuoteStyle();
         const rule2 = new ResourceICUPlurals();
 
@@ -217,7 +216,6 @@ describe("testRuleSet", () => {
     test("RuleSet remove a rule that is not already in the set", () => {
         expect.assertions(5);
 
-        debugger;
         const rule1 = new ResourceQuoteStyle();
         const rule2 = new ResourceICUPlurals();
 
@@ -238,7 +236,6 @@ describe("testRuleSet", () => {
     test("RuleSet remove a rule called with the incorrect parameter type", () => {
         expect.assertions(5);
 
-        debugger;
         const rule1 = new ResourceQuoteStyle();
         const rule2 = new ResourceICUPlurals();
 
