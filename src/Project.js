@@ -30,7 +30,7 @@ import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 import ResultComparator from './ResultComparator.js';
 
-const logger = log4js.getLogger("ilib-lint.Project");
+const logger = log4js.getLogger("ilib-lint.root.Project");
 
 const rulesetDefinitions = {
     "resource-check-all": {

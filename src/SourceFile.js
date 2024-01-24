@@ -25,7 +25,7 @@ import DirItem from "./DirItem.js";
 import Project from "./Project.js";
 import FileType from "./FileType.js";
 
-const logger = log4js.getLogger("ilib-lint.SourceFile");
+const logger = log4js.getLogger("ilib-lint.root.SourceFile");
 
 /**
  * @class Represent a source file
