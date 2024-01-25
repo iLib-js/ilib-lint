@@ -114,17 +114,7 @@ describe("testFlat", () => {
             file: "a/b/c.xliff",
         });
 
-        const expected = [
-            new Result({
-                severity: "warning",
-                description: 'Unexpected category "two" in plural',
-                pathName: "a/b/c.xliff",
-                rule,
-                highlight: "<e0>{This is a pair}</e0>",
-                id: "plural.test",
-                source: "{count, plural, one {This is singular} two {This is a pair} other {This is plural}}",
-            }),
-        ];
+        const expected = [];
         expect(result).toStrictEqual(expected);
     });
 
@@ -150,16 +140,7 @@ describe("testFlat", () => {
         const expected = [
             new Result({
                 severity: "error",
-                description: 'Missing required plural category "one"',
-                pathName: "a/b/c.xliff",
-                rule,
-                highlight: "<e0>{count, plural, =1 {This is singular} other {This is plural}}</e0>",
-                id: "plural.test",
-                source: "{count, plural, =1 {This is singular} other {This is plural}}",
-            }),
-            new Result({
-                severity: "warning",
-                description: 'Unexpected category "=1" in plural',
+                description: 'Category "=1" in plural should be "one" instead',
                 pathName: "a/b/c.xliff",
                 rule,
                 highlight: "<e0>{This is singular}</e0>",
@@ -267,6 +248,48 @@ describe("testNested", () => {
         expect(result).toStrictEqual(expected);
     });
 
+    test("MatchNestedMissingMultipleMixed", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceSourceICUPluralCategories();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "plural.test",
+            sourceLocale: "en-US",
+            source: "{count, plural, one {{total, plural, other {There is {count} of {total} items available}}} other {{total, plural, =1 {There is {count} of {total} item available} other {There are {count} of {total} items available}}}}",
+            pathName: "a/b/c.xliff",
+        });
+        const result = rule.matchString({
+            source: resource.getSource(),
+            resource,
+            file: "a/b/c.xliff",
+        });
+
+        const expected = [
+            new Result({
+                severity: "error",
+                description: 'Missing required plural category "one"',
+                pathName: "a/b/c.xliff",
+                rule,
+                highlight: "<e0>{total, plural, other {There is {count} of {total} items available}}</e0>",
+                id: "plural.test",
+                source: "{count, plural, one {{total, plural, other {There is {count} of {total} items available}}} other {{total, plural, =1 {There is {count} of {total} item available} other {There are {count} of {total} items available}}}}",
+            }),
+            new Result({
+                severity: "error",
+                description: 'Category "=1" in plural should be "one" instead',
+                pathName: "a/b/c.xliff",
+                rule,
+                highlight: "<e0>{There is {count} of {total} item available}</e0>",
+                id: "plural.test",
+                source: "{count, plural, one {{total, plural, other {There is {count} of {total} items available}}} other {{total, plural, =1 {There is {count} of {total} item available} other {There are {count} of {total} items available}}}}",
+            }),
+        ];
+
+        expect(result).toStrictEqual(expected);
+    });
+
     test("MatchNestedMissingSingleOther", () => {
         expect.assertions(2);
 
@@ -364,17 +387,7 @@ describe("testNested", () => {
             file: "a/b/c.xliff",
         });
 
-        const expected = [
-            new Result({
-                severity: "warning",
-                description: 'Unexpected category "=2" in plural',
-                pathName: "a/b/c.xliff",
-                rule,
-                highlight: "<e0>{There is {count} of two items available}</e0>",
-                id: "plural.test",
-                source: "{count, plural, one {{total, plural, one {There is {count} of {total} item available} =2 {There is {count} of two items available} other {There is {count} of {total} items available}}} other {{total, plural, one {There are {count} of {total} item available} other {There are {count} of {total} items available}}}}",
-            }),
-        ];
+        const expected = [];
         expect(result).toStrictEqual(expected);
     });
 });

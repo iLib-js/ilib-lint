@@ -29,9 +29,6 @@ import { IntlMessageFormat } from "intl-messageformat";
 // /** @ignore @typedef {import("@formatjs/icu-messageformat-parser").SelectElement} SelectElement */
 /** @ignore @typedef {import("@formatjs/icu-messageformat-parser").Location} Location */
 
-/** categories that are required to be present in an English (source) plural */
-const requiredCategories = ["one", "other"];
-
 /**
  * Verifies that categories of an ICU plural in a Resource's source are valid
  */
@@ -54,27 +51,33 @@ export class ResourceSourceICUPluralCategories extends ResourceRule {
      * @private
      */
     checkCategories(/** @type {PluralElement} */ element) {
-        const categories = Object.keys(element.options);
+        let partials = [];
 
-        // check if any required categories are missing
-        const missing = requiredCategories
-            .filter((required) => !categories.includes(required))
-            .map((missingCategory) => ({
+        if (!element.options.other) {
+            partials.push({
                 severity: /** @type {const} */ ("error"),
-                description: `Missing required plural category "${missingCategory}"`,
-                location: element.location,
-            }));
+                description: `Missing required plural category "other"`,
+                location: element.location
+            });
+        }
 
-        // check if there are any other categories than required
-        const extra = categories
-            .filter((category) => !requiredCategories.includes(category))
-            .map((extraCategory) => ({
-                severity: /** @type {const} */ ("warning"),
-                description: `Unexpected category "${extraCategory}" in plural`,
-                location: element.options[extraCategory].location,
-            }));
+        if (!element.options.one) {
+            if (element.options["=1"]) {
+                partials.push({
+                    severity: /** @type {const} */ ("error"),
+                    description: `Category "=1" in plural should be "one" instead`,
+                    location: element.options["=1"].location
+                });
+            } else {
+                partials.push({
+                    severity: /** @type {const} */ ("error"),
+                    description: `Missing required plural category "one"`,
+                    location: element.location
+                });
+            }
+        }
 
-        return [...missing, ...extra];
+        return partials;
     }
 
     /**
