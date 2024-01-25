@@ -8,11 +8,12 @@ Release Notes
 - fixed a bug where the quote style checker was not checking quotes properly
   when the quotes surrounded a replacement parameter like "{this}"
 - added the ability to set sourceLocale through the config file.
+- added time eplased information in the result.
+- added a `progressinfo` option to know the which file is checking while the tool is running.
 
 ### v1.13.1
 
-- fixed a bug with the sorting of results
-
+- fixed a bug with the sorting of resultsd
 ### v1.13.0
 
 - make sure the results are sorted by file path and also line number within

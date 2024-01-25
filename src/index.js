@@ -2,7 +2,7 @@
 /*
  * index.js - main program of ilib-lint
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,6 +89,12 @@ const optionConfig = {
         "default": "en-US",
         help: "Default locale used to interpret the strings in the source code or the source strings in resource files."
     },
+    progressInfo: {
+        flag: true,
+        short: "i",
+        "default": false,
+        help: "Show which files and rules are checked while the tool is running."
+    },
     quiet: {
         short: "q",
         flag: true,
@@ -150,7 +156,7 @@ if (options.opt.quiet) {
     logger.level = "debug";
 }
 
-logger.info("ilib-lint - Copyright (c) 2022-2023 JEDLsoft, All rights reserved.");
+logger.info("ilib-lint - Copyright (c) 2022-2024 JEDLsoft, All rights reserved.");
 
 let paths = options.args;
 if (paths.length === 0) {

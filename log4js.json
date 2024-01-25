@@ -16,6 +16,14 @@
         "ilib-lint.root": {
             "appenders": [ "default" ],
             "level": "info"
+        },
+        "ilib-lint.root.Project": {
+            "appenders": [ "default" ],
+            "level": "info"
+        },
+        "ilib-lint.root.SourceFile": {
+            "appenders": [ "default" ],
+            "level": "info"
         }
     }
 }

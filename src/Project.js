@@ -1,7 +1,7 @@
 /*
  * Project.js - Represents a particular ilin-lint project
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 import ResultComparator from './ResultComparator.js';
 
-const logger = log4js.getLogger("ilib-lint.Project");
+const logger = log4js.getLogger("ilib-lint.root.Project");
 
 const rulesetDefinitions = {
     "resource-check-all": {
@@ -499,8 +499,10 @@ class Project extends DirItem {
     findIssues(locales) {
         this.fileStats = new FileStats();
         return this.files.map(file => {
-            logger.debug(`Examining ${file.filePath}`);
-
+            //logger.debug(`Examining ${file.filePath}`);
+            if (!this.options.opt.quiet && this.options.opt.progressInfo) {
+                logger.info("Examing path   : " + file.filePath);
+            }
             try {
                 const irArray = file.parse();
                 if (irArray) {
@@ -556,12 +558,18 @@ class Project extends DirItem {
      */
     run() {
         let exitValue = 0;
+        
+        let startTime = new Date();
         const results = this.findIssues(this.options.opt.locales);
+        let endTime = new Date();
+
         this.resultStats = {
             errors: 0,
             warnings: 0,
             suggestions: 0
         };
+
+        let totalTime = (endTime.getTime() - startTime.getTime()) / 1000;
 
         // make sure the results are organized by the order the lines appear in the
         // source file in order to make it easier for the engineer to fix all the
@@ -593,6 +601,7 @@ class Project extends DirItem {
         const fmt = new Intl.NumberFormat("en-US", {
             maxFractionDigits: 2
         });
+        logger.info(`Total Elapse Time: ${String(totalTime)} seconds`);
         logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
         logger.info(`                   Total     ${`${String(this.fileStats.files)} Files`.padEnd(15, ' ')}${`${String(this.fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(this.fileStats.lines)} Lines`.padEnd(15, ' ')}`);
         if (results.length) {

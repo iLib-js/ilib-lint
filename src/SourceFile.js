@@ -1,7 +1,7 @@
 /*
  * SourceFile.js - Represent a source file
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import DirItem from "./DirItem.js";
 import Project from "./Project.js";
 import FileType from "./FileType.js";
 
-const logger = log4js.getLogger("ilib-lint.RuleSet");
+const logger = log4js.getLogger("ilib-lint.root.SourceFile");
 
 /**
  * @class Represent a source file
@@ -50,9 +50,11 @@ class SourceFile extends DirItem {
             throw "Incorrect options given to SourceFile constructor";
         }
         this.filePath = filePath;
-
         this.filetype = options.filetype;
 
+        if (this.project.options.opt && this.project.options.opt.verbose) {
+            logger.level = "debug";
+        }
         /** @typedef {Class} ParserClass Constructor of {@link Parser} or its subclass */
         /** @type {ParserClass[]} */
         this.parserClasses = [];
@@ -138,7 +140,12 @@ class SourceFile extends DirItem {
                 for (const ir of irs) {
                     // find the rules that are appropriate for this intermediate representation and then apply them
                     const rules = this.filetype.getRules().filter((rule) => rule.getRuleType() === ir.getType());
-
+                    
+                    rules.forEach(function(ru){
+                    logger.debug('Checking rule  : ' + ru.name);
+                    })
+                    logger.debug('');
+                    
                     // apply rules
                     const results = rules.flatMap(
                         (rule) =>
@@ -148,7 +155,6 @@ class SourceFile extends DirItem {
                                 file: this.filePath,
                             }) ?? []
                     );
-
                     const fixable = results.filter((result) => result?.fix !== undefined);
 
                     let fixer;
