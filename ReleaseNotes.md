@@ -10,10 +10,17 @@ Release Notes
 - added the ability to set sourceLocale through the config file.
 - added time eplased information in the result.
 - added a `progressinfo` option to know the which file is checking while the tool is running.
+- fixed the source plural category checker to not complain about extra
+  categories in the source string other than the required "one" and "other"
+  categories.
+    - However, if the source contains the "=1" category and not
+      the "one" category, a new type error is given because the "=1" should
+      be "one" instead.
 
 ### v1.13.1
 
-- fixed a bug with the sorting of resultsd
+- fixed a bug with the sorting of results
+
 ### v1.13.0
 
 - make sure the results are sorted by file path and also line number within
