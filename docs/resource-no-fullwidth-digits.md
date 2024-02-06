@@ -4,5 +4,5 @@ Ensure that translations do not contain fullwidth digit characters. These should
 
 Examples:
 
-Good translation: "Box12345"
+Good translation: "Box12345"<br>
 Bad translation: "Box１２３４５"

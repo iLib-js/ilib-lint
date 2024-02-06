@@ -8,7 +8,7 @@ more closely with the ICU messageformat syntax that it claims to support.
 
 Examples:
 
-Bad: The name is '{name}'.
-Good: The name is « name »  (for French as an example)
-Good: The name is '''{name}'''.
+Bad: The name is '{name}'.<br>
+Good: The name is « name »  (for French as an example)<br>
+Good: The name is '''{name}'''.<br>
 Good: The name is "{name}".

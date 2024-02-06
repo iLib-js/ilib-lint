@@ -4,5 +4,5 @@ Ensure that translations do not contain fullwidth punctuation characters. These 
 
 Examples:
 
-Good translation: "本当? はい! 100%"
+Good translation: "本当? はい! 100%"<br>
 Bad translation: "本当？ はい！ 100％"

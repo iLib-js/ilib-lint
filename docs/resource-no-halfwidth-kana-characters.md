@@ -4,5 +4,5 @@ Ensure that translations do not contain [half-width (single byte) kana](https://
 
 Examples:
 
-Good translation: "コミュニケーション"
+Good translation: "コミュニケーション"<br>
 Bad translation: "ｺﾐｭﾆｹｰｼｮﾝ"
