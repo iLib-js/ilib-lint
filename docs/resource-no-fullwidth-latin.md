@@ -4,5 +4,5 @@ Ensure that translations do not contain fullwidth Latin characters. These should
 
 Examples:
 
-Good translation: "Boxにアップロード"
+Good translation: "Boxにアップロード"<br>
 Bad translation: "Ｂｏｘにアップロード"

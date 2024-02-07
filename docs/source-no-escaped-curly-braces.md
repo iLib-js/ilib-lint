@@ -9,8 +9,8 @@ be tripled to escape them.
 
 Examples:
 
-Bad source string: The name is '{name}'.
-Preferred source string: The name is ‘{name}’.  (Unicode single quotes)
-Preferred source string: The name is “{name}”.  (Unicode double quotes)
-Acceptable source string: The name is '''{name}'''.  (Tripled ASCII single quotes)
+Bad source string: The name is '{name}'.<br>
+Preferred source string: The name is ‘{name}’.  (Unicode single quotes)<br>
+Preferred source string: The name is “{name}”.  (Unicode double quotes)<br>
+Acceptable source string: The name is '''{name}'''.  (Tripled ASCII single quotes)<br>
 Acceptable source string: The name is "{name}".  (ASCII double quotes)

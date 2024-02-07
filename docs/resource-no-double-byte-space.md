@@ -6,5 +6,5 @@ See https://en.wikipedia.org/wiki/Whitespace_character for details on various wh
 
 Examples:
 
-Good translation: "本当? はい! 100%"
+Good translation: "本当? はい! 100%"<br>
 Bad translation: "本当?　はい!　100%"
