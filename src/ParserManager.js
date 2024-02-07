@@ -56,6 +56,16 @@ class ParserManager {
     }
 
     /**
+     * Return the parser with the given name.
+     * @param {String} name the name of the parser being sought
+     * @returns {Parser|undefined} the parser with the given name or undefined if
+     * none was found with that name.
+     */
+    getByName(name) {
+        // TODO: implement ParserManager.getByName()
+    }
+
+    /**
      * Add a list of parsers to this factory so that other code
      * can find them.
      *

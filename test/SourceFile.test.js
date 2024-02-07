@@ -65,7 +65,7 @@ describe("testSourceFile", () => {
     test("SourceFile", () => {
         expect.assertions(2);
 
-        const sf = new SourceFile("a", {}, project);
+        const sf = new SourceFile("a", { filetype }, project);
         expect(sf).toBeTruthy();
         expect(sf.getFilePath()).toBe("a");
     });
@@ -92,7 +92,8 @@ describe("testSourceFile", () => {
         const sf = new SourceFile("a", {
             settings: {
                 template: "x"
-            }
+            },
+            filetype
         }, project);
         expect(sf).toBeTruthy();
         expect(sf.getFilePath()).toBe("a");
@@ -104,7 +105,8 @@ describe("testSourceFile", () => {
         const sf = new SourceFile("src/filemanager/xrs/messages_de_DE.properties", {
             settings: {
                 template: "[dir]/messages_[localeUnder].properties"
-            }
+            },
+            filetype
         }, project);
         expect(sf).toBeTruthy();
         expect(sf.getLocaleFromPath()).toBe("de-DE");
@@ -116,7 +118,8 @@ describe("testSourceFile", () => {
         const sf = new SourceFile("src/filemanager/xrs/Excludes.java", {
             settings: {
                 template: "[dir]/messages_[localeUnder].properties"
-            }
+            },
+            filetype
         }, project);
         expect(sf).toBeTruthy();
         expect(sf.getLocaleFromPath()).toBe("");
@@ -127,7 +130,8 @@ describe("testSourceFile", () => {
 
         const sf = new SourceFile("src/filemanager/xrs/messages_de_DE.properties", {
             settings: {
-            }
+            },
+            filetype
         }, project);
         expect(sf).toBeTruthy();
         expect(sf.getLocaleFromPath()).toBe("");
@@ -135,10 +139,11 @@ describe("testSourceFile", () => {
 
     test("SourceFileParse", () => {
         expect.assertions(3);
-
+debugger;
         const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
-            }
+            },
+            filetype
         }, project);
         expect(sf).toBeTruthy();
         const resources = sf.parse();
@@ -151,7 +156,8 @@ describe("testSourceFile", () => {
 
         const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
-            }
+            },
+            filetype
         }, project);
         expect(sf).toBeTruthy();
         const ir = sf.parse();
@@ -171,7 +177,8 @@ describe("testSourceFile", () => {
 
         const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
             settings: {
-            }
+            },
+            filetype
         }, project);
         expect(sf).toBeTruthy();
         const ir = sf.parse();
