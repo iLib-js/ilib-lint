@@ -87,6 +87,17 @@ The `ilib-lint-config.json` file can have any of the following properties:
         the rules are a superset of all of the rules in the named rule sets.
         If the value is an object, then it is considered to be an on-the-fly
         unnamed rule set defined directly.
+    -   parsers (Array of String) - explicitly name the parsers to use when
+        parsing this type of file. If none are specified, then the linter will use
+        the parser that knows how to parse files with the file name extension
+        of the file being parsed. Eg, "js" files will be parsed by the
+        "Javascript" parser. The idea behind the parsers array is that in some
+        projects, there are some file types uses a non-standard file name
+        extension and thus none of the parsers knows how to parse it. For
+        example, your project might have have some ".jscript"
+        files in it, which are really Javascript, but the linter does not know
+        that yet. You would specify the "Javascript" parser in the "jscript" file
+        type to specify how to parse files of that type.
 -   paths (Object) - this maps sets of files to file types. The properties in this
     object are [micromatch](https://github.com/micromatch/micromatch) glob expressions
     that select a subset of files within the current project. The glob expressions
@@ -150,19 +161,27 @@ Here is an example of a configuration file:
     "filetypes": {
         "json": {
             // override the general locales
-            "locales": ["en-US", "de-DE", "ja-JP"]
+            "locales": ["en-US", "de-DE", "ja-JP"],
+            "ruleset": ["json"]
         },
         "javascript": {
             "ruleset": ["react-rules"]
         },
         "jsx": {
             "ruleset": ["react-rules"]
+        },
+        "sdl-xliff": {
+            // these are actually special xliff files in our project,
+            // so we can use the regular xliff parser to parse them
+            "parsers": [ "xliff" ],
+            "ruleset": ["resource"]
         }
     },
     // this maps micromatch path expressions to a file type definition
     "paths": {
         // use the file type defined above
         "src/**/*.json": "json",
+        "src/**/*.sdlxliff": "sdl-xliff",
         "src/**/*.js": "javascript",
         "src/**/*.jsx": "jsx",
         // define a file type on the fly

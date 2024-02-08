@@ -1,6 +1,18 @@
 Release Notes
 ============================
 
+### v1.15.0
+
+- added the ability to specify which parsers to use for a particular
+  file type. This allows you to parse files that do not have the
+  standard file name extension for the file type. Example: the
+  "JavascriptReactJsx" parser automatically parses files with the
+  extension ".jsx" but in your project, the convention is to put them
+  in files with the extension ".js" instead. In this case, the mappings
+  should include an entry that maps "**/*.js" to a "react-jsx" file type
+  and the "react-jsx" file type should specify that files should be parsed
+  with the "JavascriptReactJsx" parser.
+
 ### v1.14.0
 
 - added a new rule to check whether or not replacement parameters in the
@@ -8,7 +20,7 @@ Release Notes
 - fixed a bug where the quote style checker was not checking quotes properly
   when the quotes surrounded a replacement parameter like "{this}"
 - added the ability to set sourceLocale through the config file.
-- added time eplased information in the result.
+- added time elapsed information in the result.
 - added a `progressinfo` option to know the which file is checking while the tool is running.
 - fixed the source plural category checker to not complain about extra
   categories in the source string other than the required "one" and "other"

@@ -93,59 +93,14 @@ class Project extends DirItem {
         this.config.autofix = options?.opt?.fix === true || config?.autofix === true;
 
         this.pluginMgr = this.options.pluginManager;
+
         const ruleMgr = this.pluginMgr.getRuleManager();
-        const fmtMgr = this.pluginMgr.getFormatterManager();
-        const fixerMgr = this.pluginMgr.getFixerManager();
-        if (this.config.rules) {
-            ruleMgr.add(this.config.rules);
-        }
         ruleMgr.addRuleSetDefinitions(rulesetDefinitions);
-        if (this.config.rulesets) {
-            ruleMgr.addRuleSetDefinitions(this.config.rulesets);
-        }
-        if (this.config.formatters) {
-            fmtMgr.add(this.config.formatters);
-        }
-        if (this.config.fixers) {
-            fixerMgr.add(this.config.fixers);
-        }
 
         this.filetypes = {
             "xliff": new FileType({project: this, ...xliffFileTypeDefinition}),
             "unknown": new FileType({project: this, ...unknownFileTypeDefinition})
         };
-        if (this.config.filetypes) {
-            for (let ft in this.config.filetypes) {
-                this.filetypes[ft] = new FileType({
-                    name: ft,
-                    project: this,
-                    ...this.config.filetypes[ft]
-                });
-            }
-        }
-        if (this.config.paths) {
-            this.mappings = this.config.paths;
-            for (let glob in this.mappings) {
-                let mapping = this.mappings[glob];
-                if (typeof(mapping) === 'object') {
-                    // this is an "on-the-fly" file type
-                    this.filetypes[glob] = new FileType({
-                        name: glob,
-                        project: this,
-                        ...mapping
-                    });
-                } else if (typeof(mapping) === 'string') {
-                    if (!this.filetypes[mapping]) {
-                        throw `Mapping ${glob} is configured to use unknown filetype ${mapping}`;
-                    }
-                }
-            }
-        }
-        this.formatter = fmtMgr.get(options.formatter || "ansi-console-formatter");
-        if (!this.formatter) {
-            logger.error(`Could not find formatter ${options.formatter}. Aborting...`);
-            process.exit(3);
-        }
     }
 
     /**
@@ -312,7 +267,62 @@ class Project extends DirItem {
             }
         });
 
-        return promise;
+        return promise.then(() => {
+            // This configuration processing below was moved here from the
+            // constructor. The reason is that it has to be done after
+            // the plugins are already loaded because the plugins themselves
+            // may be providing some of the parsers, rules, rulesets, etc.
+            // that are referenced in the config.
+
+            const ruleMgr = this.pluginMgr.getRuleManager();
+            const fmtMgr = this.pluginMgr.getFormatterManager();
+            const fixerMgr = this.pluginMgr.getFixerManager();
+            if (this.config.rules) {
+                ruleMgr.add(this.config.rules);
+            }
+            if (this.config.rulesets) {
+                ruleMgr.addRuleSetDefinitions(this.config.rulesets);
+            }
+            if (this.config.formatters) {
+                fmtMgr.add(this.config.formatters);
+            }
+            if (this.config.fixers) {
+                fixerMgr.add(this.config.fixers);
+            }
+
+            if (this.config.filetypes) {
+                for (let ft in this.config.filetypes) {
+                    this.filetypes[ft] = new FileType({
+                        name: ft,
+                        project: this,
+                        ...this.config.filetypes[ft]
+                    });
+                }
+            }
+            if (this.config.paths) {
+                this.mappings = this.config.paths;
+                for (let glob in this.mappings) {
+                    let mapping = this.mappings[glob];
+                    if (typeof(mapping) === 'object') {
+                        // this is an "on-the-fly" file type
+                        this.filetypes[glob] = new FileType({
+                            name: glob,
+                            project: this,
+                            ...mapping
+                        });
+                    } else if (typeof(mapping) === 'string') {
+                        if (!this.filetypes[mapping]) {
+                            throw `Mapping ${glob} is configured to use unknown filetype ${mapping}`;
+                        }
+                    }
+                }
+            }
+            this.formatter = fmtMgr.get(this.options.formatter || "ansi-console-formatter");
+            if (!this.formatter) {
+                logger.error(`Could not find formatter ${options.formatter}. Aborting...`);
+                process.exit(3);
+            }
+        });
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * FileType.js - Represents a type of file in an ilib-lint project
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ class FileType {
         }
 
         if (this.parsers) {
-            const parserMgr = project.getParserManager();
+            const parserMgr = this.project.getParserManager();
             this.parserClasses = this.parsers.map(parserName => {
                 const parser = parserMgr.getByName(parserName);
                 if (!parser) {
