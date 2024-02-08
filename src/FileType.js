@@ -67,7 +67,7 @@ class FileType {
      * the next parser to see if that one will work. If ALL parsers
      * fail for a particular file, then this tool will print an
      * error message to the output about it.
-     *  
+     *
      * @param {Object} options the options governing the construction
      * of this file type as documented above
      * @constructor

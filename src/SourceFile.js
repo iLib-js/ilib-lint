@@ -106,10 +106,11 @@ class SourceFile extends DirItem {
                 return parser.parse();
             } catch (e) {
                 logger.trace(`Parser ${parser.getName()} could not parse file ${this.filePath}`);
+                logger.trace(e);
             }
         });
         if (!irs || irs.length === 0) {
-            throw `All parsers failed to parse file ${file.filePath}. Try configuring another parser or excluding this file from the lint project.`;
+            throw `All available parsers failed to parse file ${file.filePath}. Try configuring another parser or excluding this file from the lint project.`;
         }
         return irs;
     }

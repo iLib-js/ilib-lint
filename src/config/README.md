@@ -172,7 +172,8 @@ Here is an example of a configuration file:
         },
         "sdl-xliff": {
             // these are actually special xliff files in our project,
-            // so we can use the regular xliff parser to parse them
+            // but they have the same syntax as regular xliff, so we can
+            // still use the regular xliff parser to parse them
             "parsers": [ "xliff" ],
             "ruleset": ["resource"]
         }
