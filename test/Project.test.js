@@ -272,7 +272,7 @@ describe("testProject", () => {
         expect(project.getSourceLocale()).toBe("en-KR");
     });
 
-    test("ProjectGetFileTypeForPath1", () => {
+    test("ProjectGetFileTypeForPath1", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
@@ -284,7 +284,7 @@ describe("testProject", () => {
         expect(ft.getName()).toBe("json");
     });
 
-    test("ProjectGetFileTypeForPath2", () => {
+    test("ProjectGetFileTypeForPath2", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
@@ -296,7 +296,7 @@ describe("testProject", () => {
         expect(ft.getName()).toBe("javascript");
     });
 
-    test("ProjectGetFileTypeForPathUnknown", () => {
+    test("ProjectGetFileTypeForPathUnknown", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
@@ -308,7 +308,7 @@ describe("testProject", () => {
         expect(ft.getName()).toBe("unknown");
     });
 
-    test("ProjectGetFileTypeForPathNormalizePath", () => {
+    test("ProjectGetFileTypeForPathNormalizePath", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
@@ -320,7 +320,7 @@ describe("testProject", () => {
         expect(ft.getName()).toBe("json");
     });
 
-    test("ProjectGetFileTypeForPathAnonymousFileType", () => {
+    test("ProjectGetFileTypeForPathAnonymousFileType", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);

@@ -249,7 +249,7 @@ class Project extends DirItem {
      * @accept {boolean} true when everything was initialized correct
      * @reject the initialization failed
      */
-    async init() {
+    init() {
         let promise = Promise.resolve(true);
 
         if (this.config.plugins) {
@@ -322,6 +322,8 @@ class Project extends DirItem {
                 logger.error(`Could not find formatter ${options.formatter}. Aborting...`);
                 process.exit(3);
             }
+
+            return true;
         });
     }
 
