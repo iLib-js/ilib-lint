@@ -249,7 +249,7 @@ class Project extends DirItem {
      * @accept {boolean} true when everything was initialized correct
      * @reject the initialization failed
      */
-    init() {
+    async init() {
         let promise = Promise.resolve(true);
 
         if (this.config.plugins) {
