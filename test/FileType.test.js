@@ -30,6 +30,10 @@ ruleMgr.addRuleSetDefinition("asdf", {
     "resource-quote-style": "localeOnly"
 });
 
+ruleMgr.addRuleSetDefinition("no-state-checker", {
+    "resource-state-checker": false
+});
+
 const project = new Project("x", {
     locales: ["fr-FR", "nl-NL"],
     pluginManager
@@ -214,7 +218,6 @@ describe("testFileType", () => {
     test("FileTypeGetRuleSetNoRulesetsAvailable", () => {
         expect.assertions(3);
 
-        const ruleset = [ "asdf" ]; // defined at the top of this file
         const ft = new FileType({
             name: "test",
             project
@@ -225,6 +228,47 @@ describe("testFileType", () => {
 
         expect(Array.isArray(rules)).toBeTruthy();
         expect(rules.length).toBe(0);
+    });
+
+    test("FileType contains particular rule", () => {
+        expect.assertions(4);
+
+        const ruleset = [ "generic" ];
+        const ft = new FileType({
+            name: "test",
+            ruleset,
+            project
+        });
+        expect(ft).toBeTruthy();
+
+        const rules = ft.getRules();
+
+        expect(Array.isArray(rules)).toBeTruthy();
+        expect(rules.length).toBe(17);
+
+        expect(rules.find(rule => rule.getName() === "resource-state-checker")).toBeTruthy();
+    });
+
+    test("FileType latter ruleset removes a rule", () => {
+        expect.assertions(4);
+
+        const ruleset = [
+            "generic",
+            "no-state-checker"  // defined at the top of this file
+        ];
+        const ft = new FileType({
+            name: "test",
+            ruleset,
+            project
+        });
+        expect(ft).toBeTruthy();
+
+        const rules = ft.getRules();
+
+        expect(Array.isArray(rules)).toBeTruthy();
+        expect(rules.length).toBe(16);
+
+        expect(rules.find(rule => rule.getName() === "resource-state-checker")).toBeFalsy();
     });
 
 });

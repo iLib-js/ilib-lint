@@ -140,7 +140,10 @@ class FileType {
                 if (typeof(definitions[ruleName]) === 'boolean') {
                     if (definitions[ruleName]) {
                         set.addRule(ruleMgr.get(ruleName));
-                    } // else turn the rule off by not adding it to the set!
+                    } else {
+                        // else explicitly turn the rule off
+                        set.removeRule(ruleName);
+                    }
                 } else {
                     // only pass in the optional parameter if it is not boolean
                     set.addRule(ruleMgr.get(ruleName, definitions[ruleName]));
