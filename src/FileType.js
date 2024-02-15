@@ -1,7 +1,7 @@
 /*
  * FileType.js - Represents a type of file in an ilib-lint project
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,19 @@ class FileType {
      *   the template can be left out.
      * - ruleset (Array of String) - a list of rule set names
      *   to use with this file type
+     * - parsers (Array of String) - an array of names of parsers to
+     *   apply to this file type. This is mainly useful when the source
+     *   code is in a file with an unexpected or ambiguous file
+     *   name extension. For example, a ".js" file may contain
+     *   regular Javascript code, but it may also be React JSX
+     *   code, or even Javascript with JSX and Flow type definitions.
+     *
+     * The array of parsers will be used to attempt to parse each
+     * source file. If a parser throws an exception/error while parsing,
+     * the linter will note that an error occurred and move on to
+     * the next parser to see if that one will work. If ALL parsers
+     * fail for a particular file, then this tool will print an
+     * error message to the output about it.
      *
      * @param {Object} options the options governing the construction
      * of this file type as documented above
@@ -63,7 +76,7 @@ class FileType {
         if (!options || !options.name || !options.project) {
             throw "Missing required options to the FileType constructor";
         }
-        ["name", "project", "locales", "ruleset", "template", "type"].forEach(prop => {
+        ["name", "project", "locales", "ruleset", "template", "type", "parsers"].forEach(prop => {
             if (typeof(options[prop]) !== 'undefined') {
                 this[prop] = options[prop];
             }
@@ -86,6 +99,17 @@ class FileType {
                 this.ruleset = [ setName ];
             }
         }
+
+        if (this.parsers) {
+            const parserMgr = this.project.getParserManager();
+            this.parserClasses = this.parsers.map(parserName => {
+                const parser = parserMgr.getByName(parserName);
+                if (!parser) {
+                    throw `Could not find parser ${parserName} named in the configuration for filetype ${this.name}`;
+                }
+                return parser;
+            });
+        }
     }
 
     getName() {
@@ -106,6 +130,22 @@ class FileType {
 
     getType() {
         return this.type;
+    }
+
+    /**
+     * Return an array of classes of parsers to use with this file type.
+     * If the parsers are not named explicitly in the configuration,
+     * this method will check with the parser manager to find all parsers
+     * that can parse files with the given file name extension. If there
+     * are none available, this method returned undefined;
+     * @param {String} extension file name extension of the file being parsed
+     * @returns {Array.<Class>} an array of parser classes to use with
+     * files of this type.
+     */
+    getParserClasses(extension) {
+        if (this.parserClasses) return this.parserClasses;
+        const pm = this.project.getParserManager();
+        return pm.get(extension);
     }
 
     /**

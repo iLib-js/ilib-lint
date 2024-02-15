@@ -46,7 +46,7 @@ class SourceFile extends DirItem {
      */
     constructor(filePath, options, project) {
         super(filePath, options, project);
-        if (!options || !filePath) {
+        if (!options || !filePath || !options.filetype) {
             throw "Incorrect options given to SourceFile constructor";
         }
         this.filePath = filePath;
@@ -62,8 +62,7 @@ class SourceFile extends DirItem {
         if (extension) {
             // remove the dot
             extension = extension.substring(1);
-            const pm = project.getParserManager();
-            this.parserClasses = pm.get(extension);
+            this.parserClasses = this.filetype.getParserClasses(extension);
         }
     }
 
@@ -102,7 +101,18 @@ class SourceFile extends DirItem {
      */
     parse() {
         if (!this.filePath) return [];
-        return this.getParsers().flatMap((parser) => parser.parse());
+        const irs = this.getParsers().flatMap(parser => {
+            try {
+                return parser.parse();
+            } catch (e) {
+                logger.trace(`Parser ${parser.getName()} could not parse file ${this.filePath}`);
+                logger.trace(e);
+            }
+        });
+        if (!irs || irs.length === 0) {
+            throw `All available parsers failed to parse file ${file.filePath}. Try configuring another parser or excluding this file from the lint project.`;
+        }
+        return irs;
     }
 
     /**
@@ -140,12 +150,12 @@ class SourceFile extends DirItem {
                 for (const ir of irs) {
                     // find the rules that are appropriate for this intermediate representation and then apply them
                     const rules = this.filetype.getRules().filter((rule) => rule.getRuleType() === ir.getType());
-                    
-                    rules.forEach(function(ru){
-                    logger.debug('Checking rule  : ' + ru.name);
-                    })
+
+                    rules.forEach(ru => {
+                        logger.debug('Checking rule  : ' + ru.name);
+                    });
                     logger.debug('');
-                    
+
                     // apply rules
                     const results = rules.flatMap(
                         (rule) =>

@@ -108,6 +108,8 @@ ilib-lint accepts the following command-line parameters:
 * locales - Locales you want your app to support globally. Value is a comma-separated
   list of BCP-47 style locale tags. File types can override this list.
   Default: the top 20 locales on the internet by traffic.
+* progressinfo - whether or not to show progress information while finding and
+  parsing source files.s
 * sourceLocale - locale of the source files or the source locale for resource
   files. Default: "en-US"
 * quiet - Produce no progress output during the run, except for errors running
@@ -215,6 +217,7 @@ The linter plugin should override and implement these three methods:
 
 - getParsers - return an array of classes that inherit from the Parser class
 - getRules - return an array of classes that inherit from the Rule class
+- getRuleSets - return an array of named rule sets that define which rules to use
 - getFormatters - return an array of classes that inherit from the Formatter class
 
 For rules and formatters, each array entry can be either declarative or
@@ -378,6 +381,40 @@ the built-in ICU plural matcher rule:
 [resource-icu-plurals](https://github.com/ilib-js/ilib-lint/blob/main/src/rules/ResourceICUPlurals.js)
 which checks resources to make sure that plurals in source and target strings
 have the correct syntax for ICU and formatjs.
+
+### Rule Sets
+
+Rule sets are exactly what they sound like -- a named set that makes it easy
+to use a list of rules with a particular file type.
+
+Rule sets can be declared in the config file or can be returned from a plugin.
+By convention, at least one of the rulesets returned from each plugin typically
+names all of the rules that that plugin supports. That way, a configuration can
+be assured of using all the latest available rules when the version of the plugin
+is upgraded, without explicitly updating the config to name all of those new rules.
+
+Rule sets should be returned from the getRuleSets method of a plugin which are an
+object where the properties name the rule sets, and the value of each property is
+another object that lists the individual rules that are members of that set,
+and their possible parameters/initializers.
+
+Example return value from a call to getRuleSets:
+
+```javascript
+{
+    "javascript": {
+        "source-check-hard-coded-strings": true,
+        "source-check-icu-plural-syntax": {
+            "enforcement": "strict"
+        }
+    }
+}
+```
+
+In this example, one rule set "javascript" is returned, listing two rules. The
+first rule has the value `true` meaning that it is turned on. The second rule
+has an initializer telling the rule code to strictly enforce the plural
+syntax. (Each rule defines for itself what parameters/initalizers it accepts.)
 
 ### Formatters
 

@@ -1,7 +1,7 @@
 /*
  * Project.test.js - test the project object
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -272,52 +272,62 @@ describe("testProject", () => {
         expect(project.getSourceLocale()).toBe("en-KR");
     });
 
-    test("ProjectGetFileTypeForPath1", () => {
+    test("ProjectGetFileTypeForPath1", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
+        // must initialize the project before the filetypes are available
+        const result = await project.init();
         const ft = project.getFileTypeForPath("src/foo/ja/asdf.json");
         expect(ft.getName()).toBe("json");
     });
 
-    test("ProjectGetFileTypeForPath2", () => {
+    test("ProjectGetFileTypeForPath2", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
+        // must initialize the project before the filetypes are available
+        const result = await project.init();
         const ft = project.getFileTypeForPath("src/foo/asdf.js");
         expect(ft.getName()).toBe("javascript");
     });
 
-    test("ProjectGetFileTypeForPathUnknown", () => {
+    test("ProjectGetFileTypeForPathUnknown", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
+        // must initialize the project before the filetypes are available
+        const result = await project.init();
         const ft = project.getFileTypeForPath("notsrc/foo/ja/asdf.json");
         expect(ft.getName()).toBe("unknown");
     });
 
-    test("ProjectGetFileTypeForPathNormalizePath", () => {
+    test("ProjectGetFileTypeForPathNormalizePath", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
+        // must initialize the project before the filetypes are available
+        const result = await project.init();
         const ft = project.getFileTypeForPath("./src/foo/ja/asdf.json");
         expect(ft.getName()).toBe("json");
     });
 
-    test("ProjectGetFileTypeForPathAnonymousFileType", () => {
+    test("ProjectGetFileTypeForPathAnonymousFileType", async () => {
         expect.assertions(2);
 
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 
+        // must initialize the project before the filetypes are available
+        const result = await project.init();
         const ft = project.getFileTypeForPath("i18n/it-IT.xliff");
         // since it is not a pre-defined xliff with a real name, it uses
         // the mapping's glob as the name

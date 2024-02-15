@@ -1,6 +1,6 @@
 {
     "name": "ilib-lint",
-    "version": "1.14.0",
+    "version": "1.15.0",
     "module": "./src/index.js",
     "type": "module",
     "bin": "./src/index.js",
@@ -49,14 +49,10 @@
         "node": ">=14.0.0"
     },
     "scripts": {
-        "build": "npm run build:prod",
-        "build:prod": "grunt babel --mode=prod",
-        "build:dev": "grunt babel --mode=dev",
-        "build:test": "webpack-cli --config webpack-test.config.js",
-        "dist": "npm-run-all doc build:prod; npm pack",
-        "test": "LANG=en_US.UTF8 node --experimental-vm-modules ./node_modules/.bin/jest",
+        "dist": "npm pack",
+        "test": "LANG=en_US.UTF8 node --trace-warnings --experimental-vm-modules ./node_modules/.bin/jest",
         "test:watch": "LANG=en_US.UTF8 node --experimental-vm-modules ./node_modules/.bin/jest --watch",
-        "debug": "LANG=en_US.UTF8 npm run build:dev ; node --experimental-vm-modules --inspect-brk node_modules/.bin/jest -i",
+        "debug": "LANG=en_US.UTF8 node --trace-warnings --experimental-vm-modules --inspect-brk node_modules/.bin/jest -i",
         "lint": "node src/index.js",
         "clean": "git clean -f -d src test",
         "doc": "mkdir -p docs ; jsdoc2md -c jsdoc.json --separators --source src/* -m table > docs/ilibLint.md ; npm run doc:html",
