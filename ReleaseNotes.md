@@ -1,6 +1,19 @@
 Release Notes
 ============================
 
+### v2.0.0
+
+- updated to use ilib-lint-common instead of i18nlint-common. (Same library, new name.)
+- converted to use SourceFile from ilib-lint-common so that files
+  are not referenced by path names any more. Instead, instanace of
+  SourceFile are used so that downstream parts of the linter such as
+  highlighting and auto-fixing can gain access to the raw, pre-parsed
+  text of the file.
+- using ilib-lint-common is a breaking change, and it requires:
+    - all plugins need to be updated to conform to the new ilib-lint-common API
+    - this version of the linter will not load old plugins that do not
+      use ilib-lint-common
+
 ### v1.15.0
 
 - added the ability to specify which parsers to use for a particular
