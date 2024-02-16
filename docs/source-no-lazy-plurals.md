@@ -11,10 +11,10 @@ impossible to translate it properly.
 
 German:
 
-"Auto" (car) -> "Autos" (cars)  add an "s" suffix
-"Tisch" (table) -> "Tische" (tables)  add an "e" suffix
-"Fuß" (foot) -> "Füße" (feet) add an "e" and modify the central vowel
-"Bäcker" (baker) -> "Bäcker" (bakers)  no suffix for this plural
+- "Auto" (car) -> "Autos" (cars)  add an "s" suffix
+- "Tisch" (table) -> "Tische" (tables)  add an "e" suffix
+- "Fuß" (foot) -> "Füße" (feet) add an "e" and modify the central vowel
+- "Bäcker" (baker) -> "Bäcker" (bakers)  no suffix for this plural
 
 Instead, you should use the proper plural syntax for your i18n library.
 React-intl, for example, uses the ICU messageformat syntax as in this

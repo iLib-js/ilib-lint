@@ -30,19 +30,19 @@ fix for them is different in each scenario.
 
     ```javascript
         import messages from './messages.js';
-    
+
         const messageMap = {
-            "file": messages.delete.file,
-            "folder": messages.delete.folder
+            "file": messages.deleteFile,
+            "folder": messages.deleteFolder
         };
         const deleteObjString = messageMap[objectToDelete.type];
-    
+
         [...]
             <MyDialog type="delete">
                 <FormattedMessage {...deleteObjString} />
             </MyDialog>
     ```
-    
+
     As an engineer, you may think that sharing the string is more efficient, as both strings
     are exactly the same except for the one word, but you are not really saving a lot of
     memory or disk footprint, and instead you are creating an untranslatable string.
@@ -51,14 +51,14 @@ fix for them is different in each scenario.
     from a 3rd party library or service, the way you avoid this problem is to make the string
     ungrammatical. That is, you still substitute the value into the string, but you make
     sure that the text being substituted is not grammatically related to the rest of the
-    string.
-    
+    string. The usual way of doing this is to use a colon followed by the replacement param.
+
     Here is the first example again, but expressed in a non-grammatical way.
-    
+
     ```plaintext
     Delete an object with this type: {fileType}
     ```
-    
+
     Now when you substitute in any word for "fileType", the rest of the string does not need
     to agree with the plurality or gender of the value of "fileType".
 
