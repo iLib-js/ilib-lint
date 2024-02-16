@@ -42,7 +42,7 @@ const messages = defineMessages({
     }
 });
 
-<FormattedMessage ...messages.deploymentStarted values={{
+<FormattedMessage {...messages.deploymentStarted} values={{
     formattedDateTime: <FormattedDate
         value={deployment.getStart()}
         year: "numeric"

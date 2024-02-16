@@ -33,7 +33,7 @@ const messages = defineMessages({
     }
 });
 
-<FormattedMessage ...messages.percentUploaded values={{
+<FormattedMessage {...messages.percentUploaded} values={{
     pctFiles: <FormattedNumber
         value={numUploaded/totalRequest}
         style="percent"
