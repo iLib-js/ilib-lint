@@ -19,7 +19,7 @@
 
 import log4js from 'log4js';
 
-import { Parser } from 'i18nlint-common';
+import { Parser } from 'ilib-lint-common';
 
 const logger = log4js.getLogger("ilib-lint.ParserManager");
 

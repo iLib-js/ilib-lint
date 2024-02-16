@@ -1,7 +1,7 @@
 /*
  * ParserManager.test.js - test the parser factory
  *
- * Copyright ©  2022-2023JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { Parser } from 'i18nlint-common';
+import { Parser } from 'ilib-lint-common';
 
 import ParserManager from '../src/ParserManager.js';
 

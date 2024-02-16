@@ -1,7 +1,7 @@
 /*
  * ResourceDNTTerms.js - rule to ensure that Do Not Translate terms have not been translated
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { Result } from "i18nlint-common";
+import { Result } from "ilib-lint-common";
 import { Resource, ResourcePlural } from "ilib-tools-common";
 import fs from "node:fs";
 import path from "node:path";

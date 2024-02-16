@@ -1,7 +1,7 @@
 /*
  * RuleManager.test.js - test the rule manager
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Rule } from 'i18nlint-common';
+import { Rule } from 'ilib-lint-common';
 
 import RuleManager from '../src/RuleManager.js';
 import ResourceMatcher from '../src/rules/ResourceMatcher.js';

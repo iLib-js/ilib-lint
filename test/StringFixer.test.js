@@ -1,7 +1,7 @@
 /*
  * StringFixer.test.js
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { IntermediateRepresentation } from "i18nlint-common";
+import { IntermediateRepresentation } from "ilib-lint-common";
 import StringFixer from "../src/plugins/string/StringFixer.js";
 import StringFix from "../src/plugins/string/StringFix.js";
 import StringFixCommand from "../src/plugins/string/StringFixCommand.js";

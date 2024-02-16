@@ -2,7 +2,7 @@
  * ResourceICUPluralTranslation.test.js - test that the translations in
  * ICU/formatjs plurals are different than the source
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceICUPluralTranslation from "../src/rules/ResourceICUPluralTranslation.js";
 
-import { Result, IntermediateRepresentation } from 'i18nlint-common';
+import { Result, IntermediateRepresentation } from 'ilib-lint-common';
 
 describe("testResourceICUPluralTranslation", () => {
     test("ResourceICUPluralTranslationsMatchNoError", () => {

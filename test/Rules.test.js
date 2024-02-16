@@ -1,7 +1,7 @@
 /*
  * Rules.test.js - test the built-in rules
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
 import ResourceDNTTerms from '../src/rules/ResourceDNTTerms.js';
 import ResourceNoTranslation from '../src/rules/ResourceNoTranslation.js';
 
-import { Result, IntermediateRepresentation } from 'i18nlint-common';
+import { Result, IntermediateRepresentation } from 'ilib-lint-common';
 
 describe("testRules", () => {
     test("ResourceEdgeWhitespaceEdgesMatch", () => {

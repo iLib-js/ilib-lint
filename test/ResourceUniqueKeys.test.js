@@ -1,7 +1,7 @@
 /*
  * ResourceUniqueKeys.test.js - test the resource unique key checker
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 
 import fs from 'node:fs';
-import { Result, IntermediateRepresentation } from 'i18nlint-common';
+import { Result, IntermediateRepresentation } from 'ilib-lint-common';
 import { ResourceString } from 'ilib-tools-common';
 
 import ResourceUniqueKeys from '../src/rules/ResourceUniqueKeys.js';

@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-import { Result } from 'i18nlint-common';
+import { Result } from 'ilib-lint-common';
 import DeclarativeResourceRule from './DeclarativeResourceRule.js';
 import { stripPlurals } from './utils.js';
 

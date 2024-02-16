@@ -1,7 +1,7 @@
 /*
  * TestFormatter.js - test an ilib-lint Formatter plugin
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { Formatter } from 'i18nlint-common';
+import { Formatter } from 'ilib-lint-common';
 
 class TestFormatter extends Formatter {
     constructor(options) {

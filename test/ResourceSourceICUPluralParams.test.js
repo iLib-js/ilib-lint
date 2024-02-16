@@ -1,7 +1,7 @@
 /*
  * ResourceSourceICUPluralParams.test.js
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 import { ResourceString } from 'ilib-tools-common';
-import { Result } from 'i18nlint-common';
+import { Result } from 'ilib-lint-common';
 import ResourceSourceICUPluralParams from '../src/rules/ResourceSourceICUPluralParams.js';
 
 describe("that parameters in the other category also exist in the one category", () => {

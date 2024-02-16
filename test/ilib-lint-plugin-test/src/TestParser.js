@@ -19,7 +19,7 @@
 
 import fs from 'node:fs';
 
-import { Parser, IntermediateRepresentation } from 'i18nlint-common';
+import { Parser, IntermediateRepresentation } from 'ilib-lint-common';
 import json5 from 'json5';
 import { ResourceString, TranslationSet } from 'ilib-tools-common';
 

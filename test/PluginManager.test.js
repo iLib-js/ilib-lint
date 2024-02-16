@@ -1,7 +1,7 @@
 /*
  * PluginManager.test.js - test the plugin manager
  *
- * Copyright ©  2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 
 import PluginManager from '../src/PluginManager.js';
-import { Parser, Result } from 'i18nlint-common';
+import { Parser, Result } from 'ilib-lint-common';
 import { ResourceString } from 'ilib-tools-common';
 import { TestFixerTypeId } from './ilib-lint-plugin-test/src/TestFixer.js';
 

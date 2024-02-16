@@ -2,7 +2,7 @@
  * LineRegexpChecker.test.js - test the regular-expression-based rule
  * for plain text files
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  */
 
 import fs from 'node:fs';
-import { IntermediateRepresentation } from 'i18nlint-common';
+import { IntermediateRepresentation } from 'ilib-lint-common';
 
 import LineRegexpChecker from '../src/rules/LineRegexpChecker.js';
 
@@ -30,7 +30,7 @@ const noNormalize = {
     regexps: [ /\.normalize\s*\(/g ]
 };
 
-import { Result } from 'i18nlint-common';
+import { Result } from 'ilib-lint-common';
 
 describe("testLineRegexpChecker", () => {
     test("LineRegexpChecker", () => {

@@ -1,7 +1,7 @@
 /*
  * XliffParser.js - Parser for XLIFF files
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 
 import fs from 'node:fs';
 import { ResourceXliff } from 'ilib-tools-common';
-import { FileStats, Parser, IntermediateRepresentation } from 'i18nlint-common';
+import { FileStats, Parser, IntermediateRepresentation } from 'ilib-lint-common';
 
 /**
  * @class Parser for XLIFF files based on the ilib-xliff library.

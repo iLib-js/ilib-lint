@@ -1,7 +1,7 @@
 /*
  * ResourceNoNounReplacementParams.test.js - test the built-in regular-expression-based rules
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import { ResourceString, ResourceArray, ResourcePlural } from 'ilib-tools-common
 import ResourceSourceChecker from '../src/rules/ResourceSourceChecker.js';
 import { regexRules } from '../src/plugins/BuiltinPlugin.js';
 
-import { Result, IntermediateRepresentation } from 'i18nlint-common';
+import { Result, IntermediateRepresentation } from 'ilib-lint-common';
 
 function findRuleDefinition(name) {
     return regexRules.find(rule => rule.name === name);

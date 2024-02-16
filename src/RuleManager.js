@@ -1,7 +1,7 @@
 /*
  * RuleManager.js - Manage a collection of ilib-lint rules
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { Rule } from 'i18nlint-common';
+import { Rule } from 'ilib-lint-common';
 import log4js from 'log4js';
 
 import ResourceMatcher from './rules/ResourceMatcher.js';

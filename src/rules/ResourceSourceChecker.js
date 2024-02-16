@@ -2,7 +2,7 @@
  * ResourceSourceChecker.js - implement a declarative rule to check
  * source strings for problems
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  * limitations under the License.
  */
 
-import { Result } from 'i18nlint-common';
+import { Result } from 'ilib-lint-common';
 import DeclarativeResourceRule from './DeclarativeResourceRule.js';
 import { stripPlurals } from './utils.js';
 
