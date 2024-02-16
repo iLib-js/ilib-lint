@@ -22,9 +22,9 @@ import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
 
-import { FileStats } from 'i18nlint-common';
+import { FileStats } from 'ilib-lint-common';
 
-import SourceFile from './SourceFile.js';
+import LintableFile from './LintableFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
@@ -207,7 +207,7 @@ class Project extends DirItem {
                         logger.trace(`${root} ... included`);
                         glob = glob || "**";
                         const filetype = this.getFileTypeForPath(root);
-                        this.add(new SourceFile(root, {
+                        this.add(new LintableFile(root, {
                             settings: this.getSettings(glob),
                             filetype
                         }, this));
@@ -221,7 +221,7 @@ class Project extends DirItem {
         } catch (e) {
             // if the readdirSync did not work, it's maybe a file?
             if (fs.existsSync(root)) {
-                this.add(new SourceFile(root, {}, this));
+                this.add(new LintableFile(root, {}, this));
             }
         }
 
@@ -490,11 +490,11 @@ class Project extends DirItem {
 
     /**
      * Return all directory items in this project.
-     * @returns {Array.<SourceFile>} the directory items in this project.
+     * @returns {Array.<LintableFile>} the directory items in this project.
      */
     get() {
         return this.files.flatMap(dirItem => {
-            if (dirItem instanceof SourceFile) {
+            if (dirItem instanceof LintableFile) {
                 return dirItem;
             } else if (dirItem instanceof DirItem) {
                 return dirItem.get();
