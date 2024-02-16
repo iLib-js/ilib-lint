@@ -33,7 +33,7 @@ const messages = defineMessages({
     }
 });
 
-<FormattedMessage ...messages.monthlySubscriptionFee values={{
+<FormattedMessage {...messages.monthlySubscriptionFee} values={{
     cost: <FormattedNumber
         value={this.fees.monthly}
         currency={this.user.preferredCurrency}
