@@ -12,6 +12,7 @@ Release Notes
   should include an entry that maps "**/*.js" to a "react-jsx" file type
   and the "react-jsx" file type should specify that files should be parsed
   with the "JavascriptReactJsx" parser.
+- fixed some problems with the documentation
 
 ### v1.14.0
 

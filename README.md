@@ -192,7 +192,24 @@ The built-in rules are:
   all resource files
 - [resource-url-match](./docs/resource-url-match.md) - If the source string contains references to URLs, check
   that the target string also contains references to the same URLs
-
+- [source-icu-plural-params](./docs/source-icu-plural-params.md) - Make sure the "one" category contains the same
+replacement parameter as the "other" category
+- [source-icu-unexplained-params](./docs/source-icu-unexplained-params.md) - Ensure that every replacement parameter
+in the source string is explained in the translator's note
+- [source-no-dashes-in-replacement-params](./docs/source-no-dashes-in-replacement-params.md) - Do not allow dashes
+in the names of replacement parameters
+- [source-no-escaped-curly-braces](./docs/source-no-escaped-curly-braces.md) - Do not put single quotes around
+replacement parameters
+- [source-no-lazy-plurals](./docs/source-no-lazy-plurals.md) - Do not use the construct "(s)" to indicate either
+singular or plural. Use a real plural string instead.
+- [source-no-manual-currency-formatting](./docs/source-no-manual-currency-formatting.md) - Do not manually format
+currency. Use a number formatter instead.
+- [source-no-manual-date-formatting](./docs/source-no-manual-date-formatting.md) - Do not manually format dates.
+Use a date formatter instead.
+- [source-no-manual-percentage-formatting](./docs/source-no-manual-percentage-formatting.md) - Do not manually
+format percentages. Use a number formatter instead.
+- [source-no-noun-replacement-params](./docs/source-no-noun-replacement-params.md) - Do not use the untranslatable
+construct "the {param}" or "a {param}"
 
 ## Writing Plugins
 
