@@ -30,8 +30,6 @@ class LineParser extends Parser {
      */
     constructor(options) {
         super(options);
-        this.path = options.filePath;
-
         this.extensions = [ "txt", "md" ];
         this.name = "line";
         this.description = "A parser for plain text files that splits them into lines."
@@ -39,14 +37,17 @@ class LineParser extends Parser {
 
     /**
      * Parse the current file into an intermediate representation.
+     * @param {SourceFile} sourceFile the file to be parsed
+     * @returns {Array.<IntermediateRepresentation>} the intermediate representations of
+     * the source file
      */
-    parse() {
-        const data = fs.readFileSync(this.path, "utf-8");
+    parse(sourceFile) {
+        const data = sourceFile.getContent();
         const lines = data.split(/\n/g);
         return [new IntermediateRepresentation({
             type: "line",
             ir: lines,
-            filePath: this.path
+            sourceFile
         })];
     }
 

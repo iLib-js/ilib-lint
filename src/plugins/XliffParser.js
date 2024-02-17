@@ -31,11 +31,6 @@ class XliffParser extends Parser {
      */
     constructor(options) {
         super(options);
-        this.path = options.filePath;
-        this.xliff = new ResourceXliff({
-            path: options.filePath
-        });
-
         this.extensions = [ "xliff", "xlif", "xlf" ];
         this.name = "xliff";
         this.description = "A parser for xliff files. This can handle xliff v1.2 and v2.0 format files."
@@ -43,15 +38,22 @@ class XliffParser extends Parser {
 
     /**
      * Parse the current file into an intermediate representation.
+     * @param {SourceFile} sourceFile the file to be parsed
+     * @returns {Array.<IntermediateRepresentation>} the intermediate representations of
+     * the source file
      */
-    parse() {
-        const data = fs.readFileSync(this.path, "utf-8");
-        this.xliff.parse(data);
-        const resources = this.xliff.getResources();
+    parse(sourceFile) {
+        const data = sourceFile.getContent();
+        const xliff = new ResourceXliff({
+            path: sourceFile.getPath()
+        });
+
+        xliff.parse(data);
+        const resources = xliff.getResources();
         return [new IntermediateRepresentation({
             type: "resource",
             ir: resources,
-            filePath: this.path,
+            sourceFile,
             stats: new FileStats({
                 lines: this.xliff.getLines(),
                 bytes: this.xliff.size(),
