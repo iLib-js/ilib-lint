@@ -20,12 +20,15 @@
 import path from "node:path";
 import log4js from "log4js";
 import { getLocaleFromPath } from "ilib-tools-common";
-import { Fix, IntermediateRepresentation, Parser, Result } from "ilib-lint-common";
+import { Fix, IntermediateRepresentation, Parser, Result, SourceFile } from "ilib-lint-common";
 import DirItem from "./DirItem.js";
 import Project from "./Project.js";
 import FileType from "./FileType.js";
 
 const logger = log4js.getLogger("ilib-lint.root.LintableFile");
+
+// where we store parsers for re-use
+const parserCache = {};
 
 /**
  * @class Represent a source file
@@ -49,20 +52,30 @@ class LintableFile extends DirItem {
         if (!options || !filePath || !options.filetype) {
             throw "Incorrect options given to LintableFile constructor";
         }
-        this.filePath = filePath;
+        this.sourceFile = new SourceFile(filePath, {
+            sourceLocale: options.locale,
+            getLogger: log4js.getLogger.bind(log4js),
+            type: options.filetype.getName()
+        });
         this.filetype = options.filetype;
 
         if (this.project.options.opt && this.project.options.opt.verbose) {
             logger.level = "debug";
         }
-        /** @typedef {Class} ParserClass Constructor of {@link Parser} or its subclass */
-        /** @type {ParserClass[]} */
-        this.parserClasses = [];
-        let extension = path.extname(this.filePath);
+        this.parsers = [];
+        let extension = path.extname(filePath);
         if (extension) {
             // remove the dot
             extension = extension.substring(1);
-            this.parserClasses = this.filetype.getParserClasses(extension);
+            this.parsers = this.filetype.getParserClasses(extension).map(parserClass => {
+                if (!parserCache[parserClass.name]) {
+                    parserCache[parserClass.name] = new parserClass({
+                        settings: this.settings,
+                        getLogger: log4js.getLogger.bind(log4js)
+                    });
+                }
+                return parserCache[parserClass.name];
+            });
         }
     }
 
@@ -75,23 +88,9 @@ class LintableFile extends DirItem {
      */
     getLocaleFromPath() {
         if (this.settings && this.settings.template) {
-            return getLocaleFromPath(this.settings.template, this.filePath);
+            return getLocaleFromPath(this.settings.template, this.sourceFile.getPath());
         }
         return "";
-    }
-
-    /**
-     * @private
-     * @returns {Parser[]}
-     */
-    getParsers() {
-        return this.parserClasses.map((parserClass) => {
-            return new parserClass({
-                filePath: this.filePath,
-                settings: this.settings,
-                getLogger: (name) => log4js.getLogger(name),
-            });
-        });
     }
 
     /**
@@ -101,16 +100,16 @@ class LintableFile extends DirItem {
      */
     parse() {
         if (!this.filePath) return [];
-        const irs = this.getParsers().flatMap(parser => {
+        const irs = this.parsers.flatMap(parser => {
             try {
-                return parser.parse();
+                return parser.parse(this.sourceFile);
             } catch (e) {
-                logger.trace(`Parser ${parser.getName()} could not parse file ${this.filePath}`);
+                logger.trace(`Parser ${parser.getName()} could not parse file ${this.sourceFile.getPath()}`);
                 logger.trace(e);
             }
         });
         if (!irs || irs.length === 0) {
-            throw `All available parsers failed to parse file ${file.filePath}. Try configuring another parser or excluding this file from the lint project.`;
+            throw `All available parsers failed to parse file ${file.sourceFile.getPath()}. Try configuring another parser or excluding this file from the lint project.`;
         }
         return irs;
     }
@@ -133,14 +132,14 @@ class LintableFile extends DirItem {
         }
 
         if (!this.filePath) return [];
-        return this.getParsers().flatMap((parser) => {
+        return this.parsers.flatMap((parser) => {
             let didWrite = false;
 
             const /** @type {Result[]} */ fixedResults = [];
             let /** @type {Result[]} */ currentParseResults = [];
 
             do {
-                const irs = parser.parse();
+                const irs = parser.parse(this.sourceFile);
                 // indicate that for current intermediate representations, parser did not write out modified representations yet
                 didWrite = false;
                 // clear the results of the current parse, because the file had been overwritten
