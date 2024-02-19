@@ -123,7 +123,7 @@ class SourceRegexpChecker extends Rule {
             results.push(new Result({
                 severity: this.severity,
                 rule: this,
-                pathName: ir.getPath(),
+                pathName: ir.getSourceFile().getPath(),
                 highlight: snippet,
                 description: this.note.replace(/\{matchString\}/g, match[0]),
                 lineNumber

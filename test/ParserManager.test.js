@@ -74,7 +74,7 @@ describe("testParserManager", () => {
 
         expect(parsers).toBeTruthy();
         expect(parsers.length).toBe(1);
-        expect(Object.is(parsers[0], MockParser)).toBeTruthy();
+        expect(parsers[0] instanceof MockParser).toBeTruthy();
     });
 
     test("ParserManagerAddParsersNotParser", () => {

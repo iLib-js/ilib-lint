@@ -380,7 +380,7 @@ describe("testProject", () => {
 
     test("ProjectFindIssues", async () => {
         expect.assertions(20);
-
+debugger;
         const project = new Project("x", {pluginManager, opt: {}}, genericConfig);
         expect(project).toBeTruthy();
 

@@ -55,8 +55,8 @@ class XliffParser extends Parser {
             ir: resources,
             sourceFile,
             stats: new FileStats({
-                lines: this.xliff.getLines(),
-                bytes: this.xliff.size(),
+                lines: xliff.getLines(),
+                bytes: xliff.size(),
                 modules: resources.length
             })
         })];

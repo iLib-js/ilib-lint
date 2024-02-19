@@ -21,7 +21,9 @@ import { ResourceArray, ResourcePlural, ResourceString } from 'ilib-tools-common
 
 import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
 
-import { Result, IntermediateRepresentation } from 'ilib-lint-common';
+import { Result, IntermediateRepresentation, SourceFile } from 'ilib-lint-common';
+
+const sourceFile = new SourceFile("a/b/c.xliff", {});
 
 describe("testResourceStateChecker", () => {
     test("ResourceStateCheckerMatchNoError", () => {
@@ -46,7 +48,7 @@ describe("testResourceStateChecker", () => {
                     pathName: "a/b/c.xliff",
                     state: "translated"
                 })],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
         expect(!actual).toBeTruthy();
@@ -74,7 +76,7 @@ describe("testResourceStateChecker", () => {
                     pathName: "a/b/c.xliff",
                     state: "needs-review"
                 })],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
         expect(!actual).toBeTruthy();
@@ -102,7 +104,7 @@ describe("testResourceStateChecker", () => {
                     pathName: "a/b/c.xliff",
                     state: "new"
                 })],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
         const expected = new Result({
@@ -140,7 +142,7 @@ describe("testResourceStateChecker", () => {
                     pathName: "a/b/c.xliff",
                     state: "new"
                 })],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
         const expected = new Result({
@@ -175,7 +177,7 @@ describe("testResourceStateChecker", () => {
                     pathName: "a/b/c.xliff",
                     state: "translated"
                 })],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
         expect(!actual).toBeTruthy();
@@ -200,7 +202,7 @@ describe("testResourceStateChecker", () => {
                     pathName: "a/b/c.xliff",
                     state: "new"
                 })],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
         const expected = new Result({
@@ -237,7 +239,7 @@ describe("testResourceStateChecker", () => {
                     target: "{count, plural, one {Dies ist einzigartig} other {Dies ist mehrerartig}}",
                     pathName: "a/b/c.xliff"
                 })],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
         const expected = new Result({

@@ -17,8 +17,10 @@
  * limitations under the License.
  */
 import { ResourceArray, ResourcePlural, ResourceString } from "ilib-tools-common";
-import { IntermediateRepresentation, Result } from "ilib-lint-common";
+import { IntermediateRepresentation, Result, SourceFile } from "ilib-lint-common";
 import ResourceSourceICUUnexplainedParams from "../src/rules/ResourceSourceICUUnexplainedParams.js";
+
+const sourceFile = new SourceFile("a/b/c.xliff", {});
 
 describe("ResourceSourceICUUnexplainedParams", () => {
     const rule = new ResourceSourceICUUnexplainedParams();
@@ -539,7 +541,7 @@ describe("ResourceSourceICUUnexplainedParams", () => {
             ir: new IntermediateRepresentation({
                 type: "resource",
                 ir: [resource],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
 
@@ -584,7 +586,7 @@ describe("ResourceSourceICUUnexplainedParams", () => {
             ir: new IntermediateRepresentation({
                 type: "resource",
                 ir: [resource],
-                filePath: "a/b/c.xliff"
+                sourceFile
             })
         });
 

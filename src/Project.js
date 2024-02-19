@@ -510,29 +510,20 @@ class Project extends DirItem {
      */
     findIssues(locales) {
         this.fileStats = new FileStats();
-        return this.files.map(file => {
+        return this.files.flatMap(file => {
             //logger.debug(`Examining ${file.filePath}`);
             if (!this.options.opt.quiet && this.options.opt.progressInfo) {
                 logger.info("Examing path   : " + file.filePath);
             }
             try {
-                const irArray = file.parse();
-                if (irArray) {
-                    irArray.forEach(ir => {
-                        if (ir.stats) {
-                            this.fileStats.addStats(ir.stats);
-                        } else {
-                            // no stats? At least we know there was a file, so count that
-                            this.fileStats.addFiles(1);
-                        }
-                    });
-                }
-                return file.findIssues(locales);
+                const results = file.findIssues(locales);
+                this.fileStats.addStats(file.getStats());
+                return results;
             } catch (e) {
                 logger.error(`Error while finding issues in the file ${file.filePath}`);
                 logger.error(e);
             }
-        }).flat();
+        });
     }
 
     /**

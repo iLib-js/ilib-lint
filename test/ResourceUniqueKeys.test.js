@@ -17,11 +17,12 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
-import { Result, IntermediateRepresentation } from 'ilib-lint-common';
+import { Result, IntermediateRepresentation, SourceFile } from 'ilib-lint-common';
 import { ResourceString } from 'ilib-tools-common';
 
 import ResourceUniqueKeys from '../src/rules/ResourceUniqueKeys.js';
+
+const sourceFile = new SourceFile("a/b/c.xliff", {});
 
 describe("testResourceUniqueKeys", () => {
     test("ResourceUniqueKeys", () => {
@@ -38,7 +39,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -64,7 +65,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -98,7 +99,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -138,7 +139,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -199,7 +200,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",

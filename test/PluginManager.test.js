@@ -18,7 +18,7 @@
  */
 
 import PluginManager from '../src/PluginManager.js';
-import { Parser, Result } from 'ilib-lint-common';
+import { Parser, Result, SourceFile } from 'ilib-lint-common';
 import { ResourceString } from 'ilib-tools-common';
 import { TestFixerTypeId } from './ilib-lint-plugin-test/src/TestFixer.js';
 
@@ -94,7 +94,7 @@ describe("testPluginManager", () => {
             expect(parsers).toBeTruthy();
             expect(parsers.length).toBe(1);
 
-            const testParser = new parsers[0]();
+            const testParser = parsers[0];
             expect(testParser.getName()).toBe("parser-xyz");
         });
     });
@@ -112,11 +112,11 @@ describe("testPluginManager", () => {
 
             const pm = plgmgr.getParserManager();
             const parsers = pm.get("xyz");
-            const testParser = new parsers[0]({filePath: "./test/testfiles/strings.xyz"});
+            const testParser = parsers[0];
             expect(testParser).toBeTruthy();
             expect(testParser.getName()).toBe("parser-xyz");
 
-            const ir = testParser.parse();
+            const ir = testParser.parse(new SourceFile("./test/testfiles/strings.xyz", {}));
             const resources = ir[0].getRepresentation();
             expect(resources).toBeTruthy();
             expect(resources.length).toBe(3);

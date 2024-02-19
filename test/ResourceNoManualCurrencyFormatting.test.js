@@ -21,11 +21,13 @@ import { ResourceString, ResourceArray, ResourcePlural } from 'ilib-tools-common
 import ResourceSourceChecker from '../src/rules/ResourceSourceChecker.js';
 import { regexRules } from '../src/plugins/BuiltinPlugin.js';
 
-import { Result, IntermediateRepresentation } from 'ilib-lint-common';
+import { Result, IntermediateRepresentation, SourceFile } from 'ilib-lint-common';
 
 function findRuleDefinition(name) {
     return regexRules.find(rule => rule.name === name);
 }
+
+const sourceFile = new SourceFile("a/b/c.xliff", {});
 
 describe("make sure that Resources have No Manual Currency Formatting Allowed", () => {
     test("Resource Has Manual Currency Formatting", () => {
@@ -207,7 +209,7 @@ describe("make sure that Resources have No Manual Currency Formatting Allowed", 
         const ir = new IntermediateRepresentation({
             type: "resource",
             ir: [resource],
-            filePath: "a/b/c.xliff"
+            sourceFile
         });
 
         const actual = rule.match({
@@ -249,7 +251,7 @@ describe("make sure that Resources have No Manual Currency Formatting Allowed", 
         const ir = new IntermediateRepresentation({
             type: "resource",
             ir: [resource],
-            filePath: "a/b/c.xliff"
+            sourceFile
         });
 
         const actual = rule.match({

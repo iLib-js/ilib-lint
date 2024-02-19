@@ -19,7 +19,7 @@
  */
 
 import fs from 'node:fs';
-import { IntermediateRepresentation } from 'ilib-lint-common';
+import { IntermediateRepresentation, SourceFile, Result } from 'ilib-lint-common';
 
 import LineRegexpChecker from '../src/rules/LineRegexpChecker.js';
 
@@ -30,7 +30,7 @@ const noNormalize = {
     regexps: [ /\.normalize\s*\(/g ]
 };
 
-import { Result } from 'ilib-lint-common';
+const sourceFile = new SourceFile("x/y", {});
 
 describe("testLineRegexpChecker", () => {
     test("LineRegexpChecker", () => {
@@ -111,7 +111,7 @@ describe("testLineRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "line",
             ir: lines,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -145,7 +145,7 @@ describe("testLineRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "line",
             ir: lines,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -165,7 +165,7 @@ describe("testLineRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "line",
             ir: lines,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -193,7 +193,7 @@ describe("testLineRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "line",
             ir: source.split(/\n/g),
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -242,7 +242,7 @@ describe("testLineRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "line",
             ir: lines,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -276,7 +276,7 @@ describe("testLineRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "line",
             ir: lines,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,

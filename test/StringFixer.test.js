@@ -17,17 +17,19 @@
  * limitations under the License.
  */
 
-import { IntermediateRepresentation } from "ilib-lint-common";
+import { IntermediateRepresentation, SourceFile } from "ilib-lint-common";
 import StringFixer from "../src/plugins/string/StringFixer.js";
 import StringFix from "../src/plugins/string/StringFix.js";
 import StringFixCommand from "../src/plugins/string/StringFixCommand.js";
+
+const sourceFile = new SourceFile("test/file.txt", {});
 
 describe("testStringFixer", () => {
     test("StringFixerShouldReplace", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -40,7 +42,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -53,7 +55,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -66,7 +68,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -80,7 +82,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -94,7 +96,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -108,7 +110,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -126,7 +128,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -144,7 +146,7 @@ describe("testStringFixer", () => {
         expect.assertions(1);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -163,7 +165,7 @@ describe("testStringFixer", () => {
         expect.assertions(2);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();
@@ -205,7 +207,7 @@ describe("testStringFixer", () => {
         expect.assertions(4);
         const subject = new IntermediateRepresentation({
             type: "string",
-            filePath: "test/file.txt",
+            sourceFile,
             ir: "abcdef",
         });
         const fixer = new StringFixer();

@@ -29,7 +29,7 @@ import path from "node:path";
 const jsonConfig = `{
     "name": "configuration-provider-test-json-config",
     "plugins": [
-        "i18nlint-plugin-test"
+        "ilib-lint-plugin-test"
     ],
     "locales": [
         "en-US",
@@ -40,7 +40,7 @@ const jsonConfig = `{
 const cjsConfig = `module.exports = {
     "name": "configuration-provider-test-cjs-config",
     "plugins": [
-        "i18nlint-plugin-test"
+        "ilib-lint-plugin-test"
     ],
     "locales": [
         "en-US",
@@ -51,7 +51,7 @@ const cjsConfig = `module.exports = {
 const esmConfig = `export default {
     "name": "configuration-provider-test-esm-config",
     "plugins": [
-        "i18nlint-plugin-test"
+        "ilib-lint-plugin-test"
     ],
     "locales": [
         "en-US",
@@ -66,7 +66,7 @@ const esmPackage = `{
 describe("Configuration Provider", () => {
     let tempDir;
     beforeEach(async () => {
-        tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "i18nlint-test-"));
+        tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "ilib-lint-test-"));
     });
     afterEach(async () => {
         await fs.rm(tempDir, { recursive: true });

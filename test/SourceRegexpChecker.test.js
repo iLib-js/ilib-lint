@@ -19,7 +19,7 @@
  */
 
 import fs from 'node:fs';
-import { IntermediateRepresentation } from 'ilib-lint-common';
+import { IntermediateRepresentation, SourceFile, Result } from 'ilib-lint-common';
 
 import SourceRegexpChecker from '../src/rules/SourceRegexpChecker.js';
 
@@ -30,7 +30,7 @@ const noNormalize = {
     regexps: [ /\.normalize\s*\(/g ]
 };
 
-import { Result } from 'ilib-lint-common';
+const sourceFile = new SourceFile("x/y", {});
 
 describe("testSourceRegexpChecker", () => {
     test("SourceRegexpChecker", () => {
@@ -111,7 +111,7 @@ describe("testSourceRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "string",
             ir: source,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -145,7 +145,7 @@ describe("testSourceRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "string",
             ir: source,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -165,7 +165,7 @@ describe("testSourceRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "string",
             ir: source,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -193,7 +193,7 @@ describe("testSourceRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "string",
             ir: source,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -242,7 +242,7 @@ describe("testSourceRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "string",
             ir: source,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,
@@ -276,7 +276,7 @@ describe("testSourceRegexpChecker", () => {
         const ir = new IntermediateRepresentation({
             type: "string",
             ir: source,
-            filePath: "x/y"
+            sourceFile
         });
         const actual = rule.match({
             ir,

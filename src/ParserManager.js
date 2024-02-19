@@ -83,10 +83,10 @@ class ParserManager {
                     if (!this.parserCache[extension]) {
                         this.parserCache[extension] = [];
                     }
-                    this.parserCache[extension].push(parser);
+                    this.parserCache[extension].push(p);
                 }
                 this.descriptions[p.getName()] = p.getDescription();
-                this.parserByName[p.getName()] = parser;
+                this.parserByName[p.getName()] = p;
 
                 logger.trace(`Added parser to the parser manager.`);
             } else {

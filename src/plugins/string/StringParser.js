@@ -31,7 +31,6 @@ class StringParser extends Parser {
      */
     constructor(options = {}) {
         super(options);
-        this.path = options.filePath;
 
         this.extensions = [ "*" ]; // can parse any text file
         this.name = "string";
@@ -41,12 +40,12 @@ class StringParser extends Parser {
     /**
      * Parse the current file into an intermediate representation.
      */
-    parse() {
-        const data = fs.readFileSync(this.path, "utf-8");
+    parse(sourceFile) {
+        const data = sourceFile.getContent();
         return [new IntermediateRepresentation({
             type: "string",
             ir: data,
-            filePath: this.path
+            sourceFile
         })];
     }
 
@@ -68,7 +67,7 @@ class StringParser extends Parser {
         if (ir.type !== "string") {
             throw new Error(`Cannot write representation of type ${ir.type}`);
         }
-        fs.writeFileSync(this.path, ir.ir, "utf-8");
+        fs.writeFileSync(ir.getSourceFile().getPath(), ir.ir, "utf-8");
     }
 };
 
