@@ -18,7 +18,6 @@
  */
 
 import { Result } from "ilib-lint-common";
-import { Resource, ResourcePlural } from "ilib-tools-common";
 import fs from "node:fs";
 import path from "node:path";
 

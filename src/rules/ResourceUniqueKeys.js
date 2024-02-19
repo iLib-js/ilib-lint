@@ -18,7 +18,6 @@
  */
 
 import log4js from 'log4js';
-import LocaleInfo from 'ilib-localeinfo';
 import { TranslationSet } from 'ilib-tools-common';
 
 import { Rule, Result } from 'ilib-lint-common';

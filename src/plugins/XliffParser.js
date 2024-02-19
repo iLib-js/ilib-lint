@@ -17,7 +17,6 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
 import { ResourceXliff } from 'ilib-tools-common';
 import { FileStats, Parser, IntermediateRepresentation } from 'ilib-lint-common';
 

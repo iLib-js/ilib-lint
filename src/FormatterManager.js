@@ -22,7 +22,7 @@ import log4js from 'log4js';
 import { Formatter } from 'ilib-lint-common';
 
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
-import { ConfigBasedFormatter, requiredFields } from './formatters/ConfigBasedFormatter.js';
+import { ConfigBasedFormatter } from './formatters/ConfigBasedFormatter.js';
 
 const logger = log4js.getLogger("ilib-lint.FormatterManager");
 

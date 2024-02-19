@@ -17,7 +17,6 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
 import { Parser, IntermediateRepresentation } from 'ilib-lint-common';
 
 /**
