@@ -24,9 +24,9 @@ import log4js from 'log4js';
 import FormatterManager from './FormatterManager.js';
 import ParserManager from './ParserManager.js';
 import RuleManager from './RuleManager.js';
-import RuleSet from './RuleSet.js';
 import BuiltinPlugin from './plugins/BuiltinPlugin.js';
 import FixerManager from './FixerManager.js';
+import semver from 'semver';
 
 const logger = log4js.getLogger("ilib-lint.PluginManager");
 
