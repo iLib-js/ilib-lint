@@ -19,7 +19,7 @@
 
 import { Plugin } from 'i18nlint-common';
 
-import TestParser from './TestParser.js';
+import TestParser2 from './TestParser.js';
 import TestRule from './TestRule.js';
 import TestFormatter from './TestFormatter.js';
 import TestFixer from './TestFixer.js';
@@ -53,7 +53,7 @@ class TestPlugin extends Plugin {
 
     getParsers() {
         //console.log("TestPlugin.getParsers() called");
-        return [ TestParser ];
+        return [ TestParser2 ];
     }
 
     getFormatters() {

@@ -23,11 +23,11 @@ import { Parser, IntermediateRepresentation } from 'i18nlint-common';
 import json5 from 'json5';
 import { ResourceString, TranslationSet } from 'ilib-tools-common';
 
-class TestParser extends Parser {
+class TestParser2 extends Parser {
     constructor(options) {
         super(options);
-        this.name = "parser-xyz";
-        this.description = "A test parser for xyz files, which are really just json files.";
+        this.name = "parser-def";
+        this.description = "A test parser for def files, which are really just json files.";
         this.filePath = options && options.filePath;
     }
 
@@ -36,7 +36,7 @@ class TestParser extends Parser {
     }
 
     getExtensions() {
-        return [ "xyz" ];
+        return [ "def" ];
     }
 
     parseData(data) {
@@ -52,7 +52,7 @@ class TestParser extends Parser {
                 source: prop,
                 reskey: prop,
                 target: json[prop],
-                resType: "x-xyz",
+                resType: "x-def",
                 pathName: this.filePath
             }));
         }
@@ -62,7 +62,7 @@ class TestParser extends Parser {
      * Parse the current file into an intermediate representation.
      */
     parse() {
-        // parse the xyz files as json for simplicity
+        // parse the def files as json for simplicity
         const data = fs.readFileSync(this.filePath, "utf-8");
         this.parseData(data);
         return [new IntermediateRepresentation({
@@ -74,4 +74,4 @@ class TestParser extends Parser {
     }
 }
 
-export default TestParser;
+export default TestParser2;

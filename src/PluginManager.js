@@ -26,7 +26,6 @@ import ParserManager from './ParserManager.js';
 import RuleManager from './RuleManager.js';
 import BuiltinPlugin from './plugins/BuiltinPlugin.js';
 import FixerManager from './FixerManager.js';
-import semver from 'semver';
 
 const logger = log4js.getLogger("ilib-lint.PluginManager");
 
@@ -52,6 +51,13 @@ function attemptLoadPath(name) {
     if (fs.existsSync(name) && fs.existsSync(packageName)) {
         const data = fs.readFileSync(packageName, "utf-8");
         const json = JSON.parse(data);
+        const commonVersion = json?.dependencies["ilib-lint-common"];
+        if (!commonVersion) {
+            if (json?.dependencies["i18nlint-common"]) {
+                logger.debug("Found incompatible old plugin ${name}. This needs to be upgraded in order to load it.");
+            }
+            throw new Error("Plugin does not depend on ilib-lint-common. Cannot load it.");
+        }
         if (json.type === "module") {
             let relativePath = json.module;
             if (!relativePath && json.exports) {
@@ -116,7 +122,7 @@ function loadPlugin(name) {
         plugin.init();
         return plugin;
     }).catch(e2 => {
-        logger.error(`Could not load plugin ${name}`);
+        logger.error(`Could not load plugin ${name}. If you have a plugin, make sure it is upgraded and depends on ilib-lint-common v3.0.0 or greater.`);
         logger.trace(e2);
         return undefined;
     });

@@ -64,6 +64,7 @@
         "@types/node": "^20.8.5",
         "docdash": "^2.0.2",
         "ilib-lint-plugin-test": "file:test/ilib-lint-plugin-test",
+        "ilib-lint-plugin-test-old": "file:test/ilib-lint-plugin-test-old",
         "jest": "^29.7.0",
         "jsdoc": "^4.0.2",
         "jsdoc-to-markdown": "^8.0.0",
@@ -81,7 +82,6 @@
         "json5": "^2.2.3",
         "log4js": "^6.9.1",
         "micromatch": "^4.0.5",
-        "options-parser": "^0.4.0",
-        "semver": "^7.6.0"
+        "options-parser": "^0.4.0"
     }
 }
