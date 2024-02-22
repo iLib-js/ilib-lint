@@ -1,7 +1,7 @@
 /*
  * index.js - main program of ilib-lint plugin test
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,27 +19,27 @@
 
 import { Plugin } from 'i18nlint-common';
 
-import TestParser2 from './TestParser.js';
+import TestParser3 from './TestParser.js';
 import TestRule from './TestRule.js';
 import TestFormatter from './TestFormatter.js';
 import TestFixer from './TestFixer.js';
 
-class TestPlugin extends Plugin {
+class TestPlugin3 extends Plugin {
     constructor(options) {
         super(options);
     }
 
     init() {
-        //console.log("TestPlugin.init() called");
+        //console.log("TestPlugin3.init() called");
     }
 
     getExtensions() {
-        //console.log("TestPlugin.getExtensions() called");
+        //console.log("TestPlugin3.getExtensions() called");
         return [ "xyz" ];
     }
 
     getRules() {
-        //console.log("TestPlugin.getRules() called");
+        //console.log("TestPlugin3.getRules() called");
         return [ TestRule ];
     }
 
@@ -52,12 +52,12 @@ class TestPlugin extends Plugin {
     }
 
     getParsers() {
-        //console.log("TestPlugin.getParsers() called");
-        return [ TestParser2 ];
+        //console.log("TestPlugin3.getParsers() called");
+        return [ TestParser3 ];
     }
 
     getFormatters() {
-        //console.log("TestPlugin.getFormatters() called");
+        //console.log("TestPlugin3.getFormatters() called");
         return [ TestFormatter ];
     }
 
@@ -67,4 +67,4 @@ class TestPlugin extends Plugin {
 
 }
 
-export default TestPlugin;
+export default TestPlugin3;

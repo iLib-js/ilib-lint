@@ -325,24 +325,55 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
         });
     });
 
-    test("PluginManager make sure we cannot load an old plugin", () => {
-        expect.assertions(4);
-debugger;
+    test("PluginManager make sure we cannot load an old plugin at all", () => {
+        expect.assertions(7);
+
         const plgmgr = new PluginManager();
         expect(plgmgr).toBeTruthy();
 
         return plgmgr.load([
-            "ilib-lint-plugin-test-old"
+            "i18nlint-plugin-test-old"
         ]).then(result => {
-            console.log(`result is ${result}`);
-
-            console.dir(result);
+            expect(result).toBeDefined();
+            expect(Array.isArray(result)).toBeTruthy();
+            expect(result[0].value).toBeUndefined();
 
             // should not be able to load the old plugin, so the def parser
             // should not be available. The StringParser is the default
             // parser
             const pm = plgmgr.getParserManager();
             const parsers = pm.get("def");
+            expect(parsers).toBeTruthy();
+            expect(parsers.length).toBe(1);
+
+            const testParser = parsers[0];
+            expect(testParser.getName()).toBe("string");
+        }).catch(e2 => {
+            // should throw an exception because the plugin is found
+            // but not accepted
+            console.dir(`error is ${e2}`);
+            expect(e2).toBeFalsy();
+        });
+    });
+
+    test("PluginManager make sure we cannot load an obsolete plugin", () => {
+        expect.assertions(7);
+
+        const plgmgr = new PluginManager();
+        expect(plgmgr).toBeTruthy();
+
+        return plgmgr.load([
+            "ilib-lint-plugin-obsolete"
+        ]).then(result => {
+            expect(result).toBeDefined();
+            expect(Array.isArray(result)).toBeTruthy();
+            expect(result[0].value).toBeUndefined();
+
+            // should not be able to load the old plugin, so the ghi parser
+            // should not be available. The StringParser is the default
+            // parser
+            const pm = plgmgr.getParserManager();
+            const parsers = pm.get("ghi");
             expect(parsers).toBeTruthy();
             expect(parsers.length).toBe(1);
 

@@ -1,5 +1,5 @@
 {
-    "name": "i18nlint-plugin-test-old",
+    "name": "ilib-lint-plugin-obsolete",
     "version": "1.0.0",
     "main": "./src/index.js",
     "type": "module",
@@ -8,11 +8,14 @@
             "import": "./src/index.js"
         }
     },
-    "description": "mock i18nlint plugin package used for testing the plugin functionality",
+    "description": "mock ilib-lint plugin package used for testing the plugin functionality",
     "files": [
         "src",
         "package.json"
     ],
+    "scripts": {
+        "test": "echo Success!"
+    },
     "dependencies": {
         "i18nlint-common": "^2.0.0",
         "ilib-locale": "^1.2.2",
