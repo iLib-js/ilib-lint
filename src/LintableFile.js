@@ -56,7 +56,7 @@ class LintableFile extends DirItem {
         });
         this.filetype = options.filetype;
 
-        if (this.project.options.opt && this.project.options.opt.verbose) {
+        if (this.project.options.opt?.verbose) {
             logger.level = "debug";
         }
         this.parsers = [];
@@ -76,7 +76,7 @@ class LintableFile extends DirItem {
      * string if no locale could be found.
      */
     getLocaleFromPath() {
-        if (this.settings && this.settings.template) {
+        if (this.settings?.template) {
             return getLocaleFromPath(this.settings.template, this.sourceFile.getPath());
         }
         return "";
@@ -98,7 +98,7 @@ class LintableFile extends DirItem {
             }
         });
         if (!irs || irs.length === 0) {
-            throw `All available parsers failed to parse file ${file.sourceFile.getPath()}. Try configuring another parser or excluding this file from the lint project.`;
+            throw new Error(`All available parsers failed to parse file ${file.sourceFile.getPath()}. Try configuring another parser or excluding this file from the lint project.`);
         }
         return irs;
     }
@@ -218,7 +218,7 @@ class LintableFile extends DirItem {
         });
 
         if (this.irs.length === 0) {
-            throw `All available parsers failed to parse file ${this.sourceFile.getPath()}. Try configuring another parser or excluding this file from the lint project.`;
+            throw new Error(`All available parsers failed to parse file ${this.sourceFile.getPath()}. Try configuring another parser or excluding this file from the lint project.`);
         }
 
         return results;
