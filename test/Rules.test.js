@@ -1,7 +1,7 @@
 /*
  * Rules.test.js - test the built-in rules
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,13 @@
  * limitations under the License.
  */
 import { ResourceArray, ResourcePlural, ResourceString } from 'ilib-tools-common';
-
-import ResourceStateChecker from '../src/rules/ResourceStateChecker.js';
 import ResourceEdgeWhitespace from '../src/rules/ResourceEdgeWhitespace.js';
 import ResourceCompleteness from "../src/rules/ResourceCompleteness.js";
 import ResourceDNTTerms from '../src/rules/ResourceDNTTerms.js';
-import ResourceNoTranslation from '../src/rules/ResourceNoTranslation.js';
 
-import { Result, IntermediateRepresentation } from 'i18nlint-common';
+import { Result, IntermediateRepresentation, SourceFile } from 'ilib-lint-common';
+
+const sourceFile = new SourceFile("a/b/c.xliff", {});
 
 describe("testRules", () => {
     test("ResourceEdgeWhitespaceEdgesMatch", () => {
@@ -540,7 +539,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-missing",
@@ -582,7 +581,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-terms-from-txt",
@@ -624,7 +623,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-terms-from-json",
@@ -668,7 +667,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-missing-multiple",
@@ -722,7 +721,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceArray({
                 key: "resource-dnt-test.dnt-missing-resource-array",
@@ -765,7 +764,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-missing-resource-plural-all-categories",
@@ -826,7 +825,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-missing-resource-plural-some-categories",
@@ -873,7 +872,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource-dnt-test.dnt-ok",
@@ -904,7 +903,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceArray({
                 key: "resource-dnt-test.dnt-ok-resource-array",
@@ -935,7 +934,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-ok-resource-plural-all-categories",
@@ -973,7 +972,7 @@ describe("testRules", () => {
         expect(rule).toBeTruthy();
 
         const subject = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourcePlural({
                 key: "resource-dnt-test.dnt-ok-resource-plural-some-categories",

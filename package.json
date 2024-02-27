@@ -1,6 +1,6 @@
 {
     "name": "ilib-lint",
-    "version": "1.15.0",
+    "version": "2.0.0",
     "module": "./src/index.js",
     "type": "module",
     "bin": "./src/index.js",
@@ -64,6 +64,8 @@
         "@types/node": "^20.8.5",
         "docdash": "^2.0.2",
         "ilib-lint-plugin-test": "file:test/ilib-lint-plugin-test",
+        "ilib-lint-plugin-obsolete": "file:test/ilib-lint-plugin-obsolete",
+        "i18nlint-plugin-test-old": "file:test/i18nlint-plugin-test-old",
         "jest": "^29.7.0",
         "jsdoc": "^4.0.2",
         "jsdoc-to-markdown": "^8.0.0",
@@ -72,8 +74,8 @@
     },
     "dependencies": {
         "@formatjs/intl": "^2.9.3",
-        "i18nlint-common": "^2.2.1",
         "ilib-common": "^1.1.3",
+        "ilib-lint-common": "^3.0.0",
         "ilib-locale": "^1.2.2",
         "ilib-localeinfo": "^1.0.5",
         "ilib-tools-common": "^1.8.1",

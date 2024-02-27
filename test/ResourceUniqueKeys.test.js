@@ -1,7 +1,7 @@
 /*
  * ResourceUniqueKeys.test.js - test the resource unique key checker
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,12 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
-import { Result, IntermediateRepresentation } from 'i18nlint-common';
+import { Result, IntermediateRepresentation, SourceFile } from 'ilib-lint-common';
 import { ResourceString } from 'ilib-tools-common';
 
 import ResourceUniqueKeys from '../src/rules/ResourceUniqueKeys.js';
+
+const sourceFile = new SourceFile("a/b/c.xliff", {});
 
 describe("testResourceUniqueKeys", () => {
     test("ResourceUniqueKeys", () => {
@@ -38,7 +39,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -64,7 +65,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -98,7 +99,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -138,7 +139,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",
@@ -199,7 +200,7 @@ describe("testResourceUniqueKeys", () => {
         expect(rule).toBeTruthy();
 
         const ir = new IntermediateRepresentation({
-            filePath: "a/b/c.xliff",
+            sourceFile,
             type: "resource",
             ir: [new ResourceString({
                 key: "resource1",

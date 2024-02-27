@@ -22,9 +22,9 @@ import path from 'node:path';
 import log4js from 'log4js';
 import mm from 'micromatch';
 
-import { FileStats } from 'i18nlint-common';
+import { FileStats } from 'ilib-lint-common';
 
-import SourceFile from './SourceFile.js';
+import LintableFile from './LintableFile.js';
 import DirItem from './DirItem.js';
 import FileType from './FileType.js';
 import { FolderConfigurationProvider } from './config/ConfigurationProvider.js';
@@ -207,7 +207,7 @@ class Project extends DirItem {
                         logger.trace(`${root} ... included`);
                         glob = glob || "**";
                         const filetype = this.getFileTypeForPath(root);
-                        this.add(new SourceFile(root, {
+                        this.add(new LintableFile(root, {
                             settings: this.getSettings(glob),
                             filetype
                         }, this));
@@ -221,7 +221,7 @@ class Project extends DirItem {
         } catch (e) {
             // if the readdirSync did not work, it's maybe a file?
             if (fs.existsSync(root)) {
-                this.add(new SourceFile(root, {}, this));
+                this.add(new LintableFile(root, {}, this));
             }
         }
 
@@ -490,11 +490,11 @@ class Project extends DirItem {
 
     /**
      * Return all directory items in this project.
-     * @returns {Array.<SourceFile>} the directory items in this project.
+     * @returns {Array.<LintableFile>} the directory items in this project.
      */
     get() {
         return this.files.flatMap(dirItem => {
-            if (dirItem instanceof SourceFile) {
+            if (dirItem instanceof LintableFile) {
                 return dirItem;
             } else if (dirItem instanceof DirItem) {
                 return dirItem.get();
@@ -510,29 +510,20 @@ class Project extends DirItem {
      */
     findIssues(locales) {
         this.fileStats = new FileStats();
-        return this.files.map(file => {
+        return this.files.flatMap(file => {
             //logger.debug(`Examining ${file.filePath}`);
             if (!this.options.opt.quiet && this.options.opt.progressInfo) {
                 logger.info("Examing path   : " + file.filePath);
             }
             try {
-                const irArray = file.parse();
-                if (irArray) {
-                    irArray.forEach(ir => {
-                        if (ir.stats) {
-                            this.fileStats.addStats(ir.stats);
-                        } else {
-                            // no stats? At least we know there was a file, so count that
-                            this.fileStats.addFiles(1);
-                        }
-                    });
-                }
-                return file.findIssues(locales);
+                const results = file.findIssues(locales);
+                this.fileStats.addStats(file.getStats());
+                return results;
             } catch (e) {
                 logger.error(`Error while finding issues in the file ${file.filePath}`);
                 logger.error(e);
             }
-        }).flat();
+        });
     }
 
     /**

@@ -2,7 +2,7 @@
  * ResourceQuoteStyle.test.js - test the rule that checks the quote style
  * of the translations
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import { ResourceString } from 'ilib-tools-common';
 
 import ResourceQuoteStyle from "../src/rules/ResourceQuoteStyle.js";
 
-import { IntermediateRepresentation, Result } from 'i18nlint-common';
+import { IntermediateRepresentation, Result, SourceFile } from 'ilib-lint-common';
+
+const sourceFile = new SourceFile("a/b/c.xliff", {});
 
 describe("testResourceQuoteStyle", () => {
     test("ResourceQuoteStyle", () => {
@@ -664,7 +666,7 @@ describe("testResourceQuoteStyle", () => {
         const ir = new IntermediateRepresentation({
             type: "resource",
             ir: [resource],
-            filePath: "a/b/c.xliff"
+            sourceFile
         });
 
         const actual = rule.match({

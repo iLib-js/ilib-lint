@@ -1,7 +1,7 @@
 /*
  * PluginManager.test.js - test the plugin manager
  *
- * Copyright ©  2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 
 import PluginManager from '../src/PluginManager.js';
-import { Parser, Result } from 'i18nlint-common';
+import { Parser, Result, SourceFile } from 'ilib-lint-common';
 import { ResourceString } from 'ilib-tools-common';
 import { TestFixerTypeId } from './ilib-lint-plugin-test/src/TestFixer.js';
 
@@ -94,7 +94,7 @@ describe("testPluginManager", () => {
             expect(parsers).toBeTruthy();
             expect(parsers.length).toBe(1);
 
-            const testParser = new parsers[0]();
+            const testParser = parsers[0];
             expect(testParser.getName()).toBe("parser-xyz");
         });
     });
@@ -112,11 +112,11 @@ describe("testPluginManager", () => {
 
             const pm = plgmgr.getParserManager();
             const parsers = pm.get("xyz");
-            const testParser = new parsers[0]({filePath: "./test/testfiles/strings.xyz"});
+            const testParser = parsers[0];
             expect(testParser).toBeTruthy();
             expect(testParser.getName()).toBe("parser-xyz");
 
-            const ir = testParser.parse();
+            const ir = testParser.parse(new SourceFile("./test/testfiles/strings.xyz", {}));
             const resources = ir[0].getRepresentation();
             expect(resources).toBeTruthy();
             expect(resources.length).toBe(3);
@@ -322,6 +322,68 @@ __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings
             const fixer = fixerManager.get(TestFixerTypeId);
             expect(fixer).toBeTruthy();
             expect(fixer?.type).toBe(TestFixerTypeId);
+        });
+    });
+
+    test("PluginManager make sure we cannot load an old plugin at all", () => {
+        expect.assertions(7);
+
+        const plgmgr = new PluginManager();
+        expect(plgmgr).toBeTruthy();
+
+        return plgmgr.load([
+            "i18nlint-plugin-test-old"
+        ]).then(result => {
+            expect(result).toBeDefined();
+            expect(Array.isArray(result)).toBeTruthy();
+            expect(result[0].value).toBeUndefined();
+
+            // should not be able to load the old plugin, so the def parser
+            // should not be available. The StringParser is the default
+            // parser
+            const pm = plgmgr.getParserManager();
+            const parsers = pm.get("def");
+            expect(parsers).toBeTruthy();
+            expect(parsers.length).toBe(1);
+
+            const testParser = parsers[0];
+            expect(testParser.getName()).toBe("string");
+        }).catch(e2 => {
+            // should throw an exception because the plugin is found
+            // but not accepted
+            console.dir(`error is ${e2}`);
+            expect(e2).toBeFalsy();
+        });
+    });
+
+    test("PluginManager make sure we cannot load an obsolete plugin", () => {
+        expect.assertions(7);
+
+        const plgmgr = new PluginManager();
+        expect(plgmgr).toBeTruthy();
+
+        return plgmgr.load([
+            "ilib-lint-plugin-obsolete"
+        ]).then(result => {
+            expect(result).toBeDefined();
+            expect(Array.isArray(result)).toBeTruthy();
+            expect(result[0].value).toBeUndefined();
+
+            // should not be able to load the old plugin, so the ghi parser
+            // should not be available. The StringParser is the default
+            // parser
+            const pm = plgmgr.getParserManager();
+            const parsers = pm.get("ghi");
+            expect(parsers).toBeTruthy();
+            expect(parsers.length).toBe(1);
+
+            const testParser = parsers[0];
+            expect(testParser.getName()).toBe("string");
+        }).catch(e2 => {
+            // should throw an exception because the plugin is found
+            // but not accepted
+            console.dir(`error is ${e2}`);
+            expect(e2).toBeFalsy();
         });
     });
 });

@@ -1,5 +1,5 @@
 /*
- * SourceFile.test.js - test the source file class
+ * LintableFile.test.js - test the source file class
  *
  * Copyright © 2022-2024 JEDLSoft
  *
@@ -17,11 +17,7 @@
  * limitations under the License.
  */
 
-import ResourceQuoteStyle from '../src/rules/ResourceQuoteStyle.js';
-import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
-import XliffParser from '../src/plugins/XliffParser.js';
-import FileType from '../src/FileType.js';
-import SourceFile from '../src/SourceFile.js';
+import LintableFile from '../src/LintableFile.js';
 import Project from '../src/Project.js';
 import PluginManager from '../src/PluginManager.js';
 
@@ -97,119 +93,123 @@ const project2 = new Project(".", {
     pluginManager: new PluginManager()
 }, config2);
 
-describe("testSourceFile", () => {
+describe("testLintableFile", () => {
     beforeAll(() => {
         return project.init().then(() => {
             return project2.init();
         });
     });
 
-    test("SourceFile", () => {
+    test("LintableFile", () => {
         expect.assertions(2);
 
         const filetype = project.getFileTypeForPath("test/testfiles/test.xliff");
-        const sf = new SourceFile("a", { filetype }, project);
-        expect(sf).toBeTruthy();
-        expect(sf.getFilePath()).toBe("a");
+        const lf = new LintableFile("a", { filetype }, project);
+        expect(lf).toBeTruthy();
+        expect(lf.getFilePath()).toBe("a");
     });
 
-    test("SourceFileMissingParams", () => {
+    test("LintableFileMissingParams", () => {
         expect.assertions(1);
 
         expect(() => {
-            new SourceFile();
+            new LintableFile();
         }).toThrow();
     });
 
-    test("SourceFileBadParams", () => {
+    test("LintableFileBadParams", () => {
         expect.assertions(1);
 
         expect(() => {
-            new SourceFile("", {}, {});
+            new LintableFile("", {}, {});
         }).toThrow();
     });
 
-    test("SourceFileWithSettings", () => {
+    test("LintableFileWithSettings", () => {
         expect.assertions(2);
 
         const filetype = project.getFileTypeForPath("test/testfiles/test.xliff");
-        const sf = new SourceFile("a", {
+        const lf = new LintableFile("a", {
             settings: {
                 template: "x"
             },
             filetype
         }, project);
-        expect(sf).toBeTruthy();
-        expect(sf.getFilePath()).toBe("a");
+        expect(lf).toBeTruthy();
+        expect(lf.getFilePath()).toBe("a");
     });
 
-    test("SourceFileGetLocaleFromPath", () => {
+    test("LintableFileGetLocaleFromPath", () => {
         expect.assertions(2);
 
         const filetype = project.getFileTypeForPath("src/filemanager/xrs/messages_de_DE.properties");
-        const sf = new SourceFile("src/filemanager/xrs/messages_de_DE.properties", {
+        const lf = new LintableFile("src/filemanager/xrs/messages_de_DE.properties", {
             settings: {
                 template: "[dir]/messages_[localeUnder].properties"
             },
             filetype
         }, project);
-        expect(sf).toBeTruthy();
-        expect(sf.getLocaleFromPath()).toBe("de-DE");
+        expect(lf).toBeTruthy();
+        expect(lf.getLocaleFromPath()).toBe("de-DE");
     });
 
-    test("SourceFileGetLocaleFromPathNone", () => {
+    test("LintableFileGetLocaleFromPathNone", () => {
         expect.assertions(2);
 
         const filetype = project.getFileTypeForPath("src/filemanager/xrs/Excludes.java");
-        const sf = new SourceFile("src/filemanager/xrs/Excludes.java", {
+        const lf = new LintableFile("src/filemanager/xrs/Excludes.java", {
             settings: {
                 template: "[dir]/messages_[localeUnder].properties"
             },
             filetype
         }, project);
-        expect(sf).toBeTruthy();
-        expect(sf.getLocaleFromPath()).toBe("");
+        expect(lf).toBeTruthy();
+        expect(lf.getLocaleFromPath()).toBe("");
     });
 
-    test("SourceFileGetLocaleFromPathNoTemplate", () => {
+    test("LintableFileGetLocaleFromPathNoTemplate", () => {
         expect.assertions(2);
 
         const filetype = project.getFileTypeForPath("src/filemanager/xrs/messages_de_DE.properties");
-        const sf = new SourceFile("src/filemanager/xrs/messages_de_DE.properties", {
+        const lf = new LintableFile("src/filemanager/xrs/messages_de_DE.properties", {
             settings: {
             },
             filetype
         }, project);
-        expect(sf).toBeTruthy();
-        expect(sf.getLocaleFromPath()).toBe("");
+        expect(lf).toBeTruthy();
+        expect(lf.getLocaleFromPath()).toBe("");
     });
 
-    test("SourceFileParse", () => {
-        expect.assertions(3);
+    test("LintableFileParse", () => {
+        expect.assertions(4);
 
         const filetype = project.getFileTypeForPath("test/testfiles/xliff/test.xliff");
-        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
+        const lf = new LintableFile("test/testfiles/xliff/test.xliff", {
             settings: {
             },
             filetype
         }, project);
-        expect(sf).toBeTruthy();
-        const resources = sf.parse();
+        expect(lf).toBeTruthy();
+        lf.findIssues("de-DE");
+        const ir = lf.getIRs()[0];
+        const resources = ir.getRepresentation();
         expect(resources).toBeTruthy();
+        expect(Array.isArray(resources)).toBeTruthy();
         expect(resources.length).toBe(1);
     });
 
-    test("SourceFileParseRightContents", () => {
+    test("LintableFileParseRightContents", () => {
         expect.assertions(9);
 
         const filetype = project.getFileTypeForPath("test/testfiles/xliff/test.xliff");
-        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
+        const lf = new LintableFile("test/testfiles/xliff/test.xliff", {
             settings: {
             },
             filetype
         }, project);
-        expect(sf).toBeTruthy();
-        const ir = sf.parse();
+        expect(lf).toBeTruthy();
+        lf.findIssues("de-DE");
+        const ir = lf.getIRs();
         expect(ir).toBeTruthy();
         expect(Array.isArray(ir)).toBeTruthy();
         expect(ir.length).toBe(1);
@@ -221,34 +221,36 @@ describe("testSourceFile", () => {
         expect(resources[0].reskey).toBe("foobar");
     });
 
-    test("SourceFileParseRightTypeResource", () => {
+    test("LintableFileParseRightTypeResource", () => {
         expect.assertions(5);
 
         const filetype = project.getFileTypeForPath("test/testfiles/xliff/test.xliff");
-        const sf = new SourceFile("test/testfiles/xliff/test.xliff", {
+        const lf = new LintableFile("test/testfiles/xliff/test.xliff", {
             settings: {
             },
             filetype
         }, project);
-        expect(sf).toBeTruthy();
-        const ir = sf.parse();
+        expect(lf).toBeTruthy();
+        lf.findIssues("de-DE");
+        const ir = lf.getIRs();
         expect(ir).toBeTruthy();
         expect(Array.isArray(ir)).toBeTruthy();
         expect(ir.length).toBe(1);
         expect(ir[0].getType()).toBe("resource");
     });
 
-    test("SourceFileParseNonResourceFile", () => {
+    test("LintableFileParseNonResourceFile", () => {
         expect.assertions(7);
 
         const filetype = project.getFileTypeForPath("test/ilib-mock/index.js");
-        const sf = new SourceFile("test/ilib-mock/index.js", {
+        const lf = new LintableFile("test/ilib-mock/index.js", {
             filetype,
             settings: {
             }
         }, project);
-        expect(sf).toBeTruthy();
-        const ir = sf.parse();
+        expect(lf).toBeTruthy();
+        lf.findIssues("de-DE");
+        const ir = lf.getIRs();
         expect(ir).toBeTruthy();
         expect(Array.isArray(ir)).toBeTruthy();
         expect(ir.length).toBe(1);
@@ -258,17 +260,18 @@ describe("testSourceFile", () => {
         expect(source.length).toBe(117); // how many chars in this source file?
     });
 
-    test("SourceFile parse an oddly-named file using a named parser instead of the default one", () => {
+    test("LintableFile parse an oddly-named file using a named parser instead of the default one", () => {
         expect.assertions(7);
 
         const filetype = project2.getFileTypeForPath("test/testfiles/strings.pdq");
-        const sf = new SourceFile("test/testfiles/strings.pdq", {
+        const lf = new LintableFile("test/testfiles/strings.pdq", {
             filetype,
             settings: {
             }
         }, project2);
-        expect(sf).toBeTruthy();
-        const ir = sf.parse();
+        expect(lf).toBeTruthy();
+        lf.findIssues("de-DE");
+        const ir = lf.getIRs();
         expect(ir).toBeTruthy();
         expect(Array.isArray(ir)).toBeTruthy();
         expect(ir.length).toBe(1);
@@ -278,17 +281,18 @@ describe("testSourceFile", () => {
         expect(source.length).toBe(3); // how many resources in this resource file?
     });
 
-    test("SourceFile parse an oddly-named file using the default parser not using a named parser", () => {
+    test("LintableFile parse an oddly-named file using the default parser not using a named parser", () => {
         expect.assertions(7);
 
         const filetype = project.getFileTypeForPath("test/testfiles/strings.pdq");
-        const sf = new SourceFile("test/testfiles/strings.pdq", {
+        const lf = new LintableFile("test/testfiles/strings.pdq", {
             filetype,
             settings: {
             }
         }, project);
-        expect(sf).toBeTruthy();
-        const ir = sf.parse();
+        expect(lf).toBeTruthy();
+        lf.findIssues("de-DE");
+        const ir = lf.getIRs();
         expect(ir).toBeTruthy();
         expect(Array.isArray(ir)).toBeTruthy();
         expect(ir.length).toBe(1);

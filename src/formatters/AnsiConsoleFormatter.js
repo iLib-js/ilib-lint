@@ -1,7 +1,7 @@
 /*
  * AnsiConsoleFormatter.js - Formats result output
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 import log4js from 'log4js';
 
-import { Formatter, Result } from 'i18nlint-common';
+import { Formatter, Result } from 'ilib-lint-common';
 
 var logger = log4js.getLogger("ilib-lint.formatters.AnsiConsoleFormatter");
 

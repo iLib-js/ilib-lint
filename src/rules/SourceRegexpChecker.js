@@ -1,7 +1,7 @@
 /*
  * SourceRegexpChecker.js - rule to check if regexps match in the source
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { Rule, Result } from 'i18nlint-common';
+import { Rule, Result } from 'ilib-lint-common';
 
 /**
  * @class Source checker class that checks for regular expressions
@@ -123,7 +123,7 @@ class SourceRegexpChecker extends Rule {
             results.push(new Result({
                 severity: this.severity,
                 rule: this,
-                pathName: ir.getPath(),
+                pathName: ir.getSourceFile().getPath(),
                 highlight: snippet,
                 description: this.note.replace(/\{matchString\}/g, match[0]),
                 lineNumber

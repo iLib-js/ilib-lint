@@ -18,8 +18,7 @@
  */
 
 import LocaleInfo from 'ilib-localeinfo';
-import Locale from 'ilib-locale';
-import { Rule, Result } from 'i18nlint-common';
+import { Result } from 'ilib-lint-common';
 
 import ResourceRule from './ResourceRule.js';
 

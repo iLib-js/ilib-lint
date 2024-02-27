@@ -1,7 +1,7 @@
 /*
  * TestRule.js - test an ilib-lint Rule plugin
  *
- * Copyright © 2022 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
  * limitations under the License.
  */
 
-import Locale from 'ilib-locale';
-import { Rule, Result } from 'i18nlint-common';
+import { Rule, Result } from 'ilib-lint-common';
 
 /**
  * @class Represent an ilib-lint rule.

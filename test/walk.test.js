@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import SourceFile from '../src/SourceFile.js';
+import LintableFile from '../src/LintableFile.js';
 import Project from '../src/Project.js';
 import PluginManager from '../src/PluginManager.js';
 

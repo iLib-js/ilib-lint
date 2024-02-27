@@ -1,7 +1,7 @@
 /*
  * ResourceEdgeWhitespace.js - rule to check that whitespaces on edges of target match those on edges of source
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-import { Result, withVisibleWhitespace } from "i18nlint-common";
+import { Result, withVisibleWhitespace } from "ilib-lint-common";
 import ResourceRule from './ResourceRule.js';
 
 /** Rule to check that whitespaces on edges of target match those on edges of source */

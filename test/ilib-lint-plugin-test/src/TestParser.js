@@ -17,9 +17,7 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
-
-import { Parser, IntermediateRepresentation } from 'i18nlint-common';
+import { Parser, IntermediateRepresentation } from 'ilib-lint-common';
 import json5 from 'json5';
 import { ResourceString, TranslationSet } from 'ilib-tools-common';
 
@@ -28,7 +26,6 @@ class TestParser extends Parser {
         super(options);
         this.name = "parser-xyz";
         this.description = "A test parser for xyz files, which are really just json files.";
-        this.filePath = options && options.filePath;
     }
 
     init() {
@@ -39,7 +36,7 @@ class TestParser extends Parser {
         return [ "xyz" ];
     }
 
-    parseData(data) {
+    parseData(data, filePath) {
         if (!data) {
             throw new Error("ilib-lint-plugin-test: attempt to parse empty data");
         }
@@ -53,7 +50,7 @@ class TestParser extends Parser {
                 reskey: prop,
                 target: json[prop],
                 resType: "x-xyz",
-                pathName: this.filePath
+                pathName: filePath
             }));
         }
     }
@@ -61,15 +58,15 @@ class TestParser extends Parser {
     /**
      * Parse the current file into an intermediate representation.
      */
-    parse() {
+    parse(sourceFile) {
         // parse the xyz files as json for simplicity
-        const data = fs.readFileSync(this.filePath, "utf-8");
-        this.parseData(data);
+        const data = sourceFile.getContent();
+        this.parseData(data, sourceFile.getPath());
         return [new IntermediateRepresentation({
             ir: this.ts.getAll(),
-            filePath: this.filePath,
             locale: "en-US",
-            type: "resource"
+            type: "resource",
+            sourceFile
         })];
     }
 }

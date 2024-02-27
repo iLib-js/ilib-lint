@@ -1,7 +1,7 @@
 /*
  * FixerManager.js
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 
 import log4js from "log4js";
 
-import { Fixer } from "i18nlint-common";
+import { Fixer } from "ilib-lint-common";
 
 const logger = log4js.getLogger("ilib-lint.FormatterManager");
 

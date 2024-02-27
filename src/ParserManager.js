@@ -19,7 +19,7 @@
 
 import log4js from 'log4js';
 
-import { Parser } from 'i18nlint-common';
+import { Parser } from 'ilib-lint-common';
 
 const logger = log4js.getLogger("ilib-lint.ParserManager");
 
@@ -83,10 +83,10 @@ class ParserManager {
                     if (!this.parserCache[extension]) {
                         this.parserCache[extension] = [];
                     }
-                    this.parserCache[extension].push(parser);
+                    this.parserCache[extension].push(p);
                 }
                 this.descriptions[p.getName()] = p.getDescription();
-                this.parserByName[p.getName()] = parser;
+                this.parserByName[p.getName()] = p;
 
                 logger.trace(`Added parser to the parser manager.`);
             } else {

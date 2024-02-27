@@ -1,7 +1,7 @@
 /*
  * XliffParser.js - Parser for XLIFF files
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
 import { ResourceXliff } from 'ilib-tools-common';
-import { FileStats, Parser, IntermediateRepresentation } from 'i18nlint-common';
+import { FileStats, Parser, IntermediateRepresentation } from 'ilib-lint-common';
 
 /**
  * @class Parser for XLIFF files based on the ilib-xliff library.
@@ -31,11 +30,6 @@ class XliffParser extends Parser {
      */
     constructor(options) {
         super(options);
-        this.path = options.filePath;
-        this.xliff = new ResourceXliff({
-            path: options.filePath
-        });
-
         this.extensions = [ "xliff", "xlif", "xlf" ];
         this.name = "xliff";
         this.description = "A parser for xliff files. This can handle xliff v1.2 and v2.0 format files."
@@ -43,18 +37,25 @@ class XliffParser extends Parser {
 
     /**
      * Parse the current file into an intermediate representation.
+     * @param {SourceFile} sourceFile the file to be parsed
+     * @returns {Array.<IntermediateRepresentation>} the intermediate representations of
+     * the source file
      */
-    parse() {
-        const data = fs.readFileSync(this.path, "utf-8");
-        this.xliff.parse(data);
-        const resources = this.xliff.getResources();
+    parse(sourceFile) {
+        const data = sourceFile.getContent();
+        const xliff = new ResourceXliff({
+            path: sourceFile.getPath()
+        });
+
+        xliff.parse(data);
+        const resources = xliff.getResources();
         return [new IntermediateRepresentation({
             type: "resource",
             ir: resources,
-            filePath: this.path,
+            sourceFile,
             stats: new FileStats({
-                lines: this.xliff.getLines(),
-                bytes: this.xliff.size(),
+                lines: xliff.getLines(),
+                bytes: xliff.size(),
                 modules: resources.length
             })
         })];

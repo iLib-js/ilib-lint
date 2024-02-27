@@ -1,7 +1,7 @@
 /*
  * FormatterManager.js - Factory to create and return the right formatter
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@
 
 import log4js from 'log4js';
 
-import { Formatter } from 'i18nlint-common';
+import { Formatter } from 'ilib-lint-common';
 
 import AnsiConsoleFormatter from './formatters/AnsiConsoleFormatter.js';
-import { ConfigBasedFormatter, requiredFields } from './formatters/ConfigBasedFormatter.js';
+import { ConfigBasedFormatter } from './formatters/ConfigBasedFormatter.js';
 
 const logger = log4js.getLogger("ilib-lint.FormatterManager");
 

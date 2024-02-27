@@ -19,7 +19,7 @@
 
 import { IntlMessageFormat } from 'intl-messageformat';
 import Locale from 'ilib-locale';
-import { Result } from 'i18nlint-common';
+import { Result } from 'ilib-lint-common';
 
 import ResourceRule from './ResourceRule.js';
 

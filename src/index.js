@@ -18,13 +18,11 @@
  * limitations under the License.
  */
 
-import fs from 'node:fs';
 import path from 'node:path';
 
 import OptionsParser from 'options-parser';
 import Locale from 'ilib-locale';
 import { JSUtils, Utils, Path } from 'ilib-common';
-import json5 from 'json5';
 import log4js from 'log4js';
 
 import PluginManager from './PluginManager.js';

@@ -1,7 +1,7 @@
 /*
  * BuiltinPlugin.test.js - test the built-in plugin
  *
- * Copyright © 2022-2023 JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
  */
 
 import BuiltinPlugin from '../src/plugins/BuiltinPlugin.js';
-import { Parser } from 'i18nlint-common';
+import { Parser, SourceFile } from 'ilib-lint-common';
 
 describe("testBuiltinPlugin", () => {
     test("BuiltinPlugin", () => {
@@ -37,9 +37,7 @@ describe("testBuiltinPlugin", () => {
         const parsers = xp.getParsers();
         expect(parsers.length).toBe(3);
 
-        const xliff = new parsers[0]({
-            filePath: "x"
-        });
+        const xliff = new parsers[0]();
         expect(xliff.getExtensions()).toEqual(["xliff", "xlif", "xlf"]);
     });
 
@@ -65,7 +63,7 @@ describe("testBuiltinPlugin", () => {
 
         const XliffParser = parsers[0];
 
-        const parser = new XliffParser({filePath: "asdf.xliff"});
+        const parser = new XliffParser();
         expect(parser).toBeTruthy();
         expect(parser instanceof Parser).toBeTruthy();
     });
@@ -81,9 +79,9 @@ describe("testBuiltinPlugin", () => {
 
         const XliffParser = parsers[0];
 
-        const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
+        const parser = new XliffParser();
         expect(parser).toBeTruthy();
-        const ir = parser.parse();
+        const ir = parser.parse(new SourceFile("./test/testfiles/xliff/test.xliff", {}));
 
         const resources = ir[0].getRepresentation();
         expect(resources).toBeTruthy();
@@ -101,9 +99,9 @@ describe("testBuiltinPlugin", () => {
 
         const XliffParser = parsers[0];
 
-        const parser = new XliffParser({filePath: "./test/testfiles/xliff/test.xliff"});
+        const parser = new XliffParser();
         expect(parser).toBeTruthy();
-        const ir = parser.parse();
+        const ir = parser.parse(new SourceFile("./test/testfiles/xliff/test.xliff", {}));
 
         const resources = ir[0].getRepresentation();
         expect(resources).toBeTruthy();

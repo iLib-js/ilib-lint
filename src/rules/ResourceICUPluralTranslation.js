@@ -2,7 +2,7 @@
  * ResourceICUPluralTranslation.js - rule to check formatjs/ICU style plurals
  * in the target string actually have translations
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 import { IntlMessageFormat } from 'intl-messageformat';
 import Locale from 'ilib-locale';
-import { Result } from 'i18nlint-common';
+import { Result } from 'ilib-lint-common';
 
 import ResourceRule from './ResourceRule.js';
 

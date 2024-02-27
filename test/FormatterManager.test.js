@@ -1,7 +1,7 @@
 /*
  * FormatterManager.test.js - test the formatter manager
  *
- * Copyright ©  2022-2023JEDLSoft
+ * Copyright © 2022-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Formatter, Result } from 'i18nlint-common';
+import { Formatter, Result } from 'ilib-lint-common';
 
 import FormatterManager from '../src/FormatterManager.js';
 import ResourceMatcher from '../src/rules/ResourceMatcher.js';

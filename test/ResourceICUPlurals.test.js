@@ -1,7 +1,7 @@
 /*
  * ResourceICUPlurals.test.js - test the ICU plural syntax checker rule
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import { ResourceArray, ResourcePlural, ResourceString } from 'ilib-tools-common
 
 import ResourceICUPlurals from '../src/rules/ResourceICUPlurals.js';
 
-import { Result, IntermediateRepresentation } from 'i18nlint-common';
+import { Result, IntermediateRepresentation } from 'ilib-lint-common';
 
 describe("testResourceICUPlurals", () => {
     test("ResourceICUPluralsMatchNoError", () => {
