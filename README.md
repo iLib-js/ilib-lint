@@ -219,7 +219,7 @@ or any of them at the same time.
 ## Common Code
 
 All plugins should import and use the classes in the
-[i18nlint-common](https://github.com/ilib-js/i18nlint-common) package.
+[ilib-lint-common](https://github.com/ilib-js/ilib-lint-common) package.
 This defines the super classes for each plugin type, as well as a number
 of utility classes and functions.
 
@@ -281,16 +281,16 @@ target string, so the rules are able to check the source strings against the tar
 strings. Regularly, source files only have source strings in them (if any) so
 the target translations cannot be checked.
 
-Parsers should extend the `Parser` class from the `i18nlint-common` package. The constructor
+Parsers should extend the `Parser` class from the `ilib-lint-common` package. The constructor
 for your class should define the following properties:
 
 - `this.name` - a unique name for this parser
 - `this.description` - a description of this type of parser to display to users
 
 It should also override the
-[parseData()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Parser.js)
+[parseData()](https://github.com/iLib-js/ilib-lint-common/blob/main/src/Parser.js)
 method which parses a string, and the
-[parse()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Parser.js)
+[parse()](https://github.com/iLib-js/ilib-lint-common/blob/main/src/Parser.js)
 method, which loads data from the file and then parses it.
 
 You can see an example of a parser plugin by looking at the gnu PO file parser at
@@ -302,7 +302,7 @@ Resource instances.
 
 Rules interpret the intermediate representation of a file produced by a Parser
 and produce a single
-[Result](https://github.com/iLib-js/i18nlint-common/blob/main/src/Result.js)
+[Result](https://github.com/iLib-js/ilib-lint-common/blob/main/src/Result.js)
 instance, an array of Result instances, one for each problem found, or undefined
 if there are no problems found.
 
@@ -370,8 +370,8 @@ locale first needs to look up what the correct quote style even is in
 order to apply the rule.
 
 In order to create a rule instance, create a class that extends the
-[Rule](https://github.com/ilib-js/i18nlint-common/blob/main/src/Rule.js)
-class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/) project.
+[Rule](https://github.com/ilib-js/ilib-lint-common/blob/main/src/Rule.js)
+class in the [ilib-lint-common](https://github.com/ilib-js/ilib-lint-common/) project.
 The constructor of this class should define the following properties:
 
 - `this.name` - a unique name for this rule
@@ -389,7 +389,7 @@ part is that the name should uniquely identify your Rule so that you can use it
 in config files.
 
 The rule should also override and implement the getRuleType() method and the
-[match()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Rule.js) method,
+[match()](https://github.com/iLib-js/ilib-lint-common/blob/main/src/Rule.js) method,
 which takes an intermediate representation as a parameter and returns either
 a single Result, an array of Result, or undefined.
 
@@ -435,7 +435,7 @@ syntax. (Each rule defines for itself what parameters/initalizers it accepts.)
 
 ### Formatters
 
-Formatters transform a [Result object](https://github.com/iLib-js/i18nlint-common/blob/main/src/Result.js) into a format that the consumer can use. For the most part, the consumer
+Formatters transform a [Result object](https://github.com/iLib-js/ilib-lint-common/blob/main/src/Result.js) into a format that the consumer can use. For the most part, the consumer
 is a human, so the result should be formatted in text so that the user can read
 it easily. Other times, the consumer is another program, so the result should be
 formatted for easy parsing. Formatters can formats the results in any way necessary.
@@ -468,8 +468,8 @@ sure that fields in a CSV file are escaped properly to conform to CSV syntax, an
 include escaping code in it.
 
 In order to create a formatter instance, create a class that extends the
-[Formatter](https://github.com/ilib-js/i18nlint-common/blob/main/src/Formatter.js)
-class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/) project.
+[Formatter](https://github.com/ilib-js/ilib-lint-common/blob/main/src/Formatter.js)
+class in the [ilib-lint-common](https://github.com/ilib-js/ilib-lint-common/) project.
 The constructor of this class should define the following properties:
 
 - `this.name` - a unique name for this formatter
@@ -478,7 +478,7 @@ The constructor of this class should define the following properties:
   of the rule and how to resolve the problem it found
 
 The formatter should also override and implement the
-[format()](https://github.com/iLib-js/i18nlint-common/blob/main/src/Formatter.js) method,
+[format()](https://github.com/iLib-js/ilib-lint-common/blob/main/src/Formatter.js) method,
 which takes a Result instance as a parameter and returns a formatted string.
 
 If you would like to look at an example formatter plugin, see the definition of
