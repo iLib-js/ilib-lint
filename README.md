@@ -371,7 +371,7 @@ order to apply the rule.
 
 In order to create a rule instance, create a class that extends the
 [Rule](https://github.com/ilib-js/i18nlint-common/blob/main/src/Rule.js)
-class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/] project.
+class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/) project.
 The constructor of this class should define the following properties:
 
 - `this.name` - a unique name for this rule
@@ -469,7 +469,7 @@ include escaping code in it.
 
 In order to create a formatter instance, create a class that extends the
 [Formatter](https://github.com/ilib-js/i18nlint-common/blob/main/src/Formatter.js)
-class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/] project.
+class in the [i18nlint-common](https://github.com/ilib-js/i18nlint-common/) project.
 The constructor of this class should define the following properties:
 
 - `this.name` - a unique name for this formatter
@@ -493,7 +493,7 @@ plugin as a working example of ilib-lint plugin. It implements some rules that
 check the various types of substitution parameters that python/django and
 gnu gettext support.
 
-Additionally, there is a [sample python project](https://github.com/ilib-js/ilib-samples/lint)
+Additionally, there is a [sample python project](https://github.com/iLib-js/ilib-samples/tree/main/lint)
 that uses the ilib-lint-python plugin. It has purposeful errors built into it which
 violate the rules implemented in the plugin so that the linter will produce some output.
 Clone the project, cd to the lint directory, run `npm install`, and then `npm run lint`
