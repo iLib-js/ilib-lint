@@ -24,7 +24,7 @@ This i18n linter differs from other static linters in the following ways:
     * Formatters - you can make the output look exactly the way you want
     * Rules - you can add new rules declaratively or programmatically
 
-See the [release notes](./ReleaseNotes.md) for details on what is
+See the [release notes](./docs/ReleaseNotes.md) for details on what is
 new and what has changed.
 
 ## Installation
@@ -562,6 +562,11 @@ not satisfied. You can use this exit code to determine if your CI/CD pipeline ha
 succeeded.
 
 See the section above on command-line parameters for details on these.
+
+## Migrating Plugins
+
+See the [migration doc](./docs/migration.md) for more information about upgrading your
+ilib-lint plugins from v1 of ilib-lint to v2.
 
 ## License
 
