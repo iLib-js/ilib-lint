@@ -41,22 +41,6 @@ function checkVersion(json, name) {
 }
 
 /**
- * @private
- *
-function attemptLoad(name) {
-    logger.trace(`Trying module ${name}`);
-    return import(name).then(module => {
-        logger.trace(`Module ${name} loaded with package name ${pkgName}.`);
-        const modulePath = path.join(this.resolve(name), "package.json");
-        const packageJsonContent = fs.readFileSync(modulePath, 'utf-8');
-        const json = JSON.parse(packageJsonContent);
-        checkVersion(json, name);
-        return module;
-    });
-};
-*/
-
-/**
  * @class Represent a plugin manager, which loads a list of plugins
  * and then maintains references to them
  */
