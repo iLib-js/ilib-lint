@@ -1,6 +1,20 @@
 Release Notes
 ============================
 
+### v2.0.1
+
+- fixed loading of plugins
+    - if a plugin ilib-lint-x exists and also a different package x
+      exists that is unrelated to ilib-lint, it would first attempt
+      to load x, succeed, and then fail because x does not depend on
+      ilib-lint-common properly without trying any other paths or
+      plugins. This means it would not load the perfectly valid plugin
+      that is there. Instead, now it attempts to load ilib-lint-x first
+      in various places and then if it fails or does not pass the
+      ilib-lint-common dependency test, it falls back to loading the
+      plain x package next.
+- updated dependencies
+
 ### v2.0.0
 
 - updated to use ilib-lint-common instead of i18nlint-common. (Same library, new name.)
