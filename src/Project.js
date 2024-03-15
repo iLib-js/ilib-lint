@@ -317,7 +317,7 @@ class Project extends DirItem {
                     }
                 }
             }
-            this.formatter = fmtMgr.get(this.options.opt.formatter || "ansi-console-formatter");
+            this.formatter = fmtMgr.get(this.options?.opt?.formatter || this.options.formatter || "ansi-console-formatter");
             if (!this.formatter) {
                 logger.error(`Could not find formatter ${options.formatter}. Aborting...`);
                 process.exit(3);
