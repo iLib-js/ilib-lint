@@ -41,44 +41,6 @@ function checkVersion(json, name) {
 }
 
 /**
- * @private
- */
-function attemptLoad(name) {
-    logger.trace(`Trying module ${name}`);
-    return import(name);
-};
-
-/**
- * Needed because node does not know how to load ES modules
- * from a path. (Even though that is what it does when you
- * just name the module without a path. Sigh.)
- *
- * @private
- */
-function attemptLoadPath(name) {
-    logger.trace(`Trying directory module ${name}`);
-    let packagePath = name;
-    const packageName = path.join(name, "package.json");
-    if (fs.existsSync(name) && fs.existsSync(packageName)) {
-        const data = fs.readFileSync(packageName, "utf-8");
-        const json = JSON.parse(data);
-        checkVersion(json, name);
-        if (json.type === "module") {
-            let relativePath = json.module;
-            if (!relativePath && json.exports) {
-                const keys = Object.keys(json.exports);
-                relativePath = keys.length && json.exports[keys[0]].import;
-            }
-            if (relativePath) {
-                packagePath = path.join(name, relativePath);
-            }
-        }
-    }
-    logger.trace(`Path to this module is ${packagePath}`);
-    return import(packagePath);
-}
-
-/**
  * @class Represent a plugin manager, which loads a list of plugins
  * and then maintains references to them
  */
@@ -110,69 +72,112 @@ class PluginManager {
         this.resolve = createRequire(import.meta.url).resolve;
     }
 
-    /*
-     * Attempt to load the plugin in various places:
-     *
-     * - from the node_modules where ilib-lint was loaded
-     * - from the current directory's node_modules
-     * - from the plugins directory one directory up
-     *
-     * Each time it attempts to load it, it will try two ways:
-     *
-     * - As-is. Maybe it is a fully specified package name?
-     * - With the "ilib-lint-" prefix. Try again except with
-     * the prefix. This allows the users to configure plugins
-     * in the config file more tersely, similar to the way
-     * babel plugins can be named with only the unique part.
-     * The old "i18nlint-" prefix is no longer accepted in
-     * either the name of the directory or the name of the
-     * package.
+    /**
+     * Needed because node does not know how to load ES modules
+     * from a path. (Even though that is what it does when you
+     * just name the module without a path. Sigh.)
      *
      * @private
      */
-    loadPlugin(name) {
-        let pkgName = name;
-        return attemptLoad(pkgName).catch(e1 => {
-            logger.trace(e1);
-            pkgName = `ilib-lint-${name}`;
-            return attemptLoad(pkgName).catch(e2 => {
-                logger.trace(e2);
-                pkgName = path.join(process.cwd(), "node_modules", name);
-                return attemptLoadPath(pkgName).catch(e3 => {
-                    logger.trace(e3);
-                    pkgName = path.join(process.cwd(), "node_modules", `ilib-lint-${name}`);
-                    return attemptLoadPath(pkgName).catch(e4 => {
-                        logger.trace(e4);
-                        pkgName = path.join(process.cwd(), "..", "plugins", name + ".js")
-                        return attemptLoad(pkgName).catch(e5 => {
-                            logger.trace(e5);
-                            // on the last attempt, don't catch the exception. Just let it
-                            // go to the overall `catch` clause below.
-                            pkgName = path.join(process.cwd(), "..", "plugins", `ilib-lint-${name}` + ".js")
-                            return attemptLoad(pkgName);
-                        });
-                    });
-                });
-            });
-        }).then((module) => {
-            logger.trace(`Module ${name} loaded with package name ${pkgName}.`);
-            const modulePath = this.resolve(path.join(pkgName, "package.json"));
-            const packageJsonContent = fs.readFileSync(modulePath, 'utf-8');
-            const json = JSON.parse(packageJsonContent);
+    async attemptLoad(name) {
+        logger.trace(`Trying module ${name}`);
+        let packagePath = name;
+        const packageName = this.resolve(path.join(name, "package.json"));
+        if (fs.existsSync(packageName)) {
+            const data = fs.readFileSync(packageName, "utf-8");
+            const json = JSON.parse(data);
             checkVersion(json, name);
+            if (json.type === "module") {
+                let relativePath = json.module;
+                if (!relativePath && json.exports) {
+                    const keys = Object.keys(json.exports);
+                    relativePath = keys.length && json.exports[keys[0]].import;
+                }
+                if (relativePath) {
+                    packagePath = path.join(name, relativePath);
+                }
+            }
+        }
+        logger.trace(`Path to this module is ${packagePath}`);
+        return import(packagePath);
+    }
 
-            logger.trace(`Module ${name} successfully loaded.`);
-            const Main = module.default;
-            const plugin = new Main({
-                getLogger: log4js.getLogger.bind(log4js)
-            });
-            plugin.init();
-            return plugin;
-        }).catch(e2 => {
-            logger.error(`Could not load plugin ${name}. If you have a plugin, make sure it is upgraded and depends on ilib-lint-common v3.0.0 or greater.`);
-            logger.trace(e2);
+    /*
+     * Attempt to load the plugin.
+     *
+     * If the name is given with an absolute or relative path,
+     * then it will only try to load from that path, as the caller
+     * meant to load a very specific plugin. If the name is given as
+     * just a package name, it will attemp to load from various places:
+     *
+     * - from the current directory's node_modules
+     * - from the node_modules where ilib-lint was loaded
+     * - from the plugins directory one directory up
+     * - from the global node_modules
+     *
+     * Each time it attempts to load it, it will try two ways:
+     *
+     * - With the "ilib-lint-" prefix. Try with the prefix added to the
+     * name if it was not there already. This allows the users to configure
+     * plugins in the config file more tersely, similar to the way babel
+     * plugins can be named with only the unique part. The old "i18nlint-"
+     * prefix is no longer accepted in either the name of the directory
+     * or the name of the package.
+     * - As-is. Maybe it is a fully specified package name and doesn't have
+     * the prefix?
+     *
+     * @private
+     */
+    async loadPlugin(name) {
+        const nameparts = path.parse(name);
+
+        let pathsToTry;
+        if (nameparts.dir && nameparts.dir !== ".") {
+            // If it's a relative or absolute path, then only try this path. Do not add
+            // any prefixes or try any other directory or anything.
+            pathsToTry = [name];
+        } else if (nameparts.base.startsWith("ilib-lint-")) {
+            pathsToTry = [
+                path.join(process.cwd(), "node_modules", nameparts.base),
+                name,
+                path.join(process.cwd(), "..", "plugins", nameparts.name + ".js")
+            ];
+        } else {
+            const base = `ilib-lint-${nameparts.base}`;
+            // try the paths with the ilib-lint prefix first, and then try the ones
+            // without afterwards
+            pathsToTry = [
+                path.join(process.cwd(), "node_modules", base),
+                base,
+                path.join(process.cwd(), "..", "plugins", `ilib-lint-${nameparts.name}` + ".js"),
+                path.join(process.cwd(), "node_modules", nameparts.base),
+                name,
+                path.join(process.cwd(), "..", "plugins", nameparts.name + ".js"),
+            ];
+        }
+
+        let pkgName, module;
+        while ((pkgName = pathsToTry.shift())) {
+            try {
+                module = await this.attemptLoad(pkgName);
+                break;
+            } catch (e) {
+                logger.trace(e);
+            }
+        }
+
+        if (!module) {
+            logger.error(`Could not load plugin ${name}. If you know that you have a plugin, make sure it is upgraded and depends on ilib-lint-common v3.0.0 or greater.`);
             return undefined;
+        }
+
+        logger.trace(`Module ${name} successfully loaded.`);
+        const Main = module.default;
+        const plugin = new Main({
+            getLogger: log4js.getLogger.bind(log4js)
         });
+        plugin.init();
+        return plugin;
     };
 
     /**

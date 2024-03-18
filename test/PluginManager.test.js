@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 
+import path from "node:path";
+
 import PluginManager from '../src/PluginManager.js';
 import { Parser, Result, SourceFile } from 'ilib-lint-common';
 import { ResourceString } from 'ilib-tools-common';
@@ -128,7 +130,7 @@ describe("testPluginManager", () => {
         });
     });
 
-    test("PluginManagerGetLoadPluginRightFormatter", () => {
+    test("PluginManager load the right plugin with the ilib-lint- prefix", () => {
         expect.assertions(5);
 
         const plgmgr = new PluginManager();
@@ -180,6 +182,68 @@ __Source_string_should_not_contain_the_word_"test"
 __Key:_formatter.test
 __Source:_This_string_has_the_word_>>test<<_in_it.
 __Rule_(resource-test):_Test_for_the_existence_of_the_word_'test'_in_the_strings.\n`);
+        });
+    });
+
+    test("PluginManager load the right plugin without the ilib-lint- prefix", () => {
+        expect.assertions(5);
+
+        const plgmgr = new PluginManager();
+        expect(plgmgr).toBeTruthy();
+
+        return plgmgr.load([
+            "plugin-test"
+        ]).then(result => {
+            expect(result).toBeTruthy();
+
+            const fm = plgmgr.getFormatterManager();
+            expect(fm).toBeTruthy();
+            // the plugin "plugin-test" does not have a formatter, but the
+            // "ilib-lint-plugin-test" does, so if we got the wrong one without the prefix,
+            // this below would fail
+            const formatter = fm.get("formatter-test");
+            expect(formatter).toBeTruthy();
+            expect(formatter.getName()).toBe("formatter-test");
+        });
+    });
+
+    test("PluginManager load the specific plugin if given an absolute path", () => {
+        expect.assertions(4);
+
+        const plgmgr = new PluginManager();
+        expect(plgmgr).toBeTruthy();
+        const fullPath = path.join(process.cwd(), "test", "plugin-test");
+        return plgmgr.load([
+            fullPath
+        ]).then(result => {
+            expect(result).toBeTruthy();
+
+            const fm = plgmgr.getFormatterManager();
+            expect(fm).toBeTruthy();
+            // the plugin "plugin-test" does not have a formatter, so if we got the wrong
+            // one (the one with the prefix), then formatter will be not undefined
+            const formatter = fm.get("formatter-test");
+            expect(formatter).toBeFalsy();
+        });
+    });
+
+    test("PluginManager load the specific plugin if given a relative path", () => {
+        expect.assertions(4);
+
+        const plgmgr = new PluginManager();
+        expect(plgmgr).toBeTruthy();
+        const relPath = path.join("test", "plugin-test");
+        return plgmgr.load([
+            relPath
+        ]).then(result => {
+            expect(result).toBeTruthy();
+
+            const fm = plgmgr.getFormatterManager();
+            expect(fm).toBeTruthy();
+            // the plugin "plugin-test" does not have a formatter, so if we got the wrong
+            // one (the one with the prefix), then formatter will be not undefined
+            const formatter = fm.get("formatter-test");
+            expect(formatter).toBeFalsy();
         });
     });
 
