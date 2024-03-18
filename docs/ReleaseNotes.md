@@ -1,6 +1,9 @@
 Release Notes
 ============================
 
+### v2.0.1
+- fixed to set the formatter which designated from the command line option.
+
 ### v2.0.0
 
 - updated to use ilib-lint-common instead of i18nlint-common. (Same library, new name.)
