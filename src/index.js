@@ -130,7 +130,13 @@ const optionConfig = {
         varName: "NUMBER",
         help: "Give the minimum acceptable I18N score allowed in this run. Valid values are 0-100. Default: no minimum",
         type: validateInt.bind(null, "min-score")
-    }
+    },
+    output: {
+        short: "o",
+        varName: "fileName",
+        "default": "result.txt",
+        help: "Allows you to write the results into a file."
+    },
 };
 
 const options = OptionsParser.parse(optionConfig);

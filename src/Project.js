@@ -317,7 +317,7 @@ class Project extends DirItem {
                     }
                 }
             }
-            this.formatter = fmtMgr.get(this.options.formatter || "ansi-console-formatter");
+            this.formatter = fmtMgr.get(this.options?.opt?.formatter || this.options.formatter || "ansi-console-formatter");
             if (!this.formatter) {
                 logger.error(`Could not find formatter ${options.formatter}. Aborting...`);
                 process.exit(3);
@@ -578,6 +578,22 @@ class Project extends DirItem {
         // source file in order to make it easier for the engineer to fix all the
         // problems in the source file sequentially.
         results.sort(ResultComparator);
+        let ttt = "";
+        let fullFile = ''
+        if (this.options.opt.output) {
+            console.log("write to file....");
+            results.forEach(result => {
+                const str = this.formatter.format(result);
+                ttt+=str;
+            })
+            if (typeof this.formatter.completeFile === 'function') {
+                fullFile = this.formatter.completeFile(ttt);
+            }
+            fs.writeFileSync("index.html", fullFile, "utf8");
+
+
+        }
+        console.log("!!!");
 
         if (results) {
             results.forEach(result => {
