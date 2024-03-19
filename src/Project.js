@@ -646,7 +646,7 @@ class Project extends DirItem {
             if (typeof this.formatter.completeFile === 'function') {
                 resultFull = this.formatter.completeFile(resultSet);
             }
-            let fileName = this.options.opt.output || result;
+            let fileName = this.options.opt.output || "result.txt";
             fs.writeFileSync(fileName, resultFull, "utf8");
         }
 
