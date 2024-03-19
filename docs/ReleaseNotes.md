@@ -1,6 +1,32 @@
 Release Notes
 ============================
 
+### v2.0.1
+- fixed loading of plugins
+    - if a plugin `ilib-lint-x` exists and a different package `x`
+      also exists that is unrelated to ilib-lint, and the config
+      says to load the plugin named simply `x`, it would first attempt
+      to load package `x`, succeed to load it, but then fail to
+      initialize it because `x` is not really an ilib-lint plugin.
+    - Another problem is that if this type of error occurred, it
+      would not attempt to load any other paths or plugins. This means
+      it would not load the perfectly valid plugin that is there
+      just because there was a conflicting package name.
+    - Additionally, if given a path directly to the plugin (absolute
+      or relative), it would not load that specific plugin and just
+      fail completely.
+    - Now, it:
+        - loads the specific plugin given a path to it
+        - if the plugin name is specified with the prefix like
+          `ilib-lint-x` it will attempt to load that package in various
+          locations until it finds one that works
+        - if the name is specified as simply `x`, it will attempt to
+          load the `ilib-lint-x` package first and only if it fails to
+          load or does not initialize properly will it fall back to
+          attempting to load the package just named just `x`
+- updated dependencies
+- fixed to set the formatter which designated from the command line option.
+
 ### v2.0.0
 
 - updated to use ilib-lint-common instead of i18nlint-common. (Same library, new name.)
