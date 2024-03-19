@@ -2,7 +2,6 @@ Release Notes
 ============================
 
 ### v2.0.1
-
 - fixed loading of plugins
     - if a plugin `ilib-lint-x` exists and a different package `x`
       also exists that is unrelated to ilib-lint, and the config
@@ -26,6 +25,7 @@ Release Notes
           load or does not initialize properly will it fall back to
           attempting to load the package just named just `x`
 - updated dependencies
+- fixed to set the formatter which designated from the command line option.
 
 ### v2.0.0
 
