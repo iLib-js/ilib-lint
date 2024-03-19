@@ -578,26 +578,14 @@ class Project extends DirItem {
         // source file in order to make it easier for the engineer to fix all the
         // problems in the source file sequentially.
         results.sort(ResultComparator);
-        let ttt = "";
-        let fullFile = ''
-        if (this.options.opt.output) {
-            console.log("write to file....");
-            results.forEach(result => {
-                const str = this.formatter.format(result);
-                ttt+=str;
-            })
-            if (typeof this.formatter.completeFile === 'function') {
-                fullFile = this.formatter.completeFile(ttt);
-            }
-            fs.writeFileSync("index.html", fullFile, "utf8");
-
-
-        }
-        console.log("!!!");
-
+        let resultSet = "";
+        let resultFull = "";
         if (results) {
             results.forEach(result => {
                 const str = this.formatter.format(result);
+                if (this.options.opt.output) {
+                    resultSet +=str;
+                }
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
@@ -649,6 +637,19 @@ class Project extends DirItem {
         } else {
             exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
         }
+
+        if (this.options.opt.output) {
+            if (typeof this.formatter.executeSummary === 'function') {
+                let summary = this.formatter.executeSummary(this.project.name, totalTime, this.fileStats, this.resultStats, score) ;
+                resultSet = summary+resultSet;
+            }
+            if (typeof this.formatter.completeFile === 'function') {
+                resultFull = this.formatter.completeFile(resultSet);
+            }
+            let fileName = this.options.opt.output || result;
+            fs.writeFileSync(fileName, resultFull, "utf8");
+        }
+
         return exitValue;
     }
 
