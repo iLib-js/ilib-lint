@@ -639,8 +639,8 @@ class Project extends DirItem {
         }
 
         if (this.options.opt.output) {
-            if (typeof this.formatter.executeSummary === 'function') {
-                let summary = this.formatter.executeSummary(this.project.name, totalTime, this.fileStats, this.resultStats, score) ;
+            if (typeof this.formatter.writeSummaryToFile === 'function') {
+                let summary = this.formatter.writeSummaryToFile(this.project.name, totalTime, this.fileStats, this.resultStats, score) ;
                 resultSet = summary+resultSet;
             }
             if (typeof this.formatter.completeFile === 'function') {
