@@ -89,14 +89,11 @@ class AnsiConsoleFormatter extends Formatter {
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
-                        resultStats.errors++;
                     } else if (result.severity === "warning") {
-                        resultStats.warnings++;
                         if (!errorsOnly) {
                             logger.warn(str);
                         }
                     } else {
-                        resultStats.suggestions++;
                         if (!this.options.errorsOnly) {
                             logger.info(str);
                         }
