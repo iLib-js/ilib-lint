@@ -134,7 +134,7 @@ const optionConfig = {
     output: {
         short: "o",
         varName: "fileName",
-        help: "Allows you to write the results into a file."
+        help: "Allows you to write the output into a file."
     }
 };
 
