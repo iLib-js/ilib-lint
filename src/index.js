@@ -134,9 +134,8 @@ const optionConfig = {
     output: {
         short: "o",
         varName: "fileName",
-        "default": "result.txt",
         help: "Allows you to write the results into a file."
-    },
+    }
 };
 
 const options = OptionsParser.parse(optionConfig);

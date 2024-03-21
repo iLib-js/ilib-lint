@@ -69,6 +69,61 @@ class AnsiConsoleFormatter extends Formatter {
         }
         return output;
     }
+
+    formatOutput(options){
+        let prjName, totalTime, fileStats, score, resultStats, results, errorsOnly;
+
+        if (options) {
+            prjName = options.name;
+            totalTime = options.time;
+            fileStats = options.fileStats;
+            resultStats = options.resultStats;
+            results = options.results;
+            score = options.score;
+            errorsOnly = options.errorOnly;
+        }
+
+        if (results) {
+            results.forEach(result => {
+                const str = this.format(result);
+                if (str) {
+                    if (result.severity === "error") {
+                        logger.error(str);
+                        resultStats.errors++;
+                    } else if (result.severity === "warning") {
+                        resultStats.warnings++;
+                        if (!errorsOnly) {
+                            logger.warn(str);
+                        }
+                    } else {
+                        resultStats.suggestions++;
+                        if (!this.options.errorsOnly) {
+                            logger.info(str);
+                        }
+                    }
+                }
+            });
+        }
+
+        const fmt = new Intl.NumberFormat("en-US", {
+            maxFractionDigits: 2
+        });
+
+        logger.info(`Total Elapse Time: ${String(totalTime)} seconds`);
+        logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
+        logger.info(`                   Total     ${`${String(fileStats.files)} Files`.padEnd(15, ' ')}${`${String(fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(fileStats.lines)} Lines`.padEnd(15, ' ')}`);
+        if (results.length) {
+            logger.info(
+                    `Errors:            ${String(resultStats.errors).padEnd(10, ' ')}${fmt.format(resultStats.errors/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.lines).padEnd(15, ' ')}`);
+            if (!errorsOnly) {
+                logger.info(
+                    `Warnings:          ${String(resultStats.warnings).padEnd(10, ' ')}${fmt.format(resultStats.warnings/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.lines).padEnd(15, ' ')}`);
+                logger.info(
+                    `Suggestions:       ${String(resultStats.suggestions).padEnd(10, ' ')}${fmt.format(resultStats.suggestions/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.lines).padEnd(15, ' ')}`);
+            }
+        }
+        logger.info(`I18N Score (0-100) ${fmt.format(score)}`);
+    }
 }
 
 export default AnsiConsoleFormatter;
