@@ -579,19 +579,16 @@ class Project extends DirItem {
         // problems in the source file sequentially.
         results.sort(ResultComparator);
         let resultFull;
-
-        if (typeof (this.formatter.formatOutput) !== "function") {
-            if (results) {
-                results.forEach(result => {
-                    if (result.severity === "error") {
-                        this.resultStats.errors++;
-                    } else if (result.severity === "warning") {
-                        this.resultStats.warnings++;
-                    } else {
-                        this.resultStats.suggestions++;
-                    }
-                });
-            }
+        if (results) {
+            results.forEach(result => {
+                if (result.severity === "error") {
+                    this.resultStats.errors++;
+                } else if (result.severity === "warning") {
+                    this.resultStats.warnings++;
+                } else {
+                    this.resultStats.suggestions++;
+                }
+            });
         }
         const score = this.getScore();
 
