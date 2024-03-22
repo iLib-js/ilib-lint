@@ -1,7 +1,7 @@
 Release Notes
 ============================
 
-### v2.0.1
+### v2.1.0
 - fixed loading of plugins
     - if a plugin `ilib-lint-x` exists and a different package `x`
       also exists that is unrelated to ilib-lint, and the config
@@ -26,6 +26,8 @@ Release Notes
           attempting to load the package just named just `x`
 - updated dependencies
 - fixed to set the formatter which designated from the command line option.
+- added a `output` option to write the output into a file.
+- updated to use the new method `formatOutput()`  in AnsiConsoleFormatter.
 
 ### v2.0.0
 
