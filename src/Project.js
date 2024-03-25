@@ -614,7 +614,7 @@ class Project extends DirItem {
                 results: results,
                 score: score,
                 time: totalTime,
-                errorOnly : this.options.opt.errorsOnly
+                errorsOnly : this.options.opt.errorsOnly || false
             });
         } else {
             results.forEach(result => {
