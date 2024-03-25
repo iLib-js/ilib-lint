@@ -578,7 +578,7 @@ class Project extends DirItem {
         // source file in order to make it easier for the engineer to fix all the
         // problems in the source file sequentially.
         results.sort(ResultComparator);
-        let resultFull;
+        let resultAll;
         if (results) {
             results.forEach(result => {
                 if (result.severity === "error") {
@@ -607,7 +607,7 @@ class Project extends DirItem {
         }
 
         if (typeof (this.formatter.formatOutput) === "function") {
-            resultFull = this.formatter.formatOutput({
+            resultAll = this.formatter.formatOutput({
                 name: this.project.name,
                 fileStats: this.fileStats,
                 resultStats: this.resultStats,
@@ -619,6 +619,7 @@ class Project extends DirItem {
         } else {
             results.forEach(result => {
                 const str = this.formatter.format(result);
+                resultAll += str;
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
@@ -636,14 +637,14 @@ class Project extends DirItem {
         }
 
         if (this.options.opt.output) {
-            if (typeof resultFull !== 'undefined') {
-                let file = this.options.opt.output;
-                let fileDir = path.dirname(file);
-                if (!fs.existsSync(fileDir)) {
-                    fs.mkdirSync(fileDir);
-                }
-                fs.writeFileSync(file, resultFull, "utf8");
+            let file = this.options.opt.output;
+            let fileDir = path.dirname(file);
+            if (!fs.existsSync(fileDir)) {
+                fs.mkdirSync(fileDir);
             }
+            fs.writeFileSync(file, resultAll, "utf8");
+        } else {
+            logger.info(resultAll);
         }
 
         return exitValue;

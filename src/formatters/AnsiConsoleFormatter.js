@@ -72,7 +72,7 @@ class AnsiConsoleFormatter extends Formatter {
 
     formatOutput(options){
         let prjName, totalTime, fileStats, score, resultStats, results, errorsOnly;
-
+        let resultText;
         if (options) {
             prjName = options.name;
             totalTime = options.time;
@@ -86,6 +86,7 @@ class AnsiConsoleFormatter extends Formatter {
         if (results) {
             results.forEach(result => {
                 const str = this.format(result);
+                resultText += str;
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
@@ -106,20 +107,18 @@ class AnsiConsoleFormatter extends Formatter {
             maxFractionDigits: 2
         });
 
-        logger.info(`Total Elapse Time: ${String(totalTime)} seconds`);
-        logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
-        logger.info(`                   Total     ${`${String(fileStats.files)} Files`.padEnd(15, ' ')}${`${String(fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(fileStats.lines)} Lines`.padEnd(15, ' ')}`);
+
+        resultText = `Total Elapsed Time: ${String(totalTime)} seconds\n` +
+                     `                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}\n` +
+                     `                   Total     ${`${String(fileStats.files)} Files`.padEnd(15, ' ')}${`${String(fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(fileStats.lines)} Lines`.padEnd(15, ' ')}\n`;
         if (results.length) {
-            logger.info(
-                    `Errors:            ${String(resultStats.errors).padEnd(10, ' ')}${fmt.format(resultStats.errors/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.lines).padEnd(15, ' ')}`);
-            if (!errorsOnly) {
-                logger.info(
-                    `Warnings:          ${String(resultStats.warnings).padEnd(10, ' ')}${fmt.format(resultStats.warnings/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.lines).padEnd(15, ' ')}`);
-                logger.info(
-                    `Suggestions:       ${String(resultStats.suggestions).padEnd(10, ' ')}${fmt.format(resultStats.suggestions/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.lines).padEnd(15, ' ')}`);
-            }
+            resultText += `Errors:            ${String(resultStats.errors).padEnd(10, ' ')}${fmt.format(resultStats.errors/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.lines).padEnd(15, ' ')}\n` +
+                          `Warnings:          ${String(resultStats.warnings).padEnd(10, ' ')}${fmt.format(resultStats.warnings/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.lines).padEnd(15, ' ')}\n` +
+                          `Suggestions:       ${String(resultStats.suggestions).padEnd(10, ' ')}${fmt.format(resultStats.suggestions/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.lines).padEnd(15, ' ')}\n`;
         }
-        logger.info(`I18N Score (0-100) ${fmt.format(score)}`);
+        resultText += `I18N Score (0-100) ${fmt.format(score)}`;
+
+        return resultText
     }
 }
 
