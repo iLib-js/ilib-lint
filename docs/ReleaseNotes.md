@@ -1,5 +1,8 @@
 Release Notes
 ============================
+### v2.1.0
+- added an option `output` to write the output to a file.
+- updated to use the new method `formatOutput()` in AnsiConsoleFormatter.
 
 ### v2.0.1
 - fixed loading of plugins
