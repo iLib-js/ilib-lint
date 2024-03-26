@@ -72,7 +72,8 @@ class AnsiConsoleFormatter extends Formatter {
 
     formatOutput(options){
         let prjName, totalTime, fileStats, score, resultStats, results, errorsOnly;
-        let resultText;
+        let resultText = "";
+
         if (options) {
             prjName = options.name;
             totalTime = options.time;
@@ -86,20 +87,7 @@ class AnsiConsoleFormatter extends Formatter {
         if (results) {
             results.forEach(result => {
                 const str = this.format(result);
-                resultText += str;
-                if (str) {
-                    if (result.severity === "error") {
-                        logger.error(str);
-                    } else if (result.severity === "warning") {
-                        if (!errorsOnly) {
-                            logger.warn(str);
-                        }
-                    } else {
-                        if (!this.options.errorsOnly) {
-                            logger.info(str);
-                        }
-                    }
-                }
+                resultText += str + '\n';
             });
         }
 
@@ -107,8 +95,7 @@ class AnsiConsoleFormatter extends Formatter {
             maxFractionDigits: 2
         });
 
-
-        resultText = `Total Elapsed Time: ${String(totalTime)} seconds\n` +
+        resultText += `Total Elapsed Time: ${String(totalTime)} seconds\n` +
                      `                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}\n` +
                      `                   Total     ${`${String(fileStats.files)} Files`.padEnd(15, ' ')}${`${String(fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(fileStats.lines)} Lines`.padEnd(15, ' ')}\n`;
         if (results.length) {
