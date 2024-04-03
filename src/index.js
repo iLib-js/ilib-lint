@@ -135,6 +135,11 @@ const optionConfig = {
         short: "o",
         varName: "fileName",
         help: "Allows you to write the output into a file."
+    },
+    name: {
+        short: "n",
+        varName: "projectName",
+        help: "Give the project name. It is useful when the config file is shared in multiple projects."
     }
 };
 

@@ -608,7 +608,7 @@ class Project extends DirItem {
 
         if (typeof (this.formatter.formatOutput) === "function") {
             resultAll = this.formatter.formatOutput({
-                name: this.project.name,
+                name: this.options.opt.name || this.project.name,
                 fileStats: this.fileStats,
                 resultStats: this.resultStats,
                 results: results,
