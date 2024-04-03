@@ -643,6 +643,9 @@ class Project extends DirItem {
                 fs.mkdirSync(fileDir);
             }
             fs.writeFileSync(file, resultAll, "utf8");
+            if (!this.options.opt.quiet && this.options.opt.progressInfo) {
+                logger.info("Wrote the results to file " + file);
+            }
         } else {
             logger.info(resultAll);
         }
