@@ -1,4 +1,4 @@
-# resource-no-fullwidth-digits
+# resource-no-fullwidth-punctuation-subset
 
 Ensure that translations do not contain fullwidth punctuation characters. These should be represented as ASCII symbols instead.
 
