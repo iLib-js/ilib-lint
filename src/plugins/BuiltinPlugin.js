@@ -61,7 +61,7 @@ export const regexRules = [
         description: "Ensure that the target does not contain any full-width Latin characters.",
         note: "The full-width characters '{matchString}' are not allowed in the target string. Use ASCII letters instead.",
         regexps: [ "[\\uFF21-\\uFF3A\\uFF41-\\uFF5A]+" ],
-        link: "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-no-fullwidth.md"
+        link: "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-no-fullwidth-latin.md"
     },
     {
         type: "resource-target",
