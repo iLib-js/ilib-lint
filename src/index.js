@@ -19,6 +19,7 @@
  */
 
 import path from 'node:path';
+import fs from 'node:fs';
 
 import OptionsParser from 'options-parser';
 import Locale from 'ilib-locale';
@@ -32,9 +33,10 @@ import defaultConfig from './config/default.js';
 import { FileConfigurationProvider, FolderConfigurationProvider } from './config/ConfigurationProvider.js';
 
 const __dirname = Path.dirname(Path.fileUriToPath(import.meta.url));
-log4js.configure(path.join(__dirname, '..', 'log4js.json'));
+// log4js.configure(path.join(__dirname, '..', 'log4js.json'));
+const log4jsConfigFileName = path.join(__dirname, '..', 'log4js.json');
 
-const logger = log4js.getLogger("ilib-lint.root");
+const loggerDefault = log4js.getLogger("ilib-lint.root");
 
 // make sure the mins and maxes are numeric
 function validateInt(paramName, arg, replace) {
@@ -52,7 +54,7 @@ const optionConfig = {
         help: "This help message",
         showHelp: {
             banner: 'Usage: ilib-lint [-h] [options] path [path ...]',
-            output: logger.info.bind(logger)
+            output: loggerDefault.info.bind(loggerDefault)
         }
     },
     config: {
@@ -155,6 +157,21 @@ if (options.args.length < 1) {
     process.exit(1);
 }
 */
+const log4jsConfig = JSON.parse(fs.readFileSync(log4jsConfigFileName, "utf-8"));
+
+if (options.opt.output) {
+    console.log(`Now writing logs to ${options.opt.output}`);
+    log4jsConfig.appenders.outputFile = {
+        "type": "file",
+        "filename": options.opt.output
+    }
+    for (const prop in log4jsConfig.categories) {
+        log4jsConfig.categories[prop].appenders.push("outputFile");
+    }
+}
+log4js.configure(log4jsConfig);
+
+const logger = log4js.getLogger("ilib-lint.root");
 
 if (options.opt.quiet) {
     const rootlogger = log4js.getLogger();
