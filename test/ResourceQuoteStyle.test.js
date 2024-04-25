@@ -329,6 +329,40 @@ describe("testResourceQuoteStyle", () => {
         expect(actual).toStrictEqual(expected);
     });
 
+    test("ResourceQuoteStyleMatchAlternate2", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "Please set your PIN code from 'Menu > PIN Code'.",
+            targetLocale: "af-ZA",
+            target: 'Stel asseblief u PIN-kode vanaf “Kieslys > PIN-kode”.',
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b"
+        });
+        const expected = new Result({
+            severity: "warning",
+            description: "Quote style for the locale af-ZA should be ‘text’",
+            id: "quote.test",
+            source: "Please set your PIN code from 'Menu > PIN Code'.",
+            highlight: "Target: Stel asseblief u PIN-kode vanaf <e0>“</e0>Kieslys > PIN-kode<e1>”</e1>.",
+            rule,
+            locale: "af-ZA",
+            pathName: "a/b"
+        });
+
+        expect(actual).toStrictEqual(expected);
+    });
+
     test("ResourceQuoteStyleMatchSimpleNoError", () => {
         expect.assertions(2);
 
