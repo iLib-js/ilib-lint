@@ -1,5 +1,7 @@
 Release Notes
 ============================
+### v2.0.2
+- fixed a bug where the quote style checker was not converting the highlight quotes properly
 
 ### v2.0.1
 - fixed loading of plugins
