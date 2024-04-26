@@ -149,7 +149,7 @@ class ResourceQuoteStyle extends ResourceRule {
             endQuote = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteChars}'])(\\W|$)`, "gu");
         } else if (sourceStyle.asciiAlt) {
             if (regExps.target.quotesAllAlt.test(tar)) return;
-            startQuote = new RegExp(`(^|\\W)[${regExps.target.nonQuoteCharsAlt}"]([\\p{Letter}\\{])`, "gu");
+            startQuote = new RegExp(`(^|\\W)([${regExps.target.nonQuoteCharsAlt}"])([\\p{Letter}\\{])`, "gu");
             endQuote = new RegExp(`([\\p{Letter}\\}])([${regExps.target.nonQuoteCharsAlt}"])(\\W|$)`, "gu");
         } else if (sourceStyle.native) {
             if (regExps.target.quotesNative.test(tar)) return;

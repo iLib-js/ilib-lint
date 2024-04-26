@@ -1,6 +1,6 @@
 Release Notes
-============================
 ### v2.1.0
+- fixed a bug where the quote style checker was not converting the highlight quotes properly
 - added an option `output` to write the output to a file.
 - updated to use the new method `formatOutput()` in AnsiConsoleFormatter.
 
