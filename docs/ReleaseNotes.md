@@ -2,6 +2,10 @@ Release Notes
 ============================
 ### v2.0.2
 - fixed a bug where the quote style checker was not converting the highlight quotes properly
+- fixed quote checker rule to make a special case for Japanese. In Japanese, square brackets
+  are now allowed as a quote style, and only the main hockey-stick-style of quotes are
+  accepted even if the source has an alternate quote style. The double-hockey sticks are no
+  longer accepted.
 
 ### v2.0.1
 - fixed loading of plugins
