@@ -215,6 +215,136 @@ describe("testResourceQuoteStyle", () => {
         expect(!actual).toBeTruthy();
     });
 
+    test("ResourceQuoteStyleMatchAsciiToNativeJapanese", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'Click on "My Documents" to see more',
+            targetLocale: "ja-JP",
+            target: "「マイドキュメント」をクリックすると詳細が表示されます",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have native quotes
+        expect(!actual).toBeTruthy();
+    });
+
+    test("ResourceQuoteStyleMatchAsciiToNativeJapanese with square brackets", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'Click on "My Documents" to see more',
+            targetLocale: "ja-JP",
+            target: "[マイドキュメント]をクリックすると詳細が表示されます",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "x"
+        });
+        // if the source contains ASCII quotes, the target is allowed to have square brackets
+        expect(!actual).toBeTruthy();
+    });
+
+    test("ResourceQuoteStyleMatchAsciiAlternateToNativeJapanese", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "Click on 'My Documents' to see more",
+            targetLocale: "ja-JP",
+            target: "「マイドキュメント」をクリックすると詳細が表示されます",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "x"
+        });
+        // if the source contains alternate ASCII quotes, the target is allowed to have main native quotes
+        expect(!actual).toBeTruthy();
+    });
+
+    test("ResourceQuoteStyleMatchAsciiToNativeJapanese with square brackets", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "Click on 'My Documents' to see more",
+            targetLocale: "ja-JP",
+            target: "[マイドキュメント]をクリックすると詳細が表示されます",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "x"
+        });
+        // if the source contains alternate ASCII quotes, the target is allowed to have square brackets
+        expect(!actual).toBeTruthy();
+    });
+
+    test("ResourceQuoteStyleMatchAltAsciiQuotesMismatch Japanese", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: "Click on 'My Documents' to see more",
+            targetLocale: "ja-JP",
+            target: "『マイドキュメント』をクリックすると詳細が表示されます",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        // if the source contains alternate quotes, the target should still have main quotes only
+        const expected = new Result({
+            severity: "warning",
+            description: "Quote style for the locale ja-JP should be 「text」",
+            id: "quote.test",
+            source: "Click on 'My Documents' to see more",
+            highlight: "Target: <e0>『</e0>マイドキュメント<e0>』</e0>をクリックすると詳細が表示されます",
+            rule,
+            locale: "ja-JP",
+            pathName: "a/b/c.xliff"
+        });
+        expect(actual).toStrictEqual(expected);
+    });
+
     test("ResourceQuoteStyleMatchAsciiQuotes", () => {
         expect.assertions(2);
 

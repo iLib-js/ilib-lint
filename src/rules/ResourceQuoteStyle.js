@@ -24,7 +24,7 @@ import ResourceRule from './ResourceRule.js';
 
 /** @ignore @typedef {import("ilib-tools-common").Resource} Resource */
 
-/** 
+/**
  * @typedef BaseRegExpCollection
  * @type {object}
  * @prop {string} quoteStart
@@ -33,7 +33,7 @@ import ResourceRule from './ResourceRule.js';
  * @prop {string} quoteEndAlt
  * @prop {RegExp} quotesNative
  * @prop {RegExp} quotesNativeAlt
- * 
+ *
  * @typedef {BaseRegExpCollection} SourceRegExpCollection
  */
 
@@ -44,7 +44,7 @@ import ResourceRule from './ResourceRule.js';
  * @prop {RegExp} quotesAllAlt
  * @prop {string} nonQuoteChars
  * @prop {string} nonQuoteCharsAlt
- * 
+ *
  * @typedef {BaseRegExpCollection & ExtendedRegExpCollection} TargetRegExpCollection
  */
 
@@ -77,7 +77,7 @@ let /** @type {{[locale: string]: LocaleInfo}} */ LICache = {};
  * One-param rule configuration.
  */
 
-/** 
+/**
  * @typedef Configuration
  * @type {Modes}
  * Parameters that can be set through rule configuration file.
@@ -89,8 +89,8 @@ let /** @type {{[locale: string]: LocaleInfo}} */ LICache = {};
 class ResourceQuoteStyle extends ResourceRule {
     /**
      * Make a new rule instance.
-     * 
-     * @param {object} [options] 
+     *
+     * @param {object} [options]
      * @param {string} [options.sourceLocale]
      * @param {Configuration} [options.param]
      */
@@ -100,20 +100,20 @@ class ResourceQuoteStyle extends ResourceRule {
         this.description = "Ensure that the proper quote characters are used in translated resources";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
         this.link = "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-quote-style.md";
-        
+
         if (options?.param === "localeOnly") {
             // only localized quotes are allowed in the target string
             this.localeOnly = true;
         }
-        
+
         if (!this.skipLocales) {
             this.skipLocales = new Set();
         }
-        
+
         [
             "sv", // According to the MS Style guidelines, quotes are usually not required in Swedish when the source English text contains quotes
             "it", // Based on feedback from linguists quotes in Italian are not required to be the guillemets, even though CLDR says so
-        ].forEach(locale => this.skipLocales.add(locale));   
+        ].forEach(locale => this.skipLocales.add(locale));
     }
 
     /**
@@ -136,10 +136,10 @@ class ResourceQuoteStyle extends ResourceRule {
 
         // used in results to show what the expected quote style is
         const targetQuoteStyleExample = (sourceStyle.ascii || sourceStyle.native) ?
-            `${regExps.target.quoteStart}text${regExps.target.quoteEnd}` :
-            `${regExps.target.quoteStartAlt}text${regExps.target.quoteEndAlt}`;
-        
-        // verify that corresponding quote style is present in target 
+            `${regExps.target.quoteStart[0]}text${regExps.target.quoteEnd[0]}` :
+            `${regExps.target.quoteStartAlt[0]}text${regExps.target.quoteEndAlt[0]}`;
+
+        // verify that corresponding quote style is present in target
         // otherwise, construct regexps to pinpoint violation positions
         // (for highlighting purposes)
         let startQuote, endQuote;
@@ -202,12 +202,12 @@ class ResourceQuoteStyle extends ResourceRule {
     getRegExps(locale) {
         // superset of all the non-ASCII start and end chars used in CLDR
         const quoteChars = "«»‘“”„「」’‚‹›『』";
-        
+
         // shared between all locales since there is nothing locale-specific in here
         const quotesAscii = new RegExp(`((^|\\W)"\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?"(\\W|$))`, "gu");
         // leave out the "s" before the final quote to take care of plural possessives (eg. my colleagues' files.)
         const quotesAsciiAlt = new RegExp(`((^|\\W)'\\s?[\\p{Letter}\\{]|[a-rt-zA-RT-Z\\}]\\s?'(\\W|$))`, "gu");
-    
+
         // locale info object will tell us the quote chars for the locale
         let li = LICache[locale];
         if (!li) {
@@ -216,7 +216,13 @@ class ResourceQuoteStyle extends ResourceRule {
             li = new LocaleInfo(locale);
             LICache[locale] = li;
         }
-    
+        /** special case for Japanese */
+        if (locale === "ja-JP") {
+            // accept the main quote style only and also square brackets
+            li.info.delimiter.alternateQuotationStart = "「\\[";
+            li.info.delimiter.alternateQuotationEnd = "」\\]";
+        }
+
         let sourceLI = LICache[this.sourceLocale];
         if (!sourceLI) {
             // @ts-ignore: An argument for 'options' was not provided
@@ -224,25 +230,25 @@ class ResourceQuoteStyle extends ResourceRule {
             sourceLI = new LocaleInfo(this.sourceLocale);
             LICache[this.sourceLocale] = sourceLI;
         }
-    
+
         // what are all the quote chars that this locale uses?
         const sourceQuoteStart = sourceLI.getDelimiterQuotationStart();
         const sourceQuoteStartAlt = /** @type {string} */ (sourceLI.info.delimiter.alternateQuotationStart);
-    
+
         const sourceQuoteEnd = sourceLI.getDelimiterQuotationEnd();
         const sourceQuoteEndAlt = /** @type {string} */ (sourceLI.info.delimiter.alternateQuotationEnd);
-    
+
         const targetQuoteStart = li.getDelimiterQuotationStart();
         const targetQuoteStartAlt = /** @type {string} */ (li.info.delimiter.alternateQuotationStart);
-    
+
         const targetQuoteEnd = li.getDelimiterQuotationEnd();
         const targetQuoteEndAlt = /** @type {string} */ (li.info.delimiter.alternateQuotationEnd);
-    
+
         // now calculate regular expressions for the source string that use those quotes
         // if the source uses ASCII quotes, then the target could have ASCII or native quotes
         const sourceQuotesNative = new RegExp(`((^|\\W)${sourceQuoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${sourceQuoteEnd}(\\W|$))`, "gu");
         const sourceQuotesNativeAlt = new RegExp(`((^|\\W)${sourceQuoteStartAlt}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${sourceQuoteEndAlt}(\\W|$))`, "gu");
-    
+
         // now calculate the regular expressions for the target string that use quotes
         // if the source contains native quotes, then the target should also have native quotes
         const targetQuotesNative = new RegExp(`((^|\\W)${targetQuoteStart}\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?${targetQuoteEnd}(\\W|$))`, "gu");
@@ -253,18 +259,20 @@ class ResourceQuoteStyle extends ResourceRule {
         const targetQuotesAllAlt = this.localeOnly ?
             targetQuotesNativeAlt :
             new RegExp(`((^|\\W)[${targetQuoteStartAlt}']\\s?[\\p{Letter}\\{]|[\\p{Letter}\\}]\\s?[${targetQuoteEndAlt}'](\\W|$))`, "gu");
-    
-        // the non quote chars are used to highlight errors in the target string
+
+        // the non quote chars are used to highlight errors in the target string where they are using quotes, but
+        // they are the wrong type. Start with the superset of all quotes and then remove the valid ones so that
+        // you are left with the wrong ones for this locale.
         const targetNonQuoteChars = quoteChars.
                 replace(sourceQuoteStart, "").
                 replace(targetQuoteStart, "").
                 replace(sourceQuoteEnd, "").
                 replace(targetQuoteEnd, "");
         const targetNonQuoteCharsAlt = quoteChars.
-                replace(sourceQuoteStartAlt, "").
-                replace(targetQuoteStartAlt, "").
-                replace(sourceQuoteEndAlt, "").
-                replace(targetQuoteEndAlt, "");
+                replace(new RegExp(`[${sourceQuoteStartAlt}]`, "gu"), "").
+                replace(new RegExp(`[${targetQuoteStartAlt}]`, "gu"), "").
+                replace(new RegExp(`[${sourceQuoteEndAlt}]`, "gu"), "").
+                replace(new RegExp(`[${targetQuoteEndAlt}]`, "gu"), "");
 
         return {
             quotesAscii,
@@ -294,11 +302,11 @@ class ResourceQuoteStyle extends ResourceRule {
 
     /**
      * @override
-     * @param {Object} params 
-     * @param {string | undefined} params.source 
-     * @param {string | undefined} params.target 
-     * @param {Resource} params.resource 
-     * @param {string} params.file 
+     * @param {Object} params
+     * @param {string | undefined} params.source
+     * @param {string | undefined} params.target
+     * @param {Resource} params.resource
+     * @param {string} params.file
      */
     matchString({source, target, resource, file}) {
         if (!source || !target) return; // cannot match in strings that don't exist!
