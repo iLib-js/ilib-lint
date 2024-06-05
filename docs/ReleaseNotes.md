@@ -2,7 +2,8 @@ Release Notes
 ### v2.1.0
 - fixed a bug where the quote style checker was not converting the highlight quotes properly
 - added an option `output` to write the output to a file.
-- updated to use the new method `formatOutput()` in AnsiConsoleFormatter.
+- added an option `name` to give the project name. It is useful when the config file is shared in multiple projects.
+- updated to use `formatOutput()` if it is defined in the plugin formatter.
 
 ### v2.0.1
 - fixed loading of plugins

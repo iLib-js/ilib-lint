@@ -69,57 +69,6 @@ class AnsiConsoleFormatter extends Formatter {
         }
         return output;
     }
-
-    formatOutput(options){
-        let prjName, totalTime, fileStats, score, resultStats, results, errorsOnly;
-        let resultText;
-
-        if (options) {
-            prjName = options.name;
-            totalTime = options.time;
-            fileStats = options.fileStats;
-            resultStats = options.resultStats;
-            results = options.results;
-            score = options.score;
-            errorsOnly = options.errorsOnly;
-        }
-
-        if (results) {
-            results.forEach(result => {
-                const str = this.format(result);
-                resultText += str;
-                if (str) {
-                    if (result.severity === "error") {
-                        logger.error(str);
-                    } else if (result.severity === "warning") {
-                        if (!errorsOnly) {
-                            logger.warn(str);
-                        }
-                    } else {
-                        if (!this.options.errorsOnly) {
-                            logger.info(str);
-                        }
-                    }
-                }
-            });
-        }
-
-        const fmt = new Intl.NumberFormat("en-US", {
-            maxFractionDigits: 2
-        });
-
-        resultText = `Total Elapsed Time: ${String(totalTime)} seconds\n` +
-                     `                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}\n` +
-                     `                   Total     ${`${String(fileStats.files)} Files`.padEnd(15, ' ')}${`${String(fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(fileStats.lines)} Lines`.padEnd(15, ' ')}\n`;
-        if (results.length) {
-            resultText += `Errors:            ${String(resultStats.errors).padEnd(10, ' ')}${fmt.format(resultStats.errors/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.errors/fileStats.lines).padEnd(15, ' ')}\n` +
-                          `Warnings:          ${String(resultStats.warnings).padEnd(10, ' ')}${fmt.format(resultStats.warnings/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.warnings/fileStats.lines).padEnd(15, ' ')}\n` +
-                          `Suggestions:       ${String(resultStats.suggestions).padEnd(10, ' ')}${fmt.format(resultStats.suggestions/fileStats.files).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.modules).padEnd(15, ' ')}${fmt.format(resultStats.suggestions/fileStats.lines).padEnd(15, ' ')}\n`;
-        }
-        resultText += `I18N Score (0-100) ${fmt.format(score)}`;
-
-        return resultText;
-    }
 }
 
 export default AnsiConsoleFormatter;

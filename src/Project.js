@@ -590,22 +590,10 @@ class Project extends DirItem {
                 }
             });
         }
+        const fmt = new Intl.NumberFormat("en-US", {
+            maxFractionDigits: 2
+        });
         const score = this.getScore();
-
-        if (this.options.opt["max-errors"]) {
-            exitValue = this.resultStats.errors > this.options.opt["max-errors"] ? 2 : 0;
-        } else if (this.options.opt["max-warnings"]) {
-            exitValue = this.resultStats.warnings > this.options.opt["max-warnings"] ? 1 : 0;
-        } else if (this.options.opt["max-suggestions"]) {
-            exitValue = this.resultStats.suggestions > this.options.opt["max-suggestions"] ? 1 : 0;
-        } else if (this.options.opt["min-score"]) {
-            exitValue = score < this.options.opt["min-score"] ? 2 : 0;
-        } else if (this.options.errorsOnly) {
-            exitValue = this.resultStats.errors > 0 ? 2 : 0;
-        } else {
-            exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
-        }
-
         if (typeof (this.formatter.formatOutput) === "function") {
             resultAll = this.formatter.formatOutput({
                 name: this.options.opt.name || this.project.name,
@@ -619,7 +607,6 @@ class Project extends DirItem {
         } else {
             results.forEach(result => {
                 const str = this.formatter.format(result);
-                resultAll += str;
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
@@ -634,6 +621,20 @@ class Project extends DirItem {
                     }
                 }
             });
+
+            logger.info(`Total Elapse Time: ${String(totalTime)} seconds`);
+            logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
+            logger.info(`                   Total     ${`${String(this.fileStats.files)} Files`.padEnd(15, ' ')}${`${String(this.fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(this.fileStats.lines)} Lines`.padEnd(15, ' ')}`);
+            if (results.length) {
+                logger.info(
+                        `Errors:            ${String(this.resultStats.errors).padEnd(10, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.lines).padEnd(15, ' ')}`);
+                if (!this.options.errorsOnly) {
+                    logger.info(
+                        `Warnings:          ${String(this.resultStats.warnings).padEnd(10, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.lines).padEnd(15, ' ')}`);
+                    logger.info(
+                        `Suggestions:       ${String(this.resultStats.suggestions).padEnd(10, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.lines).padEnd(15, ' ')}`);
+                }
+            }
         }
 
         if (this.options.opt.output) {
@@ -648,6 +649,22 @@ class Project extends DirItem {
             }
         } else {
             logger.info(resultAll);
+        }
+
+        logger.info(`I18N Score (0-100) ${fmt.format(score)}`);
+
+        if (this.options.opt["max-errors"]) {
+            exitValue = this.resultStats.errors > this.options.opt["max-errors"] ? 2 : 0;
+        } else if (this.options.opt["max-warnings"]) {
+            exitValue = this.resultStats.warnings > this.options.opt["max-warnings"] ? 1 : 0;
+        } else if (this.options.opt["max-suggestions"]) {
+            exitValue = this.resultStats.suggestions > this.options.opt["max-suggestions"] ? 1 : 0;
+        } else if (this.options.opt["min-score"]) {
+            exitValue = score < this.options.opt["min-score"] ? 2 : 0;
+        } else if (this.options.errorsOnly) {
+            exitValue = this.resultStats.errors > 0 ? 2 : 0;
+        } else {
+            exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
         }
 
         return exitValue;
