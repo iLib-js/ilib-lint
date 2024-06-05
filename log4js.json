@@ -24,10 +24,6 @@
         "ilib-lint.root.SourceFile": {
             "appenders": [ "default" ],
             "level": "info"
-        },
-        "ilib-lint.formatters.AnsiConsoleFormatter": {
-            "appenders": [ "default" ],
-            "level": "info"
         }
     }
 }
