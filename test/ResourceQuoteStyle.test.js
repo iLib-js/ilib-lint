@@ -345,6 +345,40 @@ describe("testResourceQuoteStyle", () => {
         expect(actual).toStrictEqual(expected);
     });
 
+    test("ResourceQuoteStyleMatchAltAsciiQuotesMismatch Japanese with primary quotes", () => {
+        expect.assertions(2);
+
+        const rule = new ResourceQuoteStyle();
+        expect(rule).toBeTruthy();
+
+        const resource = new ResourceString({
+            key: "quote.test",
+            sourceLocale: "en-US",
+            source: 'Click on "My Documents" to see more',
+            targetLocale: "ja-JP",
+            target: "『マイドキュメント』をクリックすると詳細が表示されます",
+            pathName: "a/b/c.xliff"
+        });
+        const actual = rule.matchString({
+            source: resource.getSource(),
+            target: resource.getTarget(),
+            resource,
+            file: "a/b/c.xliff"
+        });
+        // if the source contains alternate quotes, the target should still have main quotes only
+        const expected = new Result({
+            severity: "warning",
+            description: "Quote style for the locale ja-JP should be 「text」",
+            id: "quote.test",
+            source: 'Click on "My Documents" to see more',
+            highlight: "Target: <e0>『</e0>マイドキュメント<e0>』</e0>をクリックすると詳細が表示されます",
+            rule,
+            locale: "ja-JP",
+            pathName: "a/b/c.xliff"
+        });
+        expect(actual).toStrictEqual(expected);
+    });
+
     test("ResourceQuoteStyleMatchAsciiQuotes", () => {
         expect.assertions(2);
 

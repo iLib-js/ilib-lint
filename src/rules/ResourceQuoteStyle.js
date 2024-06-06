@@ -216,12 +216,6 @@ class ResourceQuoteStyle extends ResourceRule {
             li = new LocaleInfo(locale);
             LICache[locale] = li;
         }
-        /** special case for Japanese */
-        if (locale === "ja-JP") {
-            // accept the main quote style only and also square brackets
-            li.info.delimiter.alternateQuotationStart = "「\\[";
-            li.info.delimiter.alternateQuotationEnd = "」\\]";
-        }
 
         let sourceLI = LICache[this.sourceLocale];
         if (!sourceLI) {
@@ -238,11 +232,21 @@ class ResourceQuoteStyle extends ResourceRule {
         const sourceQuoteEnd = sourceLI.getDelimiterQuotationEnd();
         const sourceQuoteEndAlt = /** @type {string} */ (sourceLI.info.delimiter.alternateQuotationEnd);
 
-        const targetQuoteStart = li.getDelimiterQuotationStart();
-        const targetQuoteStartAlt = /** @type {string} */ (li.info.delimiter.alternateQuotationStart);
+        /** special case for Japanese: accept the main quote style only and also square brackets */
+        const targetQuoteStartChars = (locale === "ja-JP") ? ["「", "\\["] : [li.getDelimiterQuotationStart()];
+        // used in regular expressions:
+        const targetQuoteStart = targetQuoteStartChars.join("");
+        const targetQuoteStartAltChars = (locale === "ja-JP") ? ["「", "\\["] : [li.info.delimiter.alternateQuotationStart];
+        // used in regular expressions:
+        const targetQuoteStartAlt = /** @type {string} */ targetQuoteStartAltChars.join("");
 
-        const targetQuoteEnd = li.getDelimiterQuotationEnd();
-        const targetQuoteEndAlt = /** @type {string} */ (li.info.delimiter.alternateQuotationEnd);
+        /** special case for Japanese: accept the main quote style only and also square brackets */
+        const targetQuoteEndChars = (locale === "ja-JP") ? ["」", "\\]"] : [li.getDelimiterQuotationEnd()];
+        // used in regular expressions:
+        const targetQuoteEnd = targetQuoteEndChars.join("");
+        const targetQuoteEndAltChars = (locale === "ja-JP") ? ["」", "\\]"] : [li.info.delimiter.alternateQuotationEnd];
+        // used in regular expressions:
+        const targetQuoteEndAlt = /** @type {string} */ targetQuoteEndAltChars.join("");
 
         // now calculate regular expressions for the source string that use those quotes
         // if the source uses ASCII quotes, then the target could have ASCII or native quotes
