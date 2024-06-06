@@ -1,7 +1,9 @@
 Release Notes
-============================
-### v2.0.2
+### v2.1.0
 - fixed a bug where the quote style checker was not converting the highlight quotes properly
+- added an option `output` to write the output to a file.
+- added an option `name` to give the project name. It is useful when the config file is shared in multiple projects.
+- updated to use `formatOutput()` if it is defined in the plugin formatter.
 - fixed quote checker rule to make a special case for Japanese. In Japanese, square brackets
   are now allowed as a quote style, and only the main hockey-stick-style of quotes are
   accepted even if the source has an alternate quote style. The double-hockey sticks are no

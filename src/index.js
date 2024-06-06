@@ -130,6 +130,16 @@ const optionConfig = {
         varName: "NUMBER",
         help: "Give the minimum acceptable I18N score allowed in this run. Valid values are 0-100. Default: no minimum",
         type: validateInt.bind(null, "min-score")
+    },
+    output: {
+        short: "o",
+        varName: "fileName",
+        help: "Allows you to write the output into a file."
+    },
+    name: {
+        short: "n",
+        varName: "projectName",
+        help: "Give the project name. It is useful when the config file is shared in multiple projects."
     }
 };
 

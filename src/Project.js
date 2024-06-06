@@ -578,46 +578,79 @@ class Project extends DirItem {
         // source file in order to make it easier for the engineer to fix all the
         // problems in the source file sequentially.
         results.sort(ResultComparator);
-
+        let resultAll;
         if (results) {
+            results.forEach(result => {
+                if (result.severity === "error") {
+                    this.resultStats.errors++;
+                } else if (result.severity === "warning") {
+                    this.resultStats.warnings++;
+                } else {
+                    this.resultStats.suggestions++;
+                }
+            });
+        }
+        const fmt = new Intl.NumberFormat("en-US", {
+            maxFractionDigits: 2
+        });
+        const score = this.getScore();
+        if (typeof (this.formatter.formatOutput) === "function") {
+            resultAll = this.formatter.formatOutput({
+                name: this.options.opt.name || this.project.name,
+                fileStats: this.fileStats,
+                resultStats: this.resultStats,
+                results: results,
+                score: score,
+                time: totalTime,
+                errorsOnly : this.options.opt.errorsOnly || false
+            });
+        } else {
             results.forEach(result => {
                 const str = this.formatter.format(result);
                 if (str) {
                     if (result.severity === "error") {
                         logger.error(str);
-                        this.resultStats.errors++;
                     } else if (result.severity === "warning") {
-                        this.resultStats.warnings++;
                         if (!this.options.errorsOnly) {
                             logger.warn(str);
                         }
                     } else {
-                        this.resultStats.suggestions++;
                         if (!this.options.errorsOnly) {
                             logger.info(str);
                         }
                     }
                 }
             });
-        }
 
-        const fmt = new Intl.NumberFormat("en-US", {
-            maxFractionDigits: 2
-        });
-        logger.info(`Total Elapse Time: ${String(totalTime)} seconds`);
-        logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
-        logger.info(`                   Total     ${`${String(this.fileStats.files)} Files`.padEnd(15, ' ')}${`${String(this.fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(this.fileStats.lines)} Lines`.padEnd(15, ' ')}`);
-        if (results.length) {
-            logger.info(
-                    `Errors:            ${String(this.resultStats.errors).padEnd(10, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.lines).padEnd(15, ' ')}`);
-            if (!this.options.errorsOnly) {
+            logger.info(`Total Elapse Time: ${String(totalTime)} seconds`);
+            logger.info(`                             ${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}${`Average over`.padEnd(15, ' ')}`);
+            logger.info(`                   Total     ${`${String(this.fileStats.files)} Files`.padEnd(15, ' ')}${`${String(this.fileStats.modules)} Modules`.padEnd(15, ' ')}${`${String(this.fileStats.lines)} Lines`.padEnd(15, ' ')}`);
+            if (results.length) {
                 logger.info(
-                    `Warnings:          ${String(this.resultStats.warnings).padEnd(10, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.lines).padEnd(15, ' ')}`);
-                logger.info(
-                    `Suggestions:       ${String(this.resultStats.suggestions).padEnd(10, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.lines).padEnd(15, ' ')}`);
+                        `Errors:            ${String(this.resultStats.errors).padEnd(10, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.errors/this.fileStats.lines).padEnd(15, ' ')}`);
+                if (!this.options.errorsOnly) {
+                    logger.info(
+                        `Warnings:          ${String(this.resultStats.warnings).padEnd(10, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.warnings/this.fileStats.lines).padEnd(15, ' ')}`);
+                    logger.info(
+                        `Suggestions:       ${String(this.resultStats.suggestions).padEnd(10, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.files).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.modules).padEnd(15, ' ')}${fmt.format(this.resultStats.suggestions/this.fileStats.lines).padEnd(15, ' ')}`);
+                }
             }
         }
-        const score = this.getScore();
+
+        if (this.options.opt.output) {
+            let file = this.options.opt.output;
+            let fileDir = path.dirname(file);
+            if (!fs.existsSync(fileDir)) {
+                fs.mkdirSync(fileDir);
+            }
+            fs.writeFileSync(file, resultAll, "utf8");
+            if (!this.options.opt.quiet && this.options.opt.progressInfo) {
+                logger.info("Wrote the results to file " + file);
+            }
+        } else {
+            logger.info(resultAll);
+        }
+
         logger.info(`I18N Score (0-100) ${fmt.format(score)}`);
 
         if (this.options.opt["max-errors"]) {
@@ -633,6 +666,7 @@ class Project extends DirItem {
         } else {
             exitValue = this.resultStats.errors > 0 ? 2 : ((this.resultStats.warnings > 0) ? 1 : 0);
         }
+
         return exitValue;
     }
 
