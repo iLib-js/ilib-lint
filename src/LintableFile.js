@@ -159,7 +159,7 @@ class LintableFile extends DirItem {
                                     locale: detectedLocale || this.project.getSourceLocale(),
                                     file: this.filePath,
                                 }) ?? []
-                        );
+                        ).filter(result => result);
                         const fixable = results.filter((result) => result?.fix !== undefined);
 
                         let fixer;
@@ -216,7 +216,6 @@ class LintableFile extends DirItem {
             // and the remaining ones that were produced
             return [...fixedResults, ...currentParseResults];
         });
-
         if (this.irs.length === 0) {
             throw new Error(`All available parsers failed to parse file ${this.sourceFile.getPath()}. Try configuring another parser or excluding this file from the lint project.`);
         }
