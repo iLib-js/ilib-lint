@@ -1,4 +1,11 @@
 Release Notes
+=============
+
+### v2.1.1
+- check to make sure that every result in the results array returned by the plugins
+  is not undefined so that we do not run into the problem of dereferencing undefined
+  results later on, which caused some exceptions
+
 ### v2.1.0
 - fixed a bug where the quote style checker was not converting the highlight quotes properly
 - added an option `output` to write the output to a file.

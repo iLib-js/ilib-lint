@@ -523,7 +523,7 @@ class Project extends DirItem {
                 logger.error(`Error while finding issues in the file ${file.filePath}`);
                 logger.error(e);
             }
-        });
+        }).filter(result => result);
     }
 
     /**
