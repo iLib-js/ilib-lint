@@ -131,6 +131,11 @@ const optionConfig = {
         help: "Give the minimum acceptable I18N score allowed in this run. Valid values are 0-100. Default: no minimum",
         type: validateInt.bind(null, "min-score")
     },
+    "no-return-value": {
+        flag: true,
+        "default": false,
+        help: "Print out results, but always exit with no return value, even when there are errors and warnings. (ie. return value 0)"
+    },
     output: {
         short: "o",
         varName: "fileName",
@@ -261,7 +266,7 @@ try {
     await rootProject.scan(paths);
     const exitValue = rootProject.run();
 
-    process.exit(exitValue);
+    process.exit(options.opt["no-return-value"] ? 0 : exitValue);
 } catch (e) {
     logger.error(e);
 }
