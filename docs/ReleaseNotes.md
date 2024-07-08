@@ -1,6 +1,12 @@
 Release Notes
 =============
 
+### v2.2.0
+- added --no-return-value command-line flag to have the linter always return 0, even
+  when there are errors and warnings. This still reports the results to the output.
+  The intention is that the linter can be used to report results without causing
+  build pipelines to fail.
+
 ### v2.1.1
 - check to make sure that every result in the results array returned by the plugins
   is not undefined so that we do not run into the problem of dereferencing undefined
