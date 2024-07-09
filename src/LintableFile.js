@@ -206,7 +206,13 @@ class LintableFile extends DirItem {
                 } while (didWrite);
                 this.irs = this.irs.concat(irs);
             } catch (e) {
-                debugger;
+                if (this.parsers.length === 1) {
+                    // if this is the only parser for this file, throw an exception right away so the user
+                    // can see what the specific parse error was from the parser
+                    throw new Error(`Could not parse file ${this.sourceFile.getPath()}. Try configuring another parser or excluding this file from the lint project.`, {
+                        cause: e
+                    });
+                }
                 logger.trace(`Parser ${parser.getName()} could not parse file ${this.sourceFile.getPath()}`);
                 logger.trace(e);
             }

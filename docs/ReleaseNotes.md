@@ -1,6 +1,13 @@
 Release Notes
 =============
 
+### v2.2.1
+
+- fixed the output from the LintableFile class so that if there is only one
+  parser for the file, it will show the specific parser error that caused that
+  parsing problem instead of saying that none of the parsers could parse
+  the file without any specifics.
+
 ### v2.2.0
 - added --no-return-value command-line flag to have the linter always return 0, even
   when there are errors and warnings. This still reports the results to the output.
