@@ -23,6 +23,9 @@ import { xml2js } from 'xml-js';
 import { selfClosingTags } from 'ilib-tools-common';
 import ResourceRule from './ResourceRule.js';
 
+const htmlTags = Object.keys(selfClosingTags).concat(["p"]);
+const selfClosingRe = new RegExp(`<(${htmlTags.join('|')})>`, "g");
+const endTagRe = new RegExp(`</(${htmlTags.join('|')})>`, "g");
 const unnamedTagRe = /<\/?>/g;
 
 /**
@@ -39,10 +42,6 @@ class ResourceXML extends ResourceRule {
         this.description = "Ensure that XML in translated resources match the source";
         this.sourceLocale = (options && options.sourceLocale) || "en-US";
         this.link = "https://gihub.com/ilib-js/ilib-lint/blob/main/docs/resource-xml.md";
-
-        const htmlTags = Object.keys(selfClosingTags).concat("p");
-        this.selfClosingRe = new RegExp(`<(${htmlTags.join('|')})>`, "g");
-        this.endTagRe = new RegExp(`</(${htmlTags.join('|')})>`, "g");
     }
 
     countElements(node, elements) {
@@ -95,7 +94,7 @@ class ResourceXML extends ResourceRule {
                 if (!sourceElements[element]) {
                     const re = new RegExp(`<(?<tag>\/?${element}\/?)>`, "g");
                     const highlight =
-                        resource.getTarget().replace(re, "<e0>&lt;$<tag>></e0>");
+                        resource.getTarget().replace(re, "<e0><$<tag>></e0>");
                     let opts = {
                         severity: "error",
                         rule: this,
@@ -114,63 +113,93 @@ class ResourceXML extends ResourceRule {
         return problems;
     }
 
-    matchString({source, target, file, resource}) {
+    /**
+     * Sometimes, the xml tags are really html, which has notorious problems
+     * with unclosed tags being considered valid, such as the <p> or
+     * <br> tags. The xml parser we are using does not recognize html,
+     * so we have to convert the unclosed html tags into valid xml before we
+     * attempt to parse them. This function does that by making those tags into
+     * self-closing tags. <p> becomes <p/>
+     *
+     * Note that if there is a <p> tag, we have to make sure there is also no
+     * </p> in the string as that is valid xml already. We should only convert
+     * the <p> tags when there are no </p> tags to go with it.
+     *
+     * @private
+     * @param {string} string the string to convert
+     * @returns {string}
+     */
+    convertUnclosedTags(string) {
+        let converted = string;
+
+        endTagRe.lastIndex = 0;
+        selfClosingRe.lastIndex = 0;
+        if (!endTagRe.test(string)) {
+            converted = string.replace(selfClosingRe, "<$1/>");
+        }
+        return converted;
+    }
+
+    matchString({source, target, resource}) {
         if (!target) return; // can't check "nothing" !
-        let srcObj, tgtObj, match;
+        let srcObj, tgtObj;
         let problems = [];
         const prefix = '<?xml version="1.0" encoding="UTF-8"?><root>';
         const suffix = '</root>';
 
-        // convert HTML single tags like <p> to <p/> and <br> to <br/> so
-        // that the xml parser doesn't freak out. But, we should only do
-        // this if the closing tags </p> and </br> do not already exist
-        // in the string
-        this.endTagRe.lastIndex = 0;
-        this.selfClosingRe.lastIndex = 0;
-        if (!this.endTagRe.test(source)) {
-            source = source.replace(this.selfClosingRe, "<$1/>");
-        }
-        const wrappedSource = `${prefix}${source}${suffix}`;
+        // convert html tags to valid xml tags and wrap the strings with a prefix
+        // and suffix so that it forms a whole xml document before we attempt to
+        // call the parser on them
+        const wrappedSource = `${prefix}${this.convertUnclosedTags(source)}${suffix}`;
+        const wrappedTarget = `${prefix}${this.convertUnclosedTags(target)}${suffix}`;
 
+        // First, check the source string for problems. If there are any,
+        // don't even bother checking the target string for problems because
+        // we don't even know if they are valid problems. The translators may
+        // just have echoed the problems already in the source. There will be
+        // another rule that checks the well-formedness of the source string
+        // for the engineers to fix. It is not the job of this rule to report
+        // on the well-formedness of the source.
         try {
             srcObj = xml2js(wrappedSource, {
                 trim: false
             });
         } catch (e) {
             // source is not well-formed, so don't even
-            // attempt to parse the target!
+            // attempt to parse the target! Just bail.
             return undefined;
         }
 
-        unnamedTagRe.lastIndex = 0;
-        if ((match = unnamedTagRe.exec(target)) !== null) {
-            const highlight =
-                target.replace(/</g, "&lt;").replace(/(&lt;\/?>)/g, "<e0>$1</e0>");
-            let opts = {
-                severity: "error",
-                rule: this,
-                description: `Empty XML elements <> and </> are not allowed in the target.`,
-                id: resource.getKey(),
-                highlight: `Target: ${highlight}`,
-                pathName: resource.getPath(),
-                source: resource.getSource(),
-                locale: resource.getTargetLocale()
-            };
-            problems.push(new Result(opts));
-        }
-
-        this.endTagRe.lastIndex = 0;
-        this.selfClosingRe.lastIndex = 0;
-        if (!this.endTagRe.test(target)) {
-            target = target.replace(this.selfClosingRe, "<$1/>");
-        }
-        const wrappedTarget = `${prefix}${target}${suffix}`;
         try {
-            // then parse the target
+            // Second, tags that have no name are a special type of un-well-formedness
+            // that we want to call out separately. If the target contains them, the
+            // xml2js parser below will find it, but it will show as an unclosed tag error.
+            // While that is true, it's a poor error message that doesn't help the
+            // translators fix the real problem, which is the unnamed tag.
+            unnamedTagRe.lastIndex = 0;
+            if (unnamedTagRe.exec(target) !== null) {
+                const highlight =
+                    target.replace(/(<\/?>)/g, "<e0>$1</e0>");
+                let opts = {
+                    severity: "error",
+                    rule: this,
+                    description: `Empty XML elements <> and </> are not allowed in the target.`,
+                    id: resource.getKey(),
+                    highlight: `Target: ${highlight}`,
+                    pathName: resource.getPath(),
+                    source: resource.getSource(),
+                    locale: resource.getTargetLocale()
+                };
+                problems.push(new Result(opts));
+            }
+
+            // Third, parse the target string for well-formedness. If it does not parse properly,
+            // it throws the exception handled below
             tgtObj = xml2js(wrappedTarget, {
                 trim: false
             });
 
+            // And finally match the xml elements/tags from the source to the target
             problems = problems.concat(this.matchElements(srcObj, tgtObj, resource));
         } catch (e) {
             const lines = e.message.split(/\n/g);
@@ -180,8 +209,8 @@ class ResourceXML extends ResourceRule {
             // create the highlight, but make sure to escape any less than characters so that
             // it does not conflict with the highlight
             const highlight = column >= target.length ?
-                target.replace(/</g, "&lt;") + '<e0/>' :
-                target.substring(0, column).replace(/</g, "&lt;") + '<e0>' + target[column] + '</e0>' + target.substring(column+1).replace(/</g, "&lt;");
+                target + '<e0/>' :
+                target.substring(0, column) + '<e0>' + target[column] + '</e0>' + target.substring(column+1);
             let opts = {
                 severity: "error",
                 rule: this,

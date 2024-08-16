@@ -1,7 +1,7 @@
 /*
  * FileType.test.js - test the file type object
  *
- * Copyright © 2023 JEDLSoft
+ * Copyright © 2023-2024 JEDLSoft
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ResourceString } from 'ilib-tools-common';
-
 import FileType from '../src/FileType.js';
 import Project from '../src/Project.js';
 import PluginManager from '../src/PluginManager.js';
@@ -244,7 +242,7 @@ describe("testFileType", () => {
         const rules = ft.getRules();
 
         expect(Array.isArray(rules)).toBeTruthy();
-        expect(rules.length).toBe(17);
+        expect(rules.length).toBe(18);
 
         expect(rules.find(rule => rule.getName() === "resource-state-checker")).toBeTruthy();
     });
@@ -266,7 +264,7 @@ describe("testFileType", () => {
         const rules = ft.getRules();
 
         expect(Array.isArray(rules)).toBeTruthy();
-        expect(rules.length).toBe(16);
+        expect(rules.length).toBe(17);
 
         expect(rules.find(rule => rule.getName() === "resource-state-checker")).toBeFalsy();
     });

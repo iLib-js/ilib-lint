@@ -61,7 +61,8 @@ class AnsiConsoleFormatter extends Formatter {
 `;
 
         // output ascii terminal escape sequences
-        output = output.replace(/<e\d><\/e\d>/g, "\u001B[91m \u001B[0m");
+        output = output.replace(/<e\d><\/e\d>/g, "\u001B[91m␣\u001B[0m");
+        output = output.replace(/<e\d\/>/g, "\u001B[91m␣\u001B[0m");
         output = output.replace(/<e\d>/g, "\u001B[91m");
         output = output.replace(/<\/e\d>/g, "\u001B[0m");
         if (typeof(result.rule.getLink) === 'function' && result.rule.getLink()) {

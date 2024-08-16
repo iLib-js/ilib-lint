@@ -225,7 +225,7 @@ debugger;
                 description: "Empty XML elements <> and </> are not allowed in the target.",
                 id: "xml.test",
                 source: 'This string contains <p>xml tags</p> in it.',
-                highlight: 'Target: Diese Zeichenfolge enthält <e0>&lt;></e0>pxml<e0>&lt;/></e0>p.',
+                highlight: 'Target: Diese Zeichenfolge enthält <e0><></e0>pxml<e0></></e0>p.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -235,7 +235,7 @@ debugger;
                 description: "XML in translation is not well-formed. Error: Unmatched closing tag: p.",
                 id: "xml.test",
                 source: 'This string contains <p>xml tags</p> in it.',
-                highlight: 'Target: Diese Zeichenfolge enthält &lt;>pxml&lt;/>p.<e0/>',
+                highlight: 'Target: Diese Zeichenfolge enthält <>pxml</>p.<e0/>',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -272,7 +272,7 @@ debugger;
             description: "XML in translation is not well-formed. Error: Unmatched closing tag: b",
             id: "xml.test",
             source: 'This string contains <c0><b>xml</b> tags</c0> in it.',
-            highlight: 'Target: Diese Zeichenfolge enthält &lt;c0>&lt;b>xml&lt;/c0>&lt;/b><e0>.</e0>',
+            highlight: 'Target: Diese Zeichenfolge enthält <c0><b>xml</c0></b><e0>.</e0>',
             rule,
             locale: "de-DE",
             pathName: "a/b/c.xliff"
@@ -318,7 +318,7 @@ debugger;
                 description: "The XML element <c> in the target does not appear in the source.",
                 id: "xml.test",
                 source: 'This string contains <c0>xml tags</c0> in it.',
-                highlight: 'Target: Diese Zeichenfolge enthält <e0>&lt;c></e0>xml<e0>&lt;/c></e0>.',
+                highlight: 'Target: Diese Zeichenfolge enthält <e0><c></e0>xml<e0></c></e0>.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -365,7 +365,7 @@ debugger;
                 description: "The XML element <c> in the target does not appear in the source.",
                 id: "xml.test",
                 source: 'This <b>string</b> contains <c0>xml tags</c0> in it.',
-                highlight: 'Target: Diese <b>Zeichenfolge</b> enthält <e0>&lt;c></e0>xml<e0>&lt;/c></e0>.',
+                highlight: 'Target: Diese <b>Zeichenfolge</b> enthält <e0><c></e0>xml<e0></c></e0>.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -422,7 +422,7 @@ debugger;
                 description: "The XML element <x> in the target does not appear in the source.",
                 id: "xml.test",
                 source: 'This <b>string</b> contains <c0>xml tags</c0> in it.',
-                highlight: 'Target: Diese <e0>&lt;x></e0>Zeichenfolge<e0>&lt;/x></e0> enthält <c>xml</c>.',
+                highlight: 'Target: Diese <e0><x></e0>Zeichenfolge<e0></x></e0> enthält <c>xml</c>.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -432,7 +432,7 @@ debugger;
                 description: "The XML element <c> in the target does not appear in the source.",
                 id: "xml.test",
                 source: 'This <b>string</b> contains <c0>xml tags</c0> in it.',
-                highlight: 'Target: Diese <x>Zeichenfolge</x> enthält <e0>&lt;c></e0>xml<e0>&lt;/c></e0>.',
+                highlight: 'Target: Diese <x>Zeichenfolge</x> enthält <e0><c></e0>xml<e0></c></e0>.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -489,7 +489,7 @@ debugger;
                 description: "The XML element <c> in the target does not appear in the source.",
                 id: "xml.test",
                 source: 'This <b>string</b> contains <c0>xml tags</c0> in it.',
-                highlight: 'Target: Diese Zeichenfolge enthält <e0>&lt;c></e0>xml<e0>&lt;/c></e0>.',
+                highlight: 'Target: Diese Zeichenfolge enthält <e0><c></e0>xml<e0></c></e0>.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -551,7 +551,7 @@ debugger;
                 description: "The attributes on the <a> elements in the target do not match the attributes on the same tags in the source.",
                 id: "xml.test",
                 source: 'This string contains <a href="url">xml tags</a> in it.',
-                highlight: 'Target: Diese Zeichenfolge enthält <e0>&lt;a></e0>xml</a>.',
+                highlight: 'Target: Diese Zeichenfolge enthält <e0><a></e0>xml</a>.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -588,7 +588,7 @@ debugger;
                 description: "Empty XML elements <> and </> are not allowed in the target.",
                 id: "xml.test",
                 source: 'This string contains <c0>xml tags</c0> in it.',
-                highlight: 'Target: Diese Zeichenfolge enthält <e0>&lt;></e0>c0xml<e0>&lt;/></e0>c0.',
+                highlight: 'Target: Diese Zeichenfolge enthält <e0><></e0>c0xml<e0></></e0>c0.',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
@@ -598,7 +598,7 @@ debugger;
                 description: "XML in translation is not well-formed. Error: Unmatched closing tag: c0.",
                 id: "xml.test",
                 source: 'This string contains <c0>xml tags</c0> in it.',
-                highlight: 'Target: Diese Zeichenfolge enthält &lt;>c0xml&lt;/>c0.<e0/>',
+                highlight: 'Target: Diese Zeichenfolge enthält <>c0xml</>c0.<e0/>',
                 rule,
                 locale: "de-DE",
                 pathName: "a/b/c.xliff"
