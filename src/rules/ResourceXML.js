@@ -23,10 +23,10 @@ import { xml2js } from 'xml-js';
 import { selfClosingTags } from 'ilib-tools-common';
 import ResourceRule from './ResourceRule.js';
 
-const htmlTags = Object.keys(selfClosingTags).concat(["p"]);
+const htmlTags = Object.keys(selfClosingTags).concat(["p", "li"]);
 const selfClosingRe = new RegExp(`<(${htmlTags.join('|')})>`, "g");
-const endTagRe = new RegExp(`</(${htmlTags.join('|')})>`, "g");
-const unnamedTagRe = /<\/?>/g;
+const endTagRe = new RegExp(`</(${htmlTags.join('|')})>`);
+const unnamedTagRe = /<\/?>/;
 
 /**
  * @class Represent an ilib-lint rule.
@@ -44,6 +44,12 @@ class ResourceXML extends ResourceRule {
         this.link = "https://gihub.com/ilib-js/ilib-lint/blob/main/docs/resource-xml.md";
     }
 
+    /**
+     * @private
+     * @param {Node} node a node in the AST
+     * @param {Object} elements an object that maps each element found to the number of times it
+     * has been found
+     */
     countElements(node, elements) {
         if (Array.isArray(node)) {
             for (let i in node) {
@@ -63,6 +69,13 @@ class ResourceXML extends ResourceRule {
         }
     }
 
+    /**
+     * @private
+     * @param {Node} sourceAst the root of the AST of the source string
+     * @param {Node} targetAst the root of the AST of the target string
+     * @param {Resource} resource the resource instance where the source
+     * and target strings came from
+     */
     matchElements(sourceAst, targetAst, resource) {
         // first traverse the source tree looking for elements to count
         let sourceElements = {}, targetElements = {};
@@ -132,14 +145,15 @@ class ResourceXML extends ResourceRule {
     convertUnclosedTags(string) {
         let converted = string;
 
-        endTagRe.lastIndex = 0;
-        selfClosingRe.lastIndex = 0;
         if (!endTagRe.test(string)) {
             converted = string.replace(selfClosingRe, "<$1/>");
         }
         return converted;
     }
 
+    /**
+     * @override
+     */
     matchString({source, target, resource}) {
         if (!target) return; // can't check "nothing" !
         let srcObj, tgtObj;
@@ -176,8 +190,7 @@ class ResourceXML extends ResourceRule {
             // xml2js parser below will find it, but it will show as an unclosed tag error.
             // While that is true, it's a poor error message that doesn't help the
             // translators fix the real problem, which is the unnamed tag.
-            unnamedTagRe.lastIndex = 0;
-            if (unnamedTagRe.exec(target) !== null) {
+            if (unnamedTagRe.test(target)) {
                 const highlight =
                     target.replace(/(<\/?>)/g, "<e0>$1</e0>");
                 let opts = {
