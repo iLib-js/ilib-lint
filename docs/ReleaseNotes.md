@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+### v2.3.0
+
+- implemented the XML match rule. If there are XML tags and entities in the
+  source, then the translations must match. The order of XML tags can change,
+  as the grammar of other languages might require that, but the number and
+  type of XML tags must match or an error will recorded.
+    - this rule will also record an error if the XML in the source is
+      well-formed, but the XML in the translation is not
+
 ### v2.2.1
 
 - fixed the output from the LintableFile class so that if there is only one

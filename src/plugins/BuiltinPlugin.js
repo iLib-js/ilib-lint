@@ -36,6 +36,7 @@ import ResourceSourceICUPluralSyntax from '../rules/ResourceSourceICUPluralSynta
 import ResourceSourceICUPluralParams from '../rules/ResourceSourceICUPluralParams.js';
 import ResourceSourceICUPluralCategories from '../rules/ResourceSourceICUPluralCategories.js';
 import ResourceSourceICUUnexplainedParams from '../rules/ResourceSourceICUUnexplainedParams.js';
+import ResourceXML from '../rules/ResourceXML.js';
 
 // built-in declarative rules
 export const regexRules = [
@@ -241,6 +242,7 @@ export const builtInRulesets = {
         "resource-completeness": true,
         "resource-no-translation": true,
         "resource-icu-plurals-translated": true,
+        "resource-xml": true,
 
         // declarative rules from above
         "resource-url-match": true,
@@ -252,7 +254,7 @@ export const builtInRulesets = {
         "resource-no-space-between-double-and-single-byte-character": true,
         "resource-no-halfwidth-kana-characters": true,
         "resource-no-double-byte-space": true,
-        "resource-no-space-with-fullwidth-punctuation": true,
+        "resource-no-space-with-fullwidth-punctuation": true
     },
 
     source: {
@@ -310,6 +312,7 @@ class BuiltinPlugin extends Plugin {
             ResourceSourceICUPluralParams,
             ResourceSourceICUPluralCategories,
             ResourceSourceICUUnexplainedParams,
+            ResourceXML,
             ...regexRules
         ];
     }
