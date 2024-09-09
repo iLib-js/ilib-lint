@@ -38,7 +38,8 @@ const rulesetDefinitions = {
         "resource-quote-style": "localeOnly",
         "resource-unique-keys": true,
         "resource-url-match": true,
-        "resource-named-params": true
+        "resource-named-params": true,
+        "resource-snake-case": true,
     }
 };
 
