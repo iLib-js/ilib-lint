@@ -644,20 +644,6 @@ describe("resource-snake-case", () => {
         expect(result).toBeUndefined();
     });
 
-    // TODO @NatK: Fix in the next PR so that the rule does not run for falsy target values.
-    // it.each([
-    //     // {name: "empty", target: ""},
-    //     // {name: "undefined", target: undefined},
-    //     // {name: "undefined", target: null},
-    // ])("does not apply rule if target string is $name", ({target}) => {
-    //     const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
-    //     const resource = createTestResourceString({source: "snake_case", target});
-    //
-    //     const result = rule.matchString({source: resource.source, target: resource.target, resource, file: resource.pathName});
-    //
-    //     expect(result).toBeUndefined();
-    // });
-
     test.each(
         [
             {name: "snake case", source: "snake_case"},
@@ -725,6 +711,25 @@ describe("resource-snake-case", () => {
             file: resource.pathName,
             resource
         });
+
+        expect(result).toHaveLength(1);
+        expect(result).toEqual(expect.arrayContaining([expect.any(Result)]));
+        expect(result).toEqual(expect.arrayContaining([expect.objectContaining({
+            severity: "error",
+            rule: expect.any(ResourceMatcher),
+        })]));
+    });
+
+    it.each([
+        {name: "empty", target: ""},
+        {name: "undefined", target: undefined},
+        {name: "null", target: null},
+
+    ])("returns error if target string is $name", ({target}) => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
+        const resource = createTestResourceString({source: "snake_case", target});
+
+        const result = rule.matchString({source: resource.source, target: resource.target, resource, file: resource.pathName});
 
         expect(result).toHaveLength(1);
         expect(result).toEqual(expect.arrayContaining([expect.any(Result)]));
