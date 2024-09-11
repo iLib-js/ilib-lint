@@ -5,10 +5,6 @@ Release Notes
 
 - added the snake case match rule. If source strings contain only snake case and no whitespace, then the targets must be
   the same. It is treated as Do Not Translate. If the target is different from the source, it is an error.
-  The rule checks the source string and target string for the following:
-  - snake_case,
-  - SCREAMING_SNAKE_CASE,
-  - camel_Snake_Case.
 
 ### v2.3.0
 

@@ -234,9 +234,7 @@ export const regexRules = [
         description: "Ensure that when source strings contain only snake case (snake_case, SCREAMING_SNAKE_CASE or camel_Snake_Case) and no whitespace, then the targets are the same",
         note: "Do not translate source string if it is in snake_case, SCREAMING_SNAKE_CASE or camel_Snake_Case. Update the target string to match the source string.",
         regexps: [
-            "^\\s*[a-z0-9]+(_[a-z0-9]+)+\\s*$", // snake_case
-            "^\\s*[A-Z0-9]+(_[A-Z0-9]+)+\\s*$", // SCREAMING_SNAKE_CASE
-            "^\\s*[a-z0-9]+(_[A-Z0-9][a-z0-9]*)+\\s*$", // camel_Snake_Case
+            "^\\s*[a-zA-Z0-9]*(_[a-zA-Z0-9]+)+\\s*$",
         ],
         link: "https://gihub.com/ilib-js/ilib-lint/blob/main/docs/resource-snake-case.md",
         severity: "error"
