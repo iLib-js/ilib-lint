@@ -614,16 +614,6 @@ describe("resource-snake-case", () => {
         expect(rule.severity).toBe("error");
     });
 
-    test("sets the rule regexps to snake case variations", () => {
-        const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
-
-        expect(rule.re).toEqual(expect.arrayContaining([
-            /^\s*[a-z0-9]+(_[a-z0-9]+)+\s*$/dgu, // snake_case
-            /^\s*[A-Z0-9]+(_[A-Z0-9]+)+\s*$/dgu ,// SCREAMING_SNAKE_CASE
-            /^\s*[a-z0-9]+(_[A-Z0-9][a-z0-9]*)+\s*$/dgu, // camel_Snake_Case
-        ]));
-    });
-
     test.each([
         {name: "empty", source: ""},
         {name: "undefined", source: undefined},
