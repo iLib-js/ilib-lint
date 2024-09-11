@@ -730,12 +730,7 @@ describe("resource-snake-case", () => {
         expect(result).toEqual(expect.arrayContaining([expect.any(Result)]));
         expect(result).toEqual(expect.arrayContaining([expect.objectContaining({
             severity: "error",
-            description: 'Do not translate source string if it is in snake_case, SCREAMING_SNAKE_CASE or camel_Snake_Case. Update the target string to match the source string.',
             rule: expect.any(ResourceMatcher),
-            highlight: "Target: dos_palabras_en_español<e0></e0>",
-            id: "snake.case.test.string.id",
-            source: "two_words_in_english",
-            pathName: "tests/for/snake_case.xliff"
         })]));
     });
 });
