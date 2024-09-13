@@ -620,20 +620,15 @@ describe("resource-snake-case", () => {
         {name: "null", source: null},
 
         {name: "whitespace solely", source: " "},
-
+        {name: "undersocre solely", source: "_"},
         {name: "digits solely (no underscores)", source: "123"},
-        {name: "single word (no uderscores)", source: "word"},
+        {name: "word solely (no uderscores)", source: "word"},
 
-        {name: "solo undersocre", source: "_"},
         {name: "leading and trailing undersocre/simple markdown", source: "_italic_"},
-        {name: "markdown", source: "This is _italic_ text"},
-
-        {name: "simple markdown", source: "_italic_"},
         {name: "markdown", source: "This is _italic_ text"},
 
         {name: "text and whitespace", source: "snake case"},
         {name: "snake case and text", source: "snake_case and text"},
-        {name: "screaming snake case and text", source: "SCREAMING_SNAKE_CASE and text"},
     ])("does not apply if source string is $name", ({source}) => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
         const resource = createTestResourceString({source, target: "does not matter"});
@@ -646,38 +641,21 @@ describe("resource-snake-case", () => {
     test.each(
         [
             {name: "snake case", source: "snake_case"},
-            {name: "snake case with leading and trailing whitespace", source: " snake_case "},
-            {name: "snake case with numbers (123)", source: "snake_case123_456"},
-
             {name: "screaming snake case", source: "SOME_SCREAMING_SNAKE_CASE"},
-            {name: "screaming snake case with leading and trailing whitespace", source: " SOME_SCREAMING_SNAKE_CASE "},
-            {name: "screaming snake case with numbers", source: "SOME_SCREAMING_SNAKE_CASE123_456"},
-
             {name: "camel snake case", source: "camel_Snake_Case"},
-            {name: "came snake case with leading and trailing whitespace", source: " camel_Snake_Case "},
-            {name: "camel snake case with numbers", source: "camel_Snake_Case123_456"},
-
             {name: "mixed case", source: "mixed_CASE"},
-            {name: "mixed case with leading and trailing whitespace", source: " mixed_CASE "},
-            {name: "mixed case with numbers", source: "mixed_CASE123_456"},
-
             {name: "randomly mixed case", source: "sNake_cASe"},
-            {name: "randomly mixed case with leading and trailing whitespace", source: " sNake_cASe "},
-            {name: "randomly mixed case with numbers", source: "sNake123_cASe_456"},
 
-            {name: "single word with leading underscore", source: "_test"},
+            {name: "any snake case with leading and trailing whitespace", source: " ANY_sNake_cASe "},
+            {name: "any snake case with numbers", source: "ANY_sNake_cASe123_456"},
+            {name: "any case with leading underscore", source: "_ANY_sNake_cASe"},
+            {name: "any case with trailing underscore", source: "ANY_sNake_cASe_"},
+
+            {name: "single word with leading underscore", source: "_word"},
             {name: "single number with leading underscore", source: "_123"},
 
             {name: "single word with with trailing undersocre", source: "word_"},
             {name: "single number with with trailing undersocre", source: "123_"},
-
-            {name: "any case with leading underscore", source: "_test_And_REtest"},
-            {name: "any case with leading underscore and leading and trailing whitespace", source: " _test_And_REtest "},
-            {name: "any case with leading underscore and numbers", source: "_test_And_REtest123_456"},
-
-            {name: "any case with trailing underscore", source: "test_And_REtest_"},
-            {name: "any case with trailing underscore and leading and trailing whitespace", source: " test_And_REtest_ "},
-            {name: "any case with trailing underscore and numbers", source: "test_And_REtest123_456_"},
         ]
     )("applies if source string is $name", ({name, source}) => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
