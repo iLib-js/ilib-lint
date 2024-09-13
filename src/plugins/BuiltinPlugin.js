@@ -231,10 +231,11 @@ export const regexRules = [
     {
         type: "resource-matcher",
         name: "resource-snake-case",
-        description: "Ensure that when source strings contain only snake case (snake_case, SCREAMING_SNAKE_CASE or camel_Snake_Case) and no whitespace, then the targets are the same",
+        description: "Ensure that when source strings contain only snake case (words and/or numbers separeated by underscores) and no whitespace, then the targets are the same",
         note: "Do not translate the source string if it consists solely of snake-cased strings and/or digits. Please update the target string so it matches the source string.",
         regexps: [
             "^\\s*[a-zA-Z0-9]*(_[a-zA-Z0-9]+)+\\s*$",
+            "^\\s*[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*_\\s*$"
         ],
         link: "https://gihub.com/ilib-js/ilib-lint/blob/main/docs/resource-snake-case.md",
         severity: "error"

@@ -625,7 +625,6 @@ describe("resource-snake-case", () => {
         {name: "single word (no uderscores)", source: "word"},
 
         {name: "solo undersocre", source: "_"},
-        {name: "trailing undersocre", source: "word_"},
         {name: "leading and trailing undersocre/simple markdown", source: "_italic_"},
         {name: "markdown", source: "This is _italic_ text"},
 
@@ -669,9 +668,16 @@ describe("resource-snake-case", () => {
             {name: "single word with leading underscore", source: "_test"},
             {name: "single number with leading underscore", source: "_123"},
 
+            {name: "single word with with trailing undersocre", source: "word_"},
+            {name: "single number with with trailing undersocre", source: "123_"},
+
             {name: "any case with leading underscore", source: "_test_And_REtest"},
             {name: "any case with leading underscore and leading and trailing whitespace", source: " _test_And_REtest "},
             {name: "any case with leading underscore and numbers", source: "_test_And_REtest123_456"},
+
+            {name: "any case with trailing underscore", source: "test_And_REtest_"},
+            {name: "any case with trailing underscore and leading and trailing whitespace", source: " test_And_REtest_ "},
+            {name: "any case with trailing underscore and numbers", source: "test_And_REtest123_456_"},
         ]
     )("applies if source string is $name", ({name, source}) => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
