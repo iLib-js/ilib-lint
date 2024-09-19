@@ -145,7 +145,7 @@ class DeclarativeResourceRule extends ResourceRule {
         let results = [];
         // only need 1 regexp to match in order to trigger this rule
         for (const re of this.re) {
-            results = results.concat(this.checkString({re, source, target, file, resource}));
+            results = results.concat(this.checkString({re, source, target, file, resource}) ?? []);
             if (results.length > 0) break;
         }
         results = results.filter(result => result);

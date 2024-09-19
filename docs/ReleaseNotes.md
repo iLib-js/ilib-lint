@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+### v2.4.0
+
+- added the snake case match rule. If source strings contain only snake case and no whitespace, then the targets must be
+  the same. It is treated as Do Not Translate. If the target is different from the source, it is an error.
+
 ### v2.3.0
 
 - implemented the XML match rule. If there are XML tags and entities in the
@@ -19,17 +24,20 @@ Release Notes
 - updated dependencies
 
 ### v2.2.0
+
 - added --no-return-value command-line flag to have the linter always return 0, even
   when there are errors and warnings. This still reports the results to the output.
   The intention is that the linter can be used to report results without causing
   build pipelines to fail.
 
 ### v2.1.1
+
 - check to make sure that every result in the results array returned by the plugins
   is not undefined so that we do not run into the problem of dereferencing undefined
   results later on, which caused some exceptions
 
 ### v2.1.0
+
 - fixed a bug where the quote style checker was not converting the highlight quotes properly
 - added an option `output` to write the output to a file.
 - added an option `name` to give the project name. It is useful when the config file is shared in multiple projects.
@@ -40,6 +48,7 @@ Release Notes
   longer accepted.
 
 ### v2.0.1
+
 - fixed loading of plugins
     - if a plugin `ilib-lint-x` exists and a different package `x`
       also exists that is unrelated to ilib-lint, and the config
@@ -136,7 +145,7 @@ Release Notes
   substituted into a replacement parameter in the source English text. Nouns
   and the articles "a", "an", and "the" are not translatable to all languages
   because of gender and plurality agreement rules.
-- converted all unit tests from  nodeunit to jest
+- converted all unit tests from nodeunit to jest
 - updated dependencies
 
 ### v1.10.0
@@ -242,7 +251,7 @@ Release Notes
 - added rule to warn against half-width kana characters
 - added rule to warn against double-byte whitespace characters
 - added rule to warn of whitespace adjacent to certain fullwidth punctuation characters
-- added rule to warn of a space between double-byte and single-byte character 
+- added rule to warn of a space between double-byte and single-byte character
 - added rule to check whether or not there is a translation for each source string in
   a resource
 - removed ability for the ICU plural rule to report results on the
