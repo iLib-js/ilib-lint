@@ -40,6 +40,7 @@ const rulesetDefinitions = {
         "resource-url-match": true,
         "resource-named-params": true,
         "resource-snake-case": true,
+        "resource-camel-case": true,
     }
 };
 

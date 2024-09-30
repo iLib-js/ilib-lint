@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+### v2.5.0
+
+- added the camel case match rule. If source strings contain only camel case and no whitespace, then the targets must be
+  the same. It is treated as Do Not Translate. If the target is different from the source, it is an error.
+
 ### v2.4.0
 
 - added the snake case match rule. If source strings contain only snake case and no whitespace, then the targets must be
