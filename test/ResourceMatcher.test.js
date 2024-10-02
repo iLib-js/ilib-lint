@@ -23,6 +23,8 @@ import { regexRules } from '../src/plugins/BuiltinPlugin.js';
 
 import { Result } from 'ilib-lint-common';
 
+import {expect, jest, test} from '@jest/globals';
+
 function findRuleDefinition(name) {
     return regexRules.find(rule => rule.name === name);
 }
@@ -631,9 +633,14 @@ describe("resource-snake-case", () => {
         {name: "snake case and text", source: "snake_case and text"},
     ])("does not apply if source string is $name", ({source}) => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
-        const resource = createTestResourceString({source, target: "does not matter"});
+        const resource = createTestSnakeCaseResourceString({source, target: "does not matter"});
 
-        const result = rule.matchString({source: resource.source, target: resource.target, resource, file: resource.pathName});
+        const result = rule.matchString({
+            source: resource.source,
+            target: resource.target,
+            resource,
+            file: resource.pathName
+        });
 
         expect(result).toBeUndefined();
     });
@@ -659,7 +666,7 @@ describe("resource-snake-case", () => {
         ]
     )("applies if source string is $name", ({name, source}) => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
-        const resource = createTestResourceString({source, target: "does not matter"});
+        const resource = createTestSnakeCaseResourceString({source, target: "does not matter"});
 
         const result = rule.matchString({
             source: resource.source,
@@ -673,7 +680,10 @@ describe("resource-snake-case", () => {
 
     test("returns `undefined` if source and target strings are the same", () => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
-        const resource = createTestResourceString({source: "do_not_translate_me", target: "do_not_translate_me"});
+        const resource = createTestSnakeCaseResourceString({
+            source: "do_not_translate_me",
+            target: "do_not_translate_me"
+        });
 
         const result = rule.matchString({
             source: resource.source,
@@ -687,7 +697,10 @@ describe("resource-snake-case", () => {
 
     test("returns error if source and target strings are different", () => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
-        const resource = createTestResourceString({source: "two_words_in_english", target: "dos_palabras_en_español"});
+        const resource = createTestSnakeCaseResourceString({
+            source: "two_words_in_english",
+            target: "dos_palabras_en_español"
+        });
 
         const result = rule.matchString({
             source: resource.source,
@@ -704,16 +717,21 @@ describe("resource-snake-case", () => {
         })]));
     });
 
-    it.each([
+    test.each([
         {name: "empty", target: ""},
         {name: "undefined", target: undefined},
         {name: "null", target: null},
 
     ])("returns error if target string is $name", ({target}) => {
         const rule = new ResourceMatcher(findRuleDefinition("resource-snake-case"));
-        const resource = createTestResourceString({source: "snake_case", target});
+        const resource = createTestSnakeCaseResourceString({source: "snake_case", target});
 
-        const result = rule.matchString({source: resource.source, target: resource.target, resource, file: resource.pathName});
+        const result = rule.matchString({
+            source: resource.source,
+            target: resource.target,
+            resource,
+            file: resource.pathName
+        });
 
         expect(result).toHaveLength(1);
         expect(result).toEqual(expect.arrayContaining([expect.any(Result)]));
@@ -724,8 +742,137 @@ describe("resource-snake-case", () => {
     });
 });
 
+describe("resource-camel-case", () => {
+    test("defines the built-in declarative resource-matcher rule", () => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-camel-case"));
 
-function createTestResourceString({source, target}) {
+        expect(rule.name).toBe("resource-camel-case");
+        expect(rule).toBeInstanceOf(ResourceMatcher);
+    });
+
+    test("sets the rule severity to 'error'", () => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-camel-case"));
+
+        expect(rule.severity).toBe("error");
+    });
+
+    test.each([
+        {name: "is empty", source: ""},
+        {name: "is undefined", source: undefined},
+        {name: "is null", source: null},
+
+        {name: "is whitespace solely", source: " "},
+        {name: "is digits solely", source: "123"},
+        {name: "is lowercase letters word solely", source: "word"},
+        {name: "is uppercase letters word solely", source: "WORD"},
+        {name: "is uppercase letters word solely", source: "Word"},
+
+        {name: "ends with capitalized letter", source: "CamelCasE"},
+        {name: "has more than one consecutive uppercase letters", source: "CAmelCase"},
+        {name: "has dot (.)", source: "Camel.Case"},
+        {name: "has underscore (_)", source: "Camel_Case"},
+        {name: "has dash (-)", source: "Camel-Case"},
+
+        {name: "has camel case and text", source: "camelCase and text"},
+    ])("does not apply if source string $name", ({source}) => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-camel-case"));
+        const resource = createTestCamelCaseResourceString({source, target: "does not matter"});
+
+        const result = rule.matchString({
+            source: resource.source,
+            target: resource.target,
+            resource,
+            file: resource.pathName
+        });
+
+        expect(result).toBeUndefined();
+    });
+
+    test.each(
+        [
+            {name: "lower camel case", source: "camelCase"},
+            {name: "upper camel case a.k.a. pascal case", source: "PascalCase"},
+            {name: "randomly mixed camel case", source: "cAmelCaSe"},
+
+            {name: "any camel case with leading and trailing whitespace", source: " AnyCamelCase "},
+            {name: "any camel case with digits at any position", source: "C4m3lC4s3W1thD1g1ts"},
+        ]
+    )("applies if source string is $name", ({name, source}) => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-camel-case"));
+        const resource = createTestCamelCaseResourceString({source, target: "does not matter"});
+
+        const result = rule.matchString({
+            source: resource.source,
+            target: resource.target,
+            file: resource.pathName,
+            resource
+        });
+
+        expect(result).not.toBeUndefined();
+    });
+
+    test("returns `undefined` if source and target strings are the same", () => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-camel-case"));
+        const resource = createTestCamelCaseResourceString({source: "doNotTranslateMe", target: "doNotTranslateMe"});
+
+        const result = rule.matchString({
+            source: resource.source,
+            target: resource.target,
+            file: resource.pathName,
+            resource
+        });
+
+        expect(result).toBeUndefined();
+    });
+
+    test("returns error if source and target strings are different", () => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-camel-case"));
+        const resource = createTestCamelCaseResourceString({
+            source: "TwoWordsInEnglish",
+            target: "DosPalabrasEnEspañol"
+        });
+
+        const result = rule.matchString({
+            source: resource.source,
+            target: resource.target,
+            file: resource.pathName,
+            resource
+        });
+
+        expect(result).toHaveLength(1);
+        expect(result).toEqual(expect.arrayContaining([expect.any(Result)]));
+        expect(result).toEqual(expect.arrayContaining([expect.objectContaining({
+            severity: "error",
+            rule: expect.any(ResourceMatcher),
+        })]));
+    });
+
+    test.each([
+        {name: "empty", target: ""},
+        {name: "undefined", target: undefined},
+        {name: "null", target: null},
+
+    ])("returns error if target string is $name", ({target}) => {
+        const rule = new ResourceMatcher(findRuleDefinition("resource-camel-case"));
+        const resource = createTestCamelCaseResourceString({source: "camelCase", target});
+
+        const result = rule.matchString({
+            source: resource.source,
+            target: resource.target,
+            resource,
+            file: resource.pathName
+        });
+
+        expect(result).toHaveLength(1);
+        expect(result).toEqual(expect.arrayContaining([expect.any(Result)]));
+        expect(result).toEqual(expect.arrayContaining([expect.objectContaining({
+            severity: "error",
+            rule: expect.any(ResourceMatcher),
+        })]));
+    });
+})
+
+function createTestSnakeCaseResourceString({source, target}) {
     return new ResourceString({
         source,
         target,
@@ -736,4 +883,13 @@ function createTestResourceString({source, target}) {
     });
 }
 
-
+function createTestCamelCaseResourceString({source, target}) {
+    return new ResourceString({
+        source,
+        target,
+        key: "camel.case.test.string.id",
+        sourceLocale: "en-US",
+        targetLocale: "es-ES",
+        pathName: "tests/for/camelCase.xliff"
+    });
+}
