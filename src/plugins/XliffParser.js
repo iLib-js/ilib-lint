@@ -73,28 +73,6 @@ class XliffParser extends Parser {
     getExtensions() {
         return this.extensions;
     }
-
-    /**
-     * Convert the intermediate representation back into a source file.
-     *
-     * @override
-     * @param {IntermediateRepresentation} ir the intermediate representation to convert
-     * @returns {SourceFile} the source file with the contents of the intermediate
-     * representation
-     */
-    write(ir) {
-        const resources = ir.getRepresentation();
-        const xliff = new ResourceXliff({
-            path: ir.sourceFile.getPath()
-        });
-        resources.forEach(resource => {
-            xliff.addResource(resource);
-        });
-        const data = xliff.getText();
-        ir.sourceFile.setContent(data);
-        ir.sourceFile.write();
-        return ir.sourceFile;
-    }
 }
 
 export default XliffParser;

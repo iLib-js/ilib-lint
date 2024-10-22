@@ -18,10 +18,16 @@
  */
 import fs from 'fs';
 
-import { ResourceArray, ResourcePlural, ResourceString } from 'ilib-tools-common';
+import { ResourceString } from 'ilib-tools-common';
 
 import { IntermediateRepresentation, SourceFile } from 'ilib-lint-common';
 import XliffParser from '../src/plugins/XliffParser.js';
+
+import {describe, expect, test} from '@jest/globals';
+
+/**
+ * @jest-environment node
+ */
 
 describe("test the XliffParser plugin", () => {
     test("No arg constructor gives default values", () => {
@@ -108,103 +114,5 @@ describe("test the XliffParser plugin", () => {
         expect(() => {
             xp.parse(sourceFile);
         }).toThrow();
-    });
-
-    test("Write a regular xliff file but don't change the content", () => {
-        expect.assertions(3);
-
-        const xp = new XliffParser();
-
-        const sourceFile = new SourceFile("test/testfiles/xliff/test.xliff", {});
-        const expected = sourceFile.getContent();
-
-        const ir = xp.parse(sourceFile);
-        expect(ir).toBeTruthy();
-        expect(xp.write(ir[0])).toBe(sourceFile);
-
-        // the content has not changed
-        expect(sourceFile.getContent()).toBe(expected);
-    });
-
-    test("Write a regular xliff file and change the content", () => {
-        expect.assertions(4);
-
-        const xp = new XliffParser();
-
-        const sourceFile = new SourceFile("test/testfiles/xliff/test.xliff", {});
-        const oldContent = sourceFile.getContent();
-
-        const ir = xp.parse(sourceFile);
-        expect(ir).toBeTruthy();
-
-        const resources = ir[0].getRepresentation();
-        resources[0].setTarget("new target");
-
-        // write to a different file so we can compare the content
-        ir[0].sourceFile.filePath = "test/testfiles/xliff/test-changed.xliff";
-
-        const newSourceFile = xp.write(ir[0]);
-        expect(newSourceFile).toBe(sourceFile);
-
-        // the content has changed
-        const newContent = newSourceFile.getContent();
-        expect(newContent).not.toBe(oldContent);
-
-        // the content is what we expect
-        expect(newContent).toBe(
-`<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.2">
-  <file original="foo/bar/asdf.java" source-language="en-US" target-language="de-DE" product-name="webapp">
-    <body>
-      <trans-unit id="1" resname="foobar" restype="string" datatype="plaintext">
-        <source>Asdf asdf</source>
-        <target>new target</target>
-        <note>foobar is where it's at!</note>
-      </trans-unit>
-    </body>
-  </file>
-</xliff>`);
-
-    });
-
-    test("Write a regular xliff file and change the content on disk", () => {
-        expect.assertions(4);
-
-        const xp = new XliffParser();
-
-        const sourceFile = new SourceFile("test/testfiles/xliff/test.xliff", {});
-        const oldContent = sourceFile.getContent();
-
-        const ir = xp.parse(sourceFile);
-        expect(ir).toBeTruthy();
-
-        const resources = ir[0].getRepresentation();
-        resources[0].setTarget("new target");
-
-        // write to a different file so we can compare the content
-        ir[0].sourceFile.filePath = "test/testfiles/xliff/test-changed.xliff";
-
-        const newSourceFile = xp.write(ir[0]);
-        expect(newSourceFile).toBe(sourceFile);
-
-        // the content has changed
-        const newContent = fs.readFileSync("test/testfiles/xliff/test-changed.xliff", "utf-8");
-        expect(newContent).not.toBe(oldContent);
-
-        // the content is what we expect
-        expect(newContent).toBe(
-`<?xml version="1.0" encoding="utf-8"?>
-<xliff version="1.2">
-  <file original="foo/bar/asdf.java" source-language="en-US" target-language="de-DE" product-name="webapp">
-    <body>
-      <trans-unit id="1" resname="foobar" restype="string" datatype="plaintext">
-        <source>Asdf asdf</source>
-        <target>new target</target>
-        <note>foobar is where it's at!</note>
-      </trans-unit>
-    </body>
-  </file>
-</xliff>`);
-
     });
 });
