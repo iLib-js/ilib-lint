@@ -237,7 +237,7 @@ export const regexRules = [
             "^\\s*[a-zA-Z0-9]*(_[a-zA-Z0-9]+)+\\s*$",
             "^\\s*[a-zA-Z0-9]+(_[a-zA-Z0-9]+)*_\\s*$"
         ],
-        link: "https://gihub.com/ilib-js/ilib-lint/blob/main/docs/resource-snake-case.md",
+        link: "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-snake-case.md",
         severity: "error"
     },
     {
@@ -249,7 +249,7 @@ export const regexRules = [
             "^\\s*[a-z\\d]+([A-Z][a-z\\d]+)+\\s*$", // camelCase and 6amelCaseWithD1g1t3
             "^\\s*[A-Z][a-z\\d]+([A-Z][a-z\\d]+)+\\s*$", // PascalCase and 4ascalCaseWithD1g1t3
         ],
-        link: "https://gihub.com/ilib-js/ilib-lint/blob/main/docs/resource-camel-case.md",
+        link: "https://github.com/ilib-js/ilib-lint/blob/main/docs/resource-camel-case.md",
         severity: "error"
     },
 ];
