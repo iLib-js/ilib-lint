@@ -58,7 +58,7 @@ describe("test the XliffParser plugin", () => {
             ],
             sourceFile
         });
-        
+
         const xs = new XliffSerializer();
         const newSourceFile = xs.serialize(ir);
         expect(newSourceFile).toBeTruthy();
@@ -80,9 +80,9 @@ describe("test the XliffParser plugin", () => {
 
     test("Serialize a regular xliff file with multiple resources", () => {
         expect.assertions(3);
-        
+
         const sourceFile = new SourceFile("test/testfiles/xliff/test.xliff", {});
-        
+
         const ir = new IntermediateRepresentation({
             type: "resource",
             ir: [
@@ -131,7 +131,7 @@ describe("test the XliffParser plugin", () => {
             ],
             sourceFile
         });
-        
+
         const xs = new XliffSerializer();
         const newSourceFile = xs.serialize(ir);
         expect(newSourceFile).toBeTruthy();

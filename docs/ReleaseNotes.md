@@ -3,8 +3,9 @@ Release Notes
 
 ### v2.6.0
 
-- added XliffParser.write() method to generate the text of modified XLIFF files
-- added XliffParser.setContent() method to update the content of the XLIFF file
+- added XliffSerializer, LineSerializer, and StringSerializer classes generate the
+  text of modified files
+    - not used yet -- this is in preparation for the implementation of autofixing
 
 ### v2.5.0
 

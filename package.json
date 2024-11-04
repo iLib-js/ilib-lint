@@ -36,7 +36,6 @@
     ],
     "files": [
         "src",
-        "docs",
         "log4js.json",
         "README.md",
         "LICENSE"
